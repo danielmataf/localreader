@@ -1,3 +1,9 @@
+
+#include "reader.h"
+#include <math.h>
+#include <iostream>
+#include <fstream>
+#include <string>
 #include <TCanvas.h>
 #include <TH2.h>
 #include <TF1.h>
@@ -15,11 +21,6 @@
 #include <TGraph2D.h>
 #include <TFile.h>
 #include <TTree.h>
-#include "reader.h"
-#include <math.h>
-#include <iostream>
-#include <fstream>
-#include <string>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #define PI 3.14159265
@@ -1001,6 +1002,12 @@ int main() {
 	        }
         }
     }
+
+
+    
+
+
+
 	cout<<"tot: "<<counter_elpi<<endl;
 	cout<<"D : "<<coinci_De<<endl;
 	cout<<"Sn: "<<coinci_Sn<<endl;
@@ -1091,4 +1098,11 @@ int main() {
 
     cc->SaveAs("../correctionvar.pdf");
     cc->SaveAs("../correctionvar.root");
+
+    TFile* file1 = new TFile("output1.root", "RECREATE");
+    //previous line is a test 4 multipratio analysis in external cpp
+    //analysis keeps in the following 
+    myHists.hist_Q->Write();
+    file1->Close();
+    
 }
