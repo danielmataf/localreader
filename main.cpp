@@ -382,6 +382,15 @@ int main() {
     
 	//static const char* const filelist[] = {"../../mywork/REC_CLAS22/r_eD-01.hipo","../../mywork/REC_CLAS22/r_eSn-01.hipo"};
 
+
+    int typeoffile; 
+    cout<<"which type of file ? 1=D , 2 = Sn, 3=Cu"<<endl;
+    cin>> typeoffile;
+
+
+
+
+
 	static const char* const filelist[] =	{"../../files2read/r_eD-01.hipo","../../files2read/r_eD-02.hipo","../../files2read/r_eSn-01.hipo","../../files2read/r_eSn-02.hipo"};
 		
 	//static const char* const filelist[] = {"../../mywork/REC_CLAS22/merged.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo"};
@@ -1104,5 +1113,10 @@ int main() {
     //analysis keeps in the following 
     myHists.hist_Q->Write();
     file1->Close();
+
+        
+
+    
+
     
 }
