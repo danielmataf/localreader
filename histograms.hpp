@@ -115,6 +115,10 @@ struct VarHistograms {
 };
 */
 
+
+//creation of a class for kinematical variables and others
+//no need to differentiate between the nuclea target, main should do that distinction, and separate it when writting output files.
+
 class VarHistograms {
 public:
     TH1F* hist_Q;
@@ -166,6 +170,9 @@ public:
     }
 };
 
+//myHists.hist_Q->Write();
+
+//maybe no need to distinguish between REC and MC 
 
 struct MCHistograms {
     TH1F* hist_MC_Q;

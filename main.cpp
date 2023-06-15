@@ -42,8 +42,12 @@
 // using data filtering in variables. DC cuts ( dcfiducialcuts.hpp -working). CAL cuts (RE CHECK). others
 // TMD comparison study (R, Dpt, etc) were removed, find them in recovery_posCLAS.cpp
 // Here we are nnot recovering MC databanks, remains TBD, has to be done for headers & all
-//REFERENCE: Version not READY, on development. /!\
-//DATE: 29/03/2023
+
+//REFERENCE: Version not READY yet, on development. /!\
+//DATE: 15/06/2023
+//Sn loop was deleted. histogramm header allows now to have general histograms  
+// all drawing for Sn specific histograms were commented. unable now to compare two histograms from Sn and De in the same canvas, from this code
+//if the comparison is required? One may call the Sn and D histograms from root files and compare them outside of main.cpp 
 //next TBD: improving code, fixing sloppy conditions.   HEADERS TBD, find a way to determine also MC 
 // ctrl+F on 'TBD' to see what's pending
 //---------------------------------------------------------//
@@ -114,21 +118,11 @@ int main() {
     
 
     TH1F* h_scapiE = new TH1F("nrg(pi)", "nrg(pi)", nubin, 0.0, 10);
-    TH1F* h_MCscapiE = new TH1F("MCnrg(pi)", "MCnrg(pi)", nubin, 0.0, 10);
     // REC histograms  //
         //see histograms.hpp
     //simulations histograms from REAL MC//
         // see histograms.hpp
 
-    TH1F* h_MCmiss_Pepi = new TH1F("MCmiss_epi", "MCmiss_epi", nubin, 0,20);
-    TH1F* h_MCmiss_PeX = new TH1F("MCmiss_eX", "MCmiss_eX", nubin, 0,20);
-    TH1F* h_MCmiss_PpiX = new TH1F("MCmiss_piX", "MCmiss_piX", nubin, 0,20);
-    TH1F* h_MCmiss_PepiX = new TH1F("MCmiss_epiX", "MCmiss_epiX", nubin, 0,20);
-
-    TH1F* h_miss_Pepi = new TH1F("miss_epi", "miss_epi", nubin, 0,20);
-    TH1F* h_miss_PeX = new TH1F("miss_eX", "miss_eX", nubin, 0,20);
-    TH1F* h_miss_PpiX = new TH1F("miss_piX", "miss_piX", nubin, 0,20);
-    TH1F* h_miss_PepiX = new TH1F("miss_epiX", "miss_epiX", nubin, 0,20);
     // BSA //
     TH1* h_Phphi  = new TH1F("Ph_phi",  "Ph_phi", phibin ,0,360);
     TH1* h_Nhphi  = new TH1F("Nh_phi",  "Nh_phi", phibin ,0,360);
@@ -145,9 +139,8 @@ int main() {
     TH1* h_MCsphi  = new TH1F("MCsin_phi",  "MCsin_phi", phibin ,-1,1);
     TH1* h_MCc2phi  = new TH1F("MCcos_2phi",  "MCcos_2phi", phibin ,-1,1);
     TH1* h_MCs2phi  = new TH1F("MCsin_2phi",  "MCsin_2phi", phibin ,-1,1);
-    TH2F* h_cs = new TH2F("cos-sin","cos-sin",phibin , -1,1,phibin,-1,1);
     TH2F* h_2cs = new TH2F("cos2-sin2","cos2-sin2",phibin , -1,1,phibin,-1,1);
-    TH2F* h_cc = new TH2F("cos-cos","cos-cos",100 , -1,1,100,-1,1);
+    TH2F* h_cs = new TH2F("cos-cos","cos-cos",100 , -1,1,100,-1,1);
     TH2F* h_ss = new TH2F("sin-sin","sin-sin",100 , -1,1,100,-1,1);
     TH2F* h_c2c2 = new TH2F("cos2-cos2","cos2-cos2",100 , -1,1,100,-1,1);
     TH2F* h_s2s2 = new TH2F("sin2-sin2","sin2-sin2",100 , -1,1,100,-1,1);
@@ -157,102 +150,32 @@ int main() {
     TH2F* h_RawvRaw = new TH2F("Raw versus Raw","Raw versus Raw",nubin , -360,360,nubin,-360,360);
     TH2F* h_trueRaw = new TH2F("true raw (angle)","true raw (angle)",nubin , -2,2,nubin,-2,2);
 
-    TH1*  h_DPhih = new TH1F("Delta Phih",  "Delta Phih", nubin,-20,20);
-    TH2F* h_DphihVimp = new TH2F("Imp_pi Vs Imp_pi","Imp_pi Vs Imp_pi",nubin , 0,10,nubin,0,10);
-    TH2F* h_impeVimpe = new TH2F("Dphih Vs Imp_e","Dphih Vs Imp_e",nubin , 0,360,nubin,0,10);
-    TH1*  h_Dimpe = new TH1F("Delta impe",  "Delta impe", nubin,-10,10);
-    TH1*  h_Dimppi = new TH1F("Delta imppi",  "Delta imppi", nubin,-10,10);
-    TH1*  h_DPhie = new TH1F("Delta phie",  "Delta phie", nubin,-60,60);
-    TH1*  h_DPhipi = new TH1F("Delta phipi",  "Delta phipi", nubin,-60,60);
 
-    TH2F* h_cordphiel = new TH2F("phi(el)","phi(el)",nubin , -180,180,nubin,-180,180);
-    TH2F* h_cordphipi = new TH2F("phi(pi)","phi(pi)",nubin , -180,180,nubin,-180,180);
-
-    TH1*  h_blank = new TH1F("blank",  "blank", nubin,0,100);
     //  2Ds  //
     TH2F* DC_allpre = new TH2F("DCcutspre","DCcutspre", nubin , -3,3,1000,-3,3);
     TH2F* DC_allpos = new TH2F("DCcutspos","DCcutspos", nubin , -3,3,1000,-3,3);
 
     TH2F* DC_scalpre = new TH2F("DCscal","DCscal", nubin , -3,3,1000,-3,3);
     TH2F* DC_scalpos = new TH2F("DCscalpos","DCscalpos", nubin , -3,3,1000,-3,3);
-	//other//
+	//other//               //create a class for comparisons in 2D, or exploit the existing histograms for yada yada TBD
     TH2F* h_QvX = new TH2F("QvsX","QvsX", nubin , 0,.8,100,0,8);	//part1
         TH2F* h_QvX2 = new TH2F("QvsX2","QvsX2", nubin , 0,.5,100,0,8); //part2
     TH2F* h_zvsPt = new TH2F("zvsp","zvsp", nubin , 0,1,100,0,.8);
         TH2F* h_zvsPt2 = new TH2F("zvsp2","zvsp2", nubin , 0,1,100,0,.8);
- 	//comparisons//
-     TH2F* h_QvQ = new TH2F("QvsQ","QvsQ", nubin ,  0.0, 6,nubin, 0.0, 6);
-     TH2F* h_xvx = new TH2F("xvsx","xvsx", nubin ,0.0, 0.4,nubin,0.0, 0.4);
-     TH2F* h_yvy = new TH2F("yvsy","yvsy", nubin , 0.0, 1.0,nubin,0.0, 1.0);
-     TH2F* h_VvV = new TH2F("VvsV","VvsV", nubin , 0.0, 11,nubin,0.0, 11);
-     TH2F* h_WvW = new TH2F("WvsW","WvsW", nubin ,1.5, 5,nubin,1.5, 5);
-     TH2F* h_tvt = new TH2F("tvst","tvst", nubin , -15,0,nubin,-15,0);	// NOT DONE YET    -PENDING
-     TH2F* h_phivphi = new TH2F("phivsphi","phivsphi", 108 ,0,360,108,0,360);
-     TH2F* h_zvz = new TH2F("zvsz","zvsz", nubin , 0,1,nubin, 0,1);
-     TH2F* h_ptpt = new TH2F("PtvsPt","PtvsPt", nubin , 0,2,nubin, 0,2);
+ 	
 
     
 
 
-	//====Comparisons2======//
-    TH1F* Dcphi = new TH1F ("Delta c phi", "Delta c phi", nubin, -2, 2);
-    TH1F* Dsphi = new TH1F ("Delta s phi", "Delta s phi", nubin, -2, 2);
-    TH1F* Dc2phi = new TH1F ("Delta c 2phi", "Delta c 2phi", nubin, -2, 2);
-    TH1F* Ds2phi = new TH1F ("Delta s 2phi", "Delta s 2phi", nubin, -2, 2);
+
 
 	//==Particle Distributions==//
 
-    TH2F* thVP_e = new TH2F ("thVP_e", "thVP_e", nubin, 1.5, 7, nubin, 0,40);
-    TH2F* thVP_pi = new TH2F ("thVP_pi", "thVP_pi", nubin, 1, 7, nubin, 0, 40);
-    TH2F* QVx = new TH2F ("QVx", "QVx", nubin, 0, 0.5, nubin, 0,8);
-    TH2F*  zVpt = new TH2F ("zVpt", "zVpt", nubin, 0, 1.6, nubin, 0, 0.8);
-    TH2F* xVz = new TH2F ("xVz", "xVz", nubin, 0, 1, nubin, 0,1);
-    TH2F* PtrVz = new TH2F ("PtrVz", "PtrVz", nubin, 0, 1, nubin, 0, 2);
-    TH2F* QVz = new TH2F ("QVz", "QVz", nubin, 0, 0.8, nubin, 0,8);
-    TH2F*  PhVx = new TH2F ("PhVx", "PhVx", nubin, 0, 1, nubin, 0, 8);
 
-	//=========Sn HISTOGRAMS=======//
-    TH1F* hist_Q_Sn = new TH1F("Q2_Sn", "Q2_Sn", nubin, QminX, QmaxX);
-    TH1F* hist_v_Sn = new TH1F("gamnu_Sn", "gamnu_Sn", nubin, vminX, vmaxX);
-    TH1F* hist_y_Sn = new TH1F("y_Sn", "y_Sn", nubin, 0.0, 1.0);
-    TH1F* hist_x_Sn = new TH1F("x_bj_Sn", "x_bj_Sn", nubin, 0.0, 0.6);
-    TH1F* hist_W_Sn = new TH1F("W_Sn", "W_Sn", nubin, 1.5, 5);
-    TH1F* hist_phih_Sn = new TH1F("phih_Sn", "phih_Sn", 12, 0,360);
-    TH1F* hist_t_Sn = new TH1F("t_Sn", "t_Sn", nubin, -15,0);
-    TH1F* hist_P_t_Sn = new TH1F("P_t_Sn", "P_t_Sn", nubin, 0,2);
-    TH1F* hist_Pt2_Sn = new TH1F("Pt2_Sn", "Pt2_Sn", nubin, 0,2);
-    TH1F* hist_Pt2_De = new TH1F("Pt2_De", "Pt2_De", nubin, 0,2);
-    TH1F* hist_z_Sn = new TH1F("z_Sn", "z_Sn", nubin, zminX,zmaxX);
-    TH1F* hist_MX_Sn = new TH1F("MX_Sn", "MX_Sn", nubin, 0,20);
-
-    TH1* h_cphi_Sn  = new TH1F("cos_phi_Sn",  "cos_phi_Sn", phibin ,-1,1);
-    TH1* h_sphi_Sn  = new TH1F("sin_phi_Sn",  "sin_phi_Sn", phibin ,-1,1);
-    TH1* h_c2phi_Sn  = new TH1F("cos_2phi_Sn",  "cos_2phi_Sn", phibin ,-1,1);
-    TH1* h_s2phi_Sn  = new TH1F("sin_2phi_Sn",  "sin_2phi_Sn", phibin ,-1,1);
-    TH1* h_MCcphi_Sn  = new TH1F("MCcos_phi_Sn",  "MCcos_phi_Sn", phibin ,-1,1);
-    TH1* h_MCsphi_Sn  = new TH1F("MCsin_phi_Sn",  "MCsin_phi_Sn", phibin ,-1,1);
-    TH1* h_MCc2phi_Sn  = new TH1F("MCcos_2phi_Sn",  "MCcos_2phi_Sn", phibin ,-1,1);
-    TH1* h_MCs2phi_Sn  = new TH1F("MCsin_2phi_Sn",  "MCsin_2phi_Sn", phibin ,-1,1);
-
-    TH2F*  compcAN = new TH2F ("compcAN", "compcAN", nubin, -1, 1, nubin, -1, 1);
-    TH2F*  compsAN = new TH2F ("compsAN", "compsAN", nubin, -1, 1, nubin, -1, 1);
-    TH2F*  compc2AN = new TH2F ("compc2AN", "compc2AN", nubin, -1, 1, nubin, -1, 1);
-    TH2F*  comps2AN = new TH2F ("comps2AN", "comps2AN", nubin, -1, 1, nubin, -1, 1);
+	//=========Sn HISTOGRAMS=======// -----Replaced by  general histograms that can be used for any nuclear target
     //=====histograms for all electrons /!\ ======//
 	//(no coincidence) (for multip ratio)
-    TH1F* hist_Q_Sn_e = new TH1F("Q2_Sn_e", "Q2_Sn_e", nubin, QminX, QmaxX);
-    TH1F* hist_Q_De_e = new TH1F("Q2_De_e", "Q2_De_e", nubin, QminX, QmaxX);
-    TH1F* hist_v_Sn_e = new TH1F("v_Sn_e", "v_Sn_e", nubin, vminX, vmaxX);
-    TH1F* hist_v_De_e = new TH1F("v_De_e", "v_De_e", nubin, vminX, vmaxX);
-    TH1F* hist_z_Sn_e = new TH1F("z_Sn_e", "z_Sn_e", nubin, zminX, zmaxX);
-    TH1F* hist_z_De_e = new TH1F("z_De_e", "z_De_e", nubin, zminX, zmaxX);
-    TH1F* hist_P_t_Sn_e = new TH1F("pt_Sn_e", "pt_Sn_e", nubin, PtminX, PtmaxX);
-    TH1F* hist_P_t_De_e = new TH1F("pt_De_e", "pt_De_e", nubin, PtminX, PtmaxX);
-
-    TH1F* h_meancos_Sn = new TH1F("meancos_Sn", "meancos_Sn", phibin, -1, 1);
-    TH1F* h_meancos_De = new TH1F("meancos_De", "meancos_De", phibin, -1,1);
-    TH1F* h_cosSn = new TH1F("h_cosSn", "h_cosSn", 10, -1,1);
-    TH1F* h_cosDe = new TH1F("h_cosDe", "h_cosDe", 10, -1,1);
+    
 
 	//====Histos for <cosphi>/<cosphi>====//
     TH2F* h_cQ_Sn = new TH2F("cosQSn", "cosQSn", nubin, -1,1, nubin,QminX ,QmaxX);
@@ -390,12 +313,15 @@ int main() {
 
 
 
+    //All files
+	//static const char* const filelist[] =	{"../../files2read/r_eD-01.hipo","../../files2read/r_eD-02.hipo","../../files2read/r_eSn-01.hipo","../../files2read/r_eSn-02.hipo"};
+	
+    // D files  
+    static const char* const filelist[] =	{"../../files2read/r_eD-01.hipo","../../files2read/r_eD-02.hipo","../../files2read/r_eD-01.hipo","../../files2read/r_eD-02.hipo"};
 
-	static const char* const filelist[] =	{"../../files2read/r_eD-01.hipo","../../files2read/r_eD-02.hipo","../../files2read/r_eSn-01.hipo","../../files2read/r_eSn-02.hipo"};
-		
-	//static const char* const filelist[] = {"../../mywork/REC_CLAS22/merged.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo","../../mywork/REC_CLAS22/out_out_rgd_d_1.hipo"};
-//{"../../mywork/REC_CLAS22/readertest.hipo","../../mywork/REC_CLAS22/r_N1.hipo",
-//,"../../mywork/REC_CLAS22/r_P9.hipo","../../mywork/REC_CLAS22/r_P10.hipo"};
+    //Sn files 
+    //static const char* const filelist[] =	{"../../files2read/r_eSn-01.hipo","../../files2read/r_eSn-02.hipo","../../files2read/r_eSn-01.hipo","../../files2read/r_eSn-02.hipo"};
+
     //number of files:1
    int files = 4;
 	//int files is the total nber of files. change here when files are added on filelist[] --> filelist[files]
@@ -693,7 +619,6 @@ int main() {
 		    // MOST PROBABLY A USELESS CONDITION [HERE]
                 counter_elpi += 1;
 
-		    //--ALERT used to be here--//
 
             }
 				/////////////////////
@@ -776,14 +701,12 @@ int main() {
                 rawphih2 = angle_norm;
             } 
 	        //======= START ANALYSIS 4 DEUTERIUM =======//
-            if (filenbr <=2 ) {
+            //======= START ANALYSIS 4 ANY TYPE OF FILE =======//
+            if (filenbr <=2 ) {                                         
 		        //==== CALCS and FILLINGS for MC (Deuterium) ===//
+                    //add an option in cin at the beginning of the code in order to have an option for MC analysis.... TBD !
                     //DELETED, if needed check previous versions//
 
-                ////////////////////////////////////////////////////
-                TVector3 autre_MC_scaph = v_MC_scaph->Vect();
-                TVector3 autre_MC_scaHe = v_MC_scaHe->Vect();
-                ////////////////////////////////////////////////////
 	            //==== CALCS and FILLINGS for REC ===//		---[De]
 	            if (val_e==true){				
 	                if (Q2>1.5){
@@ -794,8 +717,8 @@ int main() {
 		                    //hist_z_De_e->Fill(z);
 				            if (W>2) {		//!!!!!!!!//
 					            counter_Deall_e += 1;
-					            hist_Q_De_e->Fill(Q2);
-					            hist_v_De_e->Fill(gamnu);					
+					            //hist_Q_De_e->Fill(Q2);
+					            //hist_v_De_e->Fill(gamnu);					
 				            }
 				            //}
 			            }
@@ -854,37 +777,14 @@ int main() {
 				    	    	                            DC_allpos->Fill(pipX,pipY); //post fiducial filling pions
 				    	    	                            DC_scalpos->Fill(scalX,scalY);//post fiducial filling electrons
 					    	                                elHists.h_scalE->Fill(v_scal->E());
-                            						        h_scapiE->Fill(v_scapip->E());
+                            						        h_scapiE->Fill(v_scapip->E());      //replace this one with a class histogram in hpp TBD
 						                                    if (v_scapip->E()<3 && v_scapip->E()>1){            //+++++++++++++++++++++++++++//
 				    	    	                                //if (lv>90 && lw>90) {				//calorimeter cut on 9cm (?)
-						    	                                h_zvsPt2->Fill(z,P_t);
 					    	                                    //h_cphi->Fill(cos(phih));			//Cos & Sin analysis
-					    	                                    h_sphi->Fill(sin(phih));
-					    	                                    h_c2phi->Fill(cos(2*phih));
-					    	                                    h_s2phi->Fill(sin(2*phih));
-						                                        h_cs->Fill(cos(phih),sin(phih));
-						                                        h_2cs->Fill(cos(2*phih),sin(2*phih));
-					            	                            h_QvX2->Fill(x_b,Q2);
-							                                    h_cQ_De->Fill(cos(phih),Q2);
-							                                    h_cv_De->Fill(cos(phih),gamnu);
-							                                    h_cz_De->Fill(cos(phih),z);
-							                                    h_cpt_De->Fill(cos(phih),P_t);
-							                                    h_ptQ_De->Fill(P_t*P_t,Q2);
-							                                    h_ptv_De->Fill(P_t*P_t,gamnu);
-							                                    h_ptz_De->Fill(P_t*P_t,z);
-							                                    w_ptQ_De->Fill(Q2,P_t*P_t);
-							                                    w_ptv_De->Fill(gamnu, P_t*P_t);
-							                                    w_ptz_De->Fill(z, P_t*P_t);
 							                                    myHists.hist_Q->Fill(Q2);		//-----------------------Q--///
 							                                    myHists.hist_v->Fill(gamnu);		//-----------------------v--///
 							                                    myHists.hist_z->Fill(z);		//-----------------------z--///
 							                                    myHists.hist_P_t->Fill(P_t);		//----------------------pt--//
-							                                    hist_Pt2_De->Fill(P_t*P_t);
-    							                                w_cQ_De->Fill(Q2,cos(phih));
-    							                                w_cv_De->Fill(gamnu,cos(phih));
-							                                    w_cz_De->Fill(z,cos(phih));
-    							                                w_cpt_De->Fill(P_t*P_t,cos(phih));
-							                                    poscutQx1->Fill(x_b,Q2);
 					            	                            //q condition was here for the MC comparisons DELETED
 							                                }
                        			       	                    // }					//end if on MC vs REC
@@ -901,114 +801,9 @@ int main() {
 		        }       //condition for true e 
             }
 		    //================================================================================================================//
+		    //===============================================   Sn loop erased   =============================================//
 		    //================================================================================================================//
-		    //===============================================   Sn    ========================================================//
-		    //================================================================================================================//
-		    //================================================================================================================//
-	        if (filenbr >2) {
-	            if (val_e==true){		//=========for All electrons=========//
-	    		    //counter inside the cut condition
-    	    	    theta_el = v_scal->Theta();	//coord_el
-                    phi_el = v_scal->Phi();		//coord_el
-		            theta_pip = v_scapip->Theta()  ;	//bof
-		            phi_pip = v_scapip->Phi() ;	//bof
-                    *v_vipho = *v_incil - *v_scal;
-                    TVector3 p_scal = v_scal->Vect();
-		            p_el = p_scal.Mag();
-                    theta_e= acos( p_incil.Dot(p_scal) / ( p_incil.Mag() * p_scal.Mag() ) ); //useful
-                    Q2  = 4 * v_incil->E() * v_scal->E() * pow( sin(theta_e/2), 2);
-		            gamnu= v_incil->E() - v_scal->E();
-		            z = (v_scapip->E())/gamnu;
-		            hist_z_Sn_e->Fill(z);
-		            TVector3 p_vipho= v_vipho->Vect();
-		            TVector3 p_scapip = v_scapip->Vect();
-		            TVector3 n2 = p_vipho.Cross(p_scapip);
-		            P_t =(n2.Mag() )/ (p_vipho.Mag() );
-		            W = sqrt(Mn*Mn + 2*Mn*gamnu - Q2);
-	                if (Q2>1.5){
-		                //hist_Q_Sn_e->Fill(Q2);     	        
-		                if (gamnu<8.5 && gamnu>2.5){
-			                //hist_v_Sn_e->Fill(gamnu);
-			                //if (z>0.3 && z<0.7){
-				            //hist_z_Sn_e->Fill(z);
-				            if (W>2) {
-					            counter_Snall_e += 1;	
-					            hist_Q_Sn_e->Fill(Q2);
-					            hist_v_Sn_e->Fill(gamnu);					
-				            }
-				            //}
-			            }
-		            }
-	            }
-      	        
-                ////////////////////////////////////////////////////
-                TVector3 autre_MC_scaph = v_MC_scaph->Vect();
-                TVector3 autre_MC_scaHe = v_MC_scaHe->Vect();
-                ////////////////////////////////////////////////////
-
-    	        //==== CALCS and FILLINGS for REC ===//		---[Sn]
-                if (val_e==true  && val_pip==true  ){	//&& val_ph==true && v_scaph->E()>2
-		            //other conditions can be added to the if-bracket
-	                coinci_Sn += 1;
-		            precutQx2->Fill(x_b,Q2);
-		            if (abs(IDel)<3){		//first    condition
-		                if (abs (IDpip)<2){     //this both cqn be merged in one condition TBDD
-				            //hist_Q_Sn->Fill(Q2);				///-----------------------Q---//
-		                    if (Q2>1.5){
-                                hist_y_Sn->Fill(y);
-		                        if (y<0.85 && y>0.25){
-	    	    	                //hist_z_Sn->Fill(z);				//---------------------z--//	
-			                        if (z>0.3 && z<0.7){
-				                        //if (dccut == true){	// /!\ implementing DC CUT!!!!
-				                            if (theta_el*180/PI>6){	// /!\ implementing CUT on theta coordinate for electrons!!!!
-                        					    //hist_v_Sn->Fill(gamnu);		//---------------------v--//
-	    	    		                   	    hist_x_Sn->Fill(x_b);
-            	    		    	            hist_W_Sn->Fill(W);
-					                            if (W>2) {
-	    	    		    	    	            hist_phih_Sn->Fill(phih);
-	    	    		    	    	            //hist_P_t_Sn->Fill(P_t);		//-------------------pt---//
-	    	    		    	    	            hist_MX_Sn->Fill(mmass);
-						                            h_cphi_Sn->Fill(cos(phih));
-						                            if (mmass>1.2){				//To remove the proton. Don't forget to draw the ct in the plot
-						                                if (v_scapip->E()<3 && v_scapip->E()>1){            ///+++++++++++++++++++++//
-				    	    	                            //if (lv>90 && lw>90) {				//calorimeter cut on 9cm (?)
-						    	                            //h_cphi_Sn->Fill(cos(phih));			//Cos & Sin analysis
-					    	                                h_sphi_Sn->Fill(sin(phih));
-					    	                                h_c2phi_Sn->Fill(cos(2*phih));
-					    	                                h_s2phi_Sn->Fill(sin(2*phih));
-							                                //h_delete->Fill(cos(phih),Q2 );
-							                                h_cQ_Sn->Fill(cos(phih),Q2);
-							                                h_cv_Sn->Fill(cos(phih),gamnu);
-							                                h_cz_Sn->Fill(cos(phih),z);
-							                                h_cpt_Sn->Fill(cos(phih),P_t);
-							                                h_ptQ_Sn->Fill(P_t*P_t,Q2);
-							                                h_ptv_Sn->Fill(P_t*P_t,gamnu);
-							                                h_ptz_Sn->Fill(P_t*P_t,z);
-							                                w_ptQ_Sn->Fill(Q2,P_t*P_t);
-							                                w_ptv_Sn->Fill(gamnu, P_t*P_t);
-							                                w_ptz_Sn->Fill(z, P_t*P_t);
-							                                hist_Q_Sn->Fill(Q2);		//---------------------Q--//	
-							                                hist_v_Sn->Fill(gamnu);		//---------------------v--//									
-							                                hist_z_Sn->Fill(z);		//---------------------z--//	
-							                                hist_P_t_Sn->Fill(P_t);		//--------------------pt--//
-							                                hist_Pt2_Sn->Fill(P_t*P_t);
-							                                w_cQ_Sn->Fill(Q2,cos(phih));
-    							                            w_cv_Sn->Fill(gamnu,cos(phih));
-							                                w_cz_Sn->Fill(z,cos(phih));
-    							                            w_cpt_Sn->Fill(P_t*P_t,cos(phih));
-							                                poscutQx2->Fill(x_b,Q2);
-                       			       	                }					
- 			 	            	                    }
-					                            }
-				                            }   
-			   	                        //}		//4 DC cut (compatibility TBD)
-			                        }
-		                        }
-		                    }
-		                }
-		            }
-                }
-	        }
+	        
         }
     }
 
@@ -1020,12 +815,13 @@ int main() {
 	cout<<"tot: "<<counter_elpi<<endl;
 	cout<<"D : "<<coinci_De<<endl;
 	cout<<"Sn: "<<coinci_Sn<<endl;
+    //the couts for Sn and D are useless now
 
 	cc->cd(1);
     myHists.hist_Q->SetLineColor(kBlue);
-	hist_Q_Sn->SetLineColor(kRed);
+	//hist_Q_Sn->SetLineColor(kRed);
     myHists.hist_Q->Draw(" hist");
-	hist_Q_Sn->Draw(" hist,same");
+	//hist_Q_Sn->Draw(" hist,same");
     cc->Update();
     TLine *cutQ=new TLine(1.5,cc->cd(1)->GetUymin(),1.5,cc->cd(1)->GetUymax());
     cutQ->SetLineWidth(2);
@@ -1033,9 +829,9 @@ int main() {
     cutQ->Draw("");
     cc->cd(2);
     myHists.hist_y->SetLineColor(kBlue);
-	hist_y_Sn->SetLineColor(kRed);
+	//hist_y_Sn->SetLineColor(kRed);
     myHists.hist_y->Draw("hist");
-	hist_y_Sn->Draw("hist,same");
+	//hist_y_Sn->Draw("hist,same");
     cc->Update();
     TLine *cutY=new TLine(0.85,cc->cd(2)->GetUymin(),0.85,cc->cd(2)->GetUymax());
     cutY->SetLineWidth(2);
@@ -1044,23 +840,23 @@ int main() {
 
     cc->cd(3);
     myHists.hist_v->SetLineColor(kBlue);
-	hist_v_Sn->SetLineColor(kRed);
+	//hist_v_Sn->SetLineColor(kRed);
     myHists.hist_v->Draw("hist");
-	hist_v_Sn->Draw("hist,same");
+	//hist_v_Sn->Draw("hist,same");
     cc->Update();
     TLine *cutV=new TLine(8.5,cc->cd(3)->GetUymin(),8.5,cc->cd(3)->GetUymax());
     cutV->SetLineWidth(2);
     cutV->SetLineStyle(kDashed);
     cc->cd(4);
     myHists.hist_x->SetLineColor(kBlue);
-	hist_x_Sn->SetLineColor(kRed);
+	//hist_x_Sn->SetLineColor(kRed);
     myHists.hist_x->Draw("hist");
-	hist_x_Sn->Draw("hist,same");
+	//hist_x_Sn->Draw("hist,same");
     cc->cd(5);
     myHists.hist_W->SetLineColor(kBlue);
     myHists.hist_W->Draw("hist");
-	hist_W_Sn->SetLineColor(kRed);
-    hist_W_Sn->Draw("hist,same");
+	//hist_W_Sn->SetLineColor(kRed);
+    //hist_W_Sn->Draw("hist,same");
     cc->Update();
     TLine *cutW=new TLine(3.16,cc->cd(5)->GetUymin(),3.16,cc->cd(5)->GetUymax());
     cutW->SetLineWidth(2);
@@ -1069,13 +865,13 @@ int main() {
     cc->cd(8);
     myHists.hist_phih->SetLineColor(kBlue);
     myHists.hist_phih->Draw("hist");
-	hist_phih_Sn->SetLineColor(kRed);
-    hist_phih_Sn->Draw("hist,same");
+	//hist_phih_Sn->SetLineColor(kRed);
+    //hist_phih_Sn->Draw("hist,same");
      cc->cd(7);
     myHists.hist_z->SetLineColor(kBlue);
     myHists.hist_z->Draw("hist");
-	hist_z_Sn->SetLineColor(kRed);
-    hist_z_Sn->Draw("hist,same");
+	//hist_z_Sn->SetLineColor(kRed);
+    //hist_z_Sn->Draw("hist,same");
     cc->Update();
     TLine *cutz_min=new TLine(0.3,cc->cd(7)->GetUymin(),0.3,cc->cd(7)->GetUymax());
     cutz_min->SetLineWidth(2);
@@ -1088,8 +884,8 @@ int main() {
     cc->cd(6);						
     myHists.hist_P_t->SetLineColor(kBlue);
     myHists.hist_P_t->Draw("hist");
-	hist_P_t_Sn->SetLineColor(kRed);
-    hist_P_t_Sn->Draw("hist,same");
+	//hist_P_t_Sn->SetLineColor(kRed);
+    //hist_P_t_Sn->Draw("hist,same");
 /*
     cc->cd(9);		
     hist_MX->SetLineColor(kBlue);
@@ -1114,9 +910,84 @@ int main() {
     myHists.hist_Q->Write();
     file1->Close();
 
+/*
         
+    //cout<<"which type of file ? 1=D , 2 = Sn, 3=Cu"<<endl;
+    //cin>>typeoffile;
+    if (typeoffile==1){             //Deuterium
+        TFile* fileD = new TFile("output_Q_1.root", "RECREATE");
+        myHists.hist_Q->Write();
+        myHists.hist_v->Write();
+        myHists.hist_y->Write();
+        myHists.hist_x->Write();
+        myHists.hist_W->Write();
+        myHists.hist_phih->Write();
+        myHists.hist_t->Write();
+        myHists.hist_P_t->Write();
+        myHists.hist_z->Write();
+        myHists.hist_MX->Write();
+        
+        fileD->Close();
+        //not adding histograms on cphi nor sphi, I believe this can be computed appart from phih histogram
+    }
+    if (typeoffile==2){             //Tin
+        TFile* fileSn = new TFile("output_Q_2.root", "RECREATE");
+        myHists.hist_Q->Write();
+        myHists.hist_v->Write();
+        myHists.hist_y->Write();
+        myHists.hist_x->Write();
+        myHists.hist_W->Write();
+        myHists.hist_phih->Write();
+        myHists.hist_t->Write();
+        myHists.hist_P_t->Write();
+        myHists.hist_z->Write();
+        myHists.hist_MX->Write();        fileSn->Close();
+    }
+    if (typeoffile==3){             //Copper
+        TFile* fileCu = new TFile("output_Q_2.root", "RECREATE");
+        myHists.hist_Q->Write();
+        myHists.hist_v->Write();
+        myHists.hist_y->Write();
+        myHists.hist_x->Write();
+        myHists.hist_W->Write();
+        myHists.hist_phih->Write();
+        myHists.hist_t->Write();
+        myHists.hist_P_t->Write();
+        myHists.hist_z->Write();
+        myHists.hist_MX->Write();
+        fileCu->Close();
+    }
+    */
 
-    
+
+    std::map<int, std::string> fileNames = {
+    {1, "../output_D.root"},
+    {2, "../output_Sn.root"},
+    {3, "../output_Cu.root"}
+};
+
+if (fileNames.find(typeoffile) == fileNames.end()) {
+    cout << "Invalid option" << endl;
+    // Handle invalid option error or provide appropriate action
+}
+else {
+    std::string filename = fileNames[typeoffile];
+    TFile* file = new TFile(filename.c_str(), "RECREATE");
+
+    myHists.hist_Q->Write();
+    myHists.hist_v->Write();
+    myHists.hist_y->Write();
+    myHists.hist_x->Write();
+    myHists.hist_W->Write();
+    myHists.hist_phih->Write();
+    myHists.hist_t->Write();
+    myHists.hist_P_t->Write();
+    myHists.hist_z->Write();
+    myHists.hist_MX->Write();
+
+    file->Close();
+}
+    // we have one only loop that could be used to calc all variables for any nuclear target 
 
     
 }
