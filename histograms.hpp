@@ -3,7 +3,7 @@
 
 #include "TH1F.h"
 
-int nubin = 100;  //--------------------------------------------------------------------binning -->USE 10 FOR RATIO PLOTS
+int nubin = 10;  //--------------------------------------------------------------------binning -->USE 10 FOR RATIO PLOTS
 int phibin= 10;
 int Rbin = 10;
 int QminX = 0;
@@ -511,7 +511,7 @@ struct linelist {
 //following class multipratio uses all the histograms needed for variables in the multiplicity ratio
 //Using one histogram per Nucleus.
 //Also using one histogram per variable.... not ideal, maybe more iseful to stock histograms in a vector of variable_histogram for each Nucleus 
-class MultipRatio {
+class MultipRatio {     //Multipratio graphes, use them !!!!
 public:
     TGraphErrors* R_Sn_Q;
     TGraphErrors* R_Sn_v;
@@ -560,7 +560,7 @@ public:
 
 //Cratio determines the cosinus ratio of the three -eventual- nuclei but follows same principle as with multipratio
 //can be improved
-class Cratio {
+class Cratio {                  //Cratio graphes!!!! use them 
 public:
     TGraphErrors* C_Sn_Q;
     TGraphErrors* C_Sn_v;
@@ -607,7 +607,8 @@ public:
 };
 
 //Dpt following the same principle as before 
-class h_Dpt {
+//Cratio graphes!!!! use them 
+class g_Dpt {
 public:
     TGraphErrors* Dpt_Sn_Q;
     TGraphErrors* Dpt_Sn_v;
@@ -619,7 +620,7 @@ public:
     TGraphErrors* Dpt_Cu_v;
     TGraphErrors* Dpt_Cu_z;
 
-    h_Dpt() {
+    g_Dpt() {
         Dpt_Sn_Q = new TGraphErrors();
         Dpt_Sn_v = new TGraphErrors();
         Dpt_Sn_z = new TGraphErrors();
@@ -631,7 +632,7 @@ public:
         Dpt_Cu_z = new TGraphErrors();
     }
 
-    ~h_Dpt() {
+    ~g_Dpt() {
         delete Dpt_Sn_Q ;
         delete Dpt_Sn_v  ;
         delete Dpt_Sn_z ;
@@ -642,6 +643,149 @@ public:
         delete Dpt_Cu_v ;
         delete Dpt_Cu_z ;
     }
+};
+
+
+
+#include <TH1F.h>
+
+class h_Dpt {
+public:
+    TH1F* w_ptQ_Sn;
+    TH1F* w_ptQ_De;
+    TH1F* w_ptv_Sn;
+    TH1F* w_ptv_De;
+    TH1F* w_ptz_Sn;
+    TH1F* w_ptz_De;
+
+    h_Dpt() {
+        w_ptQ_Sn = new TH1F("weightedptQSn", "weightedptQSn", nubin, QminX, QmaxX);
+        w_ptQ_De = new TH1F("weightedptQDe", "weightedptQDe", nubin, QminX, QmaxX);
+        w_ptv_Sn = new TH1F("weightedptvSn", "weightedptvSn", nubin, vminX, vmaxX);
+        w_ptv_De = new TH1F("weightedptvDe", "weightedptvDe", nubin, vminX, vmaxX);
+        w_ptz_Sn = new TH1F("weightedptzSn", "weightedptzSn", nubin, zminX, zmaxX);
+        w_ptz_De = new TH1F("weightedptzDe", "weightedptzDe", nubin, zminX, zmaxX);
+
+        //w_ptQ_Sn->Sumw2();
+        //w_ptQ_De->Sumw2();
+        //w_ptv_Sn->Sumw2();
+        //w_ptv_De->Sumw2();
+        //w_ptz_Sn->Sumw2();
+        //w_ptz_De->Sumw2();
+    }
+
+    ~h_Dpt() {
+        delete w_ptQ_Sn;
+        delete w_ptQ_De;
+        delete w_ptv_Sn;
+        delete w_ptv_De;
+        delete w_ptz_Sn;
+        delete w_ptz_De;
+    }
+};
+
+class h_cratio
+{
+public:
+    TH1F* w_cQ_Sn ;
+    TH1F* w_cQ_De ;
+    TH1F* w_cv_Sn ;
+    TH1F* w_cv_De ;
+    TH1F* w_cz_Sn ;
+    TH1F* w_cz_De ;
+    TH1F* w_cpt_Sn;
+    TH1F* w_cpt_De;
+    h_cratio(){
+         w_cQ_Sn = new TH1F("weightedcQSn", "weightedcQSn", nubin, QminX ,QmaxX);
+         w_cQ_De = new TH1F("weightedcQDe", "weightedcQDe", nubin, QminX ,QmaxX);
+         w_cv_Sn = new TH1F("weightedcvSn", "weightedcvSn", nubin, vminX ,vmaxX);
+         w_cv_De = new TH1F("weightedcvDe", "weightedcvDe", nubin, vminX ,vmaxX);
+         w_cz_Sn = new TH1F("weightedczSn", "weightedczSn", nubin, zminX ,zmaxX);
+         w_cz_De = new TH1F("weightedczDe", "weightedczDe", nubin, zminX ,zmaxX);
+         w_cpt_Sn = new TH1F("weightedcptSn", "weightedcptSn", nubin, PtminX ,PtmaxX);
+         w_cpt_De = new TH1F("weightedcptDe", "weightedcptDe", nubin, PtminX ,PtmaxX);
+    }
+    ~h_cratio(){
+        delete w_cQ_Sn ;
+        delete w_cQ_De ;
+        delete w_cv_Sn ;
+        delete w_cv_De ;
+        delete w_cz_Sn ;
+        delete w_cz_De ;
+        delete w_cpt_Sn;
+        delete w_cpt_De;
+    }
+
+};
+
+
+class h_sratio
+{
+public:
+    TH1F* w_sQ_Sn ;
+    TH1F* w_sQ_De ;
+    TH1F* w_sv_Sn ;
+    TH1F* w_sv_De ;
+    TH1F* w_sz_Sn ;
+    TH1F* w_sz_De ;
+    TH1F* w_spt_Sn;
+    TH1F* w_spt_De;
+    h_sratio(){
+         w_sQ_Sn = new TH1F("weightedsQSn", "weightedsQSn", nubin, QminX ,QmaxX);
+         w_sQ_De = new TH1F("weightedsQDe", "weightedsQDe", nubin, QminX ,QmaxX);
+         w_sv_Sn = new TH1F("weightedsvSn", "weightedsvSn", nubin, vminX ,vmaxX);
+         w_sv_De = new TH1F("weightedsvDe", "weightedsvDe", nubin, vminX ,vmaxX);
+         w_sz_Sn = new TH1F("weightedszSn", "weightedszSn", nubin, zminX ,zmaxX);
+         w_sz_De = new TH1F("weightedszDe", "weightedszDe", nubin, zminX ,zmaxX);
+         w_spt_Sn = new TH1F("weightedsptSn", "weightedsptSn", nubin, PtminX ,PtmaxX);
+         w_spt_De = new TH1F("weightedsptDe", "weightedsptDe", nubin, PtminX ,PtmaxX);
+    }
+    ~h_sratio(){
+        delete w_sQ_Sn ;
+        delete w_sQ_De ;
+        delete w_sv_Sn ;
+        delete w_sv_De ;
+        delete w_sz_Sn ;
+        delete w_sz_De ;
+        delete w_spt_Sn;
+        delete w_spt_De;
+    }
+
+};
+
+
+class h_c2ratio
+{
+public:
+    TH1F* w_c2Q_Sn ;
+    TH1F* w_c2Q_De ;
+    TH1F* w_c2v_Sn ;
+    TH1F* w_c2v_De ;
+    TH1F* w_c2z_Sn ;
+    TH1F* w_c2z_De ;
+    TH1F* w_c2pt_Sn;
+    TH1F* w_c2pt_De;
+    h_c2ratio(){
+         w_c2Q_Sn = new TH1F("weightedc2QSn", "weightedc2QSn", nubin, QminX ,QmaxX);
+         w_c2Q_De = new TH1F("weightedc2QDe", "weightedc2QDe", nubin, QminX ,QmaxX);
+         w_c2v_Sn = new TH1F("weightedc2vSn", "weightedc2vSn", nubin, vminX ,vmaxX);
+         w_c2v_De = new TH1F("weightedc2vDe", "weightedc2vDe", nubin, vminX ,vmaxX);
+         w_c2z_Sn = new TH1F("weightedc2zSn", "weightedc2zSn", nubin, zminX ,zmaxX);
+         w_c2z_De = new TH1F("weightedc2zDe", "weightedc2zDe", nubin, zminX ,zmaxX);
+         w_c2pt_Sn = new TH1F("weightedc2ptSn", "weightedc2ptSn", nubin, PtminX ,PtmaxX);
+         w_c2pt_De = new TH1F("weightedc2ptDe", "weightedc2ptDe", nubin, PtminX ,PtmaxX);
+    }
+    ~h_c2ratio(){
+        delete w_c2Q_Sn ;
+        delete w_c2Q_De ;
+        delete w_c2v_Sn ;
+        delete w_c2v_De ;
+        delete w_c2z_Sn ;
+        delete w_c2z_De ;
+        delete w_c2pt_Sn;
+        delete w_c2pt_De;
+    }
+
 };
 
 

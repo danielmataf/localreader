@@ -44,10 +44,13 @@
 // Here we are nnot recovering MC databanks, remains TBD, has to be done for headers & all
 
 //REFERENCE: Version not READY yet, on development. /!\
-//DATE: 15/06/2023
+//DATE: 15/06/2023 (git)
 //Sn loop was deleted. histogramm header allows now to have general histograms  
 // all drawing for Sn specific histograms were commented. unable now to compare two histograms from Sn and De in the same canvas, from this code
 //if the comparison is required? One may call the Sn and D histograms from root files and compare them outside of main.cpp 
+//fix list of fles so we can get the nbr of files w/o needing to manually insert the nbr TBD
+//fix list of files so it can go either to a D list or a Sn list TBD
+// 
 //next TBD: improving code, fixing sloppy conditions.   HEADERS TBD, find a way to determine also MC 
 // ctrl+F on 'TBD' to see what's pending
 //---------------------------------------------------------//
@@ -904,67 +907,20 @@ int main() {
     cc->SaveAs("../correctionvar.pdf");
     cc->SaveAs("../correctionvar.root");
 
+/*
     TFile* file1 = new TFile("output1.root", "RECREATE");
     //previous line is a test 4 multipratio analysis in external cpp
     //analysis keeps in the following 
     myHists.hist_Q->Write();
     file1->Close();
-
-/*
-        
-    //cout<<"which type of file ? 1=D , 2 = Sn, 3=Cu"<<endl;
-    //cin>>typeoffile;
-    if (typeoffile==1){             //Deuterium
-        TFile* fileD = new TFile("output_Q_1.root", "RECREATE");
-        myHists.hist_Q->Write();
-        myHists.hist_v->Write();
-        myHists.hist_y->Write();
-        myHists.hist_x->Write();
-        myHists.hist_W->Write();
-        myHists.hist_phih->Write();
-        myHists.hist_t->Write();
-        myHists.hist_P_t->Write();
-        myHists.hist_z->Write();
-        myHists.hist_MX->Write();
-        
-        fileD->Close();
-        //not adding histograms on cphi nor sphi, I believe this can be computed appart from phih histogram
-    }
-    if (typeoffile==2){             //Tin
-        TFile* fileSn = new TFile("output_Q_2.root", "RECREATE");
-        myHists.hist_Q->Write();
-        myHists.hist_v->Write();
-        myHists.hist_y->Write();
-        myHists.hist_x->Write();
-        myHists.hist_W->Write();
-        myHists.hist_phih->Write();
-        myHists.hist_t->Write();
-        myHists.hist_P_t->Write();
-        myHists.hist_z->Write();
-        myHists.hist_MX->Write();        fileSn->Close();
-    }
-    if (typeoffile==3){             //Copper
-        TFile* fileCu = new TFile("output_Q_2.root", "RECREATE");
-        myHists.hist_Q->Write();
-        myHists.hist_v->Write();
-        myHists.hist_y->Write();
-        myHists.hist_x->Write();
-        myHists.hist_W->Write();
-        myHists.hist_phih->Write();
-        myHists.hist_t->Write();
-        myHists.hist_P_t->Write();
-        myHists.hist_z->Write();
-        myHists.hist_MX->Write();
-        fileCu->Close();
-    }
-    */
+*/
 
 
     std::map<int, std::string> fileNames = {
-    {1, "../output_D.root"},
-    {2, "../output_Sn.root"},
-    {3, "../output_Cu.root"}
-};
+        {1, "../output_D.root"},
+        {2, "../output_Sn.root"},
+        {3, "../output_Cu.root"}
+    };
 
 if (fileNames.find(typeoffile) == fileNames.end()) {
     cout << "Invalid option" << endl;
