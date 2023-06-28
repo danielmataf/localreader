@@ -123,8 +123,9 @@ int main() {
 	    double y_qDe = h_pttestD->GetBinContent(i_q) ;
 	    double meandptQSn =(y_qSn > 0) ?  y_q_wSn / y_qSn : 0.0;
 	    double meandptQDe = ( y_qDe > 0) ?  y_q_wDe / y_qDe : 0.0;
-	//cout<<meandptQSn - meandptQDe <<"meanDPTQ"<<endl;
-	//double Rq_err=  (1/y_q_Sn) + (1/y_q_De) + (1/y_q_Sn_e) + (1/y_q_De_e); 
+	    double Rq_err=  (1/y_q_Sn) + (1/y_q_De) + (1/y_q_Sn_e) + (1/y_q_De_e);
+      	cout<<Rq_err <<" = meanDPTQ_ERR"<<endl;
+ 
    	    //WE HAD A CNDITION ON X VALUE HERE... USELESS NOWbc zere not retrieving xvalues --- just make sure you do the cuts properly on main.cpp
         Dpt_Q->SetPoint(i_q-1, x_q_w,meandptQSn - meandptQDe);
     }

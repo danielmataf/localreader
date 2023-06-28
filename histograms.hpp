@@ -511,8 +511,31 @@ struct linelist {
 //following class multipratio uses all the histograms needed for variables in the multiplicity ratio
 //Using one histogram per Nucleus.
 //Also using one histogram per variable.... not ideal, maybe more iseful to stock histograms in a vector of variable_histogram for each Nucleus 
+
+/*
+    TH1F* hist_Q_Sn_e = new TH1F("Q2_Sn_e", "Q2_Sn_e", nubin, QminX, QmaxX);
+    TH1F* hist_Q_De_e= new TH1F("Q2_De_e", "Q2_De_e", nubin, QminX, QmaxX);
+    TH1F* hist_v_Sn_e = new TH1F("v_Sn_e", "v_Sn_e", nubin, vminX, vmaxX);
+    TH1F* hist_v_De_e = new TH1F("v_De_e", "v_De_e", nubin, vminX, vmaxX);
+    TH1F* hist_z_Sn_e = new TH1F("z_Sn_e", "z_Sn_e", nubin, zminX, zmaxX);
+    TH1F* hist_z_De_e = new TH1F("z_De_e", "z_De_e", nubin, zminX, zmaxX);
+    TH1F* hist_P_t_Sn_e = new TH1F("pt_Sn_e", "pt_Sn_e", nubin, PtminX, PtmaxX);
+    TH1F* hist_P_t_De_e = new TH1F("pt_De_e", "pt_De_e", nubin, PtminX, PtmaxX);
+
+    TH1F* h_meancos_Sn = new TH1F("meancos_Sn", "meancos_Sn", phibin, -1, 1);
+    TH1F* h_meancos_De = new TH1F("meancos_De", "meancos_De", phibin, -1,1);
+    TH1F* h_cosSn = new TH1F("h_cosSn", "h_cosSn", 10, -1,1);
+    TH1F* h_cosDe = new TH1F("h_cosDe", "h_cosDe", 10, -1,1);
+*/
+
 class MultipRatio {     //Multipratio graphes, use them !!!!
 public:
+    TH1F* hist_Q_e;
+    TH1F* hist_v_e ;
+    TH1F* hist_z_e;
+    TH1F* hist_P_t_e;
+    
+
     TGraphErrors* R_Sn_Q;
     TGraphErrors* R_Sn_v;
     TGraphErrors* R_Sn_z;
@@ -527,6 +550,14 @@ public:
     TGraphErrors* R_Cu_pt;
 
     MultipRatio() {
+        hist_Q_e = new TH1F("onlye_Q", "onlye_Q", nubin, QminX ,QmaxX);
+        hist_v_e = new TH1F("onlye_v", "onlye_v", nubin, vminX ,vmaxX);
+        hist_z_e = new TH1F("onlye_z", "onlye_z", nubin, zminX ,zmaxX);
+        hist_P_t_e = new TH1F("onlye_pt", "onlye_pt", nubin, PtminX ,PtmaxX);
+
+
+
+
         R_Sn_Q = new TGraphErrors();
         R_Sn_v = new TGraphErrors();
         R_Sn_z = new TGraphErrors();
@@ -554,6 +585,12 @@ public:
         delete R_Cu_v ;
         delete R_Cu_z ;
         delete R_Cu_pt ;
+
+        delete hist_Q_e;
+        delete hist_v_e ;
+        delete hist_z_e ;
+        delete hist_P_t_e;
+
     }
 };
 
@@ -787,6 +824,5 @@ public:
     }
 
 };
-
 
 #endif

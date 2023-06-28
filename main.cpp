@@ -63,20 +63,10 @@ int main() {
     hist_electron elHists;
     hist_pip pipHists;
     hist_hadX hadHists;
+    MultipRatio R_hists;
     TCanvas* cc=new TCanvas("first","first"); //create new canvas
     cc->Divide(3,3);
-    TCanvas* c2=new TCanvas("three","three");
-    c2->Divide(2,3);
-    TCanvas* c3=new TCanvas("third","third");
-    c3->Divide(3,4);
-    TCanvas* c4=new TCanvas("fourth","fourth");
-    c4->Divide(4,3);
-    TCanvas* cN=new TCanvas("nathan","nathan");
-    cN->Divide(2,2);
-    TCanvas* pres=new TCanvas("presentation","presentation");
-    pres->Divide(3,3);
 
-    double MC_theta_e, MC_Q2, MC_W, MC_y, MC_gamnu,MC_x_b, MC_t, MC_phih, MC_Epho; //for MC  ---[De]
     double theta_e, Q2, W, y,gamnu,x_b, t , phih , Epho,  rawphih, rawphih2, MCrawphih, MCrawphih2;   //for REC  ---[De]
 
     double MC_angle_norm, MC_sign, angle_norm, sign;   //---[De]
@@ -126,33 +116,6 @@ int main() {
     //simulations histograms from REAL MC//
         // see histograms.hpp
 
-    // BSA //
-    TH1* h_Phphi  = new TH1F("Ph_phi",  "Ph_phi", phibin ,0,360);
-    TH1* h_Nhphi  = new TH1F("Nh_phi",  "Nh_phi", phibin ,0,360);
-    TH1* h_BSA  = new TH1F("BSA",  "BSA", phibin ,0,360);
-    TH1* h_MC_Phphi  = new TH1F("MC_Ph_phi",  "MC_Ph_phi", phibin ,0,360);
-    TH1* h_MC_Nhphi  = new TH1F("MC_Nh_phi",  "MC_Nh_phi", phibin ,0,360);
-    TH1* h_MC_BSA  = new TH1F("MC_BSA",  "MC_BSA", phibin ,0,360);
-    //PHI Analysis//
-    TH1* h_cphi  = new TH1F("cos_phi",  "cos_phi", phibin ,-1,1);
-    TH1* h_sphi  = new TH1F("sin_phi",  "sin_phi", phibin ,-1,1);
-    TH1* h_c2phi  = new TH1F("cos_2phi",  "cos_2phi", phibin ,-1,1);
-    TH1* h_s2phi  = new TH1F("sin_2phi",  "sin_2phi", phibin ,-1,1);
-    TH1* h_MCcphi  = new TH1F("MCcos_phi",  "MCcos_phi", phibin ,-1,1);
-    TH1* h_MCsphi  = new TH1F("MCsin_phi",  "MCsin_phi", phibin ,-1,1);
-    TH1* h_MCc2phi  = new TH1F("MCcos_2phi",  "MCcos_2phi", phibin ,-1,1);
-    TH1* h_MCs2phi  = new TH1F("MCsin_2phi",  "MCsin_2phi", phibin ,-1,1);
-    TH2F* h_2cs = new TH2F("cos2-sin2","cos2-sin2",phibin , -1,1,phibin,-1,1);
-    TH2F* h_cs = new TH2F("cos-cos","cos-cos",100 , -1,1,100,-1,1);
-    TH2F* h_ss = new TH2F("sin-sin","sin-sin",100 , -1,1,100,-1,1);
-    TH2F* h_c2c2 = new TH2F("cos2-cos2","cos2-cos2",100 , -1,1,100,-1,1);
-    TH2F* h_s2s2 = new TH2F("sin2-sin2","sin2-sin2",100 , -1,1,100,-1,1);
-    TH1* h_instant  = new TH1F("instant phih",  "instant phih", nubin ,-3.2,3.2);
-    TH1* h_MCinstant  = new TH1F("instant MCphih",  "instant MCphih", nubin ,-3.2,3.2);
-    TH2F* h_InstvInst = new TH2F("instant versus instant","instant versus instant",nubin , 0,3.2,nubin,0,3.2);
-    TH2F* h_RawvRaw = new TH2F("Raw versus Raw","Raw versus Raw",nubin , -360,360,nubin,-360,360);
-    TH2F* h_trueRaw = new TH2F("true raw (angle)","true raw (angle)",nubin , -2,2,nubin,-2,2);
-
 
     //  2Ds  //
     TH2F* DC_allpre = new TH2F("DCcutspre","DCcutspre", nubin , -3,3,1000,-3,3);
@@ -162,87 +125,19 @@ int main() {
     TH2F* DC_scalpos = new TH2F("DCscalpos","DCscalpos", nubin , -3,3,1000,-3,3);
 	//other//               //create a class for comparisons in 2D, or exploit the existing histograms for yada yada TBD
     TH2F* h_QvX = new TH2F("QvsX","QvsX", nubin , 0,.8,100,0,8);	//part1
-        TH2F* h_QvX2 = new TH2F("QvsX2","QvsX2", nubin , 0,.5,100,0,8); //part2
+    TH2F* h_QvX2 = new TH2F("QvsX2","QvsX2", nubin , 0,.5,100,0,8); //part2
     TH2F* h_zvsPt = new TH2F("zvsp","zvsp", nubin , 0,1,100,0,.8);
-        TH2F* h_zvsPt2 = new TH2F("zvsp2","zvsp2", nubin , 0,1,100,0,.8);
- 	
+    TH2F* h_zvsPt2 = new TH2F("zvsp2","zvsp2", nubin , 0,1,100,0,.8);
 
-    
-
-
-
-
-	//==Particle Distributions==//
-
-
-	//=========Sn HISTOGRAMS=======// -----Replaced by  general histograms that can be used for any nuclear target
+	//=========Sn HISTOGRAMS=======// -----Replaced by  general histograms that can be used for any nuclear target (see header) 
     //=====histograms for all electrons /!\ ======//
 	//(no coincidence) (for multip ratio)
-    
-
-	//====Histos for <cosphi>/<cosphi>====//
-    TH2F* h_cQ_Sn = new TH2F("cosQSn", "cosQSn", nubin, -1,1, nubin,QminX ,QmaxX);
-    TH2F* h_cQ_De = new TH2F("cosQDe", "cosQDe", nubin, -1,1, nubin,QminX ,QmaxX);
-    TH2F* h_cv_Sn = new TH2F("cosvSn", "cosvSn", nubin, -1,1, nubin,vminX ,vmaxX);
-    TH2F* h_cv_De = new TH2F("cosvDe", "cosvDe", nubin, -1,1, nubin,vminX ,vmaxX);
-    TH2F* h_cz_Sn = new TH2F("coszSn", "coszSn", nubin, -1,1, nubin,zminX ,zmaxX);
-    TH2F* h_cz_De = new TH2F("coszDe", "coszDe", nubin, -1,1, nubin,zminX ,zmaxX);
-    TH2F* h_cpt_Sn = new TH2F("cosptSn", "cosptSn", nubin, -1,1, nubin,PtminX ,PtmaxX);
-    TH2F* h_cpt_De = new TH2F("cosptDe", "cosptDe", nubin, -1,1, nubin,PtminX ,PtmaxX);
-
-	//====Histos for <Deltapt>/====//
-    TH2F* h_ptQ_Sn = new TH2F("ptQSn", "ptQSn", nubin, PtminX,PtmaxX, nubin,QminX ,QmaxX);
-    TH2F* h_ptQ_De = new TH2F("ptQDe", "ptQDe", nubin, PtminX,PtmaxX, nubin,QminX ,QmaxX);
-    TH2F* h_ptv_Sn = new TH2F("ptvSn", "ptvSn", nubin, PtminX,PtmaxX, nubin,vminX ,vmaxX);
-    TH2F* h_ptv_De = new TH2F("ptvDe", "ptvDe", nubin, PtminX,PtmaxX, nubin,vminX ,vmaxX);
-    TH2F* h_ptz_Sn = new TH2F("ptzSn", "ptzSn", nubin, PtminX,PtmaxX, nubin,zminX ,zmaxX);
-    TH2F* h_ptz_De = new TH2F("ptzDe", "ptzDe", nubin, PtminX,PtmaxX, nubin,zminX ,zmaxX);
-	
-    TH1F* w_ptQ_Sn = new TH1F("weightedptQSn", "weightedptQSn", nubin, QminX ,QmaxX);
-    TH1F* w_ptQ_De = new TH1F("weightedptQDe", "weightedptQDe", nubin, QminX ,QmaxX);
-    TH1F* w_ptv_Sn = new TH1F("weightedptvSn", "weightedptvSn", nubin, vminX ,vmaxX);
-    TH1F* w_ptv_De = new TH1F("weightedptvDe", "weightedptvDe", nubin, vminX ,vmaxX);
-    TH1F* w_ptz_Sn = new TH1F("weightedptzSn", "weightedptzSn", nubin, zminX ,zmaxX);
-    TH1F* w_ptz_De = new TH1F("weightedptzDe", "weightedptzDe", nubin, zminX ,zmaxX);
-    w_ptQ_Sn->Sumw2();
-    w_ptQ_De->Sumw2();
-    w_ptv_Sn->Sumw2();
-    w_ptv_De->Sumw2();
-    w_ptz_Sn->Sumw2();
-    w_ptz_De->Sumw2();
-    TH1F* w_cQ_Sn = new TH1F("weightedcQSn", "weightedcQSn", nubin, QminX ,QmaxX);
-    TH1F* w_cQ_De = new TH1F("weightedcQDe", "weightedcQDe", nubin, QminX ,QmaxX);
-    TH1F* w_cv_Sn = new TH1F("weightedcvSn", "weightedcvSn", nubin, vminX ,vmaxX);
-    TH1F* w_cv_De = new TH1F("weightedcvDe", "weightedcvDe", nubin, vminX ,vmaxX);
-    TH1F* w_cz_Sn = new TH1F("weightedczSn", "weightedczSn", nubin, zminX ,zmaxX);
-    TH1F* w_cz_De = new TH1F("weightedczDe", "weightedczDe", nubin, zminX ,zmaxX);
-    TH1F* w_cpt_Sn = new TH1F("weightedcptSn", "weightedcptSn", nubin, PtminX ,PtmaxX);
-    TH1F* w_cpt_De = new TH1F("weightedcptDe", "weightedcptDe", nubin, PtminX ,PtmaxX);
-    w_cQ_Sn->Sumw2();
-    w_cQ_De->Sumw2();
-    w_cv_Sn->Sumw2();
-    w_cv_De->Sumw2();
-    w_cz_Sn->Sumw2();
-    w_cz_De->Sumw2();
-    w_cpt_Sn->Sumw2();
-    w_cpt_De->Sumw2();
-    TH1F* diffphiSn = new TH1F("diffphiSn", "diffphiSn", nubin, -20 ,20);
-    TH1F* diffphiDe = new TH1F("diffphiDe", "diffphiDe", nubin, -20 ,20);
-     TH2F* precutQx1 = new TH2F("precutQxDe", "precutQxDe", 100, 0.0,0.6, 100,QminX ,QmaxX);
-    TH2F* poscutQx1 = new TH2F("poscutQxDe", "poscutQxDe", 100, 0.0,0.6, 100,QminX ,QmaxX);
-     TH2F* precutQx2 = new TH2F("precutQxSn", "precutQxSn", 100, 0.0,0.6, 100,QminX ,QmaxX);
-    TH2F* poscutQx2 = new TH2F("poscutQxSn", "poscutQxSn", 100, 0.0,0.6, 100,QminX ,QmaxX);
-
-
-
-    //QHistogram q_hist;
-
-
 
 	//=== Utilities ==== //
     double E_temp;
 
     //== counters ==//
+    int counter_onlye =0;   //only electron counter, no coincidence
     int counter_el = 0;   //electron counter
     int counter_pho= 0;     //photon counter
     int counter_pi = 0;   //pion (+) counter
@@ -615,94 +510,14 @@ int main() {
 
                 }
             }
-            if (val_e==true && val_pip==true){		//---IGNORE THIS
-		    //condition with coincidence on general pion not working
-		    //we r using pim, can be switched to pip
-		    //probably due to many pions in 1 event ......... TBD
-		    // MOST PROBABLY A USELESS CONDITION [HERE]
-                counter_elpi += 1;
-
-
-            }
-				/////////////////////
+            				/////////////////////
                 // ---BEGIN CALC---//
 				/////////////////////
                 //get the vqlues on qny possible vector contained in the event
                 //suppose: ward against empty vectors due to the condition on val_e =true for ex
             //theta_el = v_scal->Theta();	//coord_el
-            theta_el = cordtheta(v_scal);   
-            phi_el = v_scal->Phi();		//coord_el
-		    theta_pip = v_scapip->Theta()  ;	//bof
-		    phi_pip = v_scapip->Phi() ;	//bof
-            *v_vipho = *v_incil - *v_scal;          //-----keep
-            TVector3 p_scal = v_scal->Vect();
-		    p_el = p_scal.Mag();
-            theta_e= acos( p_incil.Dot(p_scal) / ( p_incil.Mag() * p_scal.Mag() ) ); //useful
-            //Q2  = 4 * v_incil->E() * v_scal->E() * pow( sin(theta_e/2), 2);
-		    Q2 = calcQ(v_incil,v_scal);
-            gamnu= calcgamnu(v_incil, v_scal);
-            y = calcy(v_incil,gamnu);
-            x_b = calcx(Q2, Mn, gamnu);
-		    z = calcz(v_scapip,gamnu);
-            W = calcW(Q2, Mn, gamnu);
-            TVector3 p_vipho= v_vipho->Vect();
-		    TVector3 p_scapip = v_scapip->Vect();
-			TVector3 n1 = p_vipho.Cross(p_incil);
-			TVector3 n2 = p_vipho.Cross(p_scapip);
-            TVector3 n3 = n1.Cross(n2);
-            *v_diffmass= *v_incil + *v_nucleontarg -*v_scal - *v_scapip;	//this vector corresponds to the 	X-HADRON
-		    TVector3 p_diffmass= v_diffmass->Vect();
-            MM_epiX= calcmissm(v_incil, v_nucleontarg,v_scal,v_scapip);
-
-		    //theta_missX = v_dif4epi->Theta()  ;
-		    //phi_missX = v_dif4epi->Phi() ;
-            mmass = v_diffmass->M2(); //SQUARED		//bof
-		    
- 		    //p_T = sqrt( pow(p_x_He,2) + pow(p_y_He,2)	) ;
-            px_scal=v_scal->Px();
- 		    py_scal=v_scal->Py();
-		    pz_scal=v_scal->Pz();
-		    px_scapi=v_scapip->Px();
- 		    py_scapi=v_scapip->Py();
-		    pz_scapi=v_scapip->Pz();
-            *v_diff  = *v_diffmass - *v_inciHe; 	//- *v_vipho;
-            TVector3 p_scaph= v_scaph->Vect();
-		    p_pho = p_scaph.Mag();
-            Epho = v_scaph->E();
-            t = v_diff->M2()  ;
-		    //cone_ang =acos(( p_misspho.Dot(p_scaph) ) / ( p_misspho.Mag()*p_scaph.Mag() )) *180/PI;//?
-		    //cout<<"test";
-		    //bool dccut = DC_cuts_electron(RECTraj, 0);				//NEEDED (TBD)
-		    //cout<<"t="<<t<<endl;
-            //TVector3 n2 = p_vipho.Cross(autre_MC_scaHe);
             
-            P_t =(n2.Mag() )/ (p_vipho.Mag() );
-		    //TVector3 crossX = p_vipho.Cross(p_diffmass);
-            angle_norm=( n1.Dot(n2) ) / ( n1.Mag()*n2.Mag() );
-            sign = n3.Dot(p_vipho);
-            P_trX = calcP_trX(v_vipho,v_diffmass );
-		    pipX = v_scapip->X();
-            pipY = v_scapip->Y();
-	        scalX = v_scal->X();
-		    scalY = v_scal->Y();
-			if (sign<0 ){
-	            phih =acos(angle_norm) *180.0/PI+180;
-                if (filenbr%2 == 0) {h_Phphi->Fill(phih);}	
-                if (filenbr%2 != 0) {h_Nhphi->Fill(phih);}	
-                h_instant->Fill(acos(angle_norm));
-                //phih = phih +180;
-                rawphih =acos(angle_norm)*180.0/PI;
-                rawphih2 = angle_norm;
-	        }
-            if (sign>0 ){					
-	            phih =acos(angle_norm) *-180.0/PI+180;
-                if (filenbr%2 == 0) {h_Phphi->Fill(phih);}	
-                if (filenbr%2 != 0) {h_Nhphi->Fill(phih);}	
-   	            h_instant->Fill(-acos(angle_norm));
-                //phih = phih +180;
-                rawphih =-acos(angle_norm)*180.0/PI;
-                rawphih2 = angle_norm;
-            } 
+			
 	        //======= START ANALYSIS 4 DEUTERIUM =======//
             //======= START ANALYSIS 4 ANY TYPE OF FILE =======//
             if (filenbr <=2 ) {                                         
@@ -711,11 +526,40 @@ int main() {
                     //DELETED, if needed check previous versions//
 
 	            //==== CALCS and FILLINGS for REC ===//		---[De]
-	            if (val_e==true){				
+	            if (val_e==true){	
+                    counter_onlye +=1;
+                    theta_el = cordtheta(v_scal);   
+                    phi_el = v_scal->Phi();		//coord_el
+		            
+                    *v_vipho = *v_incil - *v_scal;          //-----keep
+                    TVector3 p_scal = v_scal->Vect();
+		            p_el = p_scal.Mag();
+                    theta_e= acos( p_incil.Dot(p_scal) / ( p_incil.Mag() * p_scal.Mag() ) ); //useful
+		            Q2 = calcQ(v_incil,v_scal);
+                    gamnu= calcgamnu(v_incil, v_scal);
+                    y = calcy(v_incil,gamnu);
+                    x_b = calcx(Q2, Mn, gamnu);
+		            W = calcW(Q2, Mn, gamnu);
+                    TVector3 p_vipho= v_vipho->Vect();
+		            
+			        TVector3 n1 = p_vipho.Cross(p_incil);
+			        
+                    px_scal=v_scal->Px();
+ 		            py_scal=v_scal->Py();
+		            pz_scal=v_scal->Pz();
+		            
+                    TVector3 p_scaph= v_scaph->Vect();
+		            p_pho = p_scaph.Mag();
+                    Epho = v_scaph->E();
+                    
+		            //cone_ang =acos(( p_misspho.Dot(p_scaph) ) / ( p_misspho.Mag()*p_scaph.Mag() )) *180/PI;//?
+		                //bool dccut = DC_cuts_electron(RECTraj, 0);				//NEEDED (TBD)
+	                scalX = v_scal->X();
+		            scalY = v_scal->Y();			
 	                if (Q2>1.5){
-		            //hist_Q_De_e->Fill(Q2);
+		                R_hists.hist_Q_e->Fill(Q2);
 		                if (gamnu<8.5 && gamnu>2.5){
-		                    //hist_v_De_e->Fill(gamnu);
+                            R_hists.hist_v_e->Fill(gamnu);
 			                //if (z>0.3 && z<0.7){
 		                    //hist_z_De_e->Fill(z);
 				            if (W>2) {		//!!!!!!!!//
@@ -728,10 +572,46 @@ int main() {
 		            }
                     if (val_pip==true  ){	//this condition involves the condition in val_e
                         coinci_De += 1;
-                        //hist_MX->Fill(mmass);
-                        /*
+                        theta_pip = v_scapip->Theta()  ;	//bof
+                        phi_pip = v_scapip->Phi() ;	//bof
+                        z = calcz(v_scapip,gamnu);
+                        t = v_diff->M2()  ;
                         
-                        */
+                        TVector3 p_scapip = v_scapip->Vect();
+                        TVector3 n2 = p_vipho.Cross(p_scapip);
+                        TVector3 n3 = n1.Cross(n2);
+                        *v_diffmass= *v_incil + *v_nucleontarg -*v_scal - *v_scapip;	//this vector corresponds to the 	X-HADRON
+		                TVector3 p_diffmass= v_diffmass->Vect();
+                        MM_epiX= calcmissm(v_incil, v_nucleontarg,v_scal,v_scapip);
+                        mmass = v_diffmass->M2(); //SQUARED		//bof
+                        px_scapi=v_scapip->Px();
+ 		                py_scapi=v_scapip->Py();
+		                pz_scapi=v_scapip->Pz();
+                        P_t =(n2.Mag() )/ (p_vipho.Mag() );
+		                TVector3 crossX = p_vipho.Cross(p_diffmass);
+                        angle_norm=( n1.Dot(n2) ) / ( n1.Mag()*n2.Mag() );
+                        sign = n3.Dot(p_vipho);
+                        P_trX = calcP_trX(v_vipho,v_diffmass );
+		                pipX = v_scapip->X();
+                        pipY = v_scapip->Y();
+                        
+                        if (sign<0 ){
+	                        phih =acos(angle_norm) *180.0/PI+180;
+                            //if (filenbr%2 == 0) {h_Phphi->Fill(phih);}	//histogral filling for eventual BSA TBD
+                            //if (filenbr%2 != 0) {h_Nhphi->Fill(phih);}	//keeping them, useful
+                            //phih = phih +180;
+                            rawphih =acos(angle_norm)*180.0/PI;
+                            rawphih2 = angle_norm;
+	                    }
+                        if (sign>0 ){					
+	                        phih =acos(angle_norm) *-180.0/PI+180;
+                            //if (filenbr%2 == 0) {h_Phphi->Fill(phih);}	//TBD
+                            //if (filenbr%2 != 0) {h_Nhphi->Fill(phih);}	//
+                            //phih = phih +180;
+                            rawphih =-acos(angle_norm)*180.0/PI;
+                            rawphih2 = angle_norm;
+                        } 
+                        
                         DC_allpre->Fill(pipX,pipY);
 		                DC_scalpre->Fill(scalX,scalY);
                         elHists.h_theta_el->Fill(theta_el*180/PI);
@@ -744,7 +624,7 @@ int main() {
             		    h_QvX->Fill(x_b,Q2);
 		                h_zvsPt->Fill(z,P_t);
 		                elHists.hID_el->Fill(IDel);
-		                precutQx1->Fill(x_b,Q2);
+		                //precutQx1->Fill(x_b,Q2);
                         if (abs(IDel)<3){		//first condition
 		                    pipHists.hID_pip->Fill(IDpip);
 		                    if (abs (IDpip)<2){
@@ -764,7 +644,7 @@ int main() {
 	    	    		    	    	                myHists.hist_phih->Fill(phih);
 	    	    		    	    	                //hist_P_t->Fill(P_t);	//-------------------pt--//
 	    	    		    	    	                myHists.hist_MX->Fill(mmass);
-						                                h_cphi->Fill(cos(phih));
+						                                //h_cphi->Fill(cos(phih));
 						                                if (mmass>1.2){				//To remove the proton. Don't forget to draw the ct in the plot
 				    	    	                            elHists.hpx_el->Fill(px_scal);
 				    	    	                            elHists.hpy_el->Fill(py_scal);
@@ -803,10 +683,7 @@ int main() {
                     }
 		        }       //condition for true e 
             }
-		    //================================================================================================================//
 		    //===============================================   Sn loop erased   =============================================//
-		    //================================================================================================================//
-	        
         }
     }
 
@@ -906,6 +783,20 @@ int main() {
 
     cc->SaveAs("../correctionvar.pdf");
     cc->SaveAs("../correctionvar.root");
+    
+    
+    cc->cd(1);
+    R_hists.hist_Q_e->Draw("hist");
+    cc->cd(2);
+    R_hists.hist_v_e->Draw("hist");
+    cc->cd(3);
+    R_hists.hist_z_e->Draw("hist");
+    cc->cd(4);
+    R_hists.hist_P_t_e->Draw("hist");
+    cc->SaveAs("../testelectron.pdf");
+    cc->SaveAs("../testelectron.root");
+
+cout<<"testcounter e"<<counter_onlye<<endl;
 
 /*
     TFile* file1 = new TFile("output1.root", "RECREATE");
@@ -940,6 +831,14 @@ else {
     myHists.hist_P_t->Write();
     myHists.hist_z->Write();
     myHists.hist_MX->Write();
+    R_hists.hist_Q_e->Write();
+    R_hists.hist_v_e->Write();
+    //R_hists.hist_z_e->Write();
+    //R_hists.hist_P_t_e->Write();
+    TTree tree("treecounter","treecounter");
+    tree.Branch("counter_onlye", &counter_onlye, "counter_onlye/I");
+    tree.Fill();
+    file->Write();
 
     file->Close();
 }
