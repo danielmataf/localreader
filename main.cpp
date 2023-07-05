@@ -220,11 +220,22 @@ int main() {
     //Sn files 
     //static const char* const filelist[] =	{"../../files2read/r_eSn-01.hipo","../../files2read/r_eSn-02.hipo","../../files2read/r_eSn-01.hipo","../../files2read/r_eSn-02.hipo"};
 
-    //number of files:1
-   int files = 4;
+    //number of files:4
+   const int files = 4;       //rechange to 4 if error in local
 	//int files is the total nber of files. change here when files are added on filelist[] --> filelist[files]
 
-
+    //imrpoving file reader: 
+    const int numFiles = 100;
+    std::string basePath = "/volatile/clas12/dmat/gen/Deut/";       //path of files in ifarm
+    //std::string basePath = "/volatile/clas12/dmat/gen/Sn/";
+    std::string EndPath = "/sidis_mc-master/r_out_rgd10k_d.hipo";
+    //std::string EndPath = "/sidis_mc-master/r_out_rgd10k_Sn.hipo";
+    std::vector<std::string> filelist2;
+    for (int filenbr = 1; filenbr <= numFiles; filenbr++) {
+        std::string filePath = basePath + std::to_string(filenbr) + EndPath;
+        filelist2.push_back(filePath);
+    }
+    
     for (int filenbr = 0; filenbr<files ; filenbr++){
         //filelist[filenbr]; is a const char....most probably...
         hipo::reader reader;
