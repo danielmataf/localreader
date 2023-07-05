@@ -215,25 +215,25 @@ int main() {
 	//static const char* const filelist[] =	{"../../files2read/r_eD-01.hipo","../../files2read/r_eD-02.hipo","../../files2read/r_eSn-01.hipo","../../files2read/r_eSn-02.hipo"};
 	
     // D files  
-    static const char* const filelist[] =	{"../../files2read/r_eD-01.hipo","../../files2read/r_eD-02.hipo","../../files2read/r_eD-01.hipo","../../files2read/r_eD-02.hipo"};
+    //static const char* const filelist[] =	{"../../files2read/r_eD-01.hipo","../../files2read/r_eD-02.hipo","../../files2read/r_eD-01.hipo","../../files2read/r_eD-02.hipo"};
 
     //Sn files 
     //static const char* const filelist[] =	{"../../files2read/r_eSn-01.hipo","../../files2read/r_eSn-02.hipo","../../files2read/r_eSn-01.hipo","../../files2read/r_eSn-02.hipo"};
 
     //number of files:4
-   const int files = 4;       //rechange to 4 if error in local
+   //const int files = 4;       //rechange to 4 if error in local
 	//int files is the total nber of files. change here when files are added on filelist[] --> filelist[files]
 
     //imrpoving file reader: 
-    const int numFiles = 100;
+    const int files = 100;
     std::string basePath = "/volatile/clas12/dmat/gen/Deut/";       //path of files in ifarm
     //std::string basePath = "/volatile/clas12/dmat/gen/Sn/";
     std::string EndPath = "/sidis_mc-master/r_out_rgd10k_d.hipo";
     //std::string EndPath = "/sidis_mc-master/r_out_rgd10k_Sn.hipo";
-    std::vector<std::string> filelist2;
-    for (int filenbr = 1; filenbr <= numFiles; filenbr++) {
-        std::string filePath = basePath + std::to_string(filenbr) + EndPath;
-        filelist2.push_back(filePath);
+    std::vector<std::string> filelist;
+    for (int filenb = 1; filenb <= files; filenb++) {
+        std::string filePath = basePath + std::to_string(filenb) + EndPath;
+        filelist.push_back(filePath);
     }
     
     for (int filenbr = 0; filenbr<files ; filenbr++){
@@ -241,7 +241,7 @@ int main() {
         hipo::reader reader;
 	    cout<<(filenbr*100)/files<<"% complete"<<endl;
         //const char *filename = "../../path/to/file/here";
-        reader.open(filelist[filenbr]);
+        reader.open(filelist[filenbr].c_str());
         hipo::dictionary factory;
         reader.readDictionary(factory);
         hipo::bank REC_Particle_bank(factory.getSchema("REC::Particle"));  //call REC Bank
