@@ -67,106 +67,120 @@ int main() {
     TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("P_t"));
     TH1F* h_phiSn = dynamic_cast<TH1F*>(fileSn->Get("phih"));
     TH1F* h_phiD = dynamic_cast<TH1F*>(fileD->Get("phih"));
+    TH2F* h2DQ_D = dynamic_cast<TH2F*>(fileD->Get("sinQ"));  // Retrieve the TH2F histogram
+    TH2F* h2Dv_D = dynamic_cast<TH2F*>(fileD->Get("sinv"));  
+    TH2F* h2Dz_D = dynamic_cast<TH2F*>(fileD->Get("sinz"));
+    TH2F* h2Dp_D = dynamic_cast<TH2F*>(fileD->Get("sinp"));
+    TH2F* h2DQ_Sn = dynamic_cast<TH2F*>(fileSn->Get("sinQ"));
+    TH2F* h2Dv_Sn = dynamic_cast<TH2F*>(fileSn->Get("sinv"));
+    TH2F* h2Dz_Sn = dynamic_cast<TH2F*>(fileSn->Get("sinz"));
+    TH2F* h2Dp_Sn = dynamic_cast<TH2F*>(fileSn->Get("sinp"));
 
+    int numBinsQ = h2DQ_D->GetNbinsY();
+    int numBinsc = h2DQ_D->GetNbinsX();
 
+    for (int binQ = 1; binQ <= numBinsQ; binQ++) {
+        double sums = 0.0;
+        double sumWeights = 0.0;
+        double sums_Sn = 0.0;
+        double sumWeights_Sn = 0.0;
 
+        for (int binc = 1; binc <= numBinsc; binc++) {
+            double s = h2DQ_D->GetXaxis()->GetBinCenter(binc);
+            double weight = h2DQ_D->GetBinContent(binc, binQ);
+            double s_Sn = h2DQ_Sn->GetXaxis()->GetBinCenter(binc);
+            double weight_Sn = h2DQ_Sn->GetBinContent(binc, binQ);
+            sums += s * weight;
+            sumWeights += weight;
+            sums_Sn += s_Sn * weight_Sn;
+            sumWeights_Sn += weight_Sn;
 
-  for (Int_t i = 1; i <= 10; ++i)
-    {
-        double  Q2_D = h_QtestD->GetBinCenter(i);
-        double  Q2_Sn = h_QtestSn->GetBinCenter(i);
-        double  v_D = h_vtestD->GetBinCenter(i);
-        double  v_Sn = h_vtestSn->GetBinCenter(i);
-        double  z_D = h_ztestD->GetBinCenter(i);
-        double  z_Sn = h_ztestSn->GetBinCenter(i);
-        double  P_t_D = h_pttestD->GetBinCenter(i);
-        double  P_t_Sn = h_pttestSn->GetBinContent(i);
-        double  phih_D = h_phiD->GetBinContent(i);
-        double  phih_Sn = h_phiSn->GetBinContent(i);
-        
-        hist_sratio.w_sQ_Sn->Fill(Q2_Sn, sin(phih_Sn));
-        hist_sratio.w_sQ_De->Fill(Q2_D, sin(phih_D));
-        hist_sratio.w_sv_Sn->Fill(v_Sn, sin(phih_Sn));
-        hist_sratio.w_sv_De->Fill(v_D, sin(phih_D));
-        hist_sratio.w_sz_Sn->Fill(z_Sn, sin(phih_Sn));
-        hist_sratio.w_sz_De->Fill(z_D, sin(phih_D));
-        hist_sratio.w_spt_De->Fill(P_t_Sn, sin(phih_Sn));
-        hist_sratio.w_spt_De->Fill(P_t_D, sin(phih_D));
+                
+
+        }
+        double averages = sums / sumWeights;
+        double averages_Sn = sums_Sn / sumWeights_Sn;
     }
 
 
 
+    int numBinsv = h2Dv_D->GetNbinsY();
 
-    // Access properties of h_Q1
-    //std::cout>>numBins1>>std::endl;  
- 
-for (int i_q=1; i_q<=hist_sratio.w_sQ_Sn->GetNbinsX(); i_q++) {
-        double x_q_w1 = hist_sratio.w_sQ_Sn->GetXaxis()->GetBinCenter(i_q);		
-        double y_q_wSn1 = hist_sratio.w_sQ_Sn->GetBinContent(i_q);				
-        double x_q1 = h_QtestSn->GetXaxis()->GetBinCenter(i_q);			
-        double y_qSn1 = h_QtestSn->GetBinContent(i_q) ;
-	    double y_q_wDe1 = hist_sratio.w_sQ_De->GetBinContent(i_q);
-	    double y_qDe1 = h_QtestD->GetBinContent(i_q) ;
-	    double meansQSn1 = y_q_wSn1 / y_qSn1;
-	    double meansQDe1 = y_q_wDe1 / y_qDe1; 
-	//cout<<meandptQSn - meandptQDe <<"meanDPTQ"<<endl;
-	//double Rq_err=  (1/y_q_Sn) + (1/y_q_De) + (1/y_q_Sn_e) + (1/y_q_De_e); 
-		if(x_q_w1>1.5){ 
-        	    sin_Q->SetPoint(i_q-1, x_q_w1,meansQSn1/ meansQDe1);
-    	}
-	//}
-}
+    for (int binv = 1; binv <= numBinsv; binv++) {
+        double sums = 0.0;
+        double sumWeightsv = 0.0;
+        double sums_Sn = 0.0;
+        double sumWeightsv_Sn = 0.0;
 
-for (int i_v=1; i_v<=hist_sratio.w_sQ_Sn->GetNbinsX(); i_v++) {
-        double x_v_w1 = hist_sratio.w_sQ_Sn->GetXaxis()->GetBinCenter(i_v);		
-        double y_v_wSn1 = hist_sratio.w_sQ_Sn->GetBinContent(i_v);				
-        double x_v1 = h_vtestSn->GetXaxis()->GetBinCenter(i_v);			
-        double y_vSn1 = h_vtestSn->GetBinContent(i_v) ;
-	    double y_v_wDe1 = hist_sratio.w_sQ_De->GetBinContent(i_v);
-	    double y_vDe1 = h_vtestD->GetBinContent(i_v) ;
-	    double meansvSn1 = y_v_wSn1 / y_vSn1;
-	    double meansvDe1 = y_v_wDe1 / y_vDe1; 
-	//cout<<meandptQSn - meandptQDe <<"meanDPTQ"<<endl;
-	//double Rq_err=  (1/y_v_Sn) + (1/y_v_De) + (1/y_v_Sn_e) + (1/y_v_De_e); 
-		//if(x_v_w<8.5 && x_v_w>2.5){ 
-        	    sin_v->SetPoint(i_v-1, x_v_w1,meansvSn1/ meansvDe1);
-    	//}
-	//}
-}
+        for (int binc = 1; binc <= numBinsc; binc++) {
+            double c = h2Dv_D->GetXaxis()->GetBinCenter(binc);
+            double weightv = h2Dv_D->GetBinContent(binc, binv);
+            double c_Sn = h2Dv_Sn->GetXaxis()->GetBinCenter(binv);
+            double weightv_Sn = h2Dv_Sn->GetBinContent(binc, binv);
+            sums += c * weightv;
+            sumWeightsv += weightv;
+            sums_Sn += c_Sn * weightv_Sn;
+            sumWeightsv_Sn += weightv_Sn;
 
-for (int i_z=1; i_z<=hist_sratio.w_sQ_Sn->GetNbinsX(); i_z++) {
-        double x_z_w1 = hist_sratio.w_sQ_Sn->GetXaxis()->GetBinCenter(i_z);		
-        double y_z_wSn1 = hist_sratio.w_sQ_Sn->GetBinContent(i_z);				
-        double x_z1 = h_ztestSn->GetXaxis()->GetBinCenter(i_z);			
-        double y_zSn1 = h_ztestSn->GetBinContent(i_z) ;
-	    double y_z_wDe1 = hist_sratio.w_sQ_De->GetBinContent(i_z);
-	    double y_zDe1 = h_ztestD->GetBinContent(i_z) ;
-	    double meanszSn1 = y_z_wSn1 / y_zSn1;
-	    double meanszDe1 = y_z_wDe1 / y_zDe1; 
-	//cout<<meandptQSn - meandptQDe <<"meanDPTQ"<<endl;
-	//double Rq_err=  (1/y_z_Sn) + (1/y_z_De) + (1/y_z_Sn_e) + (1/y_z_De_e); 
-		//if(x_z_w<8.5 && x_z_w>2.5){ 
-        	    sin_z->SetPoint(i_z-1, x_z_w1,meanszSn1/ meanszDe1);
-    	//}
-	//}
-}
+                
 
-for (int i_pt=1; i_pt<=hist_sratio.w_sQ_Sn->GetNbinsX(); i_pt++) {
-        double x_pt_w1 = hist_sratio.w_sQ_Sn->GetXaxis()->GetBinCenter(i_pt);		
-        double y_pt_wSn1 = hist_sratio.w_sQ_Sn->GetBinContent(i_pt);				
-        double x_pt1 = h_pttestSn->GetXaxis()->GetBinCenter(i_pt);			
-        double y_ptSn1 = h_pttestSn->GetBinContent(i_pt) ;
-	    double y_pt_wDe1 = hist_sratio.w_sQ_De->GetBinContent(i_pt);
-	    double y_ptDe1 = h_pttestD->GetBinContent(i_pt) ;
-	    double meansptSn1 = y_pt_wSn1 / y_ptSn1;
-	    double meansptDe1 = y_pt_wDe1 / y_ptDe1; 
-	//cout<<meandptQSn - meandptQDe <<"meanDPTQ"<<endl;
-	//double Rq_err=  (1/y_pt_Sn) + (1/y_pt_De) + (1/y_pt_Sn_e) + (1/y_pt_De_e); 
-		//if(x_pt_w<8.5 && x_pt_w>2.5){ 
-        	    sin_pt->SetPoint(i_pt-1, x_pt_w1,meansptSn1/ meansptDe1);
-    	//}
-	//}
-}
+        }
+        double averagesv = sums / sumWeightsv;
+        double averagesv_Sn = sums_Sn / sumWeightsv_Sn;
+    }
+
+
+    int numBinsz = h2Dz_D->GetNbinsY();
+
+    for (int binz = 1; binz <= numBinsz; binz++) {
+        double sums = 0.0;
+        double sumWeightsz = 0.0;
+        double sums_Sn = 0.0;
+        double sumWeightsz_Sn = 0.0;
+
+        for (int binc = 1; binc <= numBinsc; binc++) {
+            double c = h2Dz_D->GetXaxis()->GetBinCenter(binc);
+            double weightz = h2Dz_D->GetBinContent(binc, binz);
+            double c_Sn = h2Dz_Sn->GetXaxis()->GetBinCenter(binz);
+            double weightz_Sn = h2Dz_Sn->GetBinContent(binc, binz);
+            sums += c * weightz;
+            sumWeightsz += weightz;
+            sums_Sn += c_Sn * weightz_Sn;
+            sumWeightsz_Sn += weightz_Sn;
+
+                
+
+        }
+        double averagesz = sums / sumWeightsz;
+        double averagesz_Sn = sums_Sn / sumWeightsz_Sn;
+        cout<<averagesz_Sn<< " / " <<averagesz<<" = "<<averagesz_Sn / averagesz<< endl;
+    }
+
+    int numBinsp = h2Dp_D->GetNbinsY();
+
+    for (int binp = 1; binp <= numBinsp; binp++) {
+        double sums = 0.0;
+        double sumWeightsp = 0.0;
+        double sums_Sn = 0.0;
+        double sumWeightsp_Sn = 0.0;
+
+        for (int binc = 1; binc <= numBinsc; binc++) {
+            double c = h2Dp_D->GetXaxis()->GetBinCenter(binc);
+            double weightp = h2Dp_D->GetBinContent(binc, binp);
+            double c_Sn = h2Dp_Sn->GetXaxis()->GetBinCenter(binp);
+            double weightp_Sn = h2Dp_Sn->GetBinContent(binc, binp);
+            sums += c * weightp;
+            sumWeightsp += weightp;
+            sums_Sn += c_Sn * weightp_Sn;
+            sumWeightsp_Sn += weightp_Sn;
+
+                
+
+        }
+        double averagesp = sums / sumWeightsp;
+        double averagesp_Sn = sums_Sn / sumWeightsp_Sn;
+        //cout<<averagesp_Sn<< " / " <<averagesp<<" = "<<averagesp_Sn / averagesp<< endl;
+    }
 
 
 
@@ -176,7 +190,7 @@ for (int i_pt=1; i_pt<=hist_sratio.w_sQ_Sn->GetNbinsX(); i_pt++) {
     // Close the first ROOT file
     fileD->Close();
     fileSn->Close();
-    
+    /*
 sR->cd(1);
 sin_Q->GetXaxis()->SetTitleSize(0.05);
 sin_Q->GetYaxis()->SetTitleSize(0.05);
@@ -217,7 +231,8 @@ sin_pt->Draw("AP");
 
     sR->SaveAs("testsRatio.pdf");
     sR->SaveAs("testsRatio.root");
-
+*/
     return 0;
+
 }
 

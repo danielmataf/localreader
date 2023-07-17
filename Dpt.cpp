@@ -50,14 +50,15 @@ int main() {
     TCanvas* cDpt=new TCanvas("Dptplot","Dptplot"); //create new canvas
     TCanvas* ctest=new TCanvas("test","test"); //create new canvas
     cDpt->Divide(2,2);
-    TGraphErrors *Dpt_Q = new TGraphErrors();
+    TGraphErrors *Dpt_Q = new TGraphErrors();   //creation of emmpty graphs to be filled at the end 
     TGraphErrors *Dpt_v = new TGraphErrors();
     TGraphErrors *Dpt_z = new TGraphErrors();
     // Open the first ROOT file
-    TFile* fileD = new TFile("output_D.root", "READ");
-    TFile* fileSn = new TFile("output_Sn.root", "READ");
-    // Retrieve the first histogram from the ROOT file
+    TFile* fileD = new TFile("../files2read/output_D.root", "READ");
+    TFile* fileSn = new TFile("../files2read/output_Sn.root", "READ");
+    // Retrieve the histograms from the ROOT file
     //TH1F* h_Q1test = dynamic_cast<TH1F*>(file1->Get("Q2"));
+    
     TH1F* h_QtestD = dynamic_cast<TH1F*>(fileD->Get("Q2"));
     TH1F* h_QtestSn = dynamic_cast<TH1F*>(fileSn->Get("Q2"));
     TH1F* h_vtestD = dynamic_cast<TH1F*>(fileD->Get("gamnu"));
@@ -66,100 +67,100 @@ int main() {
     TH1F* h_ztestSn = dynamic_cast<TH1F*>(fileSn->Get("z"));
     TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("P_t"));
     TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("P_t"));
+    TH2F* h2DQ_D = dynamic_cast<TH2F*>(fileD->Get("pt2Q2gen"));  // Retrieve the TH2F histogram
+    TH2F* h2Dv_D = dynamic_cast<TH2F*>(fileD->Get("pt2v2gen"));  
+    TH2F* h2Dz_D = dynamic_cast<TH2F*>(fileD->Get("pt2z2gen"));
+    TH2F* h2DQ_Sn = dynamic_cast<TH2F*>(fileSn->Get("pt2Q2gen"));
+    TH2F* h2Dv_Sn = dynamic_cast<TH2F*>(fileSn->Get("pt2v2gen"));
+    TH2F* h2Dz_Sn = dynamic_cast<TH2F*>(fileSn->Get("pt2z2gen"));
+
+    //TH2F* h_2DtestD  = dynamic_cast<TH2F*>(fileD->Get("pt2Q2gen"));
+    //TH2F* h_2DtestSn = dynamic_cast<TH2F*>(fileSn->Get("pt2Q2gen"));
     //maybe not even need to dynamic cast, maybe hjust enough with calling the class
     //-> Yes, dynamic cast is needed, to make the difference between Sn and De
     //-> an adjustment has to be done to sumW2 histograms in order to properly recover them making the distinction on them. 
-    hist_Dpt.w_ptQ_Sn->Sumw2();
-    hist_Dpt.w_ptQ_De->Sumw2();
-    hist_Dpt.w_ptv_Sn->Sumw2();
-    hist_Dpt.w_ptv_De->Sumw2();
-    hist_Dpt.w_ptz_Sn->Sumw2();
-    hist_Dpt.w_ptz_De->Sumw2();
-    //hist_Dpt.h_QtestD->Sumw2();
-    for (Int_t i = 1; i <= 10; ++i)
-    {
-        Double_t Q2_D = h_QtestD->GetBinCenter(i);
-        Double_t Q2_Sn = h_QtestSn->GetBinCenter(i);
-        //change name to the following TBD :
-        Double_t v_D = h_vtestD->GetBinCenter(i);
-        Double_t v_Sn = h_vtestSn->GetBinCenter(i);
-        Double_t z_D = h_ztestD->GetBinCenter(i);
-        Double_t z_Sn = h_ztestSn->GetBinCenter(i);
-        Double_t P_t_D = h_pttestD->GetBinCenter(i);
-        Double_t P_t_Sn = h_pttestSn->GetBinContent(i);
-        
-        hist_Dpt.w_ptQ_Sn->Fill(Q2_Sn, P_t_Sn * P_t_Sn);
-        hist_Dpt.w_ptQ_De->Fill(Q2_D, P_t_D * P_t_D);
-        hist_Dpt.w_ptv_Sn->Fill(v_Sn, P_t_Sn * P_t_Sn);
-        hist_Dpt.w_ptv_De->Fill(v_D, P_t_D * P_t_D);
-        hist_Dpt.w_ptz_Sn->Fill(z_Sn, P_t_Sn * P_t_Sn);
-        hist_Dpt.w_ptz_De->Fill(z_D, P_t_D * P_t_D);
-        cout<< Q2_D<<";"  <<Q2_Sn<< "; "<<v_D <<";"<<v_Sn <<"; "<<z_D<<";"<<z_Sn<<endl;
-        cout<<P_t_D<<";"<<P_t_Sn<<endl;
-        cout<<" ---------------- "<<endl; 
-    }
-
-
-
-    //TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("P_t"));
-    //TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("P_t"));
-
-    // Access properties of h_Q1
-    //std::cout>>numBins1>>std::endl;  
-    // ...
-    //hist_Dpt.w_ptQ_Sn;
-
-    cout << hist_Dpt.w_ptQ_Sn->GetXaxis()->GetBinCenter(5) << endl;
-    //this outbut is just displaying the binning, not actual content the sumW hists were not filled with Sn/D distinction. Empty. no entries
+  
     
-    
-    for (int i_q=1; i_q<=hist_Dpt.w_ptQ_Sn->GetNbinsX(); i_q++) 
-    {
-        double x_q_w = hist_Dpt.w_ptQ_Sn->GetXaxis()->GetBinCenter(i_q);		
-        double y_q_wSn = hist_Dpt.w_ptQ_Sn->GetBinContent(i_q);				
-        double x_q = hist_Dpt.w_ptQ_De->GetXaxis()->GetBinCenter(i_q);			
-        double y_qSn = h_pttestSn->GetBinContent(i_q) ;
-    	double y_q_wDe = hist_Dpt.w_ptQ_De->GetBinContent(i_q);
-	    double y_qDe = h_pttestD->GetBinContent(i_q) ;
-	    double meandptQSn =(y_qSn > 0) ?  y_q_wSn / y_qSn : 0.0;
-	    double meandptQDe = ( y_qDe > 0) ?  y_q_wDe / y_qDe : 0.0;
-	    double Rq_err=  (1/y_q_Sn) + (1/y_q_De) + (1/y_q_Sn_e) + (1/y_q_De_e);
-      	cout<<Rq_err <<" = meanDPTQ_ERR"<<endl;
- 
-   	    //WE HAD A CNDITION ON X VALUE HERE... USELESS NOWbc zere not retrieving xvalues --- just make sure you do the cuts properly on main.cpp
-        Dpt_Q->SetPoint(i_q-1, x_q_w,meandptQSn - meandptQDe);
+    int numBinsQ = h2DQ_Sn->GetNbinsY();
+    int numBinsP = h2DQ_Sn->GetNbinsX();
+/*
+    for (int binQ = 1; binQ <= numBinsQ; binQ++) {
+        double sumP = 0.0;
+        double sumWeights = 0.0;
+        double sumP_Sn = 0.0;
+        double sumWeights_Sn = 0.0;
+
+        for (int binP = 1; binP <= numBinsP; binP++) {
+            double p = h2DQ_D->GetXaxis()->GetBinCenter(binP);
+            double weight = h2DQ_D->GetBinContent(binP, binQ);
+            double p_Sn = h2DQ_Sn->GetXaxis()->GetBinCenter(binP);
+            double weight_Sn = h2DQ_Sn->GetBinContent(binP, binQ);
+            sumP += p * weight;
+            sumWeights += weight;
+            sumP_Sn += p_Sn * weight_Sn;
+            sumWeights_Sn += weight_Sn;
+
+                
+
+        }
+        double averageP = sumP / sumWeights;
+        double averageP_Sn = sumP_Sn / sumWeights_Sn;
+        //cout<<averageP_Sn<< " - " <<averageP<<" = "<<averageP_Sn - averageP<< endl;
     }
-    for (int i_v=1; i_v<=hist_Dpt.w_ptv_Sn->GetNbinsX(); i_v++) 
-    {
-        double x_v_w = hist_Dpt.w_ptv_Sn->GetXaxis()->GetBinCenter(i_v);		
-        double y_v_wSn = hist_Dpt.w_ptv_Sn->GetBinContent(i_v);				
-        double x_v = hist_Dpt.w_ptv_De->GetXaxis()->GetBinCenter(i_v);			
-        double y_vSn = h_pttestSn->GetBinContent(i_v) ;
-    	double y_v_wDe = hist_Dpt.w_ptv_De->GetBinContent(i_v);
-	    double y_vDe = h_pttestD->GetBinContent(i_v) ;
-	    double meandptvSn =(y_vSn > 0) ?  y_v_wSn / y_vSn : 0.0;
-	    double meandptvDe = ( y_vDe > 0) ?  y_v_wDe / y_vDe : 0.0;
-	//cout<<meandptQSn - meandptQDe <<"meanDPTQ"<<endl;
-	//double Rq_err=  (1/y_v_Sn) + (1/y_v_De) + (1/y_v_Sn_e) + (1/y_v_De_e); 
-   	    //WE HAD A CNDITION ON X VALUE HERE... USELESS NOWbc zere not retrieving xvalues --- just make sure you do the cuts properly on main.cpp
-        Dpt_v->SetPoint(i_v-1, x_v_w,meandptvSn - meandptvDe);
+
+
+
+    int numBinsv = h2Dv_D->GetNbinsY();
+
+    for (int binv = 1; binv <= numBinsv; binv++) {
+        double sumP = 0.0;
+        double sumWeightsv = 0.0;
+        double sumP_Sn = 0.0;
+        double sumWeightsv_Sn = 0.0;
+
+        for (int binP = 1; binP <= numBinsP; binP++) {
+            double p = h2Dv_D->GetXaxis()->GetBinCenter(binP);
+            double weightv = h2Dv_D->GetBinContent(binP, binv);
+            double p_Sn = h2Dv_Sn->GetXaxis()->GetBinCenter(binv);
+            double weightv_Sn = h2Dv_Sn->GetBinContent(binP, binv);
+            sumP += p * weightv;
+            sumWeightsv += weightv;
+            sumP_Sn += p_Sn * weightv_Sn;
+            sumWeightsv_Sn += weightv_Sn;
+
+                
+
+        }
+        double averagePv = sumP / sumWeightsv;
+        double averagePv_Sn = sumP_Sn / sumWeightsv_Sn;
     }
-    for (int i_z=1; i_z<=hist_Dpt.w_ptv_Sn->GetNbinsX(); i_z++) 
-    {
-        double x_z_w = hist_Dpt.w_ptz_Sn->GetXaxis()->GetBinCenter(i_z);		
-        double y_z_wSn = hist_Dpt.w_ptz_Sn->GetBinContent(i_z);				
-        double x_z = hist_Dpt.w_ptz_De->GetXaxis()->GetBinCenter(i_z);			
-        double y_zSn = h_pttestSn->GetBinContent(i_z) ;
-    	double y_z_wDe = hist_Dpt.w_ptz_De->GetBinContent(i_z);
-	    double y_zDe = h_pttestD->GetBinContent(i_z) ;
-	    double meandptzSn =(y_zSn > 0) ?  y_z_wSn / y_zSn : 0.0;
-	    double meandptzDe = ( y_zDe > 0) ?  y_z_wDe / y_zDe : 0.0;
-	//cout<<meandptQSn - meandptQDe <<"meanDPTQ"<<endl;
-	//double Rq_err=  (1/y_z_Sn) + (1/y_z_De) + (1/y_z_Sn_e) + (1/y_z_De_e); 
-   	    //WE HAD A CNDITION ON X VALUE HERE... USELESS NOWbc zere not retrieving xvalues --- just make sure you do the cuts properly on main.cpp
-        Dpt_z->SetPoint(i_z-1, x_z_w,meandptzSn - meandptzDe);
+
+
+    int numBinsz = h2Dz_D->GetNbinsY();
+
+    for (int binz = 1; binz <= numBinsz; binz++) {
+        double sumP = 0.0;
+        double sumWeightsz = 0.0;
+        double sumP_Sn = 0.0;
+        double sumWeightsz_Sn = 0.0;
+
+        for (int binP = 1; binP <= numBinsP; binP++) {
+            double p = h2Dz_D->GetXaxis()->GetBinCenter(binP);
+            double weightz = h2Dz_D->GetBinContent(binP, binz);
+            double p_Sn = h2Dz_Sn->GetXaxis()->GetBinCenter(binz);
+            double weightz_Sn = h2Dz_Sn->GetBinContent(binP, binz);
+            sumP += p * weightz;
+            sumWeightsz += weightz;
+            sumP_Sn += p_Sn * weightz_Sn;
+            sumWeightsz_Sn += weightz_Sn;
+
+                
+
+        }
+        double averagePz = sumP / sumWeightsz;
+        double averagePz_Sn = sumP_Sn / sumWeightsz_Sn;
+        cout<<averagePz_Sn<< " - " <<averagePz<<" = "<<averagePz_Sn - averagePz<< endl;
     }
-    
 
     // Close the first ROOT file
     fileD->Close();
@@ -168,15 +169,16 @@ int main() {
     //R_Q->SetTitle(title);
     //R_Q->GetXaxis()->SetTitle("Q{2} (GeV^{2}) " );
     //ctest->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
-    Dpt_Q->Draw("AP");
+    hist_Dpt.h_pQ_De->Draw("COLZ");
     cDpt->cd(2);
-    Dpt_v->Draw("AP");
+    hist_Dpt.h_pv_De->Draw("COLZ");
     cDpt->cd(3);
-    Dpt_z->Draw("AP");
-
+    //h_QtestD->Draw("COLZ");
+    cDpt->cd(4);
+    //h_2DtestD->Draw("COLZ");
     cDpt->SaveAs("dpttest.pdf");
     cDpt->SaveAs("dpttest.root");
-
+*/
     return 0;
 }
 

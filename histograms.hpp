@@ -694,6 +694,17 @@ public:
     TH1F* w_ptv_De;
     TH1F* w_ptz_Sn;
     TH1F* w_ptz_De;
+    TH2F* h_pQ_Sn;
+    TH2F* h_pQ_De;
+    TH2F* h_pv_Sn;
+    TH2F* h_pv_De;
+    TH2F* h_pz_Sn;
+    TH2F* h_pz_De;
+    //TH2F* h_px_Sn;
+    //TH2F* h_px_De;
+    TH2F* h_pQ;
+    TH2F* h_pv;
+    TH2F* h_pz;
 
     h_Dpt() {
         w_ptQ_Sn = new TH1F("weightedptQSn", "weightedptQSn", nubin, QminX, QmaxX);
@@ -702,7 +713,19 @@ public:
         w_ptv_De = new TH1F("weightedptvDe", "weightedptvDe", nubin, vminX, vmaxX);
         w_ptz_Sn = new TH1F("weightedptzSn", "weightedptzSn", nubin, zminX, zmaxX);
         w_ptz_De = new TH1F("weightedptzDe", "weightedptzDe", nubin, zminX, zmaxX);
+        h_pQ_Sn = new TH2F("pt2Q2Sn", "p2Q2Sn", nubin, PtminX,PtmaxX, nubin,QminX ,QmaxX);
+        h_pQ_De = new TH2F("pt2Q2De", "p2Q2De", nubin, PtminX,PtmaxX, nubin,QminX ,QmaxX);
+        h_pv_Sn = new TH2F("pt2vSn", "p2vSn", nubin, PtminX,PtmaxX, nubin,vminX ,vmaxX);
+        h_pv_De = new TH2F("pt2vDe", "p2vDe", nubin, PtminX,PtmaxX, nubin,vminX ,vmaxX);
+        h_pz_Sn = new TH2F("pt2zSn", "p2zSn", nubin, PtminX,PtmaxX, nubin,zminX ,zmaxX);
+        h_pz_De = new TH2F("pt2zDe", "p2zDe", nubin, PtminX,PtmaxX, nubin,zminX ,zmaxX);
+        h_pQ = new TH2F("pt2Q2gen", "pt2Q2gen", nubin,  PtminX,PtmaxX, nubin,QminX ,QmaxX);
+        h_pv = new TH2F("pt2v2gen", "pt2v2gen", nubin,  PtminX,PtmaxX, nubin,vminX, vmaxX);
+        h_pz = new TH2F("pt2z2gen", "pt2z2gen", nubin,  PtminX,PtmaxX, nubin,zminX, zmaxX);
+        
+        //h_px_Sn = new TH2F("pt2xSn", "p2xSn", nubin, PtminX,PtmaxX, nubin,xminX ,xmaxX);
 
+        //h_px_De = new TH2F("pt2xDe", "p2xDe", nubin, PtminX,PtmaxX, nubin,xminX ,xmaxX);
         //w_ptQ_Sn->Sumw2();
         //w_ptQ_De->Sumw2();
         //w_ptv_Sn->Sumw2();
@@ -718,7 +741,21 @@ public:
         delete w_ptv_De;
         delete w_ptz_Sn;
         delete w_ptz_De;
+        delete h_pQ_Sn;
+        delete h_pQ_De;
+        delete h_pv_Sn;
+        delete h_pv_De;
+        delete h_pz_Sn;
+        delete h_pz_De;
+        delete h_pQ;
+        //delete h_px_Sn;
+        //delete h_px_De;
+        delete h_pv;
+        delete h_pz;
+   
     }
+
+
 };
 
 class h_cratio
@@ -732,6 +769,10 @@ public:
     TH1F* w_cz_De ;
     TH1F* w_cpt_Sn;
     TH1F* w_cpt_De;
+    TH2F* h_cQ ;
+    TH2F* h_cv ;
+    TH2F* h_cz ;
+    TH2F* h_cpt ;
     h_cratio(){
          w_cQ_Sn = new TH1F("weightedcQSn", "weightedcQSn", nubin, QminX ,QmaxX);
          w_cQ_De = new TH1F("weightedcQDe", "weightedcQDe", nubin, QminX ,QmaxX);
@@ -741,6 +782,10 @@ public:
          w_cz_De = new TH1F("weightedczDe", "weightedczDe", nubin, zminX ,zmaxX);
          w_cpt_Sn = new TH1F("weightedcptSn", "weightedcptSn", nubin, PtminX ,PtmaxX);
          w_cpt_De = new TH1F("weightedcptDe", "weightedcptDe", nubin, PtminX ,PtmaxX);
+         h_cQ = new TH2F("cosQ", "cosQ", nubin, -1,1, nubin,QminX ,QmaxX);
+         h_cv = new TH2F("cosv", "cosv", nubin, -1,1, nubin,vminX ,vmaxX);
+         h_cz = new TH2F("cosz", "cosz", nubin, -1,1, nubin,zminX ,zmaxX);
+         h_cpt = new TH2F("cosp", "cosp", nubin, -1,1, nubin,PtminX ,PtmaxX);
     }
     ~h_cratio(){
         delete w_cQ_Sn ;
@@ -751,6 +796,11 @@ public:
         delete w_cz_De ;
         delete w_cpt_Sn;
         delete w_cpt_De;
+        delete h_cQ ;
+        delete h_cv;
+        delete h_cz;
+        delete h_cpt;
+
     }
 
 };
@@ -767,6 +817,11 @@ public:
     TH1F* w_sz_De ;
     TH1F* w_spt_Sn;
     TH1F* w_spt_De;
+    TH2F* h_sQ ;
+    TH2F* h_sv ;
+    TH2F* h_sz ;
+    TH2F* h_spt; 
+
     h_sratio(){
          w_sQ_Sn = new TH1F("weightedsQSn", "weightedsQSn", nubin, QminX ,QmaxX);
          w_sQ_De = new TH1F("weightedsQDe", "weightedsQDe", nubin, QminX ,QmaxX);
@@ -776,6 +831,10 @@ public:
          w_sz_De = new TH1F("weightedszDe", "weightedszDe", nubin, zminX ,zmaxX);
          w_spt_Sn = new TH1F("weightedsptSn", "weightedsptSn", nubin, PtminX ,PtmaxX);
          w_spt_De = new TH1F("weightedsptDe", "weightedsptDe", nubin, PtminX ,PtmaxX);
+         h_sQ = new TH2F("sinQ", "sinQ", nubin, -1,1, nubin,QminX ,QmaxX);
+         h_sv = new TH2F("sinv", "sinv", nubin, -1,1, nubin,vminX ,vmaxX);
+         h_sz = new TH2F("sinz", "sinz", nubin, -1,1, nubin,zminX ,zmaxX);
+         h_spt = new TH2F("sinp", "sinp", nubin, -1,1, nubin,PtminX ,PtmaxX);
     }
     ~h_sratio(){
         delete w_sQ_Sn ;
@@ -786,6 +845,10 @@ public:
         delete w_sz_De ;
         delete w_spt_Sn;
         delete w_spt_De;
+        delete h_sQ ;
+        delete h_sv;
+        delete h_sz;
+        delete h_spt;
     }
 
 };
@@ -802,6 +865,10 @@ public:
     TH1F* w_c2z_De ;
     TH1F* w_c2pt_Sn;
     TH1F* w_c2pt_De;
+    TH2F* h_c2Q;
+    TH2F* h_c2v;
+    TH2F* h_c2z;
+    TH2F* h_c2pt;
     h_c2ratio(){
          w_c2Q_Sn = new TH1F("weightedc2QSn", "weightedc2QSn", nubin, QminX ,QmaxX);
          w_c2Q_De = new TH1F("weightedc2QDe", "weightedc2QDe", nubin, QminX ,QmaxX);
@@ -811,6 +878,10 @@ public:
          w_c2z_De = new TH1F("weightedc2zDe", "weightedc2zDe", nubin, zminX ,zmaxX);
          w_c2pt_Sn = new TH1F("weightedc2ptSn", "weightedc2ptSn", nubin, PtminX ,PtmaxX);
          w_c2pt_De = new TH1F("weightedc2ptDe", "weightedc2ptDe", nubin, PtminX ,PtmaxX);
+         h_c2Q = new TH2F("cos2Q", "cos2Q", nubin, -1,1, nubin,QminX ,QmaxX);
+         h_c2v = new TH2F("cos2v", "cos2v", nubin, -1,1, nubin,vminX ,vmaxX);
+         h_c2z = new TH2F("cos2z", "cos2z", nubin, -1,1, nubin,zminX ,zmaxX);
+         h_c2pt = new TH2F("cos2p", "cos2p", nubin, -1,1, nubin,PtminX ,PtmaxX);
     }
     ~h_c2ratio(){
         delete w_c2Q_Sn ;
@@ -821,6 +892,10 @@ public:
         delete w_c2z_De ;
         delete w_c2pt_Sn;
         delete w_c2pt_De;
+        delete h_c2Q;
+        delete h_c2v;
+        delete h_c2z;
+        delete h_c2pt;
     }
 
 };

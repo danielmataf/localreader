@@ -51,10 +51,11 @@ int main() {
     TGraphErrors *R_v = new TGraphErrors();
     TGraphErrors *R_z = new TGraphErrors();
     TGraphErrors *R_pt = new TGraphErrors();
+    TGraphErrors *ReRpt = new TGraphErrors();
     // Open the first ROOT file
     //TFile* file1 = new TFile("build/output1.root", "READ");
-    TFile* fileD = new TFile("output_D.root", "READ");
-    TFile* fileSn = new TFile("output_Sn.root", "READ");
+    TFile* fileD = new TFile("../files2read/output_D.root", "READ");
+    TFile* fileSn = new TFile("../files2read/output_Sn.root", "READ");
 
     // Retrieve the first histogram from the ROOT file
     //TH1F* h_Q1test = dynamic_cast<TH1F*>(file1->Get("Q2"));
@@ -107,7 +108,8 @@ int main() {
         double interm2 = y_q_De/y_q_De_e;
         double interm3 = interm1/interm2;
         double y_R_q = interm1;
-        double Rq_err=  (1/y_q_Sn) + (1/y_q_De) + (1/y_q_Sn_e) + (1/y_q_De_e); 
+        double Rq_err= sqrt( pow((sqrt(y_q_Sn)/y_q_Sn),2) + pow((sqrt(y_q_De)/y_q_De),2) + pow((sqrt(y_q_Sn_e)/y_q_Sn_e),2) + pow((sqrt(y_q_De_e)/y_q_De_e),2) );
+        //double Rq_err=  (1/y_q_Sn) + (1/y_q_De) + (1/y_q_Sn_e) + (1/y_q_De_e); 
 		if(x_q_Sn>1.5){ 
         	    R_Q->SetPoint(i_q-1, x_q_Sn, interm3 );
 		    R_Q->SetPointError(i_q-1, 0, Rq_err);
@@ -125,7 +127,8 @@ int main() {
         double interm2 = y_v_De/y_v_De_e;
         double interm3 = interm1/interm2;
         double y_R_v = interm1;
-        double Rv_err=  (1/y_v_Sn) + (1/y_v_De) + (1/y_v_Sn_e) + (1/y_v_De_e); 
+        double Rv_err= sqrt( pow((sqrt(y_v_Sn)/y_v_Sn),2) + pow((sqrt(y_v_De)/y_v_De),2) + pow((sqrt(y_v_Sn_e)/y_v_Sn_e),2) + pow((sqrt(y_v_De_e)/y_v_De_e),2) );
+        //double Rv_err=  (1/y_v_Sn) + (1/y_v_De) + (1/y_v_Sn_e) + (1/y_v_De_e); 
 		if(x_v_Sn>1.5){ 
         	    R_v->SetPoint(i_v-1, x_v_Sn, interm3 );
 		    R_v->SetPointError(i_v-1, 0, Rv_err);
@@ -143,10 +146,9 @@ int main() {
         double interm2 = y_z_De/y_z_De_e;
         double interm3 = interm1/interm2;
         double y_R_z = interm1;
-        double Rz_err=  (1/y_z_Sn) + (1/y_z_De) + (1/y_z_Sn_e) + (1/y_z_De_e); 
-        cout<< "y1/y_e1 = "<< interm1<<endl;
-        cout<< "y2/y_e2 = "<< interm2<<endl;
-        cout<< "R = "<<interm3<<endl;
+        double Rz_err= sqrt( pow((sqrt(y_z_Sn)/y_z_Sn),2) + pow((sqrt(y_z_De)/y_z_De),2) + pow((sqrt(y_z_Sn_e)/y_z_Sn_e),2) + pow((sqrt(y_z_De_e)/y_z_De_e),2) );
+        //double Rz_err=  (1/y_z_Sn) + (1/y_z_De) + (1/y_z_Sn_e) + (1/y_z_De_e); 
+        
 		if(interm2!=0){                                               //not the sale condition
         	    R_z->SetPoint(i_z-1, x_z_Sn, interm3 );
 		    R_z->SetPointError(i_z-1, 0, Rz_err);
@@ -156,20 +158,28 @@ int main() {
     
     for (int i_pt=1; i_pt<=h_pttestD->GetNbinsX(); i_pt++) {
         double x_pt_Sn = h_pttestSn->GetXaxis()->GetBinCenter(i_pt);		//no need maybe ? it will be always the same (I think /!\)
-        double y_pt_Sn = h_pttestSn->GetBinContent(i_pt);				//hist_Q_Sn is the equivalent to  N^{A=Sn}_{h=pi}
+        float y_pt_Sn = h_pttestSn->GetBinContent(i_pt);				//hist_Q_Sn is the equivalent to  N^{A=Sn}_{h=pi}
         double x_pt_De = h_pttestD->GetXaxis()->GetBinCenter(i_pt);			//no need maybe ?
-        double y_pt_De = h_pttestD->GetBinContent(i_pt) ;				//hist_Q_De is the equivalent to  N^{De}_{h=pi}
-        int y_pt_Sn_e = intermSn; //h_ptonlyeD->GetBinContent(i_pt) ;			//hist_Q_Sn_e is the equivalent to  N^{A=Sn}_{h=pi}
-        int y_pt_De_e = intermD; //h_ptonlyeD->GetBinContent(i_pt) ;
+        float y_pt_De = h_pttestD->GetBinContent(i_pt) ;				//hist_Q_De is the equivalent to  N^{De}_{h=pi}
+        double y_pt_Sn_e = intermSn; //h_ptonlyeD->GetBinContent(i_pt) ;			//hist_Q_Sn_e is the equivalent to  N^{A=Sn}_{h=pi}
+        double y_pt_De_e = intermD; //h_ptonlyeD->GetBinContent(i_pt) ;
         double interm1 = y_pt_Sn/y_pt_Sn_e;
         double interm2 = y_pt_De/y_pt_De_e;
         double interm3 = interm1/interm2;
         double y_R_pt = interm1;
-        double Rpt_err=  (1/y_pt_Sn) + (1/y_pt_De) + (1/y_pt_Sn_e) + (1/y_pt_De_e); 
-        
-		if(interm2!=0){
-        	    R_pt->SetPoint(i_pt-1, x_pt_Sn, interm3 );
-		    R_pt->SetPointError(i_pt-1, 0, Rpt_err);
+        double Rpt_err= sqrt( pow((sqrt(y_pt_Sn)/y_pt_Sn),2) + pow((sqrt(y_pt_De)/y_pt_De),2) + pow((sqrt(y_pt_Sn_e)/y_pt_Sn_e),2) + pow((sqrt(y_pt_De_e)/y_pt_De_e),2) );
+        //double Rpt_err=  (1/y_pt_Sn) + (1/y_pt_De) + (1/y_pt_Sn_e) + (1/y_pt_De_e);     // false uncertainty 
+        //cout<< "y1/y_e1 = "<< interm1<<endl;
+        //cout<< "y2/y_e2 = "<< interm2<<endl;
+        cout<< "y_pt_Sn = "<< y_pt_Sn<<endl;
+        cout<< "y_pt_De = "<< y_pt_De <<endl;
+        cout<< "y_pt_Sn_e = "<< y_pt_Sn_e <<endl;
+        cout<< "y_pt_De_e = "<< y_pt_De_e <<endl;
+        cout<< "R error= "<<Rpt_err<<endl;
+        cout<< "...................."<<endl;
+		if(interm2!=0 &&  x_pt_Sn<1.2 ){                //added condition on the pt value (x axis) bc pt histograms dont go further than these value  
+        	    ReRpt->SetPoint(i_pt-1, x_pt_Sn, interm3 ); //
+		        ReRpt->SetPointError(i_pt-1, 0,Rpt_err );
     	}
     }
 
@@ -191,9 +201,9 @@ int main() {
     R_z->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
     R_z->Draw("AP");
     cR->cd(4);
-    R_pt->GetXaxis()->SetTitle("pt " );
-    R_pt->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
-    R_pt->Draw("AP");
+    ReRpt->GetXaxis()->SetTitle("pt " );
+    ReRpt->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    ReRpt->Draw("AP");
     cR->SaveAs("ratio.pdf");
     
 

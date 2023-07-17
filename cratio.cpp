@@ -61,72 +61,127 @@ int main() {
     TH1F* h_ztestSn = dynamic_cast<TH1F*>(fileSn->Get("z"));
     TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("P_t"));
     TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("P_t"));
+    TH2F* h2DQ_D = dynamic_cast<TH2F*>(fileD->Get("cosQ"));  // Retrieve the TH2F histogram
+    TH2F* h2Dv_D = dynamic_cast<TH2F*>(fileD->Get("cosv"));  
+    TH2F* h2Dz_D = dynamic_cast<TH2F*>(fileD->Get("cosz"));
+    TH2F* h2Dp_D = dynamic_cast<TH2F*>(fileD->Get("cosp"));
+    TH2F* h2DQ_Sn = dynamic_cast<TH2F*>(fileSn->Get("cosQ"));
+    TH2F* h2Dv_Sn = dynamic_cast<TH2F*>(fileSn->Get("cosv"));
+    TH2F* h2Dz_Sn = dynamic_cast<TH2F*>(fileSn->Get("cosz"));
+    TH2F* h2Dp_Sn = dynamic_cast<TH2F*>(fileSn->Get("cosp"));
 
-    // Access properties of h_Q1
-    //std::cout>>numBins1>>std::endl;  
- 
-	//----Dpt @ Q try2---//		//WORKING!
-int nbinsx = h_ptQ_Sn->GetNbinsX();
-double* avg = new double[nbinsx];
-double* err = new double[nbinsx];
-for (int xbin = 1; xbin <= nbinsx; xbin++) {
-  double sum = 0.0;
-  double sumsq = 0.0;
-  int count = 0;
-  for (int ybin = 1; ybin <= h_ptQ_Sn->GetNbinsY(); ybin++) {
-    double content = h_ptQ_Sn->GetBinContent(xbin, ybin);
-    double yvalue = h_ptQ_Sn->GetYaxis()->GetBinCenter(ybin);
-    sum += content * yvalue;
-    sumsq += content * yvalue * yvalue;	//somme des carrés, weighted
-    count += content;			// weighted average divise (la somme des valeurs*poids) par la somme de poids, et non par la somme d'events 
-  }
-  avg[xbin-1] = (count > 0) ? sum / count : 0.0;
-  double variance = (count > 1) ? (sumsq - sum*sum/count) / (count - 1) : 0.0;
-  err[xbin-1] = (count > 1) ? sqrt(variance/count) : 0.0;
-  cout<<"variance= "<<variance<<endl;
-}
+    int numBinsQ = h2DQ_D->GetNbinsY();
+    int numBinsc = h2DQ_D->GetNbinsX();
 
-int nbinsx2 = h_ptQ_De->GetNbinsX();
-double* avg2 = new double[nbinsx2];
-double* err2 = new double[nbinsx2];
-for (int xbin2 = 1; xbin2 <= nbinsx2; xbin2++) {
-  double sum2 = 0.0;
-  double sumsq2 = 0.0;
-  int count2 = 0;
-  for (int ybin2 = 1; ybin2 <= h_ptQ_De->GetNbinsY(); ybin2++) {
-    double content2 = h_ptQ_De->GetBinContent(xbin2, ybin2);
-    double yvalue2 = h_ptQ_De->GetYaxis()->GetBinCenter(ybin2);
-    sum2 += content2 * yvalue2;
-    sumsq2 += content2 * yvalue2 * yvalue2;
-    count2 += content2;
-  }
-  avg2[xbin2-1] = (count2 > 0) ? sum2 / count2 : 0.0;
-  double variance2 = (count2 > 1) ? (sumsq2 - sum2*sum2/count2) / (count2 - 1) : 0.0;
-  err2[xbin2-1] = (count2 > 1) ? sqrt(variance2/count2) : 0.0;
-}
+    for (int binQ = 1; binQ <= numBinsQ; binQ++) {
+        double sumc = 0.0;
+        double sumWeights = 0.0;
+        double sumc_Sn = 0.0;
+        double sumWeights_Sn = 0.0;
 
-double* avgDptQ = new double[nbinsx2];
-double* errDptQ = new double[nbinsx2];
-for (int i_avgQ = 1; i_avgQ <= nbinsx2-1; i_avgQ++) {
-    double x_Dpt = hist_Q_Sn->GetXaxis()->GetBinCenter(i_avgQ);
-    avgDptQ[i_avgQ]  = avg[i_avgQ] - avg2[i_avgQ];
-    errDptQ[i_avgQ] = sqrt(err[i_avgQ]*err[i_avgQ] + err2[i_avgQ]*err2[i_avgQ]);
-    //cout<<"err1 = "<<err[i_avgQ-1]<< "and err 2= "<<err2[i_avgQ-1]<<endl;
-    if(x_Dpt>1.5){ 
-	plotDpt_Q->SetPoint(i_avgQ-1,x_Dpt,avgDptQ[i_avgQ-1]);
-	plotDpt_Q->SetPointError(i_avgQ-1, 0, errDptQ[i_avgQ-1]);
-	//cout<<errDptQ[i_avgQ]<<endl;
-	//plotDpt_Q->SetPoint(i_avgQ,x_Dpt,avgDptQ[i_avgQ]);
-	//plotDpt_Q->SetPointError(i_avgQ, 0, errDptQ[i_avgQ]);
+        for (int binc = 1; binc <= numBinsc; binc++) {
+            double c = h2DQ_D->GetXaxis()->GetBinCenter(binc);
+            double weight = h2DQ_D->GetBinContent(binc, binQ);
+            double c_Sn = h2DQ_Sn->GetXaxis()->GetBinCenter(binc);
+            double weight_Sn = h2DQ_Sn->GetBinContent(binc, binQ);
+            sumc += c * weight;
+            sumWeights += weight;
+            sumc_Sn += c_Sn * weight_Sn;
+            sumWeights_Sn += weight_Sn;
+
+                
+
+        }
+        double averagec = sumc / sumWeights;
+        double averagec_Sn = sumc_Sn / sumWeights_Sn;
     }
-}
 
 
+
+    int numBinsv = h2Dv_D->GetNbinsY();
+
+    for (int binv = 1; binv <= numBinsv; binv++) {
+        double sumc = 0.0;
+        double sumWeightsv = 0.0;
+        double sumc_Sn = 0.0;
+        double sumWeightsv_Sn = 0.0;
+
+        for (int binc = 1; binc <= numBinsc; binc++) {
+            double c = h2Dv_D->GetXaxis()->GetBinCenter(binc);
+            double weightv = h2Dv_D->GetBinContent(binc, binv);
+            double c_Sn = h2Dv_Sn->GetXaxis()->GetBinCenter(binv);
+            double weightv_Sn = h2Dv_Sn->GetBinContent(binc, binv);
+            sumc += c * weightv;
+            sumWeightsv += weightv;
+            sumc_Sn += c_Sn * weightv_Sn;
+            sumWeightsv_Sn += weightv_Sn;
+
+                
+
+        }
+        double averagecv = sumc / sumWeightsv;
+        double averagecv_Sn = sumc_Sn / sumWeightsv_Sn;
+    }
+
+
+    int numBinsz = h2Dz_D->GetNbinsY();
+
+    for (int binz = 1; binz <= numBinsz; binz++) {
+        double sumc = 0.0;
+        double sumWeightsz = 0.0;
+        double sumc_Sn = 0.0;
+        double sumWeightsz_Sn = 0.0;
+
+        for (int binc = 1; binc <= numBinsc; binc++) {
+            double c = h2Dz_D->GetXaxis()->GetBinCenter(binc);
+            double weightz = h2Dz_D->GetBinContent(binc, binz);
+            double c_Sn = h2Dz_Sn->GetXaxis()->GetBinCenter(binz);
+            double weightz_Sn = h2Dz_Sn->GetBinContent(binc, binz);
+            sumc += c * weightz;
+            sumWeightsz += weightz;
+            sumc_Sn += c_Sn * weightz_Sn;
+            sumWeightsz_Sn += weightz_Sn;
+
+                
+
+        }
+        double averagecz = sumc / sumWeightsz;
+        double averagecz_Sn = sumc_Sn / sumWeightsz_Sn;
+        cout<<averagecz_Sn<< " / " <<averagecz<<" = "<<averagecz_Sn / averagecz<< endl;
+    }
+
+    int numBinsp = h2Dp_D->GetNbinsY();
+
+    for (int binp = 1; binp <= numBinsp; binp++) {
+        double sumc = 0.0;
+        double sumWeightsp = 0.0;
+        double sumc_Sn = 0.0;
+        double sumWeightsp_Sn = 0.0;
+
+        for (int binc = 1; binc <= numBinsc; binc++) {
+            double c = h2Dp_D->GetXaxis()->GetBinCenter(binc);
+            double weightp = h2Dp_D->GetBinContent(binc, binp);
+            double c_Sn = h2Dp_Sn->GetXaxis()->GetBinCenter(binp);
+            double weightp_Sn = h2Dp_Sn->GetBinContent(binc, binp);
+            sumc += c * weightp;
+            sumWeightsp += weightp;
+            sumc_Sn += c_Sn * weightp_Sn;
+            sumWeightsp_Sn += weightp_Sn;
+
+                
+
+        }
+        double averagecp = sumc / sumWeightsp;
+        double averagecp_Sn = sumc_Sn / sumWeightsp_Sn;
+        //cout<<averagecp_Sn<< " / " <<averagecp<<" = "<<averagecp_Sn / averagecp<< endl;
+    }
 
     // Close the first ROOT file
     fileD->Close();
     fileSn->Close();
     
+
+    /*
 cR->cd(1);
 cos_Q->GetXaxis()->SetTitleSize(0.05);
 cos_Q->GetYaxis()->SetTitleSize(0.05);
@@ -164,7 +219,7 @@ cos_pt->GetYaxis()->SetTitle("<cos(#Phi)>_{Sn} / <cos(#Phi)>_{De}");
 cos_pt->Draw("AP");
     cR->SaveAs("cratio.pdf");
     cR->SaveAs("cratio.root");
-
+*/
     return 0;
 }
 

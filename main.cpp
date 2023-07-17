@@ -64,6 +64,10 @@ int main() {
     hist_pip pipHists;
     hist_hadX hadHists;
     MultipRatio R_hists;
+    h_Dpt hist_Dpt;
+    h_cratio hist_cratio;
+    h_sratio hist_sratio;
+    h_c2ratio hist_c2ratio;
     TCanvas* cc=new TCanvas("first","first"); //create new canvas
     cc->Divide(3,3);
 
@@ -225,11 +229,33 @@ int main() {
 	//int files is the total nber of files. change here when files are added on filelist[] --> filelist[files]
 
     //imrpoving file reader: 
-    const int files = 100;
-    std::string basePath = "/volatile/clas12/dmat/gen/Deut/";       //path of files in ifarm
-    //std::string basePath = "/volatile/clas12/dmat/gen/Sn/";
-    std::string EndPath = "/sidis_mc-master/r_out_rgd10k_d.hipo";
-    //std::string EndPath = "/sidis_mc-master/r_out_rgd10k_Sn.hipo";
+    const int files = 2;    //100 in ifarm
+    
+
+    int RECoMC; 
+    cout<<"which type of analysis ? 1=REC , 2 = MC"<<endl;
+    cin>> RECoMC;
+    //RECoMC = 1;
+
+    std::string basePath;
+    std::string EndPath;
+    if (typeoffile==1)
+    {
+        //basePath = "/volatile/clas12/dmat/gen/Deut/";       //path of files in ifarm
+        //EndPath = "/sidis_mc-master/r_out_rgd10k_d.hipo";
+        basePath = "../../files2read/r_eD-0";       //path of files in ifarm
+        EndPath = ".hipo";
+
+    }
+    else
+    {
+        //basePath = "/volatile/clas12/dmat/gen/Sn/";
+        //EndPath = "/sidis_mc-master/r_out_rgd10k_Sn.hipo";
+        basePath = "../../files2read/r_eSn-0";       //path of files in ifarm
+        EndPath = ".hipo";
+        
+    }
+
     std::vector<std::string> filelist;
     for (int filenb = 1; filenb <= files; filenb++) {
         std::string filePath = basePath + std::to_string(filenb) + EndPath;
@@ -244,6 +270,15 @@ int main() {
         reader.open(filelist[filenbr].c_str());
         hipo::dictionary factory;
         reader.readDictionary(factory);
+        hipo::bank RECgen;
+        if (RECoMC==1)
+        {
+            hipo::bank RECgen(factory.getSchema("REC::Particle"));  //call REC Bank    
+        }
+        else
+        {
+            hipo::bank RECgen(factory.getSchema("MC::Particle"));  //call MC Bank
+        }
         hipo::bank REC_Particle_bank(factory.getSchema("REC::Particle"));  //call REC Bank
         hipo::bank MC_Particle_bank(factory.getSchema("MC::Particle"));       //call MC Bank
         //***************//
@@ -279,12 +314,14 @@ int main() {
 	        val_MC_neu = false;
 	        val_MC_pro = false;
             reader.read(event);
+            //event.getStructure(RECgen);  //general particle bank call for MC and REC
             event.getStructure(REC_Particle_bank);
             event.getStructure(MC_Particle_bank);
-            event.getStructure(AHDC_Particle_bank);
-            event.getStructure(AHDCMC_Particle_bank);
+            //event.getStructure(AHDC_Particle_bank);
+            //event.getStructure(AHDCMC_Particle_bank);
 	        event.getStructure(RECTraj);
 	        event.getStructure(RECCal);
+            int numrows    = RECgen.getRows();
             int numRECrows = REC_Particle_bank.getRows();
             int numMCRows  = MC_Particle_bank.getRows();
 	        int numRECcal  = RECCal.getRows();
@@ -368,9 +405,6 @@ int main() {
 		        if (MC_Particle_bank.getInt("pid", i)==211){
                     //Get simulated PION+
 		            val_MC_pip = true;
-                    counter_MC_pi += 1;
-		            if (filenbr <= 2) {MC_counter_pi_De += 1;}
-		            if (filenbr > 2) {MC_counter_pi_Sn += 1;}
 		            v_MC_scapip->SetPx(MC_Particle_bank.getFloat("px", i));
                     v_MC_scapip->SetPy(MC_Particle_bank.getFloat("py", i));
                     v_MC_scapip->SetPz(MC_Particle_bank.getFloat("pz", i));
@@ -433,36 +467,10 @@ int main() {
                     v_MC_scaph->SetPz(MC_Particle_bank.getFloat("pz", i));
                     v_MC_scaph->SetE(sqrt(v_MC_scaph->Px()*v_MC_scaph->Px() + v_MC_scaph->Py()*v_MC_scaph->Py() + v_MC_scaph->Pz()*v_MC_scaph->Pz() ));
                 }
-                if (MC_Particle_bank.getInt("pid", i)==1000020040 && val_MC_He==false){
-                    //Get simulated HELIUM
-                    val_MC_He = true;
-		            counter_MC_He += 1;
-                    v_MC_scaHe->SetPx(MC_Particle_bank.getFloat("px", i));
-                    v_MC_scaHe->SetPy(MC_Particle_bank.getFloat("py", i));
-                    v_MC_scaHe->SetPz(MC_Particle_bank.getFloat("pz", i));
-                    TVector3 p_MC_scaHe = v_MC_scaHe->Vect();
-                    v_MC_scaHe->SetVectM(p_MC_scaHe, M_He);
-                }
+                
             }
             //======GET REC EVENTS=======//*
 	        for (int i = 0; i < numRECrows; ++i) {
-                /*
-                  //test vector function !!!!
-		        if (REC_Particle_bank.getInt("pid", i)==211 || -211){
-                    TLorentzVector myVector;
-                myVector= fillVector2(myVector,m_pi,  i);
-                }
-                
-                    //Get the REC PION      //detect ANY pion /!\
-		            val_pit = true;
-                    counter_pit += 1;
-		            v_scapit->SetPx(REC_Particle_bank.getFloat("px", i));
-                    v_scapit->SetPy(REC_Particle_bank.getFloat("py", i));
-                    v_scapit->SetPz(REC_Particle_bank.getFloat("pz", i));
-                    TVector3 p_scapit = v_scapit->Vect();
-                    v_scapit->SetVectM(p_scapit,m_pi);
-                }
-                */
 		        if (REC_Particle_bank.getInt("pid", i)==211 ){
                     //Get the REC PION      //detect PION
 		            val_pip = true;
@@ -529,7 +537,6 @@ int main() {
             //theta_el = v_scal->Theta();	//coord_el
             
 			
-	        //======= START ANALYSIS 4 DEUTERIUM =======//
             //======= START ANALYSIS 4 ANY TYPE OF FILE =======//
             if (filenbr <=2 ) {                                         
 		        //==== CALCS and FILLINGS for MC (Deuterium) ===//
@@ -679,6 +686,25 @@ int main() {
 							                                    myHists.hist_v->Fill(gamnu);		//-----------------------v--///
 							                                    myHists.hist_z->Fill(z);		//-----------------------z--///
 							                                    myHists.hist_P_t->Fill(P_t);		//----------------------pt--//
+                                                                hist_Dpt.h_pQ->Fill(P_t*P_t,Q2);
+                                                                hist_Dpt.h_pv->Fill(P_t*P_t,gamnu);
+                                                                hist_Dpt.h_pz->Fill(P_t*P_t,z);
+                                                                hist_cratio.h_cQ->Fill(cos(phih),Q2);
+                                                                hist_cratio.h_cv->Fill(cos(phih),gamnu);
+                                                                hist_cratio.h_cz->Fill(cos(phih),z);
+                                                                hist_cratio.h_cpt->Fill(cos(phih),P_t); 
+                                                                hist_sratio.h_sQ->Fill(sin(phih),Q2);
+                                                                hist_sratio.h_sv->Fill(sin(phih),gamnu);
+                                                                hist_sratio.h_sz->Fill(sin(phih),z);
+                                                                hist_sratio.h_spt->Fill(sin(phih),P_t);
+                                                                hist_c2ratio.h_c2Q->Fill(cos(2*phih),Q2);
+                                                                hist_c2ratio.h_c2v->Fill(cos(2*phih),gamnu);
+                                                                hist_c2ratio.h_c2z->Fill(cos(2*phih),z);
+                                                                hist_c2ratio.h_c2pt->Fill(cos(2*phih),P_t*P_t );
+
+
+
+
 					            	                            //q condition was here for the MC comparisons DELETED
 							                                }
                        			       	                    // }					//end if on MC vs REC
@@ -844,6 +870,21 @@ else {
     myHists.hist_MX->Write();
     R_hists.hist_Q_e->Write();
     R_hists.hist_v_e->Write();
+    hist_Dpt.h_pQ->Write();
+    hist_Dpt.h_pv->Write();
+    hist_Dpt.h_pz->Write();
+    hist_cratio.h_cQ->Write();
+    hist_cratio.h_cv->Write();
+    hist_cratio.h_cz->Write();
+    hist_cratio.h_cpt->Write(); 
+    hist_sratio.h_sQ->Write();
+    hist_sratio.h_sv->Write();
+    hist_sratio.h_sz->Write();
+    hist_sratio.h_spt->Write();
+    hist_c2ratio.h_c2Q->Write();
+    hist_c2ratio.h_c2v->Write();
+    hist_c2ratio.h_c2z->Write();
+    hist_c2ratio.h_c2pt->Write();
     //R_hists.hist_z_e->Write();
     //R_hists.hist_P_t_e->Write();
     TTree tree("treecounter","treecounter");
