@@ -68,6 +68,8 @@ int main() {
     h_cratio hist_cratio;
     h_sratio hist_sratio;
     h_c2ratio hist_c2ratio;
+    WeightHistograms weights;
+    VarianceHistograms variance;
     TCanvas* cc=new TCanvas("first","first"); //create new canvas
     cc->Divide(3,3);
 
@@ -686,6 +688,44 @@ int main() {
 							                                    myHists.hist_v->Fill(gamnu);		//-----------------------v--///
 							                                    myHists.hist_z->Fill(z);		//-----------------------z--///
 							                                    myHists.hist_P_t->Fill(P_t);		//----------------------pt--//
+                                                                
+                                                                //all P_t used below have to be squared even in the weights
+                                                                weights.hist_wQp->Fill(Q2,P_t);
+                                                                weights.hist_wvp->Fill(gamnu,P_t*P_t);
+                                                                weights.hist_wzp->Fill(z,P_t*P_t);
+                                                                weights.hist_wQcos->Fill(Q2 , cos(phih));
+                                                                weights.hist_wvcos->Fill(gamnu , cos(phih));
+                                                                weights.hist_wP_tcos->Fill( P_t*P_t, cos(phih));
+                                                                weights.hist_wzcos->Fill( z, cos(phih));
+                                                                weights.hist_wQsin->Fill( Q2, sin(phih));
+                                                                weights.hist_wvsin->Fill( gamnu , sin(phih));
+                                                                weights.hist_wP_tsin->Fill(P_t*P_t, sin(phih) );
+                                                                weights.hist_wzsin->Fill(z, sin(phih));
+                                                                weights.hist_wQc2->Fill(Q2, cos(2*phih)  );
+                                                                weights.hist_wvc2->Fill( gamnu, cos(2*phih));
+                                                                weights.hist_wP_tc2->Fill(P_t*P_t, cos(2*phih));
+                                                                weights.hist_wzc2->Fill( z, cos(2*phih));
+
+
+                                                                variance.hist_varQp->Fill(Q2,pow(P_t,4));
+                                                                variance.hist_varvp->Fill(gamnu,pow(P_t,4));
+                                                                variance.hist_varzp->Fill(z,pow(P_t,4));
+                                                                variance.hist_varQcos->Fill(Q2 , pow(cos(phih),2));
+                                                                variance.hist_varvcos->Fill(gamnu , pow(cos(phih),2));
+                                                                variance.hist_varP_tcos->Fill( P_t*P_t, pow(cos(phih),2));
+                                                                variance.hist_varzcos->Fill( z, pow(cos(phih),2));
+                                                                variance.hist_varQsin->Fill( Q2, pow(sin(phih),2));
+                                                                variance.hist_varvsin->Fill( gamnu ,pow(sin(phih),2));
+                                                                variance.hist_varP_tsin->Fill(P_t*P_t, pow(cos(phih),2) );
+                                                                variance.hist_varzsin->Fill(z, pow(sin(phih),2));
+                                                                variance.hist_varQc2->Fill(Q2, pow(cos(2*phih),2) );
+                                                                variance.hist_varvc2->Fill( gamnu, pow(cos(2*phih),2));
+                                                                variance.hist_varP_tc2->Fill(P_t*P_t, pow(cos(2*phih),2));
+                                                                variance.hist_varzc2->Fill( z, pow(cos(2*phih),2));
+
+
+
+
                                                                 hist_Dpt.h_pQ->Fill(P_t*P_t,Q2);
                                                                 hist_Dpt.h_pv->Fill(P_t*P_t,gamnu);
                                                                 hist_Dpt.h_pz->Fill(P_t*P_t,z);
@@ -885,6 +925,39 @@ else {
     hist_c2ratio.h_c2v->Write();
     hist_c2ratio.h_c2z->Write();
     hist_c2ratio.h_c2pt->Write();
+    weights.hist_wQp->Write();
+    weights.hist_wvp->Write();
+    weights.hist_wzp->Write();
+    weights.hist_wQcos->Write();
+    weights.hist_wvcos->Write();
+    weights.hist_wP_tcos->Write();
+    weights.hist_wzcos->Write();
+    weights.hist_wQsin->Write();
+    weights.hist_wvsin->Write();
+    weights.hist_wP_tsin->Write();
+    weights.hist_wzsin->Write();
+    weights.hist_wQc2->Write();
+    weights.hist_wvc2->Write();
+    weights.hist_wP_tc2->Write();
+    weights.hist_wzc2->Write();
+    variance.hist_varQp->Write();
+    variance.hist_varvp->Write();
+    variance.hist_varzp->Write();
+    variance.hist_varQcos->Write();
+    variance.hist_varvcos->Write();
+    variance.hist_varP_tcos->Write();
+    variance.hist_varzcos->Write();
+    variance.hist_varQsin->Write();
+    variance.hist_varvsin->Write();
+    variance.hist_varP_tsin->Write();
+    variance.hist_varzsin->Write();
+    variance.hist_varQc2->Write();
+    variance.hist_varvc2->Write();
+    variance.hist_varP_tc2->Write();
+    variance.hist_varzc2->Write();
+
+
+
     //R_hists.hist_z_e->Write();
     //R_hists.hist_P_t_e->Write();
     TTree tree("treecounter","treecounter");

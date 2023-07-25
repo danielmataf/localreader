@@ -142,7 +142,7 @@ public:
         hist_y = new TH1F("y", "y", nubin, 0.0, 1.0);
         hist_x = new TH1F("x_bj", "x_bj", nubin, 0.0, 0.6);
         hist_W = new TH1F("W", "W", nubin, 1.5, 5);
-        hist_phih = new TH1F("phih", "phih", 12, 0, 360);
+        hist_phih = new TH1F("phih", "phih", phibin, 0, 360);
         hist_t = new TH1F("t", "t", nubin, -15, 0);
         hist_P_t = new TH1F("P_t", "P_t", nubin, 0, 2);
         hist_z = new TH1F("z", "z", nubin, zminX, zmaxX);
@@ -169,6 +169,170 @@ public:
         delete hist_MM_epiX;
     }
 };
+
+
+class WeightHistograms {
+//class containing same histograms with variables (q,v,p,phi or cosphi) but with added weight
+//these hists must be in the root output so we can determine ratio
+public:
+    TH1F* hist_wQp;
+    TH1F* hist_wvp;
+    TH1F* hist_wyp;
+    TH1F* hist_wzp;
+
+    TH1F* hist_wQcos;
+    TH1F* hist_wvcos;
+    TH1F* hist_wycos;
+    TH1F* hist_wP_tcos;
+    TH1F* hist_wzcos;
+
+    TH1F* hist_wQsin;
+    TH1F* hist_wvsin;
+    TH1F* hist_wysin;
+    TH1F* hist_wP_tsin;
+    TH1F* hist_wzsin;
+
+    TH1F* hist_wQc2;
+    TH1F* hist_wvc2;
+    TH1F* hist_wyc2;
+    TH1F* hist_wP_tc2;
+    TH1F* hist_wzc2;
+
+    WeightHistograms() {
+        hist_wQp= new TH1F("weightedQp", "weightedQp", nubin, QminX, QmaxX);
+        hist_wvp= new TH1F("weightedvp", "weightedvp", nubin, vminX, vmaxX);
+        hist_wyp= new TH1F("weightedyp", "weightedyp", nubin, 0.0, 1.0);
+        hist_wzp = new TH1F("weightedzp", "weightedzp", nubin, zminX, zmaxX);
+
+        hist_wQcos= new TH1F("weightedQcos", "weightedQcos", nubin, QminX, QmaxX);
+        hist_wvcos= new TH1F("weightedvcos", "weightedvcos", nubin, vminX, vmaxX);
+        hist_wycos= new TH1F("weightedycos", "weightedycos", nubin, 0.0, 1.0);
+        hist_wP_tcos= new TH1F("weightedpcos", "weightedpcos",  nubin, 0, 2);
+        hist_wzcos= new TH1F("weightedzcos", "weightedzcos", nubin, zminX, zmaxX);
+        
+        hist_wQsin= new TH1F("weightedQsin", "weightedQsin", nubin, QminX, QmaxX);
+        hist_wvsin= new TH1F("weightedvsin", "weightedvsin", nubin, vminX, vmaxX);
+        hist_wysin= new TH1F("weightedysin", "weightedysin", nubin, 0.0, 1.0);
+        hist_wP_tsin= new TH1F("weightedpsin", "weightedpsin",  nubin, 0, 2);
+        hist_wzsin= new TH1F("weightedzsin", "weightedzsin", nubin, zminX, zmaxX);
+        
+        hist_wQc2= new TH1F("weightedQc2", "weightedQc2", nubin, QminX, QmaxX);
+        hist_wvc2= new TH1F("weightedvc2", "weightedvc2", nubin, vminX, vmaxX);
+        hist_wyc2= new TH1F("weightedyc2", "weightedyc2", nubin, 0.0, 1.0);
+        hist_wP_tc2= new TH1F("weightedpc2", "weightedpc2",  nubin, 0, 2);
+        hist_wzc2= new TH1F("weightedzc2", "weightedzc2", nubin, zminX, zmaxX);
+
+
+                 
+    }
+
+    ~WeightHistograms() {
+        
+        delete hist_wQp;
+        delete hist_wvp;
+        delete hist_wyp;
+        delete hist_wzp;
+
+        delete hist_wQcos;
+        delete hist_wvcos;
+        delete hist_wycos;
+        delete hist_wP_tcos;
+        delete hist_wzcos;
+
+        delete hist_wQsin;
+        delete hist_wvsin;
+        delete hist_wysin;
+        delete hist_wP_tsin;
+        delete hist_wzsin;
+
+        delete hist_wQc2;
+        delete hist_wvc2;
+        delete hist_wyc2;
+        delete hist_wP_tc2;
+        delete hist_wzc2;
+    }
+};
+
+class VarianceHistograms {
+//class containing same histograms with variables (q,v,p,phi or cosphi) but with added weight
+//these hists must be in the root output so we can determine ratio
+public:
+    TH1F* hist_varQp;
+    TH1F* hist_varvp;
+    TH1F* hist_varyp;
+    TH1F* hist_varzp;
+
+    TH1F* hist_varQcos;
+    TH1F* hist_varvcos;
+    TH1F* hist_varycos;
+    TH1F* hist_varP_tcos;
+    TH1F* hist_varzcos;
+
+    TH1F* hist_varQsin;
+    TH1F* hist_varvsin;
+    TH1F* hist_varysin;
+    TH1F* hist_varP_tsin;
+    TH1F* hist_varzsin;
+
+    TH1F* hist_varQc2;
+    TH1F* hist_varvc2;
+    TH1F* hist_varyc2;
+    TH1F* hist_varP_tc2;
+    TH1F* hist_varzc2;
+
+    VarianceHistograms() {
+
+        hist_varQp=new TH1F("VarianceQp", "VarianceQp", nubin, QminX, QmaxX);;
+        hist_varvp=new TH1F("Variancevp", "Variancevp", nubin, vminX, vmaxX);;
+        hist_varyp=new TH1F("Varianceyp", "Varianceyp", nubin, 0.0, 1.0);
+        hist_varzp= new TH1F("Variancezp", "Variancezp", nubin, zminX, zmaxX);
+
+        hist_varQcos= new TH1F("VarianceQcos", "VarianceQcos", nubin, QminX, QmaxX);
+        hist_varvcos= new TH1F("Variancevcos", "Variancevcos", nubin, vminX, vmaxX);
+        hist_varycos= new TH1F("Varianceycos", "Varianceycos", nubin, 0.0, 1.0);
+        hist_varP_tcos= new TH1F("Variancepcos", "Variancepcos",  nubin, 0, 2);
+        hist_varzcos= new TH1F("Variancezcos", "Variancezcos", nubin, zminX, zmaxX);
+
+        hist_varQsin = new TH1F("VarianceQsin", "VarianceQsin", nubin, QminX, QmaxX);
+        hist_varvsin = new TH1F("Variancevsin", "Variancevsin", nubin, vminX, vmaxX);
+        hist_varysin = new TH1F("Varianceysin", "Varianceysin", nubin, 0.0, 1.0);
+        hist_varP_tsin = new TH1F("Variancepsin", "Variancepsin",  nubin, 0, 2);
+        hist_varzsin = new TH1F("Variancezsin", "Variancezsin", nubin, zminX, zmaxX);
+
+        hist_varQc2 = new TH1F("VarianceQc2", "VarianceQc2", nubin, QminX, QmaxX);
+        hist_varvc2 = new TH1F("Variancevc2", "Variancevc2", nubin, vminX, vmaxX);
+        hist_varyc2 = new TH1F("Varianceyc2", "Varianceyc2", nubin, 0.0, 1.0);
+        hist_varP_tc2 = new TH1F("Variancepc2", "Variancepc2",  nubin, 0, 2);
+        hist_varzc2 = new TH1F("Variancezc2", "Variancezc2", nubin, zminX, zmaxX);
+    }
+
+    ~VarianceHistograms() {
+        delete hist_varQp;
+        delete hist_varvp;
+        delete hist_varyp;
+        delete hist_varzp;
+        delete hist_varQcos;
+        delete hist_varvcos;
+        delete hist_varycos;
+        delete hist_varP_tcos;
+        delete hist_varzcos;
+        delete hist_varQsin;
+        delete hist_varvsin;
+        delete hist_varysin;
+        delete hist_varP_tsin;
+        delete hist_varzsin;
+        delete hist_varQc2;
+        delete hist_varvc2;
+        delete hist_varyc2;
+        delete hist_varP_tc2;
+        delete hist_varzc2;
+        
+    }
+};
+
+
+
+
 
 //myHists.hist_Q->Write();
 
