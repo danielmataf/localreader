@@ -690,7 +690,7 @@ int main() {
 							                                    myHists.hist_P_t->Fill(P_t);		//----------------------pt--//
                                                                 
                                                                 //all P_t used below have to be squared even in the weights
-                                                                weights.hist_wQp->Fill(Q2,P_t);
+                                                                weights.hist_wQp->Fill(Q2,P_t*P_t);
                                                                 weights.hist_wvp->Fill(gamnu,P_t*P_t);
                                                                 weights.hist_wzp->Fill(z,P_t*P_t);
                                                                 weights.hist_wQcos->Fill(Q2 , cos(phih));
