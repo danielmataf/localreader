@@ -50,6 +50,10 @@ int main() {
     TGraphErrors *cos2_v = new TGraphErrors();
     TGraphErrors *cos2_z = new TGraphErrors();
     TGraphErrors *cos2_pt = new TGraphErrors();
+    TGraphErrors *cos2_Qbis = new TGraphErrors();
+    TGraphErrors *cos2_vbis = new TGraphErrors();
+    TGraphErrors *cos2_zbis = new TGraphErrors();
+    TGraphErrors *cos2_pbis  = new TGraphErrors();
     // Open the first ROOT file
     //TFile* file1 = new TFile("build/output1.root", "READ");
     TFile* fileD = new TFile("output_D.root", "READ");
@@ -67,6 +71,16 @@ int main() {
     TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("P_t"));
     TH1F* h_phiSn = dynamic_cast<TH1F*>(fileSn->Get("phih"));
     TH1F* h_phiD = dynamic_cast<TH1F*>(fileD->Get("phih"));
+    TH2F* h2DQ_D = dynamic_cast<TH2F*>(fileD->Get("cos2Q"));  // Retrieve the TH2F histogram
+    TH2F* h2Dv_D = dynamic_cast<TH2F*>(fileD->Get("cos2v"));  
+    TH2F* h2Dz_D = dynamic_cast<TH2F*>(fileD->Get("cos2z"));
+    TH2F* h2Dp_D = dynamic_cast<TH2F*>(fileD->Get("cos2p"));
+    TH2F* h2DQ_Sn = dynamic_cast<TH2F*>(fileSn->Get("cos2Q"));
+    TH2F* h2Dv_Sn = dynamic_cast<TH2F*>(fileSn->Get("cos2v"));
+    TH2F* h2Dz_Sn = dynamic_cast<TH2F*>(fileSn->Get("cos2z"));
+    TH2F* h2Dp_Sn = dynamic_cast<TH2F*>(fileSn->Get("cos2p"));
+    //pt is already squared in the histogrammmm
+
 
 
 
@@ -151,6 +165,14 @@ for (int i_z=1; i_z<=hist_c2Ratio.w_c2Q_Sn->GetNbinsX(); i_z++) {
 	//}
 }
 
+
+
+
+
+
+
+
+
 for (int i_pt=1; i_pt<=hist_c2Ratio.w_c2Q_Sn->GetNbinsX(); i_pt++) {
         double x_pt_w1 = hist_c2Ratio.w_c2Q_Sn->GetXaxis()->GetBinCenter(i_pt);		
         double y_pt_wSn1 = hist_c2Ratio.w_c2Q_Sn->GetBinContent(i_pt);				
@@ -169,14 +191,27 @@ for (int i_pt=1; i_pt<=hist_c2Ratio.w_c2Q_Sn->GetNbinsX(); i_pt++) {
 }
 
 
-
-
-
-
     // Close the first ROOT file
     fileD->Close();
     fileSn->Close();
     
+
+
+    c2R->cd(1);
+cos2_Qbis->GetXaxis()->SetTitleSize(0.05);
+cos2_Qbis->GetYaxis()->SetTitleSize(0.05);
+cos2_Qbis->SetMarkerSize(0.5);
+cos2_Qbis->SetMarkerStyle(21);
+cos2_Qbis->GetXaxis()->SetRangeUser(1,6.5);
+cos2_Qbis->GetXaxis()->SetTitle("Q^{2} " );
+cos2_Qbis->GetYaxis()->SetTitle("<cos(  #phih)>_{Sn} / <cos(  #phih)>_{D}");
+cos2_Qbis->Draw("APE");
+
+
+
+    c2R->SaveAs("cRatiotest.pdf");
+    c2R->SaveAs("cRatiotest.root");
+
 c2R->cd(1);
 cos2_Q->GetXaxis()->SetTitleSize(0.05);
 cos2_Q->GetYaxis()->SetTitleSize(0.05);
@@ -217,6 +252,8 @@ cos2_pt->Draw("AP");
 
     c2R->SaveAs("testc2Ratio.pdf");
     c2R->SaveAs("testc2Ratio.root");
+
+
 
     return 0;
 }

@@ -1,6 +1,7 @@
 #ifndef HISTOGRAMS_H
 #define HISTOGRAMS_H
-
+#include <TGraph.h>
+#include <TGraphErrors.h>
 #include "TH1F.h"
 
 int nubin = 10;  //--------------------------------------------------------------------binning -->USE 10 FOR RATIO PLOTS

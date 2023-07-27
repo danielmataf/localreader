@@ -103,17 +103,14 @@ int main() {
         double y_q_De = h_QtestD->GetBinContent(i_q) ;				//hist_Q_De is the equivalent to  N^{De}_{h=pi}
         double y_q_Sn_e = h_QonlyeSn->GetBinContent(i_q) ;			//hist_Q_Sn_e is the equivalent to  N^{A=Sn}_{h=pi}
         double y_q_De_e = h_QonlyeD->GetBinContent(i_q) ;
-        //cout << y_q_Sn_e<< endl;
         double interm1 = y_q_Sn/y_q_Sn_e;
         double interm2 = y_q_De/y_q_De_e;
+        if(interm2==0) continue;
         double interm3 = interm1/interm2;
-        double y_R_q = interm1;
-        double Rq_err= sqrt( pow((sqrt(y_q_Sn)/y_q_Sn),2) + pow((sqrt(y_q_De)/y_q_De),2) + pow((sqrt(y_q_Sn_e)/y_q_Sn_e),2) + pow((sqrt(y_q_De_e)/y_q_De_e),2) );
-        //double Rq_err=  (1/y_q_Sn) + (1/y_q_De) + (1/y_q_Sn_e) + (1/y_q_De_e); 
-		if(x_q_Sn>1.5){ 
-        	    R_Q->SetPoint(i_q-1, x_q_Sn, interm3 );
-		    R_Q->SetPointError(i_q-1, 0, Rq_err);
-    		}
+        double Rq_err= interm3 * sqrt(1/y_q_Sn + 1/y_q_De + 1/y_q_Sn_e + 1/y_q_De_e);
+		 
+        R_Q->SetPoint(i_q-1, x_q_Sn, interm3 );
+		R_Q->SetPointError(i_q-1, 0, Rq_err);
     }
 
     for (int i_v=1; i_v<=h_vtestD->GetNbinsX(); i_v++) {
@@ -144,6 +141,7 @@ int main() {
         double y_z_De_e = intermD; //h_zonlyeD->GetBinContent(i_z) ;
         double interm1 = y_z_Sn/y_z_Sn_e;
         double interm2 = y_z_De/y_z_De_e;
+        if(interm2==0) continue;
         double interm3 = interm1/interm2;
         double y_R_z = interm1;
         double Rz_err= sqrt( pow((sqrt(y_z_Sn)/y_z_Sn),2) + pow((sqrt(y_z_De)/y_z_De),2) + pow((sqrt(y_z_Sn_e)/y_z_Sn_e),2) + pow((sqrt(y_z_De_e)/y_z_De_e),2) );
