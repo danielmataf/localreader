@@ -38,10 +38,37 @@
 #include "histograms.hpp"
 using namespace std;
 
+void calculateSRat(TH1F* hD, TH1F* h_weightD, TH1F* h_sqD,TH1F* hSn, TH1F* h_weightSn,TH1F* h_sqSn, TGraphErrors* g_result) {
+    int numBins = hD->GetNbinsX();
 
+    for (int bin = 1; bin <= numBins; bin++) {
+        double N_D = hD->GetBinContent(bin);
+        double P_D = h_weightD->GetBinContent(bin);
+        double Psq_D = h_sqD->GetBinContent(bin);
+        double N_Sn = hSn->GetBinContent(bin);
+        double P_Sn = h_weightSn->GetBinContent(bin);
+        double Psq_Sn = h_sqSn->GetBinContent(bin);
+        double x = hD->GetXaxis()->GetBinCenter(bin);
+        
+        double wavg_D  = (N_D > 0) ? P_D/N_D : 0.0;
+        double wavg_Sn = (N_Sn > 0) ? P_Sn/N_Sn : 0.0;
+        double srat_point = (wavg_D > 0) ? wavg_Sn/wavg_D : 0.0; 
+        double variance_D = Psq_D/N_D - pow(wavg_D,2);     
+        double variance_Sn=   Psq_Sn/N_Sn - pow(wavg_Sn,2) ;
+        double Err_D  = sqrt(variance_D/N_D);
+        double Err_Sn = sqrt(variance_Sn/N_Sn);
+        double unc = (wavg_Sn/wavg_D) *sqrt( pow( Err_D/wavg_D,2) + pow(Err_Sn/wavg_Sn ,2) );
+        if (unc>5){
+            unc = 0.0;
+            srat_point = 0.0;
+        }
+
+        g_result->SetPoint(bin - 1, x, srat_point);
+        g_result->SetPointError(bin - 1, 0, unc);
             //w_sQ_Sn->Fill(Q2,sin(phih));
 
-
+    }
+}
 int main() {
     h_sratio hist_sratio;
     TCanvas* sR=new TCanvas("ratio","ratio"); //sReate new canvas
@@ -62,8 +89,8 @@ int main() {
 
     // Open the first ROOT file
     //TFile* file1 = new TFile("build/output1.root", "READ");
-    TFile* fileD = new TFile("../files2read/output_D10binJul.root", "READ");
-    TFile* fileSn = new TFile("../files2read/output_Sn10binJul.root", "READ");
+    TFile* fileD = new TFile("../files2read/REoutput_D.root", "READ");
+    TFile* fileSn = new TFile("../files2read/REoutput_Sn.root", "READ");
 
     // Retrieve the first histogram from the ROOT file
     //TH1F* h_Q1test = dynamic_cast<TH1F*>(file1->Get("Q2"));
@@ -114,6 +141,14 @@ int main() {
     int nubinsv = h_vtestD->GetNbinsX(); 
     int nubinsz = h_ztestD->GetNbinsX(); 
     int nubinsp = h_pttestD->GetNbinsX(); 
+
+    calculateSRat( h_QtestD, h_QweightD, h_QsqD,h_QtestSn, h_QweightSn,h_QsqD, sin_Q);
+    calculateSRat( h_vtestD, h_vweightD, h_vsqD,h_vtestSn, h_vweightSn,h_vsqD, sin_v);
+    calculateSRat( h_ztestD, h_zweightD, h_zsqD,h_ztestSn, h_zweightSn,h_zsqD, sin_z);
+    calculateSRat( h_pttestD, h_ptweightD, h_ptsqD,h_pttestSn, h_ptweightSn,h_ptsqD, sin_pt);
+
+/*
+
 
     /////////fix weight test/////////////////
     /////////////////////////////////////////
@@ -232,284 +267,7 @@ int main() {
     /////////fix weight test (end)///////////
     /////////////////////////////////////////
 
-
-
-    for (int binQ = 1; binQ <= numBinsQ; binQ++) {
-        double sums = 0.0;
-        double sumWeights = 0.0;
-        double sums_Sn = 0.0;
-        double sumWeights_Sn = 0.0;
-
-        for (int binc = 1; binc <= numbinsS; binc++) {
-            double s = h2DQ_D->GetXaxis()->GetBinCenter(binc);
-            double weight = h2DQ_D->GetBinContent(binc, binQ);
-            double s_Sn = h2DQ_Sn->GetXaxis()->GetBinCenter(binc);
-            double weight_Sn = h2DQ_Sn->GetBinContent(binc, binQ);
-            sums += s * weight;
-            sumWeights += weight;
-            sums_Sn += s_Sn * weight_Sn;
-            sumWeights_Sn += weight_Sn;
-
-                
-
-        }
-        double averages = sums / sumWeights;
-        double averages_Sn = sums_Sn / sumWeights_Sn;
-    }
-
-
-
-
-    for (int binv = 1; binv <= numBinsv; binv++) {
-        double sums = 0.0;
-        double sumWeightsv = 0.0;
-        double sums_Sn = 0.0;
-        double sumWeightsv_Sn = 0.0;
-
-        for (int binc = 1; binc <= numbinsS; binc++) {
-            double c = h2Dv_D->GetXaxis()->GetBinCenter(binc);
-            double weightv = h2Dv_D->GetBinContent(binc, binv);
-            double c_Sn = h2Dv_Sn->GetXaxis()->GetBinCenter(binv);
-            double weightv_Sn = h2Dv_Sn->GetBinContent(binc, binv);
-            sums += c * weightv;
-            sumWeightsv += weightv;
-            sums_Sn += c_Sn * weightv_Sn;
-            sumWeightsv_Sn += weightv_Sn;
-
-                
-
-        }
-        double averagesv = sums / sumWeightsv;
-        double averagesv_Sn = sums_Sn / sumWeightsv_Sn;
-    }
-
-
-
-    for (int binz = 1; binz <= numBinsz; binz++) {
-        double sums = 0.0;
-        double sumWeightsz = 0.0;
-        double sums_Sn = 0.0;
-        double sumWeightsz_Sn = 0.0;
-
-        for (int binc = 1; binc <= numbinsS; binc++) {
-            double c = h2Dz_D->GetXaxis()->GetBinCenter(binc);
-            double weightz = h2Dz_D->GetBinContent(binc, binz);
-            double c_Sn = h2Dz_Sn->GetXaxis()->GetBinCenter(binz);
-            double weightz_Sn = h2Dz_Sn->GetBinContent(binc, binz);
-            sums += c * weightz;
-            sumWeightsz += weightz;
-            sums_Sn += c_Sn * weightz_Sn;
-            sumWeightsz_Sn += weightz_Sn;
-
-                
-
-        }
-        double averagesz = sums / sumWeightsz;
-        double averagesz_Sn = sums_Sn / sumWeightsz_Sn;
-        cout<<averagesz_Sn<< " / " <<averagesz<<" = "<<averagesz_Sn / averagesz<< endl;
-    }
-
-
-    for (int binp = 1; binp <= numBinsp; binp++) {
-        double sums = 0.0;
-        double sumWeightsp = 0.0;
-        double sums_Sn = 0.0;
-        double sumWeightsp_Sn = 0.0;
-
-        for (int binc = 1; binc <= numbinsS; binc++) {
-            double c = h2Dp_D->GetXaxis()->GetBinCenter(binc);
-            double weightp = h2Dp_D->GetBinContent(binc, binp);
-            double c_Sn = h2Dp_Sn->GetXaxis()->GetBinCenter(binp);
-            double weightp_Sn = h2Dp_Sn->GetBinContent(binc, binp);
-            sums += c * weightp;
-            sumWeightsp += weightp;
-            sums_Sn += c_Sn * weightp_Sn;
-            sumWeightsp_Sn += weightp_Sn;
-
-                
-
-        }
-        double averagesp = sums / sumWeightsp;
-        double averagesp_Sn = sums_Sn / sumWeightsp_Sn;
-        //cout<<averagesp_Sn<< " / " <<averagesp<<" = "<<averagesp_Sn / averagesp<< endl;
-    }
-
-
-
-
-
-
-
-for (int binQ = 1; binQ <= numBinsQ; binQ++) {
-        double sinsumS = 0.0;
-        double sumWeightsQ = 0.0;
-        double sinsumS_Sn = 0.0;
-        double sumWeightsQ_Sn = 0.0;
-        double sinsumS_squared = 0.0;
-        double sumWeightsQ_squared = 0.0;
-        double sinsumS_Sn_squared = 0.0;
-        double sumWeightsQ_Sn_squared = 0.0;
-        double x_Q_Sn = h_QtestSn->GetXaxis()->GetBinCenter(binQ);
-        for (int binS = 1; binS <= numbinsS; binS++) {
-            double sinphi = h2DQ_D->GetXaxis()->GetBinCenter(binS);
-            double weightQ = h2DQ_D->GetBinContent(binS, binQ);
-            double sinphi_Sn = h2DQ_Sn->GetXaxis()->GetBinCenter(binQ);
-            double weightQ_Sn = h2DQ_Sn->GetBinContent(binS, binQ);
-            sinsumS += sinphi * weightQ;
-            sumWeightsQ += weightQ;
-            sinsumS_Sn += sinphi_Sn * weightQ_Sn;
-            sumWeightsQ_Sn += weightQ_Sn;
-            sinsumS_squared += sinphi * sinphi * weightQ;
-            sumWeightsQ_squared += weightQ * weightQ;
-            sinsumS_Sn_squared += sinphi_Sn * sinphi_Sn * weightQ_Sn;
-            sumWeightsQ_Sn_squared += weightQ_Sn * weightQ_Sn;
-        }
-        double averagePC = sinsumS / sumWeightsQ;
-        double averagePC_Sn = sinsumS_Sn / sumWeightsQ_Sn;
-        double varPC = (sinsumS_squared / sumWeightsQ) - (averagePC * averagePC / (sumWeightsQ));
-        double varPC_Sn = (sinsumS_Sn_squared / sumWeightsQ_Sn) - (averagePC_Sn * averagePC_Sn / (sumWeightsQ_Sn) );
-  //      lines 2up and 2down added for error TBC  
-        double uncertaintyPC = sqrt(varPC /sumWeightsQ);
-        double uncertaintyPC_Sn = sqrt(varPC_Sn /sumWeightsQ_Sn);
-        if (sumWeightsQ != 0 && sumWeightsQ_Sn != 0){
-            double sin_point = averagePC_Sn / averagePC  ;
-            double unc= (averagePC_Sn/averagePC) *sqrt( pow((sqrt(uncertaintyPC)/averagePC),2) + pow((sqrt(uncertaintyPC_Sn)/averagePC_Sn),2)    );
-            sin_Qbis->SetPoint(binQ-1, x_Q_Sn, sin_point );
-            sin_Qbis->SetPointError(binQ-1, unc );
-
-        }
-
-    }
-
-    //int numbinsS = h2Dv_Sn->GetNbinsX();        //C is for sin; for sin(phi)
-
-    for (int binv = 1; binv <= numBinsv; binv++) {
-        double sinsumS = 0.0;
-        double sumWeightsv = 0.0;
-        double sinsumS_Sn = 0.0;
-        double sumWeightsv_Sn = 0.0;
-        double sinsumS_squared = 0.0;
-        double sumWeightsv_squared = 0.0;
-        double sinsumS_Sn_squared = 0.0;
-        double sumWeightsv_Sn_squared = 0.0;
-        double x_v_Sn = h_vtestSn->GetXaxis()->GetBinCenter(binv);
-        for (int binS = 1; binS <= numbinsS; binS++) {
-            double sinphi = h2Dv_D->GetXaxis()->GetBinCenter(binS);
-            double weightv = h2Dv_D->GetBinContent(binS, binv);
-            double sinphi_Sn = h2Dv_Sn->GetXaxis()->GetBinCenter(binv);
-            double weightv_Sn = h2Dv_Sn->GetBinContent(binS, binv);
-            sinsumS += sinphi * weightv;
-            sumWeightsv += weightv;
-            sinsumS_Sn += sinphi_Sn * weightv_Sn;
-            sumWeightsv_Sn += weightv_Sn;
-            sinsumS_squared += sinphi * sinphi * weightv;
-            sumWeightsv_squared += weightv * weightv;
-            sinsumS_Sn_squared += sinphi_Sn * sinphi_Sn * weightv_Sn;
-            sumWeightsv_Sn_squared += weightv_Sn * weightv_Sn;
-        }
-        double averagePC = sinsumS / sumWeightsv;
-        double averagePC_Sn = sinsumS_Sn / sumWeightsv_Sn;
-        double varPC = (sinsumS_squared / sumWeightsv) - (averagePC * averagePC / (sumWeightsv));
-        double varPC_Sn = (sinsumS_Sn_squared / sumWeightsv_Sn) - (averagePC_Sn * averagePC_Sn / (sumWeightsv_Sn) );
-  //      lines 2up and 2down added for error TBC  
-        double uncertaintyPC = sqrt(varPC /sumWeightsv);
-        double uncertaintyPC_Sn = sqrt(varPC_Sn /sumWeightsv_Sn);
-        if (sumWeightsv != 0 && sumWeightsv_Sn != 0){
-            double sin_point = averagePC_Sn / averagePC  ;
-            double unc= (averagePC_Sn/averagePC) *sqrt( pow((sqrt(uncertaintyPC)/averagePC),2) + pow((sqrt(uncertaintyPC_Sn)/averagePC_Sn),2)    );
-            sin_vbis->SetPoint(binv-1, x_v_Sn, sin_point );
-            sin_vbis->SetPointError(binv-1, unc );
-
-        }
-
-    }
-
-
-     for (int binz = 1; binz <= numBinsz; binz++) {
-        double sinsumS = 0.0;
-        double sumWeightsz = 0.0;
-        double sinsumS_Sn = 0.0;
-        double sumWeightsz_Sn = 0.0;
-        double sinsumS_squared = 0.0;
-        double sumWeightsz_squared = 0.0;
-        double sinsumS_Sn_squared = 0.0;
-        double sumWeightsz_Sn_squared = 0.0;
-        double x_z_Sn = h_ztestSn->GetXaxis()->GetBinCenter(binz);
-        for (int binS = 1; binS <= numbinsS; binS++) {
-            double sinphi = h2Dz_D->GetXaxis()->GetBinCenter(binS);
-            double weightz = h2Dz_D->GetBinContent(binS, binz);
-            double sinphi_Sn = h2Dz_Sn->GetXaxis()->GetBinCenter(binz);
-            double weightz_Sn = h2Dz_Sn->GetBinContent(binS, binz);
-            sinsumS += sinphi * weightz;
-            sumWeightsz += weightz;
-            sinsumS_Sn += sinphi_Sn * weightz_Sn;
-            sumWeightsz_Sn += weightz_Sn;
-            sinsumS_squared += sinphi * sinphi * weightz;
-            sumWeightsz_squared += weightz * weightz;
-            sinsumS_Sn_squared += sinphi_Sn * sinphi_Sn * weightz_Sn;
-            sumWeightsz_Sn_squared += weightz_Sn * weightz_Sn;
-        }
-        double averagePC = sinsumS / sumWeightsz;
-        double averagePC_Sn = sinsumS_Sn / sumWeightsz_Sn;
-        double varPC = (sinsumS_squared / sumWeightsz) - (averagePC * averagePC / (sumWeightsz));
-        double varPC_Sn = (sinsumS_Sn_squared / sumWeightsz_Sn) - (averagePC_Sn * averagePC_Sn / (sumWeightsz_Sn) );
-  //      lines 2up and 2down added for error TBC  
-        double uncertaintyPC = sqrt(varPC /sumWeightsz);
-        double uncertaintyPC_Sn = sqrt(varPC_Sn /sumWeightsz_Sn);
-        if (sumWeightsz != 0 && sumWeightsz_Sn != 0){
-            double sin_point = averagePC_Sn / averagePC  ;
-            double unc= (averagePC_Sn/averagePC) *sqrt( pow((sqrt(uncertaintyPC)/averagePC),2) + pow((sqrt(uncertaintyPC_Sn)/averagePC_Sn),2)    );
-            sin_zbis->SetPoint(binz-1, x_z_Sn, sin_point );
-            sin_zbis->SetPointError(binz-1, unc );
-
-        }
-
-    }
-
-
- for (int binp = 1; binp <= numBinsp; binp++) {
-        double sinsumS = 0.0;
-        double sumWeightsp = 0.0;
-        double sinsumS_Sn = 0.0;
-        double sumWeightsp_Sn = 0.0;
-        double sinsumS_squared = 0.0;
-        double sumWeightsp_squared = 0.0;
-        double sinsumS_Sn_squared = 0.0;
-        double sumWeightsp_Sn_squared = 0.0;
-        double x_p_Sn = h_pttestSn->GetXaxis()->GetBinCenter(binp);
-        for (int binS = 1; binS <= numbinsS; binS++) {
-            double sinphi = h2Dp_D->GetXaxis()->GetBinCenter(binS);
-            double weightp = h2Dp_D->GetBinContent(binS, binp);
-            double sinphi_Sn = h2Dp_Sn->GetXaxis()->GetBinCenter(binp);
-            double weightp_Sn = h2Dp_Sn->GetBinContent(binS, binp);
-            sinsumS += sinphi * weightp;
-            sumWeightsp += weightp;
-            sinsumS_Sn += sinphi_Sn * weightp_Sn;
-            sumWeightsp_Sn += weightp_Sn;
-            sinsumS_squared += sinphi * sinphi * weightp;
-            sumWeightsp_squared += weightp * weightp;
-            sinsumS_Sn_squared += sinphi_Sn * sinphi_Sn * weightp_Sn;
-            sumWeightsp_Sn_squared += weightp_Sn * weightp_Sn;
-        }
-        double averagePC = sinsumS / sumWeightsp;
-        double averagePC_Sn = sinsumS_Sn / sumWeightsp_Sn;
-        double varPC = (sinsumS_squared / sumWeightsp) - (averagePC * averagePC / (sumWeightsp));
-        double varPC_Sn = (sinsumS_Sn_squared / sumWeightsp_Sn) - (averagePC_Sn * averagePC_Sn / (sumWeightsp_Sn) );
-  //      lines 2up and 2down added for error TBC  
-        double uncertaintyPC = sqrt(varPC /sumWeightsp);
-        double uncertaintyPC_Sn = sqrt(varPC_Sn /sumWeightsp_Sn);
-        if (sumWeightsp != 0 && sumWeightsp_Sn != 0){
-            double sin_point = averagePC_Sn / averagePC  ;
-            double unc= (sin_point) *sqrt( pow((sqrt(uncertaintyPC)/averagePC),2) + pow((sqrt(uncertaintyPC_Sn)/averagePC_Sn),2)    );
-            sin_pbis->SetPoint(binp-1, x_p_Sn, sin_point );
-            sin_pbis->SetPointError(binp-1, unc );
-            cout<<unc<<"..."<<endl;
-        }
-
-    }
-
-
-
+*/
 
 
 
@@ -519,44 +277,45 @@ for (int binQ = 1; binQ <= numBinsQ; binQ++) {
     fileD->Close();
     fileSn->Close();
     
+
+    
 sR->cd(1);
-sin_Qter->GetXaxis()->SetTitleSize(0.05);
-sin_Qter->GetYaxis()->SetTitleSize(0.05);
-sin_Qter->SetMarkerSize(0.5);
-sin_Qter->SetMarkerStyle(21);
-sin_Qter->GetXaxis()->SetRangeUser(1,6.5);
-sin_Qter->GetXaxis()->SetTitle("Q^{2} " );
-sin_Qter->GetYaxis()->SetTitle("<sin(#Phi)>_{Sn} / <sin(#Phi)>_{D}");
-sin_Qter->Draw("APE");
+sin_Q->GetXaxis()->SetTitleSize(0.05);
+sin_Q->GetYaxis()->SetTitleSize(0.05);
+sin_Q->SetMarkerSize(0.5);
+sin_Q->SetMarkerStyle(21);
+sin_Q->GetXaxis()->SetRangeUser(1,6.5);
+sin_Q->GetXaxis()->SetTitle("Q^{2} " );
+sin_Q->GetYaxis()->SetTitle("<sin(#Phi)>_{Sn} / <sin(#Phi)>_{D}");
+sin_Q->Draw("APE");
 
 sR->cd(2);
-sin_vter->GetXaxis()->SetTitleSize(0.05);
-sin_vter->GetYaxis()->SetTitleSize(0.05);
-sin_vter->GetXaxis()->SetRangeUser(2,9);
-sin_vter->SetMarkerSize(0.5);
-sin_vter->SetMarkerStyle(21);
-sin_vter->GetXaxis()->SetTitle("#nu " );
-sin_vter->GetYaxis()->SetTitle("<sin(#Phi)>_{Sn} / <sin(#Phi)>_{D}");
-sin_vter->Draw("APE");
+sin_v->GetXaxis()->SetTitleSize(0.05);
+sin_v->GetYaxis()->SetTitleSize(0.05);
+sin_v->GetXaxis()->SetRangeUser(2,9);
+sin_v->SetMarkerSize(0.5);
+sin_v->SetMarkerStyle(21);
+sin_v->GetXaxis()->SetTitle("#nu " );
+sin_v->GetYaxis()->SetTitle("<sin(#Phi)>_{Sn} / <sin(#Phi)>_{D}");
+sin_v->Draw("APE");
 
 sR->cd(3);
-sin_zter->GetXaxis()->SetTitleSize(0.05);
-sin_zter->GetYaxis()->SetTitleSize(0.05);
-sin_zter->SetMarkerSize(0.5);
-sin_zter->SetMarkerStyle(21);
-sin_zter->GetXaxis()->SetTitle("p_{t}^{2} " );
-sin_zter->GetYaxis()->SetTitle("<sin(#Phi)>_{Sn} / <sin(#Phi)>_{D}");
-sin_zter->Draw("APE");
+sin_z->GetXaxis()->SetTitleSize(0.05);
+sin_z->GetYaxis()->SetTitleSize(0.05);
+sin_z->SetMarkerSize(0.5);
+sin_z->SetMarkerStyle(21);
+sin_z->GetXaxis()->SetTitle("p_{t}^{2} " );
+sin_z->GetYaxis()->SetTitle("<sin(#Phi)>_{Sn} / <sin(#Phi)>_{D}");
+sin_z->Draw("APE");
 sR->cd(4);
-sin_pter->GetXaxis()->SetTitleSize(0.05);
-sin_pter->GetYaxis()->SetTitleSize(0.05);
-sin_pter->SetMarkerSize(0.5);
-sin_pter->SetMarkerStyle(21);
-sin_pter->GetXaxis()->SetRangeUser(0.2,0.9);
-sin_pter->GetXaxis()->SetTitle("z " );
-sin_pter->GetYaxis()->SetTitle("<sin(#Phi)>_{Sn} / <sin(#Phi)>_{D}");
-sin_pter->Draw("APE");
-
+sin_pt->GetXaxis()->SetTitleSize(0.05);
+sin_pt->GetYaxis()->SetTitleSize(0.05);
+sin_pt->SetMarkerSize(0.5);
+sin_pt->SetMarkerStyle(21);
+sin_pt->GetXaxis()->SetRangeUser(0.2,0.9);
+sin_pt->GetXaxis()->SetTitle("z " );
+sin_pt->GetYaxis()->SetTitle("<sin(#Phi)>_{Sn} / <sin(#Phi)>_{D}");
+sin_pt->Draw("APE");
     sR->SaveAs("testsRatio.pdf");
     sR->SaveAs("testsRatio.root");
 

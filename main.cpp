@@ -29,31 +29,6 @@
 #include "vectors.hpp"
 #include "variables.hpp"
 
-//-------------------------------------------------------//
-//recovering old analysis script from ALERT. "filelist" is the list of files to open.
-//make sure to change the # of files in the for loop below to analysis wanted files
-//Reconstruction done from mod_pythia (working code)
-//files used here are properly reconstructed -> working with proper magnetic fields (no offset)
-//
-// code working, hold for classoftware version (intermitent - seems fixed now)
-// pions found. using SIDIS in Pi+ (only)
-// proceeding to determine other variables useful for TMDs in RGD
-// using 2 types of files: Sn_files and De_files in order to compare nuclei to nucleons. /!\
-// using data filtering in variables. DC cuts ( dcfiducialcuts.hpp -working). CAL cuts (RE CHECK). others
-// TMD comparison study (R, Dpt, etc) were removed, find them in recovery_posCLAS.cpp
-// Here we are nnot recovering MC databanks, remains TBD, has to be done for headers & all
-
-//REFERENCE: Version not READY yet, on development. /!\
-//DATE: 15/06/2023 (git)
-//Sn loop was deleted. histogramm header allows now to have general histograms  
-// all drawing for Sn specific histograms were commented. unable now to compare two histograms from Sn and De in the same canvas, from this code
-//if the comparison is required? One may call the Sn and D histograms from root files and compare them outside of main.cpp 
-//fix list of fles so we can get the nbr of files w/o needing to manually insert the nbr TBD
-//fix list of files so it can go either to a D list or a Sn list TBD
-// 
-//next TBD: improving code, fixing sloppy conditions.   HEADERS TBD, find a way to determine also MC 
-// ctrl+F on 'TBD' to see what's pending
-//---------------------------------------------------------//
 VarHistograms myHists;
 MCHistograms MCHists;
 hist_electron elHists;
@@ -86,22 +61,12 @@ int main() {
     int counter_el = 0;   //electron counter
     int counter_pi = 0;   //pion (+) counter
     int counter_pim = 0;  //pion (-) counter
-    int counter_pit = 0;//total pion counter
     int counter_pro= 0;     //proton counter
     int counter_neu = 0;   //neutron counter
-    int counter_ev = 0;      //event counter
     int j ;   //photon saver
     int k;
     double e_sup_pho = 0;
-    int counter_elpi = 0;
-    int counter_scalE =0;
-    int counter_pi_De = 0;
-    int counter_pi_Sn = 0;
-    int counter_el_De = 0;
-    int counter_el_Sn = 0;
     int coinci_De = 0;
-    int coinci_Sn = 0;
-    int counter_Deall_e = 0;
     //ID	(chi2, eventID for each particle)
     double IDel, IDpip;
 
@@ -146,6 +111,8 @@ int main() {
         filelist.push_back(filePath);
     }
     
+    
+    
     for (int filenbr = 0; filenbr<files ; filenbr++){
         //filelist[filenbr]; is a const char....most probably...
         hipo::reader reader;
@@ -165,19 +132,16 @@ int main() {
         }
         hipo::bank REC_Particle_bank(factory.getSchema("REC::Particle"));  //call REC Bank
         hipo::bank MC_Particle_bank(factory.getSchema("MC::Particle"));       //call MC Bank
+        hipo::bank RUNevt(factory.getSchema("RUN::config"));    //call RUN bank 4 evt_nbr
         //***************//
-        hipo::bank AHDC_Particle_bank(factory.getSchema("AHDCRec::Track"));
-        hipo::bank AHDCMC_Particle_bank(factory.getSchema("AHDCRec::MC"));
         hipo::bank RECTraj(factory.getSchema("REC::Traj"));
 	    hipo::bank RECCal(factory.getSchema("REC::Calorimeter"));
         //**************//
         hipo::event event;
         while (reader.next()) {
-            counter_ev += 1;
             e_sup_pho = 0; //reset the photon max energy at the beginning of every new event.
             j = 0;   //reset the photon saver
             k = 0;
-	        counter_scalE =0;		//resetting the electron energy counter at every event (we want to recover the most energetic one)//
             val_e=false;
 	        val_pip = false;
 	        val_pim = false;
@@ -188,35 +152,31 @@ int main() {
             //event.getStructure(RECgen);  //general particle bank call for MC and REC
             event.getStructure(REC_Particle_bank);
             event.getStructure(MC_Particle_bank);
-            //event.getStructure(AHDC_Particle_bank);
-            //event.getStructure(AHDCMC_Particle_bank);
+            event.getStructure(RUNevt);
 	        event.getStructure(RECTraj);
 	        event.getStructure(RECCal);
             int numrows    = RECgen.getRows();
             int numRECrows = REC_Particle_bank.getRows();
             int numMCRows  = MC_Particle_bank.getRows();
-	        int numRECcal  = RECCal.getRows();
+            int numRUNRows  = RUNevt.getRows();
+            int numRECcal  = RECCal.getRows();
 	        //cout<<numRECcal<<endl;
 	        
 	        int numTRAJrows= RECTraj.getRows();
 	        if (numTRAJrows==-1 || 0){continue;}
             //-----Q2//
-            int numALERTRows=AHDC_Particle_bank.getRows();
-	        int numALERTMCRows=AHDCMC_Particle_bank.getRows();
             //==   Vectors ==//
             //Vectors are defined HERE in order to be reset after every iteration
             physicsVecs.v_incil->SetPxPyPzE(0.0, 0.0, 11.0, 11.0); //has no MC version, since it is a predefined vector, REC and MC versions are the same
             TVector3 p_incil = physicsVecs.v_incil->Vect();  //3D
             physicsVecs.v_nucleontarg->SetPxPyPzE(0.0, 0.0, 0.0, Mn);
-	                  
+	        int evt_nbr = RUNevt.getInt("run",0); //goes inside the event loop
             //======GET REC EVENTS=======//*
 	        for (int i = 0; i < numRECrows; ++i) {
 		        if (REC_Particle_bank.getInt("pid", i)==211 ){
                     //Get the REC PION      //detect PION
 		            val_pip = true;
                     counter_pi += 1;
-		            if (filenbr <= 2) {counter_pi_De += 1;}
-		            if (filenbr > 2) {counter_pi_Sn += 1;}
 		            IDpip = REC_Particle_bank.getFloat("chi2pid", i);
 		            physicsVecs.v_scapip->SetPx(REC_Particle_bank.getFloat("px", i));
                     physicsVecs.v_scapip->SetPy(REC_Particle_bank.getFloat("py", i));
@@ -258,8 +218,6 @@ int main() {
                     //Get the REC electron      //detect electron
                     val_e = true;
                     counter_el += 1;
-		            if (filenbr <= 2) {counter_el_De += 1;}
-		            if (filenbr > 2) {counter_el_Sn += 1;}
         		    IDel = REC_Particle_bank.getFloat("chi2pid", i);
                     physicsVecs.v_scal->SetPx(REC_Particle_bank.getFloat("px", i));
                     physicsVecs.v_scal->SetPy(REC_Particle_bank.getFloat("py", i));
@@ -320,7 +278,6 @@ int main() {
 		            if (variables.gamnu<8.5 && variables.gamnu>2.5){
                         R_hists.hist_v_e->Fill(variables.gamnu);
 				        if (variables.W>2) {		//!!!!!!!!//
-					        counter_Deall_e += 1;
 				        }
 			        }
 		        }
@@ -482,9 +439,7 @@ int main() {
         }
     }
 
-	cout<<"tot: "<<counter_elpi<<endl;
 	cout<<"D : "<<coinci_De<<endl;
-	cout<<"Sn: "<<coinci_Sn<<endl;
     //the couts for Sn and D are useless now
 
     std::map<int, std::string> fileNames = {

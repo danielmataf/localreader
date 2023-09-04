@@ -7,6 +7,20 @@
 #include "TH1F.h"
 
 
+class particules  {
+public:
+    std::vector<TLorentzVector> electrons;
+    std::vector<TLorentzVector> piplus;
+//    std::vector<any> EventVector;   //event vector is different, (type: any (?) ) 
+    //std::vector<std::any> EventVector;
+    particules() {
+
+    }
+
+    ~particules() {
+    }
+};
+
 
 
 class PhysicsVectors {

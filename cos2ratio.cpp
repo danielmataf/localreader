@@ -56,8 +56,8 @@ int main() {
     TGraphErrors *cos2_pbis  = new TGraphErrors();
     // Open the first ROOT file
     //TFile* file1 = new TFile("build/output1.root", "READ");
-    TFile* fileD = new TFile("output_D.root", "READ");
-    TFile* fileSn = new TFile("output_Sn.root", "READ");
+    TFile* fileD = new TFile("../files2read/REoutput_D.root", "READ");
+    TFile* fileSn = new TFile("../files2read/REoutput_Sn.root", "READ");
 
     // Retrieve the first histogram from the ROOT file
     //TH1F* h_Q1test = dynamic_cast<TH1F*>(file1->Get("Q2"));

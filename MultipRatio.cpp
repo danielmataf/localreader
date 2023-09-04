@@ -44,6 +44,46 @@ using namespace std;
 
 
 
+void calculateMRat(int option, TH1F* hD, TH1F* h_onlyeD, int elecD, TH1F* hSn, TH1F* h_onlyeSn, int elecSn,  TGraphErrors* g_result, TGraphErrors* g_resulta) {
+    int numBins = hD->GetNbinsX();
+
+    for (int bin = 1; bin <= numBins; bin++) {
+        double x_Sn = hSn->GetXaxis()->GetBinCenter(bin);		
+        double y_Sn = hSn->GetBinContent(bin);				
+        double x_D = hD->GetXaxis()->GetBinCenter(bin);			
+        double y_D = hD->GetBinContent(bin) ;				
+        double y_Sn_e = h_onlyeSn->GetBinContent(bin) ;			
+        double y_D_e = h_onlyeD->GetBinContent(bin) ;
+        double interm1;
+        double interm2;
+        double interm3;
+        double Rq_err;
+        if (option == 1){
+            interm1 = (y_Sn_e > 0) ? y_Sn/y_Sn_e : 0.0;
+            interm2 = (y_D_e > 0) ? y_D/y_D_e : 0.0;
+            interm3 = (interm2 > 0) ? interm1/interm2 : 0.0;
+            Rq_err= interm3 * sqrt(1/y_Sn + 1/y_D + 1/y_Sn_e + 1/y_D_e);
+        }
+        if (option==2) {
+            interm1 = (elecSn > 0) ? y_Sn/elecSn : 0.0;
+            interm2 = (elecD > 0) ? y_D/elecD : 0.0;
+            interm3 = (interm2 > 0) ? interm1/interm2 : 0.0;
+            cout<<interm3<<"->"<<endl;
+            if (y_Sn!=0 && y_D!=0 && y_Sn_e != 0 && y_D_e != 0){
+                Rq_err= interm3 * sqrt(1/y_Sn + 1/y_D + 1/y_Sn_e + 1/y_D_e);
+                cout<<Rq_err<<"->"<<endl;
+            }
+        }
+        g_result->SetPoint(bin-1, x_Sn, interm3 );
+		g_result->SetPointError(bin-1, 0, Rq_err);
+    }
+}
+
+
+
+
+
+
 int main() {
     TCanvas* cR=new TCanvas("ratio","ratio"); //create new canvas
     cR->Divide(2,2);
@@ -51,11 +91,15 @@ int main() {
     TGraphErrors *R_v = new TGraphErrors();
     TGraphErrors *R_z = new TGraphErrors();
     TGraphErrors *R_pt = new TGraphErrors();
+    TGraphErrors *R_Qa = new TGraphErrors();
+    TGraphErrors *R_va = new TGraphErrors();
+    TGraphErrors *R_za = new TGraphErrors();
+    TGraphErrors *R_pta = new TGraphErrors();
     TGraphErrors *ReRpt = new TGraphErrors();
     // Open the first ROOT file
     //TFile* file1 = new TFile("build/output1.root", "READ");
-    TFile* fileD = new TFile("../files2read/output_D.root", "READ");
-    TFile* fileSn = new TFile("../files2read/output_Sn.root", "READ");
+    TFile* fileD = new TFile("../files2read/REoutput_D.root", "READ");
+    TFile* fileSn = new TFile("../files2read/REoutput_Sn.root", "READ");
 
     // Retrieve the first histogram from the ROOT file
     //TH1F* h_Q1test = dynamic_cast<TH1F*>(file1->Get("Q2"));
@@ -78,6 +122,9 @@ int main() {
     TH1F* h_ptonlyeSn = dynamic_cast<TH1F*>(fileSn->Get("onlye_pt"));
     TTree* treeD = dynamic_cast<TTree*>(fileD->Get("treecounter"));
     TTree* treeSn = dynamic_cast<TTree*>(fileSn->Get("treecounter"));
+    
+    
+
 
     int counter_e_D; 
     
@@ -86,16 +133,17 @@ int main() {
     int counter_e_Sn;
     treeSn->SetBranchAddress("counter_onlye", &counter_e_Sn);
     treeSn->GetEntry(0);
-    cout<<counter_e_D<<endl;
-    cout<<counter_e_Sn<<endl;
     double intermD = counter_e_D;
     double intermSn= counter_e_Sn;
-    //cout<<counter_e_Sn<<endl;
-    // Access properties of h_Q1
-    //std::cout>>numBins1>>std::endl;  
-    // ...
-    cout << h_pttestD->GetNbinsX() << endl;
-    cout << h_pttestSn->GetNbinsX() << endl;
+    
+    calculateMRat( 1, h_QtestD, h_QonlyeD,  intermD, h_QtestSn, h_QonlyeSn,  intermSn, R_Q, R_Qa);
+    calculateMRat( 1, h_vtestD, h_vonlyeD,  intermD, h_vtestSn, h_vonlyeSn,  intermSn, R_v, R_va);
+    calculateMRat( 2, h_ztestD, h_vonlyeD,  intermD, h_ztestSn, h_vonlyeSn,  intermSn, R_z, R_za);
+    calculateMRat( 2, h_pttestD, h_vonlyeD,  intermD, h_pttestSn, h_vonlyeSn,  intermSn, R_pt,R_pta);
+
+
+
+    /*
     for (int i_q=1; i_q<=h_QtestD->GetNbinsX(); i_q++) {
         double x_q_Sn = h_QtestSn->GetXaxis()->GetBinCenter(i_q);		//no need maybe ? it will be always the same (I think /!\)
         double y_q_Sn = h_QtestSn->GetBinContent(i_q);				//hist_Q_Sn is the equivalent to  N^{A=Sn}_{h=pi}
@@ -103,14 +151,17 @@ int main() {
         double y_q_De = h_QtestD->GetBinContent(i_q) ;				//hist_Q_De is the equivalent to  N^{De}_{h=pi}
         double y_q_Sn_e = h_QonlyeSn->GetBinContent(i_q) ;			//hist_Q_Sn_e is the equivalent to  N^{A=Sn}_{h=pi}
         double y_q_De_e = h_QonlyeD->GetBinContent(i_q) ;
+        //cout << y_q_Sn_e<< endl;
         double interm1 = y_q_Sn/y_q_Sn_e;
         double interm2 = y_q_De/y_q_De_e;
-        if(interm2==0) continue;
+        //if(interm2==0) continue;
+        if (y_q_De_e!=0 && y_q_Sn_e!=0 ){
         double interm3 = interm1/interm2;
         double Rq_err= interm3 * sqrt(1/y_q_Sn + 1/y_q_De + 1/y_q_Sn_e + 1/y_q_De_e);
-		 
+		cout<<y_q_Sn_e<<" only e for Q"<<endl;
         R_Q->SetPoint(i_q-1, x_q_Sn, interm3 );
 		R_Q->SetPointError(i_q-1, 0, Rq_err);
+        }
     }
 
     for (int i_v=1; i_v<=h_vtestD->GetNbinsX(); i_v++) {
@@ -180,16 +231,15 @@ int main() {
 		        ReRpt->SetPointError(i_pt-1, 0,Rpt_err );
     	}
     }
-
+*/
     //Close the first ROOT file
     fileD->Close();
     fileSn->Close();
     cR->cd(1);
-    //R_Q->SetTitle(title);
     R_Q->GetXaxis()->SetTitle("Q{2} (GeV^{2}) " );
     R_Q->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
     R_Q->Draw("AP");
-    //cR->SaveAs("ratio.pdf");
+    ////cR->SaveAs("ratio.pdf");
     cR->cd(2);
     R_v->GetXaxis()->SetTitle("#nu " );
     R_v->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
@@ -199,10 +249,28 @@ int main() {
     R_z->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
     R_z->Draw("AP");
     cR->cd(4);
-    ReRpt->GetXaxis()->SetTitle("pt " );
-    ReRpt->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
-    ReRpt->Draw("AP");
-    cR->SaveAs("ratio.pdf");
+    R_pt->GetXaxis()->SetTitle("pt " );
+    R_pt->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_pt->Draw("AP");
+    cR->SaveAs("ratiotest.pdf");
+    cR->cd(1);
+    R_Qa->GetXaxis()->SetTitle("Q{2} (GeV^{2}) " );
+    R_Qa->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_Qa->Draw("AP");
+    ////cR->SaveAs("ratio.pdf");
+    cR->cd(2);
+    R_va->GetXaxis()->SetTitle("#nu " );
+    R_va->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_va->Draw("AP");
+    cR->cd(3);
+    R_za->GetXaxis()->SetTitle("z " );
+    R_za->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_za->Draw("AP");
+    cR->cd(4);
+    R_pta->GetXaxis()->SetTitle("pt " );
+    R_pta->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_pta->Draw("AP");
+    cR->SaveAs("ratiotesta.pdf");
     
 
     return 0;
