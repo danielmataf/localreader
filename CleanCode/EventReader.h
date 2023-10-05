@@ -23,6 +23,7 @@ public:
     void PrintEventInfo(int eventIndex);
     Event ProcessEventsInFile();
 
+
 private:
     Event ProcessEvent( hipo::event event, int eventNumber);
     hipo::bank RECgen;
@@ -34,25 +35,7 @@ private:
     std::vector<std::string> filelist;
     Event currentEvent;
 
+
 };
-
-
-
-
-
-
-
-//private:
-//    // Member variables
-//    std::vector<Event> events;
-//    hipo::bank RECgen;
-//    hipo::bank RUNconfig;
-//    hipo::reader reader;
-//    hipo::event event;
-//    hipo::dictionary factory;
-//
-//    // Helper function declaration
-//    bool IsHadron(int pid);
-//};
 
 #endif // EVENTREADER_H

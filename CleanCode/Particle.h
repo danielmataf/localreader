@@ -11,15 +11,36 @@
 
 class Particle {
 public:
-    //Particle(const TLorentzVector& momentum,  int pid) : momentum(momentum),  pid(pid) {}
-    Particle(const TLorentzVector& , int );   //no need of arg nale !!!
+    Particle(const TLorentzVector& , int );   
     const TLorentzVector& GetMomentum() const; 
     int GetEventIndex() const ;
-    int GetPID() const ;    
+    int GetPID() const ;  
+    void SetQ2(double);
+    void Setnu(double );
+    void SetKinVariables(double, double, double, double, double);
+    double GetQ2() const ;
+    double Getnu() const ;
+    double Gety() const ;
+    double GetW2() const ;
+    double Getxb() const ;
+    double Getz()    const;
+    double Getpt2()  const;
+    double Getphih() const;
+    void SetMomentum( TLorentzVector);
+
+
+    int CalcHadronKin(TLorentzVector,TLorentzVector);
+
 private:
     TLorentzVector momentum;
+    TLorentzVector IncidentLepton;
+
     int eventIndex;
-    int pid; // adding Particle ID
+    int pid; 
+    double z=0, pt2=0, phih=0;
+    double Q2bis=0, nubis=0, w2bis=0 ,ybis=0 ,xbbis=0;
+
+
 };
 #endif
 

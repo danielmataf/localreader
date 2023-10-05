@@ -20,15 +20,9 @@
         filelist = Files; 
         filenb = 0;
 
-
-
     }
-    //need to create a fct "next event that verifies if there is a next event, else it will open the next file
-        // see elements in the EvtReader function 
-    //Add PrintEventInfo on the class and modify it so it can be used fo a single evt in a given time
-    // feed qnan(?) filelist in argumt
 
-        bool EventReader::IsHadron(int pid) {
+    bool EventReader::IsHadron(int pid) {
         return pid != ELECTRON_PID && pid != POSITRON_PID;
         //taking every other particle that is not an e- nor an e+
         //how to consider only pions without touching the functions ? TBD
@@ -45,28 +39,29 @@
         } else if (IsHadron(pid)) {
             currentEvent.AddHadron(momentum, pid);
         }
+        
     }
 
 
     Event EventReader::ProcessEvent( hipo::event event, int eventNumber) {
-    	//THIS FCT ENTERS AN EVT AND LOOPS IN ITS ROWS.
-        //FCT RETURNS AN EVT
 
-        //std::cout << "Processing event: " << eventNumber << std::endl;  //OK!!!
+
+        currentEvent = Event(); //RESTARTING EVENT
+
+
         bool el_detect = false;
         double max_energy_electron = 0.0; // reference energy counter
+        TLorentzVector max_e_momentum;      //reference electron max nrg moment
 
-        std::cout << "inside the event " << std::endl;
 //all, move to constructeur 
         event.getStructure(RECgen);
-        std::cout<<"nb of rows: " << RECgen.getRows()<<std::endl ;
+
         for (int i = 0; i < RECgen.getRows(); ++i) {
             int pid = RECgen.getInt("pid", i);
             if (pid == POSITRON_PID) {
                 continue;
-                //next evt(?) if positron 
+                //skip evt if positron 
             }
-            
             double mass = (pid == ELECTRON_PID) ? mass_e : mass_pi; //if/else on masses
                 //condition ward can be improved to a non binary statement 
                 //also no need bc use of process particle 
@@ -79,23 +74,25 @@
             TVector3 momentum3D = momentum.Vect();
             momentum.SetVectM(momentum3D, mass);
             if (pid == ELECTRON_PID) {
-                    
-
     	        double  electron_status = RECgen.getInt("status", i);
                 if (momentum.E() > max_energy_electron && electron_status < 0) {
                     max_energy_electron = momentum.E();
-                    ProcessParticle(momentum, pid);  // Add electron to the currentEvent
-                        //skip this just add particle (?)
-                        //no need 4 the process fct 
-                    el_detect = true;
+                    max_e_momentum = momentum;
+                    //coinsider trigger electron , noit most energetic one 
                 }
 
                 el_detect = true;
-            } else if (IsHadron(pid) && el_detect) {
+            } else if (IsHadron(pid) && el_detect ==true) {
                 ProcessParticle(momentum, pid ); // Add hadron to the currentEvent
+
+                //PROBLEM IS HERE. HADRON IS FILLING B4 ELECTRON. 
+                //WHEN HADRON MOMENTA ARE RECOVERED THE ELECTRON MOMENTA ARE EMPTY 
+
+
             }
+
         }
-        
+        ProcessParticle(max_e_momentum , ELECTRON_PID);
         return currentEvent; // return the evt object w/ particles (TO BE TESTED)
     }
 
@@ -138,5 +135,8 @@
             //std::cout << "All evts processed?" << std::endl;
     }
     
+
+
+
 
 
