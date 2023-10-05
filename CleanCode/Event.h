@@ -30,6 +30,8 @@ public:
 
     int CalcKinematics( );
     void Print();
+    void calcAll();
+
 
 
 private:
@@ -44,3 +46,52 @@ private:
 };
 //
 #endif
+
+
+
+
+
+/* 
+TO DO
+class cut ou struct 
+creer un strucs avec un setcut 
+avec cuts = a2 low Q2 high (doubles )
+
+class cuts ...
+....
+
+
+struct cutval {
+    double Q2 etc //initializing 
+    ...
+}
+CutValues CutVMC(1,5....)
+Cut 
+
+
+
+class cutSet
+..
+{
+    double Q = 
+
+
+
+
+    bool PassCut(event);
+}
+
+CutSet CutMC();
+if (CutMC.PassCuts(test))
+        do whatever 
+
+
+cut CutBase, CutTest;
+CutTest.set (value )
+
+
+
+
+
+
+ */

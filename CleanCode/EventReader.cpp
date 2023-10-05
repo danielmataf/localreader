@@ -75,10 +75,12 @@
             momentum.SetVectM(momentum3D, mass);
             if (pid == ELECTRON_PID) {
     	        double  electron_status = RECgen.getInt("status", i);
-                if (momentum.E() > max_energy_electron && electron_status < 0) {
+                if ( electron_status < 0) {     //momentum.E() > max_energy_electron &&
                     max_energy_electron = momentum.E();
                     max_e_momentum = momentum;
                     //coinsider trigger electron , noit most energetic one 
+                    ProcessParticle(momentum , ELECTRON_PID);
+
                 }
 
                 el_detect = true;
@@ -92,7 +94,9 @@
             }
 
         }
-        ProcessParticle(max_e_momentum , ELECTRON_PID);
+        //ProcessParticle(max_e_momentum , ELECTRON_PID);
+        // THIS LINE WAS MOVED INSIDE THE CONDITION FOR THE TRIGGER ELECTRON. TO DISREGARD THE MAX NRG CONDITION 
+
         return currentEvent; // return the evt object w/ particles (TO BE TESTED)
     }
 

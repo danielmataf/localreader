@@ -19,7 +19,7 @@ public:
     void Setnu(double );
     void SetKinVariables(double, double, double, double, double);
     double GetQ2() const ;
-    double Getnu() const ;
+    double Getnu()  const ;
     double Gety() const ;
     double GetW2() const ;
     double Getxb() const ;

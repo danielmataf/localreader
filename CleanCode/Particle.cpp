@@ -80,10 +80,15 @@
         TVector3 n2 = vipho.Vect().Cross(vec2.Vect());
         TVector3 n3 = n1.Cross(n2);
         double angle_norm = ( n1.Dot(n2) ) / ( n1.Mag()*n2.Mag() );
-        double sign = n3.Dot(vipho.Vect());
+        double sign = n3.Dot(vipho.Vect()); 
             //TVector3 p_incil = v_incil->Vect();  //3D
-        z= vec1.Px();//(vec2.E())/Getnu();
-        pt2 = vec1.Py();// pow(  (n2.Mag() )/ (vipho.Vect().Mag() )  ,    2);
-        phih = vec1.Pz();// acos(angle_norm)*180.0/PI;       // check sign TBD!!!!   //consider BSA as well TBD
+        z= (vec2.E())/(       IncidentLepton.E() - vec1.E() ); // 
+        pt2 =  pow(  (n2.Mag() )/ (vipho.Vect().Mag() )  ,    2);
+        if (sign<0 ){
+            phih =  acos(angle_norm) *180.0/PI +180;       // check sign TBD!!!!   //consider BSA as well TBD
+        }
+        if (sign>0 ){
+            phih =  acos(angle_norm) *-180.0/PI+180;       // check sign TBD!!!!   //consider BSA as well TBD
+        }
         return 0;
     }

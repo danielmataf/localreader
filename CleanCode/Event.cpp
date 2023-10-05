@@ -26,7 +26,7 @@ void Event::AddElectron(const TLorentzVector& electronMomentum) {
 
 void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid) {
     hadrons.push_back(Particle(hadronMomentum,  pid));
-    hadrons.back().CalcHadronKin(electron.GetMomentum(),hadronMomentum);
+    //hadrons.back().CalcHadronKin(electron.GetMomentum(),hadronMomentum);
         std::cout << "-------------------testing electron momentum "<< electron.GetMomentum().P() <<std::endl;
 
         // ERROR IS IN THE  EventReader::ProcessEvent FUNCTION
@@ -37,6 +37,9 @@ void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid) {
         //change the Addelectron function and with it make a vector of particles as before.
         // then change the method of electron selection. Cant be anymore in the ProcessEvent  
 
+            //  SOLUTION : EITHER LOOP AGAIN IN ROWS ONLY SO WE CAN CONSIDER PION QITH ELECTRON DEFINITIVE MOMENTA
+                        //  EITHER FORGET ABOUT THE CONDITIONS ON THE ELECTRON AND SELECT THE 1ST ONE DISREGARDING MAX NRG CONDITION , ONLY CONSIDER TRIGGER
+                        //      THEN PROCESS PARTICLE WHILE BEING ON THT "CONDITION " 
 
 
     //call the funbction calchadronkin 
@@ -62,8 +65,8 @@ void Event::Print() {   //add int v=0 as argument 4 different types of verbose T
     std::cout << "Electrons:" << std::endl;
     //for (const Particle& electron : event.GetElectrons()) {
         std::cout << "  Particle ID: " << electron.GetPID() << std::endl;
-        //std::cout << "  Momentum: (" << electron.GetMomentum().Px() << ", "
-        //          << electron.GetMomentum().Py() << ", " << electron.GetMomentum().Pz() << ")" << std::endl;
+        std::cout << "  Momentum: (" << electron.GetMomentum().Px() << ", "
+                  << electron.GetMomentum().Py() << ", " << electron.GetMomentum().Pz() << ")" << std::endl;
         std::cout << " Total Momentum: " << electron.GetMomentum().P() << std::endl;
         std::cout << " Q2 value : " << electron.GetQ2()<< std::endl;
         std::cout << " nu value : " << electron.Getnu()<< std::endl;
@@ -107,6 +110,13 @@ int Event::CalcKinematics(){
 
 }
 
+
+void Event::calcAll(){
+    CalcKinematics( );
+    for (Particle& hadron : hadrons) {
+        hadron.CalcHadronKin(electron.GetMomentum(), hadron.GetMomentum());
+    }
+}
 
 
 //Create fct calcs kinematix 

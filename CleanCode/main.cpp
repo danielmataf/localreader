@@ -21,8 +21,8 @@ int main() {
             test = MC.ProcessEventsInFile();
             
             
-            test.CalcKinematics();
-            
+            //test.CalcKinematics();    //WHERE SHOULD THIS BE CALLED 
+            test.calcAll();
             test.Print();
 
 
