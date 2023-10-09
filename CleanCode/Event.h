@@ -11,7 +11,6 @@
 #include <any>
 #include <cstdlib>
 #include "Particle.h"
-//#include "EventProcessor.h"
 
 
 
@@ -38,7 +37,6 @@ private:
     int eventIndex;
     Particle electron;
     std::vector<Particle> hadrons; 
-    TLorentzVector IncidentLepton;
     double Q2=0,nu=0,w2=0,y=0,xb=0;
     double m_e =  0.000511, m_n = 0.939565, m_p = 0.938272 ; //GeV/c^2
     double m_D, m_Sn, m_Cu; //GeV/c^2

@@ -7,17 +7,15 @@
 #include "reader.h"
 #include "Event.h"
 #include "Particle.h"
-
+#include "constants.h"
     
 Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0) {
-    IncidentLepton.SetPxPyPzE(0.0, 0.0, 11.0, 11.0);
-    m_D = m_n + m_p;
+    m_D = Constants::MASS_NEUTRON + Constants::MASS_PROTON ;
 }
 
 void Event::AddElectron(const TLorentzVector& electronMomentum) {
         electron = Particle(electronMomentum, 11);  // Update the electron member
         electron.SetMomentum(electronMomentum);
-        //CalcKinematics( );
 }
 
 //set electron variables in event
@@ -26,34 +24,11 @@ void Event::AddElectron(const TLorentzVector& electronMomentum) {
 
 void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid) {
     hadrons.push_back(Particle(hadronMomentum,  pid));
-    //hadrons.back().CalcHadronKin(electron.GetMomentum(),hadronMomentum);
-        std::cout << "-------------------testing electron momentum "<< electron.GetMomentum().P() <<std::endl;
-
-        // ERROR IS IN THE  EventReader::ProcessEvent FUNCTION
-        // ELECTRON MOMENTA ARE SET AFTER THE HADRON MOMENTA
-        // THE FUNCTION CALLS THE Event::AddHadron BEFORE CALLING Event::AddElectron
-        // THEREFORE ELECTRON MOMENTUM IS EMTPY FOR ANY HADRON ALWAYS!!!! 
-        //              Fix this 2morrow 
-        //change the Addelectron function and with it make a vector of particles as before.
-        // then change the method of electron selection. Cant be anymore in the ProcessEvent  
-
-            //  SOLUTION : EITHER LOOP AGAIN IN ROWS ONLY SO WE CAN CONSIDER PION QITH ELECTRON DEFINITIVE MOMENTA
-                        //  EITHER FORGET ABOUT THE CONDITIONS ON THE ELECTRON AND SELECT THE 1ST ONE DISREGARDING MAX NRG CONDITION , ONLY CONSIDER TRIGGER
-                        //      THEN PROCESS PARTICLE WHILE BEING ON THT "CONDITION " 
-
-
-    //call the funbction calchadronkin 
-    //need to store the electronmomentum in the particle so it can be accesed trhoug electron.something
-    //probably electron.GeteMomentum (?) that retunrs a vector and a fct SeteMomentum has to be called in AddElectron I suppose 
 }
 
 int Event::GetEventIndex() const {
     return eventIndex;
 }
-
-//const std::vector<Particle>& Event::GetElectrons() const {
-//    return electrons;
-//}
 
 const std::vector<Particle>& Event::GetHadrons() const {
     return hadrons;
@@ -68,11 +43,11 @@ void Event::Print() {   //add int v=0 as argument 4 different types of verbose T
         std::cout << "  Momentum: (" << electron.GetMomentum().Px() << ", "
                   << electron.GetMomentum().Py() << ", " << electron.GetMomentum().Pz() << ")" << std::endl;
         std::cout << " Total Momentum: " << electron.GetMomentum().P() << std::endl;
-        std::cout << " Q2 value : " << electron.GetQ2()<< std::endl;
-        std::cout << " nu value : " << electron.Getnu()<< std::endl;
-        std::cout << " y  value : " << electron.Gety()<< std::endl;
-        std::cout << " W2 value : " << electron.GetW2()<< std::endl;
-        std::cout << " xb value : " << electron.Getxb()<< std::endl;
+        std::cout << " Q2 value : " << Q2<< std::endl;
+        std::cout << " nu value : " << nu<< std::endl;
+        std::cout << " y  value : " << y<< std::endl;
+        std::cout << " W2 value : " << w2<< std::endl;
+        std::cout << " xb value : " << xb<< std::endl;
 
     
     //}
@@ -95,17 +70,13 @@ void Event::Print() {   //add int v=0 as argument 4 different types of verbose T
 }
 
 int Event::CalcKinematics(){
-    //only argument is the scattered electron vector
-    //!!!!!Argument was changed to no argument importing vector of scattered lepton 
-
-    double theta_e = acos(IncidentLepton.Vect().Dot(electron.GetMomentum().Vect()) / (IncidentLepton.Vect().Mag() * electron.GetMomentum().Vect().Mag()));
-    Q2 = 4 * IncidentLepton.E() * electron.GetMomentum().E() * pow(sin(theta_e / 2), 2);
-    nu  = IncidentLepton.E() - electron.GetMomentum().E();
-    y = nu / IncidentLepton.E(); 
+    double theta_e = acos(Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag()));
+    Q2 = 4 * Constants::elBeam.E() * electron.GetMomentum().E() * pow(sin(theta_e / 2), 2);
+    nu  = Constants::elBeam.E() - electron.GetMomentum().E();
+    y = nu / Constants::elBeam.E(); 
     w2 =  sqrt(m_D* m_D + 2 * m_D * nu - Q2);
     xb = Q2 / (2 * m_D * nu);
-    electron.SetKinVariables(Q2, nu, y, w2, xb);
-    //add option for the target mass 
+    electron.SetKinVariables(Q2, nu, y, w2, xb);    //useless 
     return 0;
 
 }

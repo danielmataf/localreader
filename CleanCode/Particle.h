@@ -33,7 +33,6 @@ public:
 
 private:
     TLorentzVector momentum;
-    TLorentzVector IncidentLepton;
 
     int eventIndex;
     int pid; 

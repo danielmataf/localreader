@@ -7,14 +7,6 @@
 #include "dictionary.h"  
 #include "Event.h"
 
-
-
-static const int ELECTRON_PID = 11;
-static const int POSITRON_PID = -11;
-static const double mass_pi = 0.134976, mass_e = 0.000511;  //CREATE constantes.h to include csts
-
-
-
 class EventReader {
 public:
     EventReader(const std::vector<std::string>& );
@@ -22,8 +14,6 @@ public:
     bool IsHadron(int );
     void PrintEventInfo(int eventIndex);
     Event ProcessEventsInFile();
-
-
 private:
     Event ProcessEvent( hipo::event event, int eventNumber);
     hipo::bank RECgen;
@@ -37,5 +27,4 @@ private:
 
 
 };
-
-#endif // EVENTREADER_H
+#endif 

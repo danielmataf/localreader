@@ -9,12 +9,10 @@
 #include <any>
 #include "reader.h"
 #include "dictionary.h"  
-
 #include <cstdlib>
-
 #include "Event.h"
-
 #include "EventReader.h"
+#include "constants.h"
 
     EventReader::EventReader(const std::vector<std::string>& Files){
         filelist = Files; 
@@ -23,18 +21,11 @@
     }
 
     bool EventReader::IsHadron(int pid) {
-        return pid != ELECTRON_PID && pid != POSITRON_PID;
-        //taking every other particle that is not an e- nor an e+
-        //how to consider only pions without touching the functions ? TBD
+        return pid != Constants::ELECTRON_PID && pid != Constants::POSITRON_PID;
     }
-
     
     void EventReader::ProcessParticle(const TLorentzVector& momentum, int pid) {
-        //useless fct (?)   or put it into event class 
-        //or create a fct AddParticle inside the evtClass
-        //maybe add the bool ishadron fct 
-            //previous line is useless? no need of eventIndex
-        if (pid == ELECTRON_PID) {
+        if (pid == Constants::ELECTRON_PID) {
             currentEvent.AddElectron(momentum);
         } else if (IsHadron(pid)) {
             currentEvent.AddHadron(momentum, pid);
@@ -44,25 +35,18 @@
 
 
     Event EventReader::ProcessEvent( hipo::event event, int eventNumber) {
-
-
-        currentEvent = Event(); //RESTARTING EVENT
-
-
+        currentEvent = Event(); 
         bool el_detect = false;
         double max_energy_electron = 0.0; // reference energy counter
         TLorentzVector max_e_momentum;      //reference electron max nrg moment
-
-//all, move to constructeur 
         event.getStructure(RECgen);
 
         for (int i = 0; i < RECgen.getRows(); ++i) {
             int pid = RECgen.getInt("pid", i);
-            if (pid == POSITRON_PID) {
-                continue;
-                //skip evt if positron 
+            if (pid == Constants::POSITRON_PID) {
+                continue;   //skip evt if positron 
             }
-            double mass = (pid == ELECTRON_PID) ? mass_e : mass_pi; //if/else on masses
+            double mass = (pid == Constants::ELECTRON_PID) ? Constants::MASS_ELECTRON : Constants::MASS_PION; //if/else on masses
                 //condition ward can be improved to a non binary statement 
                 //also no need bc use of process particle 
     
@@ -73,35 +57,21 @@
             momentum.SetPz(RECgen.getFloat("pz", i));
             TVector3 momentum3D = momentum.Vect();
             momentum.SetVectM(momentum3D, mass);
-            if (pid == ELECTRON_PID) {
+            if (pid == Constants::ELECTRON_PID) {
     	        double  electron_status = RECgen.getInt("status", i);
                 if ( electron_status < 0) {     //momentum.E() > max_energy_electron &&
                     max_energy_electron = momentum.E();
                     max_e_momentum = momentum;
-                    //coinsider trigger electron , noit most energetic one 
-                    ProcessParticle(momentum , ELECTRON_PID);
-
+                    //coinsider trigger electron , not most energetic one 
+                    ProcessParticle(momentum , Constants::ELECTRON_PID);
                 }
-
                 el_detect = true;
             } else if (IsHadron(pid) && el_detect ==true) {
                 ProcessParticle(momentum, pid ); // Add hadron to the currentEvent
-
-                //PROBLEM IS HERE. HADRON IS FILLING B4 ELECTRON. 
-                //WHEN HADRON MOMENTA ARE RECOVERED THE ELECTRON MOMENTA ARE EMPTY 
-
-
             }
-
         }
-        //ProcessParticle(max_e_momentum , ELECTRON_PID);
-        // THIS LINE WAS MOVED INSIDE THE CONDITION FOR THE TRIGGER ELECTRON. TO DISREGARD THE MAX NRG CONDITION 
-
-        return currentEvent; // return the evt object w/ particles (TO BE TESTED)
+        return currentEvent; 
     }
-
-    
-
                                             //std::vector<std::string>
                                             //const std::string& filename
                                             //const std::vector<std::string>& filename
