@@ -9,16 +9,26 @@ namespace Constants {
     const double MASS_NEUTRON = 0.939565;   // GeV/c^2
     const double MASS_PROTON = 0.938272;    // GeV/c^2
     const double MASS_PION = 0.134976;      // GeV/c^2
+    static const double MASS_PION_PLUS  = 0.13957;
+    static const double MASS_PION_MINUS = 0.13957;
+    static const double MASS_PION_ZERO  = 0.13497;
+    static const double default_mass  = 0.001;
+
+
+    // Particle IDs
     static const int ELECTRON_PID = 11;
     static const int POSITRON_PID = -11;
-
+    static const int PION_PLUS_PID = 211;
+    static const int PION_MINUS_PID = -211;
+    static const int PION_ZERO_PID = 111;
+    // Values 
+    const double PI = 3.14159265;
 
     //to call these values use in declaration e.g.:     Constants::MASS_ELECTRON;
 
-    // Incident lepton
-    const TLorentzVector elBeam(0.0, 0.0, 11.0, 11.0); // Define your values here
+    // Vectors     
+    const TLorentzVector elBeam(0.0, 0.0, 11.0, 11.0); // incident lepton
 
-    // Other constants...
 }
 
-#endif // CONSTANTS_H
+#endif 

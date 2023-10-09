@@ -18,7 +18,7 @@ public:
     void SetQ2(double);
     void Setnu(double );
     void SetKinVariables(double, double, double, double, double);
-    double GetQ2() const ;
+    //double GetQ2() const ;
     double Getnu()  const ;
     double Gety() const ;
     double GetW2() const ;
@@ -37,7 +37,7 @@ private:
     int eventIndex;
     int pid; 
     double z=0, pt2=0, phih=0;
-    double Q2bis=0, nubis=0, w2bis=0 ,ybis=0 ,xbbis=0;
+    double Q2=0, nu=0, w2=0 ,y=0 ,xb=0;
 
 
 };

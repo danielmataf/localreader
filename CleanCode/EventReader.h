@@ -12,6 +12,7 @@ public:
     EventReader(const std::vector<std::string>& );
     void ProcessParticle(const TLorentzVector& , int  );
     bool IsHadron(int );
+    double GetMassID(int); 
     void PrintEventInfo(int eventIndex);
     Event ProcessEventsInFile();
 private:

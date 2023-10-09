@@ -14,12 +14,10 @@ Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0) {
 }
 
 void Event::AddElectron(const TLorentzVector& electronMomentum) {
-        electron = Particle(electronMomentum, 11);  // Update the electron member
+        electron = Particle(electronMomentum, 11);  
         electron.SetMomentum(electronMomentum);
 }
 
-//set electron variables in event
-//and pion variables in event 
 
 
 void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid) {
@@ -35,7 +33,6 @@ const std::vector<Particle>& Event::GetHadrons() const {
 }
 
 void Event::Print() {   //add int v=0 as argument 4 different types of verbose TBD
-    //std::cout << "Event Index: " << event.GetEventIndex() << std::endl;
 
     std::cout << "Electrons:" << std::endl;
     //for (const Particle& electron : event.GetElectrons()) {
@@ -51,15 +48,11 @@ void Event::Print() {   //add int v=0 as argument 4 different types of verbose T
 
     
     //}
-
-    // Print hadrons' momentum
     std::cout << "Hadrons:" << std::endl;
     for (const Particle& hadron : GetHadrons()) {
         //if (hadron.GetPID()== 211){
             std::cout << "  ____________ " <<  std::endl;
             std::cout << "  Particle ID: " << hadron.GetPID() << std::endl;
-            //std::cout << "  Momentum: (" << hadron.GetMomentum().Px() << ", "
-            //          << hadron.GetMomentum().Py() << ", " << hadron.GetMomentum().Pz() << ")" << std::endl;
             std::cout << " Total Momentum: " << hadron.GetMomentum().P() << std::endl;
             std::cout << " z value : " << hadron.Getz()<< std::endl;
             std::cout << " pt2 value : " << hadron.Getpt2()<< std::endl;
@@ -81,30 +74,38 @@ int Event::CalcKinematics(){
 
 }
 
+//void SetKinVariables(double , double  , double , double, double);
+
 
 void Event::calcAll(){
     CalcKinematics( );
     for (Particle& hadron : hadrons) {
         hadron.CalcHadronKin(electron.GetMomentum(), hadron.GetMomentum());
+        
     }
 }
 
-
-//Create fct calcs kinematix 
-//assign elect to variables (same w/ hadron + le variables)
-//calc here, stock  them in class particle 
-
-
-/*
-double Event::cordtheta(TLorentzVector* vec){
-    //argument is scattered lepton 
-    double theta_el = vec->Theta();
-    return theta_el;
+double Event::GetQ2() const {
+        return Q2;
 }
-
-double Event::cordphi(TLorentzVector* vec3){
-    //function can work for any particle represented with a vector
-    double phi_el = vec3->Phi();
-    return phi_el;
+double Event::Getnu() const {
+    return nu;
 }
-*/
+double Event::Gety() const {
+    return y;
+} 
+double Event::GetW2() const{
+    return w2;
+}
+double Event::Getxb() const{
+    return xb;
+}
+//double Event::Getz()     const {
+//    return hadron.GetZ(); 
+//}
+//double Event::Getpt2()   const {
+//    return hadron.Getpt2() ; 
+//}
+//double Event::Getphih()  const {
+//    return hadron.Getphih(); 
+//}

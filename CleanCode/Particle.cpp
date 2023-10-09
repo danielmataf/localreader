@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
-#define PI 3.14159265
 #include "Particle.h"
 #include "constants.h"
 
@@ -15,7 +14,6 @@
         : momentum(momentum),  pid(pid) {
 
         }
-
     const TLorentzVector& Particle::GetMomentum() const {
         return momentum;
     }
@@ -26,35 +24,35 @@
         return pid;
     }
     void Particle::SetQ2(double q2) {
-        Q2bis = q2;
+        Q2 = q2;
     }
 
     void Particle::Setnu(double v) {
-        nubis = v;
+        nu = v;
     }
     void Particle::SetKinVariables(double a, double v, double c, double d, double e){
-        Q2bis = a;
-        nubis = v;
-        ybis  = c;
-        w2bis = d;
-        xbbis = e; 
+        Q2 = a;
+        nu = v;
+        y  = c;
+        w2 = d;
+        xb = e; 
 
     }
 
-    double Particle::GetQ2() const {
-        return Q2bis;
-    }
+    //double Particle::GetQ2() const {
+    //    return Q2;
+    //}
     double Particle::Getnu() const {
-        return nubis;
+        return nu;
     }
     double Particle::Gety() const {
-        return ybis;
+        return y;
     } 
     double Particle::GetW2() const{
-        return w2bis;
+        return w2;
     }
     double Particle::Getxb() const{
-        return xbbis;
+        return xb;
     }
     double Particle::Getz()     const {
         return z; 
@@ -74,21 +72,20 @@
 
                                 //vec1=scatterdelec (scal)    vec2=scatteredhadron (scapip)
     int Particle::CalcHadronKin(TLorentzVector vec1 ,TLorentzVector vec2){
-        //vec1 = scal ; vec2 = scapip or scah 
         TLorentzVector vipho = Constants::elBeam - vec1; 
         TVector3 n1 = vipho.Vect().Cross(Constants::elBeam.Vect());
         TVector3 n2 = vipho.Vect().Cross(vec2.Vect());
         TVector3 n3 = n1.Cross(n2);
         double angle_norm = ( n1.Dot(n2) ) / ( n1.Mag()*n2.Mag() );
         double sign = n3.Dot(vipho.Vect()); 
-            //TVector3 p_incil = v_incil->Vect();  //3D
         z= (vec2.E())/(       Constants::elBeam.E() - vec1.E() ); // 
         pt2 =  pow(  (n2.Mag() )/ (vipho.Vect().Mag() )  ,    2);
         if (sign<0 ){
-            phih =  acos(angle_norm) *180.0/PI +180;       // check sign TBD!!!!   //consider BSA as well TBD
+            phih =  acos(angle_norm) *180.0/Constants::PI +180;       
         }
-        if (sign>0 ){
-            phih =  acos(angle_norm) *-180.0/PI+180;       // check sign TBD!!!!   //consider BSA as well TBD
+        if (sign>0 ){   
+            phih =  acos(angle_norm) *-180.0/Constants::PI+180; 
         }
+        //consider BSA 4 phih TBD
         return 0;
     }
