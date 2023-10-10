@@ -15,7 +15,10 @@ public:
 
     
     //check if an event passes the cuts
-    bool PassCuts(const Event& event) ;
+    bool PassCutsElectrons(const Event& ) ;
+    bool PassCutsHadrons(const Particle& ) ;
+
+    
     
     //bool PassCut(double Q2, double y, double v, double w, double z) ;
     //we 

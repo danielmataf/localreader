@@ -4,6 +4,7 @@
 #include "Event.h"
 #include "EventReader.h"
 #include "Cuts.h"
+#include "Monitoring.h"
 
 //compile :
 //g++ -o analyse main.cpp `root-config --cflags --libs` -I/home/matamoros/Desktop/localreader/hipo4/
@@ -14,15 +15,23 @@ int main() {
     EventReader MC(filenames);
     Event test;
     CutSet ccuts;
+    CutSet bcuts;
+    bcuts.SetCutQ(3,10);
+    Monitoring mon(ccuts);
+    Monitoring monb(bcuts);
+
     for (int i=0; i<10; i++){
-           std::cout<< "Event number  " << i << std::endl;
+           //std::cout<< "Event number  " << i << std::endl;
             test = MC.ProcessEventsInFile();
             test.calcAll();
             test.Print();
-            if (ccuts.PassCuts(test)==true){
-                std::cout << " -> electron cuts passed successfully  " << std::endl;
-                //fill histograms here
-            } 
+            //monitoring(test,)
+                mon.FillHistograms(test);
+                monb.FillHistograms(test);
+
+
+                //fill electrron variables histograms
+                //loop in hadron "list"
     }    
 
 

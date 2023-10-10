@@ -63,6 +63,9 @@
             //double mass = (pid == Constants::ELECTRON_PID) ? Constants::MASS_ELECTRON : Constants::MASS_PION; //if/else on masses
                 //condition ward can be improved to a non binary statement TBD
             double mass = GetMassID(pid);
+            //if (mass == Constants::default_mass){
+            //    continue;
+            //}
             TLorentzVector momentum;
             momentum.SetPx(RECgen.getFloat("px", i));
             momentum.SetPy(RECgen.getFloat("py", i));
@@ -101,15 +104,9 @@
             if (reader.next()) {
                 reader.read(hipoEvent);
 
-                std::cout<<"starting event"<<std::endl;
+                //std::cout<<"starting event"<<std::endl;
                 return ProcessEvent(hipoEvent, 0);
             } 
             Event empty;
             return empty;
     }
-    
-
-
-
-
-

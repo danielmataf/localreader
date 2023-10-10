@@ -57,16 +57,17 @@ void CutSet::SetCutZ(double minZ, double maxZ) {
 }
 
 
-bool CutSet::PassCuts(const Event& event)  {
+bool CutSet::PassCutsElectrons(const Event& event)  {
     // recover kinematic variables from the event
     double Q2 = event.GetQ2();
     double y  = event.Gety();
     double v  = event.Getnu();
     double w  = event.GetW2();
-    for (const Particle& hadron : event.GetHadrons()) {
-        double z = hadron.Getz();
-        std::cout << " z value ok ? = "<< z << std::endl;
-    } 
+    //for (const Particle& hadron : event.GetHadrons()) {
+    //    double z = hadron.Getz();
+    //    std::cout << " z value ok ? = "<< z << std::endl;
+    //    
+    //} 
     //double z  = event.GetZ();             //hadron variable TBD!!
     // Check if the event's kinematic variables pass the cuts
     if (Q2 >= cutQMin && Q2 <= cutQMax ){
@@ -84,4 +85,23 @@ bool CutSet::PassCuts(const Event& event)  {
 //bool CutSet::PassCut(double Q2, double y, double v, double w, double z) const {
 //  return true ;    
 //}
+
+bool CutSet::PassCutsHadrons(const Particle& hadron)  {
+    double z = hadron.Getz();
+    double pt2 = hadron.Getpt2();
+    double phih = hadron.Getphih();
+    
+    if (z >= cutZMin && z <= cutZMax) {
+        return true;
+    }
+    
+    return false;
+}
+
+
+//do another  fct for hadron cutts (-count hadrons, call function passcuts de l'electron )
+//returns  
   
+//create funct to recover hadrons in event.cpp 
+//fct how many hadrons in an evt 
+//create passcutshadron w/ argument is particle hadron  
