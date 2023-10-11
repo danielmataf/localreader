@@ -13,6 +13,7 @@
 #include "Event.h"
 #include "EventReader.h"
 #include "constants.h"
+#include <optional>
 
     EventReader::EventReader(const std::vector<std::string>& Files){
         filelist = Files; 
@@ -49,23 +50,35 @@
 }
 
 
-    Event EventReader::ProcessEvent( hipo::event event, int eventNumber) {
-        currentEvent = Event(); 
+    std::optional<Event> EventReader::ProcessEvent( hipo::event event, int eventNumber) {
+        currentEvent = Event();
+         
         bool el_detect = false;
         double max_energy_electron = 0.0; 
         event.getStructure(RECgen);
+        //RECgen.show();
+        bool flag_el = false;
+        int counter_el= 0.0;
 
+        for (int i = 0; i < RECgen.getRows(); ++i) {
+            
+            if ( RECgen.getInt("pid", i) == 11 ){
+                flag_el = true;
+            }
+        }
+        if (flag_el == false )return std::nullopt;
         for (int i = 0; i < RECgen.getRows(); ++i) {
             int pid = RECgen.getInt("pid", i);
             if (pid == Constants::POSITRON_PID) {
-                continue;    
+                return std::nullopt;    
+            }
+            if ( pid == 0){    //mass == Constants::default_mass ||
+                continue;
             }
             //double mass = (pid == Constants::ELECTRON_PID) ? Constants::MASS_ELECTRON : Constants::MASS_PION; //if/else on masses
                 //condition ward can be improved to a non binary statement TBD
             double mass = GetMassID(pid);
-            //if (mass == Constants::default_mass){
-            //    continue;
-            //}
+            
             TLorentzVector momentum;
             momentum.SetPx(RECgen.getFloat("px", i));
             momentum.SetPy(RECgen.getFloat("py", i));
@@ -78,6 +91,7 @@
                     max_energy_electron = momentum.E();
                     //coinsider trigger electron , not most energetic one 
                     ProcessParticle(momentum , Constants::ELECTRON_PID);
+                    
                 }
                 el_detect = true;
             } else if (IsHadron(pid) && el_detect ==true) {
@@ -86,7 +100,17 @@
         }
         return currentEvent; 
     }
-    Event EventReader::ProcessEventsInFile() { 
+    int EventReader::getevtnbr(){
+        std::string filename;
+        filename = filelist.at(filenb);
+        reader.open(filename.c_str());  
+        int evtnbr = reader.getEntries();
+        return evtnbr;
+
+    }
+
+
+    std::optional<Event> EventReader::ProcessEventsInFile() { 
             std::string filename;
 
             if (!reader.hasNext()) {

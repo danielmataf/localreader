@@ -70,7 +70,13 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     //} 
     //double z  = event.GetZ();             //hadron variable TBD!!
     // Check if the event's kinematic variables pass the cuts
+    //std::cout<< Q2<<" .........Q2......"<<std::endl;
+    //std::cout<< y<<" .........y......"<<std::endl;
+    //std::cout<< v<<" .........v......"<<std::endl;
+    //std::cout<< w<<" .........W......"<<std::endl;
+
     if (Q2 >= cutQMin && Q2 <= cutQMax ){
+        
         if (y >= cutYMin && y <= cutYMax){
             if (v >= cutVMin && v <= cutVMax ){
                 if (w >= cutWMin && w <= cutWMax ){

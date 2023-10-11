@@ -67,7 +67,8 @@ int Event::CalcKinematics(){
     Q2 = 4 * Constants::elBeam.E() * electron.GetMomentum().E() * pow(sin(theta_e / 2), 2);
     nu  = Constants::elBeam.E() - electron.GetMomentum().E();
     y = nu / Constants::elBeam.E(); 
-    w2 =  sqrt(m_D* m_D + 2 * m_D * nu - Q2);
+    w2 =  m_D* m_D + 2 * m_D * nu - Q2;
+    //W = sqrt(Mn*Mn + 2*Mn*gamnu - Q2);
     xb = Q2 / (2 * m_D * nu);
     electron.SetKinVariables(Q2, nu, y, w2, xb);    //useless 
     return 0;

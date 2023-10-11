@@ -6,7 +6,7 @@
 #include "reader.h"  
 #include "dictionary.h"  
 #include "Event.h"
-
+#include <optional>
 class EventReader {
 public:
     EventReader(const std::vector<std::string>& );
@@ -14,9 +14,11 @@ public:
     bool IsHadron(int );
     double GetMassID(int); 
     void PrintEventInfo(int eventIndex);
-    Event ProcessEventsInFile();
+    std::optional<Event> ProcessEventsInFile();
+    int getevtnbr();
+
 private:
-    Event ProcessEvent( hipo::event event, int eventNumber);
+    std::optional<Event> ProcessEvent( hipo::event event, int eventNumber);
     hipo::bank RECgen;
     hipo::bank RUNconfig;
     hipo::reader reader;
