@@ -46,8 +46,8 @@ private:
     int phihminX = 0;
     int phihmaxX = 360;
 
-    TH1F *h_Q2 = new TH1F("Q2", "Q2", nubin, QminX , QmaxX);
     //create pointer and init them here
+    TH1F *h_Q2 = new TH1F("Q2", "Q2", nubin, QminX , QmaxX);
     TH1F *h_xb= new TH1F("xb", "xb", nubin, xminX, xmaxX) ;
     TH1F *h_y= new TH1F ("y" , "y" , nubin, yminX, ymaxX) ;
     TH1F *h_nu= new TH1F("nu", "nu", nubin,numinX,numaxX) ;

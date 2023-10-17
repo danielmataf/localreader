@@ -9,6 +9,7 @@
 class CutSet {
 public:
     CutSet(); //initialize the cut values
+    ~CutSet();
 
     void SetCutQ(double minQ, double maxQ);
     void SetCutY(double minY, double maxY);

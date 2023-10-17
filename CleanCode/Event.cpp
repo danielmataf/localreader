@@ -10,7 +10,8 @@
 #include "constants.h"
     
 Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0) {
-    m_D = Constants::MASS_NEUTRON + Constants::MASS_PROTON ;
+    m_D = (Constants::MASS_NEUTRON + Constants::MASS_PROTON)/2 ;
+
 }
 
 void Event::AddElectron(const TLorentzVector& electronMomentum) {

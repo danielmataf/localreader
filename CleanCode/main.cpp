@@ -22,6 +22,8 @@ int main() {
     EventReader MC_Sn(filenamesSn);
     //std::optional<Event> testD;
     //std::optional<Event> testSn;
+        std::optional<Event> eventD;
+        std::optional<Event> eventSn;
 
 
     //call class cuts 4 both nuclei
@@ -43,8 +45,6 @@ int main() {
     Ratio ratiotest(cutD, cutSn);
 
     for (int i = 0; i < 20000; i++) {
-        std::optional<Event> eventD;
-        std::optional<Event> eventSn;
 
         //process events for deuterium and tin separately
         eventD = MC_D.ProcessEventsInFile();
@@ -70,20 +70,20 @@ int main() {
             ratiotest.FillHistograms(eventtestSn, "Sn");
             //ratiotest.calcR();
         }
-        ratiotest.calcR();
+        //ratiotest.calcR();
     }
 
     //ratiotest.WriteHistos("output_ratio_SnetD.root");
 
     return 0;
 }
+
+
 /*
 int main() {
     std::vector<std::string> filenames =	{"../../../files2read/r_eD-01.hipo","../../../files2read/r_ttest3S.hipo","../../../files2read/r_ttest3S.hipo","../../../files2read/r_ttest3S.hipo"};
     std::cout<< "Hello world \n";
     EventReader MC(filenames);
-    EventReader MC_D(filenamesD);
-    EventReader MC_Sn(filenamesSn);
     std::optional<Event> test;
     std::optional<Event> testD;
     std::optional<Event> testSn;
@@ -91,11 +91,11 @@ int main() {
     CutSet bcuts;
     bcuts.SetCutQ(1.5,10);
     bcuts.SetCutY(0.25, 0.85);
-    bcuts.SetCutW(0,30);
+    bcuts.SetCutW(6,30);
     bcuts.SetCutZ(0.3,0.7);
     ccuts.SetCutQ(0, 10);
     ccuts.SetCutY(0, 10);
-    ccuts.SetCutW(0, 30);
+    ccuts.SetCutW(10, 0);
     ccuts.SetCutZ(0, 10);
 
     Monitoring mon(ccuts);

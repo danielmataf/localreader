@@ -31,6 +31,18 @@ CutSet::CutSet() {
     // (mmass>1.2)		    //To remove the proton.
     // (v_scapip->E()<3 && v_scapip->E()>1)
 }
+CutSet::~CutSet() {
+}
+
+
+
+
+//Add cut vertex TBD 
+//Add cut pour differentes set up de cible (C vs Sn et/ou Cu)
+//Simulation must generate events from a target in the correct position 
+
+
+
 
 void CutSet::SetCutQ(double minQ, double maxQ) {
     //this function can be called in main.cpp but can be used in an eventual eventprocessor.cpp 
