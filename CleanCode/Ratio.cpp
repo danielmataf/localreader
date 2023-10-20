@@ -40,6 +40,7 @@ void Ratio::FillHistograms(const Event& event, const std::string target) {
                 ////not using the if (==false) return statement 
                 //h_z_D->Fill(hadron.Getz());
                 //h_pt2_D->Fill(hadron.Getpt2());
+                h_nu_z_pt2D->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 
                 
                 //!!!!!!!!!!    
@@ -58,6 +59,7 @@ void Ratio::FillHistograms(const Event& event, const std::string target) {
                 //h_nu_A_had->Fill(event.Getnu());
                 //h_z_A->Fill(hadron.Getz());
                 //h_pt2_A->Fill(hadron.Getpt2());
+                h_nu_z_pt2A->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
             }
         }
     }
@@ -67,7 +69,7 @@ void Ratio::FillHistograms(const Event& event, const std::string target) {
 
 
 
-/*
+
 void Ratio::calcR(){
     //all histos are supposed to be filled.
     //no need to include them as argument of the function just recover themm by calling em 
@@ -79,46 +81,55 @@ void Ratio::calcR(){
         //then call R with the specific variable as an argument  argument 
         //and use switch in order to have a generic histogram ? 
 
-    int numBins = h_nu_D->GetNbinsX();  //all bins should be the same 
-                                        // DONT FORGET TO DEFINE THE BINNING OF KINVAR TO Rbinning = 10
-    TGraphErrors *R_v = new TGraphErrors();
-    for (int bin = 1; bin <= numBins; bin++) {
-        double x_axis =h_nu_D->GetXaxis()->GetBinCenter(bin);
-                //should be the same for all 		
-        double nu_D  = h_nu_D->GetBinContent(bin) ;	
-        double nu_D_had = h_nu_D_had->GetBinContent(bin) ;
-        double z_D   = h_z_D->GetBinContent(bin) ;				
-        double pt2_D = h_pt2_D->GetBinContent(bin) ;				
-        double nu_A  = h_nu_A->GetBinContent(bin) ;				
-        double nu_A_had = h_nu_D_had->GetBinContent(bin) ;
-        double z_A   = h_z_A->GetBinContent(bin) ;				
-        double pt2_A = h_pt2_A->GetBinContent(bin) ;	
-        double Rq_err;
-        double interm1 = (nu_A > 0) ? nu_A_had/nu_A : 0.0;
-        double interm2 = (nu_D > 0) ? nu_D_had/nu_D : 0.0;
-        double interm3 = (interm2 > 0) ? interm1/interm2 : 0.0;
-        Rq_err= interm3 * sqrt(1/nu_A_had + 1/nu_D_had + 1/nu_A_had + 1/nu_D_had);
-        R_v->SetPoint(bin-1, x_axis, interm3 );
-		//	
-    }   
+    //IN 3d HISTO x=nu; y= z; z=pt2;
+    int counter_3D = 0;
+    int numBinsX = h_nu_z_pt2D->GetNbinsX(); 
+    int numBinsY = h_nu_z_pt2D->GetNbinsY(); 
+    int numBinsZ = h_nu_z_pt2D->GetNbinsZ(); 
+    //TGraphErrors *R_v = new TGraphErrors();
+    for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {  
+        double nu_D  = h_nu_z_pt2D->GetBinContent(Xbin,0,0) ;	
+        double nu_D_had = h_nu_z_pt2A->GetBinContent(Xbin,0,0) ;
+        for (int Ybin = 1; Ybin <= numBinsY; Ybin++ ){
+            double nu_D_y  =    h_nu_z_pt2D->GetBinContent(Xbin,Ybin,0) ;	
+            double nu_D_had_y = h_nu_z_pt2A->GetBinContent(Xbin,Ybin,0) ;
+            for (int Ybin = 1; Ybin <= numBinsY; Ybin++ ){
 
+                counter_3D ++;  //1000 elements here
+            }
+        }
+      
+    //    double x_axis =h_nu_D->GetXaxis()->GetBinCenter(bin);
+    //            //should be the same for all 		
+    //    double nu_D  = h_nu_D->GetBinContent(bin) ;	
+    //    double nu_D_had = h_nu_D_had->GetBinContent(bin) ;
+    //    double z_D   = h_z_D->GetBinContent(bin) ;				
+    //    double pt2_D = h_pt2_D->GetBinContent(bin) ;				
+    //    double nu_A  = h_nu_A->GetBinContent(bin) ;				
+    //    double nu_A_had = h_nu_D_had->GetBinContent(bin) ;
+    //    double z_A   = h_z_A->GetBinContent(bin) ;				
+    //    double pt2_A = h_pt2_A->GetBinContent(bin) ;	
+    //    double Rq_err;
+    //    double interm1 = (nu_A > 0) ? nu_A_had/nu_A : 0.0;
+    //    double interm2 = (nu_D > 0) ? nu_D_had/nu_D : 0.0;
+    //    double interm3 = (interm2 > 0) ? interm1/interm2 : 0.0;
+    //    Rq_err= interm3 * sqrt(1/nu_A_had + 1/nu_D_had + 1/nu_A_had + 1/nu_D_had);
+    //    R_v->SetPoint(bin-1, x_axis, interm3 );
+	//	//	
+    }   
 }
-*/
+
 //TH3 getbins bini binj etc 
 
-//void Ratio::PlotRatio(const std::string filename) {
-//    TCanvas Rcanv("Ratio canvas", "Ratio Plots");
-//    Rcanv.Divide(3, 3);
+void Ratio::PlotRatio(const std::string filename) {
+    TCanvas Rcanv("Ratio canvas", "Ratio Plots");
+    Rcanv.Divide(1, 2);
+    Rcanv.cd(1);
+    h_nu_z_pt2A->Draw("lego");
+    Rcanv.cd(2);
+    h_nu_z_pt2D->Draw("lego");
+    Rcanv.Print((filename + ".pdf").c_str());
 
-    //Dont write histo 
-//    h_nu_D->Write();
-//    h_z_D->Write();
-//    h_pt2_D->Write();
-//    h_nu_Sn->Write();
-//    h_z_Sn->Write();
-//    h_pt2_Sn->Write();
-//    outputFile->Write();
-//    outputFile->Close();
-//}
+}
 
     //outputFile = new TFile("ratio_output.root", "RECREATE");

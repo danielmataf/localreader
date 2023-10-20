@@ -57,6 +57,7 @@ Monitoring::Monitoring(CutSet a)//:   h_Q2("Q2", "Q2", nubin, QminX, QmaxX),
 void Monitoring::FillHistograms(const Event& event) {
     if (cut1.PassCutsElectrons(event)==false) return;
     std::cout << " -> electron cuts passed successfully  " << std::endl;
+    h_vertexZ->Fill(event.GetVz()); //Vz only exists when an electron is detecte !!!!
     h_Q2->Fill(event.GetQ2());
     h_xb->Fill(event.Getxb());
     h_y->Fill(event.Gety());
@@ -93,6 +94,7 @@ void Monitoring::WriteHistogramsToFile(const std::string filename) {
     h_z->Write();
     h_pt2->Write();
     h_phih->Write();
+    h_vertexZ->Write();
     //file.Write();
     // Write other histograms here
     file.Close();
@@ -125,6 +127,9 @@ void Monitoring::DrawHistograms(const std::string filename) {
     MonC.cd(8);
     h_phih->Draw("hist");
     h_phih->SetTitle("phih Distribution");
+    MonC.cd(9);
+    h_vertexZ->Draw("hist");
+    h_vertexZ->SetTitle("Vertex Z Distribution");
 
 
     MonC.Print((filename + ".pdf").c_str());

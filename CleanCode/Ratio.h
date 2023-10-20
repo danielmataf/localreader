@@ -26,6 +26,8 @@ public:
     void FillHistograms(const Event& , const std::string );
     void WriteHistos(const std::string );
     void calcR();
+    void PlotRatio(const std::string );
+
 
 
 private:
@@ -85,7 +87,9 @@ private:
     //TH1F *h_pt2_A= new TH1F("pt2_A", "pt2_A", Rbin, pt2minX, pt2maxX) ;
     //TH1F *h_phih_A= new TH1F("phih_A", "phih_A", phibin, phihminX, phihmaxX) ;
 
-    TH3F *h_nu_z_pt2 = new TH3F("nu,z,pt2", "histo nu,z,pt2", Rbin,numinX,numaxX,Rbin,zminX, zmaxX,Rbin, pt2minX, pt2maxX  );
+    TH3F *h_nu_z_pt2D = new TH3F("nu,z,pt2,D", "histo nu,z,pt2 for D", Rbin,numinX,numaxX,Rbin,zminX, zmaxX,Rbin, pt2minX, pt2maxX  );
+    TH3F *h_nu_z_pt2A = new TH3F("nu,z,pt2,A", "histo nu,z,pt2 for A", Rbin,numinX,numaxX,Rbin,zminX, zmaxX,Rbin, pt2minX, pt2maxX  );
+
     //TFile* outputFile;
     CutSet cutsD;
     CutSet cutsSn;

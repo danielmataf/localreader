@@ -25,9 +25,10 @@
         return pid != Constants::ELECTRON_PID && pid != Constants::POSITRON_PID;
     }
     
-    void EventReader::ProcessParticle(const TLorentzVector& momentum, int pid) {
+    void EventReader::ProcessParticle(const TLorentzVector& momentum, int pid, double vertz ) {
         if (pid == Constants::ELECTRON_PID) {
             currentEvent.AddElectron(momentum);
+            currentEvent.SetVertexZ(vertz);
         } else if (IsHadron(pid)) {
             currentEvent.AddHadron(momentum, pid);
         }
@@ -78,7 +79,7 @@
             //double mass = (pid == Constants::ELECTRON_PID) ? Constants::MASS_ELECTRON : Constants::MASS_PION; //if/else on masses
                 //condition ward can be improved to a non binary statement TBD
             double mass = GetMassID(pid);
-            
+            double targetvz = RECgen.getFloat("vz", i); 
             TLorentzVector momentum;
             momentum.SetPx(RECgen.getFloat("px", i));
             momentum.SetPy(RECgen.getFloat("py", i));
@@ -90,12 +91,12 @@
                 if ( electron_status < 0) {     //momentum.E() > max_energy_electron &&
                     max_energy_electron = momentum.E();
                     //coinsider trigger electron , not most energetic one 
-                    ProcessParticle(momentum , Constants::ELECTRON_PID);
+                    ProcessParticle(momentum , Constants::ELECTRON_PID,targetvz);
                     
                 }
                 el_detect = true;
             } else if (IsHadron(pid) && el_detect ==true) {
-                ProcessParticle(momentum, pid ); 
+                ProcessParticle(momentum, pid,targetvz ); 
             }
         }
         return currentEvent; 

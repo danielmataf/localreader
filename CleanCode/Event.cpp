@@ -17,6 +17,7 @@ Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0) {
 void Event::AddElectron(const TLorentzVector& electronMomentum) {
         electron = Particle(electronMomentum, 11);  
         electron.SetMomentum(electronMomentum);
+        
 }
 
 
@@ -31,6 +32,13 @@ int Event::GetEventIndex() const {
 
 const std::vector<Particle>& Event::GetHadrons() const {
     return hadrons;
+}
+
+void Event::SetVertexZ(double vertexz){
+    vz = vertexz;
+}
+double Event::GetVz()const {
+    return vz;
 }
 
 void Event::Print() {   //add int v=0 as argument 4 different types of verbose TBD

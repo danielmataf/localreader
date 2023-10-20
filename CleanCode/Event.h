@@ -21,6 +21,8 @@ public:
     void AddElectron(const TLorentzVector& ); 
     void AddHadron(const TLorentzVector& , int ); 
     int GetEventIndex() const ;
+    void SetVertexZ(double );
+    double GetVz()const ;
     const std::vector<Particle>& GetHadrons() const;
     int CalcKinematics( );
     void Print();
@@ -44,6 +46,7 @@ private:
     std::vector<Particle> hadrons; 
     double Q2=0,nu=0,w2=0,y=0,xb=0;
     double m_D, m_Sn, m_Cu; //GeV/c^2
+    double vz;  //vertex of the event (?) (should be the same every time)
 
 };
 //

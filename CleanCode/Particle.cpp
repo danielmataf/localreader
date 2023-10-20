@@ -67,7 +67,9 @@
 
         this-> momentum = momentum;
     }
-
+    //void Particle::SetVertexZ ( double vertz) {
+    //    this->
+    //}
 
 
                                 //vec1=scatterdelec (scal)    vec2=scatteredhadron (scapip)

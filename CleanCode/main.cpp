@@ -13,7 +13,7 @@
 // or use makefile 
 
 
-
+/*
 int main() {
     std::vector<std::string> filenamesD = {"../../../files2read/r_eD-01.hipo", "../../../files2read/r_eD-01.hipo", "../../../files2read/r_eD-02.hipo"};
     std::vector<std::string> filenamesSn = {"../../../files2read/r_eSn-01.hipo", "../../../files2read/r_eSn-01.hipo", "../../../files2read/r_eSn-02.hipo"};
@@ -70,18 +70,25 @@ int main() {
             ratiotest.FillHistograms(eventtestSn, "Sn");
             //ratiotest.calcR();
         }
-        //ratiotest.calcR();
+        ratiotest.calcR();
     }
 
     //ratiotest.WriteHistos("output_ratio_SnetD.root");
+    ratiotest.PlotRatio("test3D");
 
     return 0;
 }
+*/
 
 
-/*
 int main() {
-    std::vector<std::string> filenames =	{"../../../files2read/r_eD-01.hipo","../../../files2read/r_ttest3S.hipo","../../../files2read/r_ttest3S.hipo","../../../files2read/r_ttest3S.hipo"};
+    //std::vector<std::string> filenames =	{"../../../files2read/r_eD-01.hipo","../../../files2read/r_ttest3S.hipo","../../../files2read/r_ttest3S.hipo","../../../files2read/r_ttest3S.hipo"};
+    std::vector<std::string> filenames = {
+    "/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00570-00574.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00570-00574.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00565-00569.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00560-00564.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00555-00559.hipo"};
     std::cout<< "Hello world \n";
     EventReader MC(filenames);
     std::optional<Event> test;
@@ -134,4 +141,3 @@ int main() {
 
     return 0;
 }
-*/
