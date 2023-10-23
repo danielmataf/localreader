@@ -1,0 +1,9 @@
+/home/matamoros/Desktop/LumiScanDta/CuSn/rec_clas_018348.evio.00000-00004.hipo
+/home/matamoros/Desktop/LumiScanDta/CuSn/rec_clas_018348.evio.00000-00004.hipo
+/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00570-00574.hipo
+/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00570-00574.hipo
+/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00565-00569.hipo
+/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00560-00564.hipo
+/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00555-00559.hipo
+/home/matamoros/Desktop/LumiScanDta/CuSn/rec_clas_018348.evio.00000-00004.hipo
+

@@ -16,6 +16,7 @@ public:
     void SetCutV(double minV, double maxV);
     void SetCutW(double minW, double maxW);
     void SetCutZ(double minZ, double maxZ);
+    void SetCutVz(double, double);
 
     
     //check if an event passes the cuts
@@ -27,11 +28,15 @@ public:
     //bool PassCut(double Q2, double y, double v, double w, double z) ;
     //we 
 private:
+    //for cuts
     double cutQMin, cutQMax;
     double cutYMin, cutYMax;
     double cutVMin, cutVMax;
     double cutWMin, cutWMax;
     double cutZMin, cutZMax;
+    double cutVzMin,cutVzMax;
+
+    //for histograms
     int QminX = 0;
     int QmaxX = 6;
     int nubin = 100;

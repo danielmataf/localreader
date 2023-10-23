@@ -1,5 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <string>
+#include <vector>
+
 #include "reader.h"
 #include "Event.h"
 #include "EventReader.h"
@@ -83,12 +86,26 @@ int main() {
 
 int main() {
     //std::vector<std::string> filenames =	{"../../../files2read/r_eD-01.hipo","../../../files2read/r_ttest3S.hipo","../../../files2read/r_ttest3S.hipo","../../../files2read/r_ttest3S.hipo"};
-    std::vector<std::string> filenames = {
-    "/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00570-00574.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00570-00574.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00565-00569.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00560-00564.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00555-00559.hipo"};
+    //std::vector<std::string> filenames = {
+    //"/home/matamoros/Desktop/LumiScanDta/CuSn/rec_clas_018348.evio.00000-00004.hipo",
+    //"/home/matamoros/Desktop/LumiScanDta/CuSn/rec_clas_018348.evio.00000-00004.hipo",
+    //"/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00570-00574.hipo",
+    //"/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00570-00574.hipo",
+    //"/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00565-00569.hipo",
+    //"/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00560-00564.hipo",
+    //"/home/matamoros/Desktop/LumiScanDta/LD2/rec_clas_018325.evio.00555-00559.hipo",
+    //"/home/matamoros/Desktop/LumiScanDta/CuSn/rec_clas_018348.evio.00000-00004.hipo"};
+    std::vector<std::string> filenames;         // creating file list (vector)
+    std::string line; 
+    std::ifstream file("file_paths.txt");       // opening the file where the paths are 
+    if (file.is_open()) { 
+        while (std::getline(file, line)) {      // looping throught the lines in the txt file 
+            filenames.push_back(line);          // adding each line (file path) to the file list  
+        }
+        file.close();
+    }
+
+    
     std::cout<< "Hello world \n";
     EventReader MC(filenames);
     std::optional<Event> test;
@@ -119,7 +136,7 @@ int main() {
     int counter_elSn= 0.0;
 
 
-    for (int i=0; i<20000; i++){
+    for (int i=0; i<200000; i++){
             test = MC.ProcessEventsInFile();
            if (test.has_value()==false) continue;
             counter_el ++;

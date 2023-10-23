@@ -25,6 +25,8 @@ CutSet::CutSet() {
     cutZMin = 0.0;
     cutZMax = 10.0;
     // (z>0.3 && z<0.7)
+    cutVzMin = -30.0;
+    cutVzMax = 30.0 ;
 
     //OTHER CUTS 
     // (theta_el*180/PI>6)	// /!\ implementing CUT on theta coordinate for electrons!!!!
@@ -71,6 +73,11 @@ void CutSet::SetCutZ(double minZ, double maxZ) {
     cutZMax = maxZ;
 }
 
+void CutSet::SetCutVz(double vzmin, double vzmax){
+    cutVzMin = vzmin;
+    cutVzMax = vzmax;
+    
+}
 
 bool CutSet::PassCutsElectrons(const Event& event)  {
     // recover kinematic variables from the event
