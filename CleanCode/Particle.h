@@ -18,6 +18,9 @@ public:
     void SetQ2(double);
     void Setnu(double );
     void SetKinVariables(double, double, double, double, double);
+    void SetVx(double); 
+    void SetVy(double); 
+
     //double GetQ2() const ;
     double Getnu()  const ;
     double Gety() const ;
@@ -27,6 +30,9 @@ public:
     double Getpt2()  const;
     double Getphih() const;
     void SetMomentum( TLorentzVector);
+    double GetVx() const; 
+    double GetVy() const; 
+
 
 
     int CalcHadronKin(TLorentzVector,TLorentzVector);
@@ -38,6 +44,7 @@ private:
     int pid; 
     double z=0, pt2=0, phih=0;
     double Q2=0, nu=0, w2=0 ,y=0 ,xb=0;
+    double vx, vy;
 
 
 };

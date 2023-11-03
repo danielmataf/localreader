@@ -38,6 +38,12 @@
         xb = e; 
 
     }
+    void Particle::SetVx(double vertX) {
+        vx = vertX;
+    }
+    void Particle::SetVy(double vertY) {
+        vy = vertY;
+    }
 
     //double Particle::GetQ2() const {
     //    return Q2;
@@ -70,6 +76,14 @@
     //void Particle::SetVertexZ ( double vertz) {
     //    this->
     //}
+    double Particle::GetVx() const {
+        return vx;
+    }
+    double Particle::GetVy() const {
+        return vy;
+    }
+
+
 
 
                                 //vec1=scatterdelec (scal)    vec2=scatteredhadron (scapip)

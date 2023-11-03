@@ -56,24 +56,32 @@ Monitoring::Monitoring(CutSet a)//:   h_Q2("Q2", "Q2", nubin, QminX, QmaxX),
 
 void Monitoring::FillHistograms(const Event& event) {
     if (cut1.PassCutsElectrons(event)==false) return;
-    std::cout << " -> electron cuts passed successfully  " << std::endl;
+    //
+    //std::cout << " -> electron cuts passed successfully  " << std::endl;
+    //
+    counterel_R ++;
     h_vertexZ->Fill(event.GetVz()); //Vz only exists when an electron is detecte !!!!
     h_Q2->Fill(event.GetQ2());
     h_xb->Fill(event.Getxb());
     h_y->Fill(event.Gety());
     h_nu->Fill(event.Getnu());
     h_W2->Fill(event.GetW2());
-    std::cout << " kinel " << event.GetQ2()<<" , " << event.Getxb()<<" , " << event.Gety()<<" , "<< event.Getnu()<<" , "<< event.GetW2()<<std::endl;  
+    //
+    //std::cout << " kinel " << event.GetQ2()<<" , " << event.Getxb()<<" , " << event.Gety()<<" , "<< event.Getnu()<<" , "<< event.GetW2()<<std::endl;  
+    //
     for (const Particle& hadron : event.GetHadrons()) {
         if (cut1.PassCutsHadrons(hadron)==true){
-            std::cout << " -> hadron cuts passed successfully  " << std::endl;
+            //
+            //std::cout << " -> hadron cuts passed successfully  " << std::endl;
+            //
             //if passcuts(given hadron )
             //fill histogram with hadron variables  
             h_z->Fill(hadron.Getz());
             h_pt2->Fill(hadron.Getpt2());
             h_phih->Fill(hadron.Getphih());
-            std::cout << " kinhad " << hadron.Getz()<<" , " << hadron.Getpt2()<<" , " << hadron.Getphih()<<std::endl;  
-
+            //
+            //std::cout << " kinhad " << hadron.Getz()<<" , " << hadron.Getpt2()<<" , " << hadron.Getphih()<<std::endl;  
+            //
         }
     }
  //add histos 
@@ -95,7 +103,10 @@ void Monitoring::WriteHistogramsToFile(const std::string filename) {
     h_pt2->Write();
     h_phih->Write();
     h_vertexZ->Write();
-    //file.Write();
+    TTree tree("treecounter","treecounter");
+    tree.Branch("counterel_R", &counterel_R, "counterel_R/I");
+    tree.Fill();
+    file.Write();
     // Write other histograms here
     file.Close();
 }

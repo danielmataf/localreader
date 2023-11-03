@@ -16,7 +16,10 @@ public:
     void SetCutV(double minV, double maxV);
     void SetCutW(double minW, double maxW);
     void SetCutZ(double minZ, double maxZ);
+    void SetCutVx(double, double);
+    void SetCutVy(double, double);
     void SetCutVz(double, double);
+
 
     
     //check if an event passes the cuts
@@ -34,7 +37,10 @@ private:
     double cutVMin, cutVMax;
     double cutWMin, cutWMax;
     double cutZMin, cutZMax;
+    double cutVxMin,cutVxMax;
+    double cutVyMin,cutVyMax;
     double cutVzMin,cutVzMax;
+
 
     //for histograms
     int QminX = 0;

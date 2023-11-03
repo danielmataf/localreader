@@ -83,7 +83,7 @@ void Ratio::calcR(){
 
     //IN 3d HISTO x=nu; y= z; z=pt2;
     int counter_3D = 0;
-    int numBinsX = h_nu_z_pt2D->GetNbinsX(); 
+    int numBinsX = h_nu_z_pt2D->GetNbinsX();    //same bins 4 Deut and A 
     int numBinsY = h_nu_z_pt2D->GetNbinsY(); 
     int numBinsZ = h_nu_z_pt2D->GetNbinsZ(); 
     //TGraphErrors *R_v = new TGraphErrors();

@@ -72,6 +72,16 @@ void CutSet::SetCutZ(double minZ, double maxZ) {
     cutZMin = minZ;
     cutZMax = maxZ;
 }
+void CutSet::SetCutVx(double vxmin, double vxmax){
+    cutVxMin = vxmin;
+    cutVxMax = vxmax;
+    
+}
+void CutSet::SetCutVy(double vymin, double vymax){
+    cutVyMin = vymin;
+    cutVyMax = vymax;
+    
+}
 
 void CutSet::SetCutVz(double vzmin, double vzmax){
     cutVzMin = vzmin;

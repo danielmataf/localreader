@@ -1,7 +1,9 @@
 #include <iostream>
 #include <fstream>
-#include <filesystem>
+#include <string>
+#include <vector>
 
+#include <filesystem>
 
 
 
@@ -10,7 +12,7 @@
 // th e function wshould get the content of all directories (file names) and write thel down in the txt output file 
 // can be called anywhere ? 
 
-void createFilePathsFile(const std::vector<std::string>& directories, const std::string& outputFilePath) {
+void createFilePathsFile(const std::vector<std::string> directories, const std::string outputFilePath) {
     std::ofstream outputFile(outputFilePath);
 
     if (!outputFile.is_open()) {
@@ -18,7 +20,7 @@ void createFilePathsFile(const std::vector<std::string>& directories, const std:
         return;
     }
 
-    for (const std::string& directory : directories) {
+    for (const std::string directory : directories) {
             //creating an iterator in the directory list (vector of strings)
         std::filesystem::path path(directory);
             //definign a path from std lib
@@ -42,7 +44,7 @@ int main() {
         // other direct can be added
     };
 
-    std::string outputFilePath = "file_paths.txt";
+    std::string outputFilePath = "file_paths1.txt";
 
     createFilePathsFile(directories, outputFilePath);
 
