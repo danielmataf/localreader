@@ -95,6 +95,7 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     double y  = event.Gety();
     double v  = event.Getnu();
     double w  = event.GetW2();
+    double Vz = event.GetVz();
     //for (const Particle& hadron : event.GetHadrons()) {
     //    double z = hadron.Getz();
     //    std::cout << " z value ok ? = "<< z << std::endl;
@@ -106,21 +107,25 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     //std::cout<< y<<" .........y......"<<std::endl;
     //std::cout<< v<<" .........v......"<<std::endl;
     //std::cout<< w<<" .........W......"<<std::endl;
+    h_Vzpre->Fill(Vz);
+    if (Vz >= cutVzMin && Vz <= cutVzMax ){
+    h_Vzpos->Fill(Vz);
     h_Q2pre->Fill(Q2);
-    if (Q2 >= cutQMin && Q2 <= cutQMax ){
-        h_Q2pos->Fill(Q2); 
-        h_xbpre->Fill(event.Getxb());
-        h_ypre->Fill(y);
-        if (y >= cutYMin && y <= cutYMax){
-            h_nupre->Fill(v);
-            if (v >= cutVMin && v <= cutVMax ){
-                h_W2pre->Fill(w);
-                if (w >= cutWMin && w <= cutWMax ){
-                      return true;
+        if (Q2 >= cutQMin && Q2 <= cutQMax ){
+            h_Q2pos->Fill(Q2); 
+            h_xbpre->Fill(event.Getxb());
+            h_ypre->Fill(y);
+            if (y >= cutYMin && y <= cutYMax){
+                h_nupre->Fill(v);
+                if (v >= cutVMin && v <= cutVMax ){
+                    h_W2pre->Fill(w);
+                    if (w >= cutWMin && w <= cutWMax ){
+                          return true;
+                    }
                 }
             }
         }
-    }
+    }    
     return false;
 }
     // checks if the event's kinematic variables pass the cuts

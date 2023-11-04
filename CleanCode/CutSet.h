@@ -72,6 +72,9 @@ private:
     TH1F *h_zpre= new TH1F("zpre", "zpre", nubin, zminX, zmaxX) ;
     TH1F *h_pt2pre= new TH1F("pt2pre", "pt2pre", nubin, pt2minX, pt2maxX) ;
     TH1F *h_phihpre= new TH1F("phihpre", "phihpre", phibin, phihminX, phihmaxX) ;
+    TH1F *h_Vzpre= new TH1F("Vzpre", "Vzpre", nubin, -20, 30) ;
+    TH1F *h_Vzpos= new TH1F("Vzpos", "Vzpos", nubin, -20, 30) ;
+    
 
 };
 
