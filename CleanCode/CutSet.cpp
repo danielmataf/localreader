@@ -167,6 +167,11 @@ void CutSet::Chop(const std::string filename) {
     h_ypre->Write();
     h_nupre->Write();
     h_W2pre->Write();
+    h_zpre->Write();
+    h_pt2pre->Write();
+    h_phihpre->Write();
+    h_Vzpre->Write();
+    h_Vzpos->Write();
     //file.Write();
     // Write other histograms here
     file.Close();

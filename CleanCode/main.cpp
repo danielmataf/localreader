@@ -111,41 +111,41 @@ int main() {
     Monitoring mon(ccuts);
     int sumevts = 0;
     Monitoring monb(bcuts);
-    for (auto & f : filenames ){
-        try{ 
-        std::cout << "Processing file: " << f << std::endl; 
-      
-        std::cout<< MC.getevtnbr()<< std::endl;
-        sumevts += MC.getevtnbr();
-        } catch (const std::exception &e) { 
-            std::cerr << "Error opening or processing file: " << f << std::endl;
-            std::cerr << "[ERROR] something went wrong with opening file: " << f << std::endl;
-            std::cerr << e.what() << std::endl; 
-            continue; // Skip to the next file in case of an error
-        }
+//    for (auto & f : filenames ){
+//        try{ 
+//        std::cout << "Processing file: " << f << std::endl; 
+//      
+//        std::cout<< MC.getevtnbr()<< std::endl;
+//        sumevts += MC.getevtnbr();
+//        } catch (const std::exception &e) { 
+//            std::cerr << "Error opening or processing file: " << f << std::endl;
+//            std::cerr << "[ERROR] something went wrong with opening file: " << f << std::endl;
+//            std::cerr << e.what() << std::endl; 
+//            continue; // skips to next file if error
+//        }
+//    }
+    std::cout << "Total number of events: " << sumevts << std::endl;
+    int counter_el= 0.0;
+    int counter_elD= 0.0;
+    int counter_elSn= 0.0;
+    for (int i=0; i<30000; i++){
+            test = MC.ProcessEventsInFile();
+           if (test.has_value()==false) continue;
+            counter_el ++;
+           Event eventtest =  test.value();
+            eventtest.calcAll();
+            //eventtest.Print();
+            //monitoring(test,)
+                mon.FillHistograms(eventtest);
+                monb.FillHistograms(eventtest);
+                //loop in hadron "list"
     }
-    //std::cout << "Total number of events: " << sumevts << std::endl;
-    //int counter_el= 0.0;
-    //int counter_elD= 0.0;
-    //int counter_elSn= 0.0;
-    //for (int i=0; i<30000; i++){
-    //        test = MC.ProcessEventsInFile();
-    //       if (test.has_value()==false) continue;
-    //        counter_el ++;
-    //       Event eventtest =  test.value();
-    //        eventtest.calcAll();
-    //        //eventtest.Print();
-    //        //monitoring(test,)
-    //            mon.FillHistograms(eventtest);
-    //            monb.FillHistograms(eventtest);
-    //            //loop in hadron "list"
-    //}
-    //std::cout<<counter_el<<std::endl;  
-    //mon.WriteHistogramsToFile("output_testVz.root");
-    //monb.WriteHistogramsToFile("output_testVz.root");
-    //monb.DrawHistograms("after_bcutsVz.root");
-    //bcuts.Chop("chop_bcutsVz.root");
-    //bcuts.DrawChop("chopped_bcutsVz");
+    std::cout<<counter_el<<std::endl;  
+    mon.WriteHistogramsToFile("output_testVz.root");
+    monb.WriteHistogramsToFile("output_testVz.root");
+    monb.DrawHistograms("after_bcutsVz.root");
+    bcuts.Chop("chop_bcutsVz.root");
+    bcuts.DrawChop("chopped_bcutsVz");
 
     return 0;
 }
