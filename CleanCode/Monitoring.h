@@ -56,7 +56,7 @@ private:
     TH1F *h_W2= new TH1F("W2", "W2", nubin, WminX, 30) ;
     TH1F *h_z= new TH1F("z", "z", nubin, zminX, zmaxX) ;
     TH1F *h_pt2= new TH1F("pt2", "pt2", nubin, pt2minX, pt2maxX) ;
-    TH1F *h_phih= new TH1F("phih", "phih", 10, phihminX, phihmaxX) ;
+    TH1F *h_phih= new TH1F("phih", "phih", nubin, phihminX, phihmaxX) ;
     TH1F *h_vertexZ= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
 
     //add more histograms for other variables here
