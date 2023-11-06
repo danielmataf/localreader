@@ -128,7 +128,7 @@ int main() {
     int counter_el= 0.0;
     int counter_elD= 0.0;
     int counter_elSn= 0.0;
-    for (int i=0; i<30000; i++){
+    for (int i=0; i<900000; i++){
             test = MC.ProcessEventsInFile();
            if (test.has_value()==false) continue;
             counter_el ++;

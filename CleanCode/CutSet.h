@@ -4,6 +4,8 @@
 
 #include "Event.h"  
 #include <TH1F.h>
+#include <TH2F.h>
+
 
 
 class CutSet {
@@ -71,9 +73,15 @@ private:
     TH1F *h_W2pre= new TH1F("W2pre", "W2pre", nubin, WminX, 30) ;
     TH1F *h_zpre= new TH1F("zpre", "zpre", nubin, zminX, zmaxX) ;
     TH1F *h_pt2pre= new TH1F("pt2pre", "pt2pre", nubin, pt2minX, pt2maxX) ;
-    TH1F *h_phihpre= new TH1F("phihpre", "phihpre", nubin, phihminX, phihmaxX) ;
+    TH1F *h_phihpre= new TH1F("phihpre", "phihpre", 10, phihminX, phihmaxX) ;
     TH1F *h_Vzpre= new TH1F("Vzpre", "Vzpre", nubin, -20, 30) ;
     TH1F *h_Vzpos= new TH1F("Vzpos", "Vzpos", nubin, -20, 30) ;
+    TH2F *h_Qvx= new TH2F("Qvsx", "Qvsx", nubin, xminX, xmaxX, nubin, QminX , QmaxX);
+
+    TH1F *h_pt4R= new TH1F("pt2pre", "pt2pre", 10, pt2minX, pt2maxX) ;
+
+    //  TH1F *h_vertexZpre= new TH1F("targetVzpre", "vertex4targetpre", 100, -40, 40) ;
+    //TH1F *h_vertexZpos= new TH1F("targetVzpre", "vertex4targetpre", 100, -40, 40) ;
     
 
 };

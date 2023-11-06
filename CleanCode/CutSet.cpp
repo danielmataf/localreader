@@ -114,6 +114,7 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
         if (Q2 >= cutQMin && Q2 <= cutQMax ){
             h_Q2pos->Fill(Q2); 
             h_xbpre->Fill(event.Getxb());
+            h_Qvx->Fill(event.Getxb(), Q2);
             h_ypre->Fill(y);
             if (y >= cutYMin && y <= cutYMax){
                 h_nupre->Fill(v);
@@ -140,6 +141,7 @@ bool CutSet::PassCutsHadrons(const Particle& hadron)  {
     h_zpre->Fill(z);
     if (z >= cutZMin && z <= cutZMax) {
         h_pt2pre->Fill(pt2);
+        h_pt4R->Fill(pt2);
         h_phihpre->Fill(phih);
         return true;
     }
@@ -172,6 +174,8 @@ void CutSet::Chop(const std::string filename) {
     h_phihpre->Write();
     h_Vzpre->Write();
     h_Vzpos->Write();
+    h_Qvx->Write();
+    h_pt4R->Write();
     //file.Write();
     // Write other histograms here
     file.Close();
