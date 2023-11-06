@@ -22,7 +22,13 @@ public:
     void AddHadron(const TLorentzVector& , int ); 
     int GetEventIndex() const ;
     void SetVertexZ(double );
+    void SetVertexX(double );
+    void SetVertexY(double );
+
     double GetVz()const ;
+    double GetVx()const ;
+    double GetVy()const ;
+
     const std::vector<Particle>& GetHadrons() const;
     int CalcKinematics( );
     void Print();
@@ -47,6 +53,8 @@ private:
     double Q2=0,nu=0,w2=0,y=0,xb=0;
     double m_D, m_Sn, m_Cu; //GeV/c^2
     double vz;  //vertex of the event (?) (should be the same every time)
+    double vx;
+    double vy;
 
 };
 //

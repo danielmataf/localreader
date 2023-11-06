@@ -10,7 +10,7 @@
 class EventReader {
 public:
     EventReader(const std::vector<std::string>& );
-    void ProcessParticle(const TLorentzVector& , int ,double );
+    void ProcessParticle(const TLorentzVector& , int ,double, double, double );
     bool IsHadron(int );
     double GetMassID(int); 
     void PrintEventInfo(int eventIndex);

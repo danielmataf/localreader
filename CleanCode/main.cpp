@@ -141,11 +141,11 @@ int main() {
                 //loop in hadron "list"
     }
     std::cout<<counter_el<<std::endl;  
-    mon.WriteHistogramsToFile("output_testVz.root");
-    monb.WriteHistogramsToFile("output_testVz.root");
-    monb.DrawHistograms("after_bcutsVz.root");
-    bcuts.Chop("chop_bcutsVz.root");
-    bcuts.DrawChop("chopped_bcutsVz");
+    //mon.WriteHistogramsToFile("output_testVz.root");
+    monb.WriteHistogramsToFile("output_testother.root");
+    monb.DrawHistograms("after_bcutsother.root");
+    bcuts.Chop("chop_bcutsother.root");
+    bcuts.DrawChop("chopped_bcutsother");
 
     return 0;
 }

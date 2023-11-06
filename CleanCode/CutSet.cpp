@@ -96,6 +96,9 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     double v  = event.Getnu();
     double w  = event.GetW2();
     double Vz = event.GetVz();
+    double Vx = event.GetVx();
+    double Vy = event.GetVy();
+
     //for (const Particle& hadron : event.GetHadrons()) {
     //    double z = hadron.Getz();
     //    std::cout << " z value ok ? = "<< z << std::endl;
@@ -109,8 +112,10 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     //std::cout<< w<<" .........W......"<<std::endl;
     h_Vzpre->Fill(Vz);
     if (Vz >= cutVzMin && Vz <= cutVzMax ){
-    h_Vzpos->Fill(Vz);
-    h_Q2pre->Fill(Q2);
+        h_Vxpre->Fill(Vx);
+        h_Vypre->Fill(Vy);
+        h_Vzpos->Fill(Vz);
+        h_Q2pre->Fill(Q2);
         if (Q2 >= cutQMin && Q2 <= cutQMax ){
             h_Q2pos->Fill(Q2); 
             h_xbpre->Fill(event.Getxb());
@@ -121,7 +126,10 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
                 if (v >= cutVMin && v <= cutVMax ){
                     h_W2pre->Fill(w);
                     if (w >= cutWMin && w <= cutWMax ){
-                          return true;
+                        h_Q4R->Fill(Q2);
+                        h_nu4R->Fill(v);
+
+                        return true;
                     }
                 }
             }
@@ -142,6 +150,8 @@ bool CutSet::PassCutsHadrons(const Particle& hadron)  {
     if (z >= cutZMin && z <= cutZMax) {
         h_pt2pre->Fill(pt2);
         h_pt4R->Fill(pt2);
+        h_z4R->Fill(hadron.Getz());
+
         h_phihpre->Fill(phih);
         return true;
     }
@@ -173,8 +183,13 @@ void CutSet::Chop(const std::string filename) {
     h_pt2pre->Write();
     h_phihpre->Write();
     h_Vzpre->Write();
+    h_Vxpre->Write();
+    h_Vypre->Write();
     h_Vzpos->Write();
     h_Qvx->Write();
+    h_Q4R->Write();
+    h_nu4R->Write();
+    h_z4R->Write();
     h_pt4R->Write();
     //file.Write();
     // Write other histograms here

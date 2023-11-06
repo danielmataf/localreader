@@ -96,11 +96,11 @@ int main() {
     //  Choped has all histograms pre & pos 
     //  Use here Monitoring, it has only histograms pos cuts [and the electron counter]
     //TFile* fileD = new TFile("../files2read/REoutput_D.root", "READ");
-    TFile* fileD = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_ULT_LD2.root","READ");
+    TFile* fileD = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_ULTsimLD2.root","READ");
     //TFile* fileSn = new TFile("../files2read/REoutput_Sn.root", "READ");
-    TFile* fileSn = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_ULT_Sn.root","READ");
-    TFile* fileDbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_ULT_LD2.root","READ");
-    TFile* fileSnbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_ULT_Sn.root","READ");
+    TFile* fileSn = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_ULTsimSn.root","READ");
+    TFile* fileDbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_ULTsimLD2.root","READ");
+    TFile* fileSnbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_ULTsimSn.root","READ");
 
     //ERROR HANDLER - file open
     if (!fileD->IsOpen()) {
@@ -125,8 +125,20 @@ int main() {
     // Retrieve the first histogram from the ROOT file
     //  USING MONITORING histNAMES 
     //TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("pt2p"));
-    TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("pt2pre"));
-    TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("pt2pre"));
+    TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("pt2R"));
+    TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("pt2R"));
+    TH1F* h_QtestD = dynamic_cast<TH1F*>(fileD->Get("Q2R"));
+    TH1F* h_QtestSn = dynamic_cast<TH1F*>(fileSn->Get("Q2R"));
+    TH1F* h_nutestD = dynamic_cast<TH1F*>(fileD->Get("nuR"));
+    TH1F* h_nutestSn = dynamic_cast<TH1F*>(fileSn->Get("nuR"));
+    TH1F* h_ztestD = dynamic_cast<TH1F*>(fileD->Get("zR"));
+    TH1F* h_ztestSn = dynamic_cast<TH1F*>(fileSn->Get("zR"));
+    TH1F* h_QtestDpos = dynamic_cast<TH1F*>(fileDbis->Get("Q2truePOS"));
+    TH1F* h_QtestSnpos = dynamic_cast<TH1F*>(fileSnbis->Get("Q2truePOS"));
+    TH1F* h_nutestDpos = dynamic_cast<TH1F*>(fileDbis->Get("nutruePOS"));
+    TH1F* h_nutestSnpos = dynamic_cast<TH1F*>(fileSnbis->Get("nutruePOS"));
+
+
     if (!h_pttestD || !h_pttestSn) {
             std::cerr << "Error: Cant retrieve histograms" << std::endl;
             return 0 ;

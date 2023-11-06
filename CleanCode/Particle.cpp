@@ -45,9 +45,9 @@
         vy = vertY;
     }
 
-    //double Particle::GetQ2() const {
-    //    return Q2;
-    //}
+    double Particle::GetQ2() const {
+        return Q2;
+    }
     double Particle::Getnu() const {
         return nu;
     }

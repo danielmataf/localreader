@@ -61,7 +61,9 @@ private:
 
     //add more histograms for other variables here
     
-    //TH1F *h_Q2pre = new TH1F("Q2pre", "Q2pre", nubin, QminX , QmaxX);
+    TH1F *h_Q2posel = new TH1F("Q2truePOS", "Q2truePOS", 10, QminX , QmaxX);
+    TH1F *h_nuposel= new TH1F("nuposel", "nuposel", 10,numinX,numaxX) ;
+
     //TH1F *h_xbpre= new TH1F("xbpre", "xbpre", nubin, xminX, xmaxX) ;
     //TH1F *h_ypre= new TH1F ("ypre" , "ypre" , nubin, yminX, ymaxX) ;
     //TH1F *h_nupre= new TH1F("nupre", "nupre", nubin,numinX,numaxX) ;

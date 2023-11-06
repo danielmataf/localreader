@@ -75,7 +75,9 @@ void Monitoring::FillHistograms(const Event& event) {
             //std::cout << " -> hadron cuts passed successfully  " << std::endl;
             //
             //if passcuts(given hadron )
-            //fill histogram with hadron variables  
+            //fill histogram with hadron variables ù
+            h_Q2posel->Fill(event.GetQ2());
+            h_nuposel->Fill(event.Getnu());
             h_z->Fill(hadron.Getz());
             h_pt2->Fill(hadron.Getpt2());
             h_phih->Fill(hadron.Getphih());
@@ -103,6 +105,8 @@ void Monitoring::WriteHistogramsToFile(const std::string filename) {
     h_pt2->Write();
     h_phih->Write();
     h_vertexZ->Write();
+    h_nuposel->Write();
+    h_Q2posel->Write();
     TTree tree("treecounter","treecounter");
     tree.Branch("counterel_R", &counterel_R, "counterel_R/I");
     tree.Fill();

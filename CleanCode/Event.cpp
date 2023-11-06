@@ -37,10 +37,22 @@ const std::vector<Particle>& Event::GetHadrons() const {
 void Event::SetVertexZ(double vertexz){
     vz = vertexz;
 }
+void Event::SetVertexX(double vertexx){
+    vx = vertexx;
+}
+void Event::SetVertexY(double vertexy){
+    vy = vertexy;
+}
+
 double Event::GetVz()const {
     return vz;
 }
 
+double Event::GetVx()const {
+    return vx;
+}double Event::GetVy()const {
+    return vy;
+}
 void Event::Print() {   //add int v=0 as argument 4 different types of verbose TBD
 
     std::cout << "Electrons:" << std::endl;

@@ -21,7 +21,7 @@ public:
     void SetVx(double); 
     void SetVy(double); 
 
-    //double GetQ2() const ;
+    double GetQ2() const ;
     double Getnu()  const ;
     double Gety() const ;
     double GetW2() const ;
