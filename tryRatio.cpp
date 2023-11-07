@@ -74,12 +74,14 @@ void calculateMRat(int option, TH1F* hD, TH1F* h_onlyeD, int elecD, TH1F* hSn, T
             interm1 = (elecSn > 0) ? y_Sn/elecSn : 0.0;
             interm2 = (elecD > 0) ? y_D/elecD : 0.0;
             interm3 = (interm2 > 0) ? interm1/interm2 : 0.0;
-            cout<<interm3<<"->"<<endl;
+            cout<<" double rat= ("<<y_Sn << "/"<< elecSn<<")/("<<  y_D << "/"<< elecD<<") = " <<interm1<<"/"<<interm2 << " = "<< interm3<<"..........."<<  endl;
+            cout<<" x ="<<x_Sn<< "-> interm 3 ="<< interm3<<"->"<<endl;
             if (y_Sn!=0 && y_D!=0 && y_Sn_e != 0 && y_D_e != 0){
                 Rq_err= interm3 * sqrt(1/y_Sn + 1/y_D + 1/y_Sn_e + 1/y_D_e);
-                cout<<Rq_err<<"->"<<endl;
+                cout<<Rq_err<<"-> Err"<<endl;
             }
         }
+
         g_result->SetPoint(bin-1, x_Sn, interm3 );
 		g_result->SetPointError(bin-1, 0, Rq_err);
     }
@@ -109,10 +111,10 @@ int main() {
     //  Use here Monitoring, it has only histograms pos cuts [and the electron counter]
     //TFile* fileD = new TFile("../files2read/REoutput_D.root", "READ");
     //TFile* fileSn = new TFile("../files2read/REoutput_Sn.root", "READ");
-    TFile* fileD = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_RrecLD2.root","READ");
-    TFile* fileSn = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_RrecSn.root","READ");
-    TFile* fileDbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_RrecLD2.root","READ");
-    TFile* fileSnbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_RrecSn.root","READ");
+    TFile* fileD = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_WINrecLD2.root","READ");
+    TFile* fileSn = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_WINrecSn.root","READ");
+    TFile* fileDbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_WINrecLD2.root","READ");
+    TFile* fileSnbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_WINrecSn.root","READ");
 
     //ERROR HANDLER - file open
     if (!fileD->IsOpen()) {
@@ -205,7 +207,6 @@ int main() {
     fileSn->Close();
    
     ////cR->SaveAs("ratio.pdf");
-    fileSn->Close();
     cR->cd(1);
     R_Q->GetXaxis()->SetTitle("Q{2} (GeV^{2}) " );
     R_Q->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");

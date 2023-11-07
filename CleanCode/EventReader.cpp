@@ -101,7 +101,9 @@
                 }
                 el_detect = true;
             } else if (IsHadron(pid) && el_detect ==true) {
-                ProcessParticle(momentum, pid,targetvx,targetvy,targetvz ); 
+                if (pid == Constants::PION_PLUS_PID){
+                    ProcessParticle(momentum, pid,targetvx,targetvy,targetvz ); 
+                }
             }
         }
         return currentEvent; 
@@ -114,6 +116,68 @@
         return evtnbr;
 
     }
+
+////////////////////////CLAScollNOV//////////////////////////
+
+
+std::optional<Event> EventReader::ProcessEventsWithPositivePions(hipo::event event, int eventNumber) {
+    currentEvent = Event();
+    bool el_detect = false;
+    double max_energy_electron = 0.0; 
+    event.getStructure(RECgen);
+    //RECgen.show();
+    bool flag_el = false;
+    int counter_el = 0.0;
+
+    for (int i = 0; i < RECgen.getRows(); ++i) {
+        if (RECgen.getInt("pid", i) == 11) {
+            flag_el = true;
+        }
+    }
+    if (flag_el == false) return std::nullopt;
+
+    for (int i = 0; i < RECgen.getRows(); ++i) {
+        int pid = RECgen.getInt("pid", i);
+        if (pid == Constants::POSITRON_PID) {
+            return std::nullopt;    
+        }
+        if (pid == 0) {
+            continue;
+        }
+
+        // Check for positive pions (pi+)
+        if (pid != Constants::PION_PLUS_PID) {
+            continue; // Skip this hadron
+        }
+
+        double mass = GetMassID(pid);
+        double targetvz = RECgen.getFloat("vz", i);
+        double targetvx = RECgen.getFloat("vx", i);
+        double targetvy = RECgen.getFloat("vy", i);
+
+        TLorentzVector momentum;
+        momentum.SetPx(RECgen.getFloat("px", i));
+        momentum.SetPy(RECgen.getFloat("py", i));
+        momentum.SetPz(RECgen.getFloat("pz", i));
+        TVector3 momentum3D = momentum.Vect();
+        momentum.SetVectM(momentum3D, mass);
+
+        if (pid == Constants::ELECTRON_PID) {
+            double electron_status = RECgen.getInt("status", i);
+            if (electron_status < 0) {
+                max_energy_electron = momentum.E();
+                ProcessParticle(momentum, Constants::ELECTRON_PID, targetvx, targetvy, targetvz);
+            }
+            el_detect = true;
+        } else if (IsHadron(pid) && el_detect == true) {
+            ProcessParticle(momentum, pid, targetvx, targetvy, targetvz); 
+        }
+    }
+    return currentEvent; 
+}
+
+
+/////////////////////////////////////////////////////////
 
 
     std::optional<Event> EventReader::ProcessEventsInFile() { 
@@ -135,7 +199,11 @@
                 reader.read(hipoEvent);
 
                 //std::cout<<"starting event"<<std::endl;
-                return ProcessEvent(hipoEvent, 0);
+                
+                
+                return ProcessEvent(hipoEvent, 0);    
+                //prevoius line was commented and replace by the next one for CLAScollNOV
+                //return ProcessEventsWithPositivePions(hipoEvent, 0);
             } 
             Event empty;
             return empty;

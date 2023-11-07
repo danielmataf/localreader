@@ -28,7 +28,7 @@ CutSet::CutSet() {
     cutVzMin = -30.0;
     cutVzMax = 30.0 ;
     cutPt2Min= 0.0;
-    cutPt2Max=30.0 ;
+    cutPt2Max=3.0 ;
 
 
     //OTHER CUTS 

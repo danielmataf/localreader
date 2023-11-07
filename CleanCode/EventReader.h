@@ -19,6 +19,8 @@ public:
 
 private:
     std::optional<Event> ProcessEvent( hipo::event event, int eventNumber);
+    std::optional<Event> ProcessEventsWithPositivePions(hipo::event event, int eventNumber) ;
+
     hipo::bank RECgen;
     hipo::bank RUNconfig;
     hipo::reader reader;
