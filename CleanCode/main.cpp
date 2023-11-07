@@ -104,6 +104,7 @@ int main() {
     bcuts.SetCutW(6,30);
     bcuts.SetCutZ(0.3,0.7);
     bcuts.SetCutVz(-7.5,-2.5);
+    //bcuts.SetCutPt2(3,10);        //this cut has not been added yet to passcuts
     ccuts.SetCutQ(0, 10);
     ccuts.SetCutY(0, 10);
     ccuts.SetCutW(10, 0);

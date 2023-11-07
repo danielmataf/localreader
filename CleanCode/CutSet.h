@@ -18,6 +18,8 @@ public:
     void SetCutV(double minV, double maxV);
     void SetCutW(double minW, double maxW);
     void SetCutZ(double minZ, double maxZ);
+    void SetCutPt2(double minPt2, double maxPt2);
+
     void SetCutVx(double, double);
     void SetCutVy(double, double);
     void SetCutVz(double, double);
@@ -39,6 +41,8 @@ private:
     double cutVMin, cutVMax;
     double cutWMin, cutWMax;
     double cutZMin, cutZMax;
+    double cutPt2Min, cutPt2Max;
+
     double cutVxMin,cutVxMax;
     double cutVyMin,cutVyMax;
     double cutVzMin,cutVzMax;
@@ -61,7 +65,7 @@ private:
     int zminX = 0;
     int zmaxX = 1;
     int pt2minX = 0;
-    int pt2maxX = 10;
+    int pt2maxX = 3;
     int phihminX = 0;
     int phihmaxX = 360;
 

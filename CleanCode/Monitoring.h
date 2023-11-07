@@ -42,7 +42,7 @@ private:
     int zminX = 0;
     int zmaxX = 1;
     int pt2minX = 0;
-    int pt2maxX = 10;
+    int pt2maxX = 3;
     int phihminX = 0;
     int phihmaxX = 360;
 

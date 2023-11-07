@@ -27,6 +27,9 @@ CutSet::CutSet() {
     // (z>0.3 && z<0.7)
     cutVzMin = -30.0;
     cutVzMax = 30.0 ;
+    cutPt2Min= 0.0;
+    cutPt2Max=30.0 ;
+
 
     //OTHER CUTS 
     // (theta_el*180/PI>6)	// /!\ implementing CUT on theta coordinate for electrons!!!!
@@ -72,6 +75,14 @@ void CutSet::SetCutZ(double minZ, double maxZ) {
     cutZMin = minZ;
     cutZMax = maxZ;
 }
+void CutSet::SetCutPt2(double minPt2, double maxPt2){
+    cutPt2Min = minPt2;
+    cutPt2Max = maxPt2;
+
+
+}
+
+
 void CutSet::SetCutVx(double vxmin, double vxmax){
     cutVxMin = vxmin;
     cutVxMax = vxmax;

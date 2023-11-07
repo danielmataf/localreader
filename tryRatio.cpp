@@ -64,7 +64,12 @@ void calculateMRat(int option, TH1F* hD, TH1F* h_onlyeD, int elecD, TH1F* hSn, T
             interm2 = (y_D_e > 0) ? y_D/y_D_e : 0.0;
             interm3 = (interm2 > 0) ? interm1/interm2 : 0.0;
             Rq_err= interm3 * sqrt(1/y_Sn + 1/y_D + 1/y_Sn_e + 1/y_D_e);
+            
+            
+
         }
+        //->SetPoint(bin-1, x_Sn, interm3 );
+        //->SetPointError(bin-1, 0, Rq_err);
         if (option==2) {
             interm1 = (elecSn > 0) ? y_Sn/elecSn : 0.0;
             interm2 = (elecD > 0) ? y_D/elecD : 0.0;
@@ -88,6 +93,13 @@ void calculateMRat(int option, TH1F* hD, TH1F* h_onlyeD, int elecD, TH1F* hSn, T
 int main() {
     TCanvas* cR=new TCanvas("ratio","ratio"); //create new canvas
     cR->Divide(2,2);
+    TGraphErrors *R_Q = new TGraphErrors();
+    TGraphErrors *R_Qa = new TGraphErrors();
+    TGraphErrors *R_v = new TGraphErrors();
+    TGraphErrors *R_va = new TGraphErrors();
+    TGraphErrors *R_z = new TGraphErrors();
+    TGraphErrors *R_za = new TGraphErrors();
+
     TGraphErrors *R_pt = new TGraphErrors();
     TGraphErrors *R_pta = new TGraphErrors();
     TGraphErrors *ReRpt = new TGraphErrors();
@@ -96,11 +108,11 @@ int main() {
     //  Choped has all histograms pre & pos 
     //  Use here Monitoring, it has only histograms pos cuts [and the electron counter]
     //TFile* fileD = new TFile("../files2read/REoutput_D.root", "READ");
-    TFile* fileD = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_ULTsimLD2.root","READ");
     //TFile* fileSn = new TFile("../files2read/REoutput_Sn.root", "READ");
-    TFile* fileSn = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_ULTsimSn.root","READ");
-    TFile* fileDbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_ULTsimLD2.root","READ");
-    TFile* fileSnbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_ULTsimSn.root","READ");
+    TFile* fileD = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_RrecLD2.root","READ");
+    TFile* fileSn = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_RrecSn.root","READ");
+    TFile* fileDbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_RrecLD2.root","READ");
+    TFile* fileSnbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_RrecSn.root","READ");
 
     //ERROR HANDLER - file open
     if (!fileD->IsOpen()) {
@@ -125,18 +137,19 @@ int main() {
     // Retrieve the first histogram from the ROOT file
     //  USING MONITORING histNAMES 
     //TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("pt2p"));
-    TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("pt2R"));
-    TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("pt2R"));
+    TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("pt2"));
+    TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("pt2"));
     TH1F* h_QtestD = dynamic_cast<TH1F*>(fileD->Get("Q2R"));
     TH1F* h_QtestSn = dynamic_cast<TH1F*>(fileSn->Get("Q2R"));
     TH1F* h_nutestD = dynamic_cast<TH1F*>(fileD->Get("nuR"));
     TH1F* h_nutestSn = dynamic_cast<TH1F*>(fileSn->Get("nuR"));
     TH1F* h_ztestD = dynamic_cast<TH1F*>(fileD->Get("zR"));
     TH1F* h_ztestSn = dynamic_cast<TH1F*>(fileSn->Get("zR"));
-    TH1F* h_QtestDpos = dynamic_cast<TH1F*>(fileDbis->Get("Q2truePOS"));
-    TH1F* h_QtestSnpos = dynamic_cast<TH1F*>(fileSnbis->Get("Q2truePOS"));
-    TH1F* h_nutestDpos = dynamic_cast<TH1F*>(fileDbis->Get("nutruePOS"));
-    TH1F* h_nutestSnpos = dynamic_cast<TH1F*>(fileSnbis->Get("nutruePOS"));
+    TH1F* h_QonlyeD = dynamic_cast<TH1F*>(fileDbis->Get("Q2truePOS"));
+    TH1F* h_QonlyeSn = dynamic_cast<TH1F*>(fileSnbis->Get("Q2truePOS"));
+    TH1F* h_vonlyeD = dynamic_cast<TH1F*>(fileDbis->Get("nuposel"));        //histo with only electron cuts
+    TH1F* h_vonlyeSn = dynamic_cast<TH1F*>(fileSnbis->Get("nuposel"));      //histo with only electron cuts
+
 
 
     if (!h_pttestD || !h_pttestSn) {
@@ -175,7 +188,14 @@ int main() {
     treeSn->GetEntry(0);
     double intermD = counter_e_D;
     double intermSn= counter_e_Sn;
+
     
+    cout<<intermD<<"    value "<<endl;
+    
+
+    calculateMRat( 1, h_QtestD, h_QonlyeD,  intermD, h_QtestSn, h_QonlyeSn,  intermSn, R_Q, R_Qa);
+    calculateMRat( 1, h_nutestD, h_vonlyeD,  intermD, h_nutestSn, h_vonlyeSn,  intermSn, R_v, R_va);
+    calculateMRat( 2, h_ztestD, h_vonlyeD,  intermD, h_ztestSn, h_vonlyeSn,  intermSn, R_z, R_za);
     calculateMRat( 2, h_pttestD, h_pttestD,  intermD, h_pttestD, h_pttestD,  intermSn, R_pt,R_pta);
 
 
@@ -183,17 +203,48 @@ int main() {
     //Close the first ROOT file
     fileD->Close();
     fileSn->Close();
-    cR->cd(1);
-    R_pta->GetXaxis()->SetTitle("Q{2} (GeV^{2}) " );
-    R_pta->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
-    R_pta->Draw("AP");
+   
     ////cR->SaveAs("ratio.pdf");
     fileSn->Close();
+    cR->cd(1);
+    R_Q->GetXaxis()->SetTitle("Q{2} (GeV^{2}) " );
+    R_Q->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_Q->Draw("AP");
+
     cR->cd(2);
-    R_pt->GetXaxis()->SetTitle("Q{2} (GeV^{2}) " );
+    R_v->GetXaxis()->SetTitle("#nu " );
+    R_v->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_v->Draw("AP");
+    cR->cd(3);
+    R_z->GetXaxis()->SetTitle("z " );
+    R_z->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_z->Draw("AP");
+
+    cR->cd(4);
+    R_pt->GetXaxis()->SetTitle("pt " );
     R_pt->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
     R_pt->Draw("AP");
     cR->SaveAs("ratiotest.pdf");
+
+    cR->cd(1);
+    R_Qa->GetXaxis()->SetTitle("Q{2} (GeV^{2}) " );
+    R_Qa->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_Qa->Draw("AP");
+    //////cR->SaveAs("ratio.pdf");
+    cR->cd(2);
+    R_va->GetXaxis()->SetTitle("#nu " );
+    R_va->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_va->Draw("AP");
+    cR->cd(3);
+    R_za->GetXaxis()->SetTitle("z " );
+    R_za->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_za->Draw("AP");
+    cR->cd(4);
+    R_pta->GetXaxis()->SetTitle("pt " );
+    R_pta->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
+    R_pta->Draw("AP");
+
+    cR->SaveAs("ratiotesta.pdf");
     
 
     return 0;
