@@ -101,9 +101,9 @@
                 }
                 el_detect = true;
             } else if (IsHadron(pid) && el_detect ==true) {
-                if (pid == Constants::PION_PLUS_PID){
+                //if (pid == Constants::PION_PLUS_PID){
                     ProcessParticle(momentum, pid,targetvx,targetvy,targetvz ); 
-                }
+                //}
             }
         }
         return currentEvent; 

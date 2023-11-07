@@ -63,6 +63,11 @@ private:
     
     TH1F *h_Q2posel = new TH1F("Q2truePOS", "Q2truePOS", 10, QminX , QmaxX);
     TH1F *h_nuposel= new TH1F("nuposel", "nuposel", 10,numinX,numaxX) ;
+    TH1F *h_Q2_had = new TH1F("Q2_had", "Q2_had",10, QminX , QmaxX);
+    TH1F *h_nu_had= new TH1F("nu_had", "nu_had", 10, xminX, xmaxX) ;
+    TH1F *h_z_had= new TH1F("z_had", "z_had", 10, zminX, zmaxX) ;
+    TH1F *h_pt2_had= new TH1F("pt2_had", "pt2_had", 10, pt2minX, pt2maxX) ;
+
 
     //TH1F *h_xbpre= new TH1F("xbpre", "xbpre", nubin, xminX, xmaxX) ;
     //TH1F *h_ypre= new TH1F ("ypre" , "ypre" , nubin, yminX, ymaxX) ;

@@ -7,6 +7,7 @@
 #include "Event.h" 
 #include "Monitoring.h"
 #include "CutSet.h"
+#include "constants.h"
 
     //int nubin = 100;  
   
@@ -66,24 +67,31 @@ void Monitoring::FillHistograms(const Event& event) {
     h_y->Fill(event.Gety());
     h_nu->Fill(event.Getnu());
     h_W2->Fill(event.GetW2());
+    h_nuposel->Fill(event.GetQ2());
+    h_Q2posel->Fill(event.Getnu());
+    
     //
     //std::cout << " kinel " << event.GetQ2()<<" , " << event.Getxb()<<" , " << event.Gety()<<" , "<< event.Getnu()<<" , "<< event.GetW2()<<std::endl;  
     //
     for (const Particle& hadron : event.GetHadrons()) {
         if (cut1.PassCutsHadrons(hadron)==true){
+            if (hadron.GetPID() == Constants::PION_PLUS_PID){   //adding this condition for pion+ and erasing the condit at evtprocessr
             //
             //std::cout << " -> hadron cuts passed successfully  " << std::endl;
             //
             //if passcuts(given hadron )
-            //fill histogram with hadron variables ù
-            h_Q2posel->Fill(event.GetQ2());
-            h_nuposel->Fill(event.Getnu());
+            //fill histogram with hadron variables 
+            h_Q2_had->Fill(event.GetQ2());
+            h_nu_had->Fill(event.Getnu());
+            h_z_had->Fill(hadron.Getz());
+            h_pt2_had->Fill(hadron.Getpt2());
             h_z->Fill(hadron.Getz());
             h_pt2->Fill(hadron.Getpt2());
             h_phih->Fill(hadron.Getphih());
             //
             //std::cout << " kinhad " << hadron.Getz()<<" , " << hadron.Getpt2()<<" , " << hadron.Getphih()<<std::endl;  
             //
+            }
         }
     }
  //add histos 
@@ -107,6 +115,10 @@ void Monitoring::WriteHistogramsToFile(const std::string filename) {
     h_vertexZ->Write();
     h_nuposel->Write();
     h_Q2posel->Write();
+    h_Q2_had->Write();
+    h_nu_had->Write();
+    h_z_had->Write();
+    h_pt2_had->Write();
     TTree tree("treecounter","treecounter");
     tree.Branch("counterel_R", &counterel_R, "counterel_R/I");
     tree.Fill();

@@ -110,11 +110,11 @@ int main() {
     //  Choped has all histograms pre & pos 
     //  Use here Monitoring, it has only histograms pos cuts [and the electron counter]
     //TFile* fileD = new TFile("../files2read/REoutput_D.root", "READ");
-    //TFile* fileSn = new TFile("../files2read/REoutput_Sn.root", "READ");
-    TFile* fileD = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_WINrecLD2.root","READ");
-    TFile* fileSn = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_WINrecSn.root","READ");
-    TFile* fileDbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_WINrecLD2.root","READ");
-    TFile* fileSnbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_WINrecSn.root","READ");
+    //TFile* fileSn = new TFile("../files2read/REoutput_Sn.root", "READ"); 
+    TFile* fileD = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_PI100recLD2.root","READ");
+    TFile* fileSn = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_PIrecSn.root","READ");
+    TFile* fileDbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_PI100recLD2.root","READ");
+    TFile* fileSnbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_PIrecSn.root","READ");
 
     //ERROR HANDLER - file open
     if (!fileD->IsOpen()) {
