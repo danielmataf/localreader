@@ -91,24 +91,39 @@ int main() {
     "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00025-00029.hipo"};
     //std::vector<std::string> filenames = {"../../../files2read/r_eD-01.hipo", "../../../files2read/r_eD-01.hipo", "../../../files2read/r_eD-02.hipo"};
     //std::vector<std::string> filenamesSn = {"../../../files2read/r_eSn-01.hipo", "../../../files2read/r_eSn-01.hipo", "../../../files2read/r_eSn-02.hipo"};
+    std::vector<std::string> filenamesLD2 = {
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00015-00019.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00020-00024.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00025-00029.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00010-00014.hipo"
+    };
+
+    std::vector<std::string> filenamesCuSn = {
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00010-00014.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00015-00019.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00020-00024.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00025-00029.hipo"
+    };
 
     std::cout<< "Hello world \n";
     EventReader MC(filenames);
+    EventReader MC_LD2(filenamesLD2);
+    EventReader MC_CuSn(filenamesCuSn);
     std::optional<Event> test;
-    std::optional<Event> testD;
-    std::optional<Event> testSn;
+    std::optional<Event> testLD2;
+    std::optional<Event> testCuSn;
     CutSet Sncuts;   //Sn
     CutSet LDcuts;   //LD2
     Sncuts.SetCutQ(1.5,10);
     Sncuts.SetCutY(0.25, 0.85);
     Sncuts.SetCutW(6,30);
     Sncuts.SetCutZ(0.3,0.7);
-    Sncuts.SetCutVz(-3.5,-1.5);  //vz cut for Sn 
+    Sncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
     LDcuts.SetCutQ(1.5,10);
     LDcuts.SetCutY(0.25, 0.85);
     LDcuts.SetCutW(6,30);
     LDcuts.SetCutZ(0.3,0.7);
-    LDcuts.SetCutVz(-7.5,-2.5);
+    LDcuts.SetCutVz(-7.5,-2.5);     //vz cut for precision in LD2 target
 
     //bcuts.SetCutPt2(3,10);        //this cut has not been added yet to passcuts
     int sumevts = 0;
@@ -130,25 +145,50 @@ int main() {
 //    }
     std::cout << "Total number of events: " << sumevts << std::endl;
     int counter_el= 0.0;
-    int counter_elD= 0.0;
+    int counter_elLD2 = 0;
     int counter_elSn= 0.0;
     for (int i=0; i<900000; i++){
+            //std::optional<Event> 
+            testLD2 = MC_LD2.ProcessEventsInFile();
+            //std::optional<Event> 
+            testCuSn = MC_CuSn.ProcessEventsInFile();
             test = MC.ProcessEventsInFile();
-           if (test.has_value()==false) continue;
-            counter_el ++;
-           Event eventtest =  test.value();
-            eventtest.calcAll();
-            //eventtest.Print();
-            //monitoring(test,)
-                monSn.FillHistograms(eventtest);
-                //rat.FillHistograms( )
-                //loop in hadron "list"
+            if (testLD2.has_value()) {
+                counter_elLD2++;
+                Event eventtestLD2 = testLD2.value();
+                eventtestLD2.calcAll();
+                monLD.FillHistograms(eventtestLD2);
+            }
+            if (testCuSn.has_value()) {
+                counter_elSn++;
+                Event eventtestCuSn = testCuSn.value();
+                eventtestCuSn.calcAll();
+                monSn.FillHistograms(eventtestCuSn);
+            }
+           
+           
+           //if (test.has_value()==false) continue;
+           // counter_el ++;
+           //Event eventtest =  test.value();
+           // eventtest.calcAll();
+           // //eventtest.Print();
+           // //monitoring(test,)
+           //     monSn.FillHistograms(eventtest);
+           //     //rat.FillHistograms( )
+           //     //loop in hadron "list"
+    
+    
+    
     }
-    std::cout<<counter_el<<std::endl;  
-    monSn.WriteHistogramsToFile("output_testother.root");
-    monSn.DrawHistograms("after_bcutsother");
-    //bcuts.Chop("chop_bcutsother.root");
-    //bcuts.DrawChop("chopped_bcutsother");
+
+    std::cout << "Events processed for LD2: " << counter_elLD2 << std::endl;
+    std::cout << "Events processed for Sn: " << counter_elSn << std::endl;
+
+    monLD.WriteHistogramsToFile("output_LD2.root");
+    monSn.WriteHistogramsToFile("output_CuSn.root");
+
+    monLD.DrawHistograms("after_cuts_LD2");
+    monSn.DrawHistograms("after_cuts_CuSn");
 
     return 0;
 }
