@@ -97,21 +97,24 @@ int main() {
     std::optional<Event> test;
     std::optional<Event> testD;
     std::optional<Event> testSn;
-    CutSet ccuts;
-    CutSet bcuts;
-    bcuts.SetCutQ(1.5,10);
-    bcuts.SetCutY(0.25, 0.85);
-    bcuts.SetCutW(6,30);
-    bcuts.SetCutZ(0.3,0.7);
-    bcuts.SetCutVz(-7.5,-2.5);
+    CutSet Sncuts;   //Sn
+    CutSet LDcuts;   //LD2
+    Sncuts.SetCutQ(1.5,10);
+    Sncuts.SetCutY(0.25, 0.85);
+    Sncuts.SetCutW(6,30);
+    Sncuts.SetCutZ(0.3,0.7);
+    Sncuts.SetCutVz(-3.5,-1.5);  //vz cut for Sn 
+    LDcuts.SetCutQ(1.5,10);
+    LDcuts.SetCutY(0.25, 0.85);
+    LDcuts.SetCutW(6,30);
+    LDcuts.SetCutZ(0.3,0.7);
+    LDcuts.SetCutVz(-7.5,-2.5);
+
     //bcuts.SetCutPt2(3,10);        //this cut has not been added yet to passcuts
-    ccuts.SetCutQ(0, 10);
-    ccuts.SetCutY(0, 10);
-    ccuts.SetCutW(10, 0);
-    ccuts.SetCutZ(0, 10);
-    Monitoring mon(ccuts);
     int sumevts = 0;
-    Monitoring monb(bcuts);
+    Monitoring monSn(Sncuts, "Sn");
+    Monitoring monLD(LDcuts, "LD2");
+    Ratio rat(LDcuts, Sncuts); //calling the class with the corresponding cuts
 //    for (auto & f : filenames ){
 //        try{ 
 //        std::cout << "Processing file: " << f << std::endl; 
@@ -137,16 +140,15 @@ int main() {
             eventtest.calcAll();
             //eventtest.Print();
             //monitoring(test,)
-                mon.FillHistograms(eventtest);
-                monb.FillHistograms(eventtest);
+                monSn.FillHistograms(eventtest);
+                //rat.FillHistograms( )
                 //loop in hadron "list"
     }
     std::cout<<counter_el<<std::endl;  
-    //mon.WriteHistogramsToFile("output_testVz.root");
-    monb.WriteHistogramsToFile("output_testother.root");
-    monb.DrawHistograms("after_bcutsother.root");
-    bcuts.Chop("chop_bcutsother.root");
-    bcuts.DrawChop("chopped_bcutsother");
+    monSn.WriteHistogramsToFile("output_testother.root");
+    monSn.DrawHistograms("after_bcutsother");
+    //bcuts.Chop("chop_bcutsother.root");
+    //bcuts.DrawChop("chopped_bcutsother");
 
     return 0;
 }

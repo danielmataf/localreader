@@ -20,7 +20,7 @@ void CompareHistograms(const char* file1, const char* file2) {
         return;
     }
 
-    // histogram names to recover 
+    // hist names to recover 
     const std::vector<std::pair<const char*, const char*>> histogramPairs = {
         {"Q2pre", "Q2pre"},
         {"W2pre", "W2pre"},
@@ -33,16 +33,16 @@ void CompareHistograms(const char* file1, const char* file2) {
         {"pt2pre", "pt2pre"}
     };
 
-    //some info for plots
+    //some info for plots:
     //( name , { cutlow, cuthigh, title, titleXaxis, titleYaxis, rangeXmin,rangeXmax, bool4logscale})
     const std::map<const char*, std::tuple<double, double, std::string, std::string, std::string, double, double, bool>> xStartValues = {
-        {"Q2pre", {1.5, 100.0, "Q^{2} Distribution in LD2", "Q^{2}(Gev^{2})", "", 0.0, 6.0, false}},
         {"W2pre", {0.0, 100.0, "W^{2} Distribution in LD2", "W^{2}", "", 0.0, 20.0, false}},
+        {"Q2pre", {1.5, 100, "Q^{2} Distribution in LD2", "Q^{2}(Gev^{2})", "", 0.0, 6.0, false}},
         {"nupre", {100.0, 100.0, "#nu Distribution in LD2", "#nu", "", 0.0, 12.0, false}},
         {"phihpre", {100.0, 100.0, "#phi_{h} Distribution in LD2", "#phi_{h}", "", 0.0, 360.0, false}},
         {"xbpre", {100.0, 100.0, "x_{b} Distribution in LD2", " x_{b}", "", 0.0, 1.0, false}},
         {"ypre", {0.25, 0.85, "y Distribution in LD2", "y (GeV)", "", 0.2, 1.0, false}},
-        {"zpre", {0.3, 0.7, "z Distribution in LD2", " z", "", 0.0, 1.0, false}},
+        {"zpre", {0.3,   0.7, "z Distribution in LD2", " z", "", 0.0, 1.0, false}},
         {"Vzpre", {-9.0, -1.5, "V_{z} Distribution in LD2", "V_{z} (cm) ", "", -20.0, 10.0, false}},
         {"pt2pre", {100.0, 100.0, "p_{T}^{2} Distribution in LD2", "p_{T}^{2} (Gev^{2})", "", 0.0, 3.0, true}}
     };
@@ -94,7 +94,7 @@ void CompareHistograms(const char* file1, const char* file2) {
         //drawing
         h1->Draw("hist");
         h2->Draw("hist, same");
-
+        canvas->Update();
         //creating and drawing Cuts
         const double xStart1 = std::get<0>(xStartValues.at(pair.first));
         const double xStart2 = std::get<1>(xStartValues.at(pair.second));
@@ -103,13 +103,14 @@ void CompareHistograms(const char* file1, const char* file2) {
             line1->SetLineColor(kBlack);
             line1->SetLineWidth(2);
             line1->SetLineStyle(2); //dashed
-            line1->Draw("");
+            line1->Draw("same");
             TLine* line2 = new TLine(xStart2, 0, xStart2, max);
             line2->SetLineColor(kBlack);
             line2->SetLineWidth(2);
             line2->SetLineStyle(2); //dashed
-            line2->Draw("");
+            line2->Draw("same");
         }
+        canvas->Update();
 
         // Save the canvas as a PDF file
         canvas->SaveAs(Form("%s_vs_%s_comparison.pdf", pair.first, pair.second));

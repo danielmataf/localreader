@@ -125,11 +125,60 @@ void Ratio::PlotRatio(const std::string filename) {
     TCanvas Rcanv("Ratio canvas", "Ratio Plots");
     Rcanv.Divide(1, 2);
     Rcanv.cd(1);
-    h_nu_z_pt2A->Draw("lego");
     Rcanv.cd(2);
-    h_nu_z_pt2D->Draw("lego");
     Rcanv.Print((filename + ".pdf").c_str());
 
 }
+
+
+
+void Ratio::calculateMRat(int option, TH1F* hD, TH1F* h_onlyeD, int elecD, TH1F* hSn, TH1F* h_onlyeSn, int elecSn,  TGraphErrors* g_result, TGraphErrors* g_resulta) {
+    int numBins = hD->GetNbinsX();
+    
+
+    for (int bin = 1; bin <= numBins; bin++) {
+        double x_Sn = hSn->GetXaxis()->GetBinCenter(bin);		
+        double y_Sn = hSn->GetBinContent(bin);				
+        double x_D = hD->GetXaxis()->GetBinCenter(bin);			
+        double y_D = hD->GetBinContent(bin) ;				
+        double y_Sn_e = h_onlyeSn->GetBinContent(bin) ;			
+        double y_D_e = h_onlyeD->GetBinContent(bin) ;
+        double interm1;
+        double interm2;
+        double interm3;
+        double Rq_err;
+        if (option == 1){
+            interm1 = (y_Sn_e > 0) ? y_Sn/y_Sn_e : 0.0;
+            interm2 = (y_D_e > 0) ? y_D/y_D_e : 0.0;
+            interm3 = (interm2 > 0) ? interm1/interm2 : 0.0;
+            Rq_err= interm3 * sqrt(1/y_Sn + 1/y_D + 1/y_Sn_e + 1/y_D_e);
+            
+            
+
+        }
+        //->SetPoint(bin-1, x_Sn, interm3 );
+        //->SetPointError(bin-1, 0, Rq_err);
+        if (option==2) {
+            interm1 = (elecSn > 0) ? y_Sn/elecSn : 0.0;
+            interm2 = (elecD > 0) ? y_D/elecD : 0.0;
+            interm3 = (interm2 > 0) ? interm1/interm2 : 0.0;
+            //cout<<" double rat= ("<<y_Sn << "/"<< elecSn<<")/("<<  y_D << "/"<< elecD<<") = " <<interm1<<"/"<<interm2 << " = "<< interm3<<"..........."<<  endl;
+            //cout<<" x ="<<x_Sn<< "-> interm 3 ="<< interm3<<"->"<<endl;
+            if (y_Sn!=0 && y_D!=0 && y_Sn_e != 0 && y_D_e != 0){
+                Rq_err= interm3 * sqrt(1/y_Sn + 1/y_D + 1/y_Sn_e + 1/y_D_e);
+                //cout<<Rq_err<<"-> Err"<<endl;
+            }
+        }
+
+        g_result->SetPoint(bin-1, x_Sn, interm3 );
+		g_result->SetPointError(bin-1, 0, Rq_err);
+    }
+}
+
+
+
+
+
+
 
     //outputFile = new TFile("ratio_output.root", "RECREATE");

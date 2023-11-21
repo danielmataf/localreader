@@ -4,6 +4,8 @@
 #include <TCanvas.h>
 #include <TPDF.h>
 #include <TLine.h>
+#include "constants.h"
+
 
 
 
@@ -30,6 +32,21 @@ CutSet::CutSet() {
     cutPt2Min= 0.0;
     cutPt2Max=3.0 ;
 
+    hadPID = Constants::PION_PLUS_PID;
+
+
+    // target Sn (-3.5, -1.5)
+    VzminSn= -3.5;       
+    VzmaxSn= -1.5;     
+    // target LD2 (-7.5,-2.5)
+    VzminLD2= -7.5;    
+    VzmaxLD2= -2.5;         
+    // target Cu (-8.5, -6.5)   +/-1 position
+    VzminCu= -8.5;     
+    VzmaxCu= -6.5;     
+    //target CxC (?)
+    VzminCxC= -10.0;    
+    VzmaxCxC= 0.0;    
 
     //OTHER CUTS 
     // (theta_el*180/PI>6)	// /!\ implementing CUT on theta coordinate for electrons!!!!
@@ -100,6 +117,36 @@ void CutSet::SetCutVz(double vzmin, double vzmax){
     
 }
 
+
+//
+
+
+void CutSet::SetCutHadPID( int hadronPID){
+    hadPID = hadronPID;
+}
+
+bool CutSet::PassCutSnTarget(const Event& event){
+    double Vz = event.GetVz();
+    if (Vz >= VzminSn && Vz <= VzmaxSn ){
+        return true;
+    }
+}
+
+bool CutSet::PassCutLD2Target(const Event& event){
+    double Vz = event.GetVz();
+    if (Vz >= VzminLD2 && Vz <= VzmaxLD2 ){
+        return true;
+    }
+}
+
+bool CutSet::PassCutCuTarget(const Event& event){
+    double Vz = event.GetVz();
+    if (Vz >= VzminCu && Vz <= VzmaxCu ){    
+        return true;
+    }
+}
+
+
 bool CutSet::PassCutsElectrons(const Event& event)  {
     // recover kinematic variables from the event
     double Q2 = event.GetQ2();
@@ -121,24 +168,24 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     //std::cout<< y<<" .........y......"<<std::endl;
     //std::cout<< v<<" .........v......"<<std::endl;
     //std::cout<< w<<" .........W......"<<std::endl;
-    h_Vzpre->Fill(Vz);
+    // h_Vzpre->Fill(Vz);
     if (Vz >= cutVzMin && Vz <= cutVzMax ){
-        h_Vxpre->Fill(Vx);
-        h_Vypre->Fill(Vy);
-        h_Vzpos->Fill(Vz);
-        h_Q2pre->Fill(Q2);
+        //h_Vxpre->Fill(Vx);
+        //h_Vypre->Fill(Vy);
+        //h_Vzpos->Fill(Vz);
+        //h_Q2pre->Fill(Q2);
         if (Q2 >= cutQMin && Q2 <= cutQMax ){
-            h_Q2pos->Fill(Q2); 
-            h_xbpre->Fill(event.Getxb());
-            h_Qvx->Fill(event.Getxb(), Q2);
-            h_ypre->Fill(y);
+            //h_Q2pos->Fill(Q2); 
+            //h_xbpre->Fill(event.Getxb());
+            //h_Qvx->Fill(event.Getxb(), Q2);
+            //h_ypre->Fill(y);
             if (y >= cutYMin && y <= cutYMax){
-                h_nupre->Fill(v);
+                //h_nupre->Fill(v);
                 if (v >= cutVMin && v <= cutVMax ){
-                    h_W2pre->Fill(w);
+                    //h_W2pre->Fill(w);
                     if (w >= cutWMin && w <= cutWMax ){
-                        h_Q4R->Fill(Q2);
-                        h_nu4R->Fill(v);
+                        //h_Q4R->Fill(Q2);
+                        //h_nu4R->Fill(v);
 
                         return true;
                     }
@@ -157,13 +204,13 @@ bool CutSet::PassCutsHadrons(const Particle& hadron)  {
     double z = hadron.Getz();
     double pt2 = hadron.Getpt2();
     double phih = hadron.Getphih();
-    h_zpre->Fill(z);
+    double h_pid= hadron.GetPID();
+    //h_zpre->Fill(z);
     if (z >= cutZMin && z <= cutZMax) {
-        h_pt2pre->Fill(pt2);
-        h_pt4R->Fill(pt2);
-        h_z4R->Fill(hadron.Getz());
-
-        h_phihpre->Fill(phih);
+        //h_pt2pre->Fill(pt2);
+        //h_pt4R->Fill(pt2);
+        //h_z4R->Fill(hadron.Getz());
+        //h_phihpre->Fill(phih);
         return true;
     }
     
@@ -177,6 +224,23 @@ bool CutSet::PassCutsHadrons(const Particle& hadron)  {
 //create funct to recover hadrons in event.cpp 
 //fct how many hadrons in an evt 
 //create passcutshadron w/ argument is particle hadron  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+//====Writing and Drawing histos saved below=======//
 
 void CutSet::Chop(const std::string filename) {
     //this function recreates a new rootfile everytime is called 
@@ -206,6 +270,11 @@ void CutSet::Chop(const std::string filename) {
     // Write other histograms here
     file.Close();
 }
+
+
+
+
+
 
 
 void CutSet::DrawChop(const std::string filename) {
@@ -272,3 +341,4 @@ void CutSet::DrawChop(const std::string filename) {
     ChopC.Print((filename + ".pdf").c_str());
 }
 
+*/

@@ -7,11 +7,9 @@
 
 
 ////////////////////////////////////////////////////////////////
-//Reusing old code for multipratio ... 
-//It contains only a function that determines (maybe) the multipratio from a given histogram found in a root file 
+//contains only a function that determines the multipratio (failed) from a given histogram found in a root file 
 // 
 //  Oct 2023 
-//Only plot R as a fct of pt2 for CLAS presentation.. 
 //CleanCode is supposed to be applied to a set of data (cooked and MC) for LD2 and Sn
 //Process MC data first with a given # evts, get the # of evts and process cooked with this #
 // CleanCode will produce a root file everytime you run it. depending on the curts applied and the files in input
@@ -111,10 +109,10 @@ int main() {
     //  Use here Monitoring, it has only histograms pos cuts [and the electron counter]
     //TFile* fileD = new TFile("../files2read/REoutput_D.root", "READ");
     //TFile* fileSn = new TFile("../files2read/REoutput_Sn.root", "READ"); 
-    TFile* fileD = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_PI100recLD2.root","READ");
-    TFile* fileSn = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/chop_PIrecSn.root","READ");
-    TFile* fileDbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_PI100recLD2.root","READ");
-    TFile* fileSnbis = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_PIrecSn.root","READ");
+    TFile* fileD = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_MONrecLD2.root","READ");
+    TFile* fileSn = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_MONrecSn.root","READ");
+    //TFile* fileD = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_MONsimLD2.root","READ");
+    //TFile* fileSn = new TFile("/home/matamoros/Desktop/reboot/CleanCode/build/output_MONsimSn.root","READ");
 
     //ERROR HANDLER - file open
     if (!fileD->IsOpen()) {
@@ -125,37 +123,49 @@ int main() {
         std::cerr << "Error: Cant open fileSn" << std::endl;
         return 0 ;
     }
-    if (!fileDbis->IsOpen()) {
-        std::cerr << "Error: Cant open fileLD2bis" << std::endl;
-        return 0 ;
-    }
-    if (!fileSnbis->IsOpen()) {
-        std::cerr << "Error: Cant open fileSnbis" << std::endl;
-        return 0 ;
-    }
+    //if (!fileDbis->IsOpen()) {
+    //    std::cerr << "Error: Cant open fileLD2bis" << std::endl;
+    //    return 0 ;
+    //}
+    //if (!fileSnbis->IsOpen()) {
+    //    std::cerr << "Error: Cant open fileSnbis" << std::endl;
+    //    return 0 ;
+    //}
 
 
 
     // Retrieve the first histogram from the ROOT file
     //  USING MONITORING histNAMES 
     //TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("pt2p"));
-    TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("pt2"));
-    TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("pt2"));
-    TH1F* h_QtestD = dynamic_cast<TH1F*>(fileD->Get("Q2R"));
-    TH1F* h_QtestSn = dynamic_cast<TH1F*>(fileSn->Get("Q2R"));
-    TH1F* h_nutestD = dynamic_cast<TH1F*>(fileD->Get("nuR"));
-    TH1F* h_nutestSn = dynamic_cast<TH1F*>(fileSn->Get("nuR"));
-    TH1F* h_ztestD = dynamic_cast<TH1F*>(fileD->Get("zR"));
-    TH1F* h_ztestSn = dynamic_cast<TH1F*>(fileSn->Get("zR"));
-    TH1F* h_QonlyeD = dynamic_cast<TH1F*>(fileDbis->Get("Q2truePOS"));
-    TH1F* h_QonlyeSn = dynamic_cast<TH1F*>(fileSnbis->Get("Q2truePOS"));
-    TH1F* h_vonlyeD = dynamic_cast<TH1F*>(fileDbis->Get("nuposel"));        //histo with only electron cuts
-    TH1F* h_vonlyeSn = dynamic_cast<TH1F*>(fileSnbis->Get("nuposel"));      //histo with only electron cuts
+    //TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("pt2"));
+    //TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("pt2"));
+    //TH1F* h_QtestD = dynamic_cast<TH1F*>(fileD->Get("Q2R"));
+    //TH1F* h_QtestSn = dynamic_cast<TH1F*>(fileSn->Get("Q2R"));
+    //TH1F* h_nutestD = dynamic_cast<TH1F*>(fileD->Get("nuR"));
+    //TH1F* h_nutestSn = dynamic_cast<TH1F*>(fileSn->Get("nuR"));
+    //TH1F* h_ztestD = dynamic_cast<TH1F*>(fileD->Get("zR"));
+    //TH1F* h_ztestSn = dynamic_cast<TH1F*>(fileSn->Get("zR"));
+    //TH1F* h_QonlyeD = dynamic_cast<TH1F*>(fileDbis->Get("Q2truePOS"));
+    //TH1F* h_QonlyeSn = dynamic_cast<TH1F*>(fileSnbis->Get("Q2truePOS"));
+    //TH1F* h_vonlyeD = dynamic_cast<TH1F*>(fileDbis->Get("nuposel"));        //histo with only electron cuts
+    //TH1F* h_vonlyeSn = dynamic_cast<TH1F*>(fileSnbis->Get("nuposel"));      //histo with only electron cuts
+    TH1F* h_pttestD = dynamic_cast<TH1F*>(fileD->Get("pt2_had"));
+    TH1F* h_pttestSn = dynamic_cast<TH1F*>(fileSn->Get("pt2_had"));
+    TH1F* h_QtestD = dynamic_cast<TH1F*>(fileD->Get("Q2_had"));
+    TH1F* h_QtestSn = dynamic_cast<TH1F*>(fileSn->Get("Q2_had"));
+    TH1F* h_nutestD = dynamic_cast<TH1F*>(fileD->Get("nu_had"));
+    TH1F* h_nutestSn = dynamic_cast<TH1F*>(fileSn->Get("nu_had"));
+    TH1F* h_ztestD = dynamic_cast<TH1F*>(fileD->Get("z_had"));
+    TH1F* h_ztestSn = dynamic_cast<TH1F*>(fileSn->Get("z_had"));
+    TH1F* h_QonlyeD = dynamic_cast<TH1F*>(fileD->Get("Q2truePOS"));
+    TH1F* h_QonlyeSn = dynamic_cast<TH1F*>(fileSn->Get("Q2truePOS"));
+    TH1F* h_vonlyeD = dynamic_cast<TH1F*>(fileD->Get("nuposel"));        //histo with only electron cuts
+    TH1F* h_vonlyeSn = dynamic_cast<TH1F*>(fileSn->Get("nuposel"));      //histo with only electron cuts
 
 
 
     if (!h_pttestD || !h_pttestSn) {
-            std::cerr << "Error: Cant retrieve histograms" << std::endl;
+            std::cerr << "Error: cant retrieve histograms" << std::endl;
             return 0 ;
         }
     
@@ -167,10 +177,10 @@ int main() {
     //    }
 
         
-    TTree* treeD = dynamic_cast<TTree*>(  fileDbis->Get("treecounter"));
-    TTree* treeSn = dynamic_cast<TTree*>(fileSnbis->Get("treecounter"));
+    TTree* treeD = dynamic_cast<TTree*>(  fileD->Get("treecounter"));
+    TTree* treeSn = dynamic_cast<TTree*>(fileSn->Get("treecounter"));
         if (!treeD || !treeSn) {
-            std::cerr << "Error: Cant retrieve trees" << std::endl;
+            std::cerr << "Error: cant retrieve trees" << std::endl;
             return 0 ;
         }
     
@@ -198,7 +208,7 @@ int main() {
     calculateMRat( 1, h_QtestD, h_QonlyeD,  intermD, h_QtestSn, h_QonlyeSn,  intermSn, R_Q, R_Qa);
     calculateMRat( 1, h_nutestD, h_vonlyeD,  intermD, h_nutestSn, h_vonlyeSn,  intermSn, R_v, R_va);
     calculateMRat( 2, h_ztestD, h_vonlyeD,  intermD, h_ztestSn, h_vonlyeSn,  intermSn, R_z, R_za);
-    calculateMRat( 2, h_pttestD, h_pttestD,  intermD, h_pttestD, h_pttestD,  intermSn, R_pt,R_pta);
+    calculateMRat( 2, h_pttestD, h_pttestD,  intermD, h_pttestSn, h_pttestSn,  intermSn, R_pt,R_pta);
 
 
 
@@ -208,7 +218,7 @@ int main() {
    
     ////cR->SaveAs("ratio.pdf");
     cR->cd(1);
-    R_Q->GetXaxis()->SetTitle("Q{2} (GeV^{2}) " );
+    R_Q->GetXaxis()->SetTitle("Q^{2} (GeV^{2}) " );
     R_Q->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
     R_Q->Draw("AP");
 
@@ -225,27 +235,8 @@ int main() {
     R_pt->GetXaxis()->SetTitle("pt " );
     R_pt->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
     R_pt->Draw("AP");
-    cR->SaveAs("ratiotest.pdf");
+    cR->SaveAs("ratiotestsim1.pdf");
 
-    cR->cd(1);
-    R_Qa->GetXaxis()->SetTitle("Q{2} (GeV^{2}) " );
-    R_Qa->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
-    R_Qa->Draw("AP");
-    //////cR->SaveAs("ratio.pdf");
-    cR->cd(2);
-    R_va->GetXaxis()->SetTitle("#nu " );
-    R_va->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
-    R_va->Draw("AP");
-    cR->cd(3);
-    R_za->GetXaxis()->SetTitle("z " );
-    R_za->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
-    R_za->Draw("AP");
-    cR->cd(4);
-    R_pta->GetXaxis()->SetTitle("pt " );
-    R_pta->GetYaxis()->SetTitle("R^{#Pi+}_{Sn}");
-    R_pta->Draw("AP");
-
-    cR->SaveAs("ratiotesta.pdf");
     
 
     return 0;

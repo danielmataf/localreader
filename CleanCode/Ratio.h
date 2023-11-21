@@ -5,6 +5,7 @@
 #include <TTree.h>
 #include <TH1F.h>
 #include <TH3F.h>
+#include <TGraphErrors.h>
 
 #include <vector>
 #include "Event.h"
@@ -27,6 +28,8 @@ public:
     void WriteHistos(const std::string );
     void calcR();
     void PlotRatio(const std::string );
+    void calculateMRat(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
+
 
 
 

@@ -10,7 +10,9 @@
 
 class Monitoring {
 public:
-    Monitoring(CutSet);
+    Monitoring(CutSet, const std::string& targetName); //adding name to constructor to add unique names to histograms
+    //Monitoring(CutSet);
+    ~Monitoring();          
 
     void FillHistograms(const Event& );
     void WriteHistogramsToFile(const std::string ); 
@@ -25,6 +27,7 @@ public:
 
 private:
     CutSet cut1;
+    std::string targetName;     //adding target name to add to hist names
     
     int QminX = 0;
     int QmaxX = 6;
@@ -49,24 +52,27 @@ private:
     int counterel_R = 0;
 
     //create pointer and init them here
-    TH1F *h_Q2 = new TH1F("Q2", "Q2", nubin, QminX , QmaxX);
-    TH1F *h_xb= new TH1F("xb", "xb", nubin, xminX, xmaxX) ;
-    TH1F *h_y= new TH1F ("y" , "y" , nubin, yminX, ymaxX) ;
-    TH1F *h_nu= new TH1F("nu", "nu", nubin,numinX,numaxX) ;
-    TH1F *h_W2= new TH1F("W2", "W2", nubin, WminX, 30) ;
-    TH1F *h_z= new TH1F("z", "z", nubin, zminX, zmaxX) ;
-    TH1F *h_pt2= new TH1F("pt2", "pt2", nubin, pt2minX, pt2maxX) ;
-    TH1F *h_phih= new TH1F("phih", "phih", nubin, phihminX, phihmaxX) ;
-    TH1F *h_vertexZ= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
+    TH1F *h_Q2; // = new TH1F(("Q2_" + targetName).c_str(), "Q2", nubin, QminX , QmaxX);
+    TH1F *h_xb; //= new TH1F("xb", "xb", nubin, xminX, xmaxX) ;
+    TH1F *h_y;  //= new TH1F ("y" , "y" , nubin, yminX, ymaxX) ;
+    TH1F *h_nu; //= new TH1F("nu", "nu", nubin,numinX,numaxX) ;
+    TH1F *h_W2; //= new TH1F("W2", "W2", nubin, WminX, 30) ;
+    TH1F *h_z;  //= new TH1F("z", "z", nubin, zminX, zmaxX) ;
+    TH1F *h_pt2;    //= new TH1F("pt2", "pt2", nubin, pt2minX, pt2maxX) ;
+    TH1F *h_phih;   //= new TH1F("phih", "phih", nubin, phihminX, phihmaxX) ;
+    TH1F *h_vertexZ;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
+    TH1F *h_pid;    //= new TH1F("pid", "pid", 100, -250, 250) ;
 
     //add more histograms for other variables here
     
-    TH1F *h_Q2posel = new TH1F("Q2truePOS", "Q2truePOS", 10, QminX , QmaxX);
-    TH1F *h_nuposel= new TH1F("nuposel", "nuposel", 10,numinX,numaxX) ;
-    TH1F *h_Q2_had = new TH1F("Q2_had", "Q2_had",10, QminX , QmaxX);
-    TH1F *h_nu_had= new TH1F("nu_had", "nu_had", 10, xminX, xmaxX) ;
-    TH1F *h_z_had= new TH1F("z_had", "z_had", 10, zminX, zmaxX) ;
-    TH1F *h_pt2_had= new TH1F("pt2_had", "pt2_had", 10, pt2minX, pt2maxX) ;
+
+    //commenting histos that dont belong here. DELETE
+    //TH1F *h_Q2posel = new TH1F("Q2truePOS", "Q2truePOS", 10, QminX , QmaxX);
+    //TH1F *h_nuposel= new TH1F("nuposel", "nuposel", 10,numinX,numaxX) ;
+    //TH1F *h_Q2_had = new TH1F("Q2_had", "Q2_had",10, QminX , QmaxX);
+    //TH1F *h_nu_had= new TH1F("nu_had", "nu_had", 10, xminX, xmaxX) ;
+    //TH1F *h_z_had= new TH1F("z_had", "z_had", 10, zminX, zmaxX) ;
+    //TH1F *h_pt2_had= new TH1F("pt2_had", "pt2_had", 10, pt2minX, pt2maxX) ;
 
 
     //TH1F *h_xbpre= new TH1F("xbpre", "xbpre", nubin, xminX, xmaxX) ;
@@ -82,6 +88,8 @@ private:
 
     TFile outputFile;
     //creating a root file 
+
+
 };
 
 #endif 

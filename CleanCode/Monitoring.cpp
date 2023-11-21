@@ -10,34 +10,23 @@
 #include "constants.h"
 
     //int nubin = 100;  
-  
-Monitoring::Monitoring(CutSet a)//:   h_Q2("Q2", "Q2", nubin, QminX, QmaxX),
-                                    //h_xb("xb", "xb", nubin, xminX, xmaxX),
-                                    //h_y ("y" , "y" , nubin, yminX, ymaxX),
-                                    //h_nu("nu", "nu", nubin,numinX,numaxX),
-                                    //h_W2("W2", "W2", nubin, WminX, WmaxX),
-                                    //h_z    ("z", "z", nubin, zminX, zmaxX),
-                                    //h_pt2  ("pt2", "pt2", nubin, pt2minX, pt2maxX),
-                                    //h_phih ("phih", "phih", nubin, phihminX, phihmaxX)
-                                    //add histos here if needed
-                                    //outputFile("monitoring_output.root", "RECREATE")
 
-
-  {
-    cut1 = a;
-    
-    //create the root file 
-    //outputFile = new TFile("histQ.root", "RECREATE");
-
+Monitoring::Monitoring(CutSet a, const std::string& targetName)
+    : cut1(a), targetName(targetName),
+      h_Q2(new TH1F(("Q2_" + targetName).c_str(), "Q2", nubin, QminX, QmaxX)),
+      h_xb(new TH1F(("xb_" + targetName).c_str(), "xb", nubin, xminX, xmaxX)),
+      h_y(new TH1F(("y_" + targetName).c_str(), "y", nubin, yminX, ymaxX)),
+      h_nu(new TH1F(("nu_" + targetName).c_str(), "nu", nubin, numinX, numaxX)),
+      h_W2(new TH1F(("W2_" + targetName).c_str(), "W2", nubin, WminX, WmaxX)),
+      h_z(new TH1F(("z_" + targetName).c_str(), "z", nubin, zminX, zmaxX)),
+      h_pt2(new TH1F(("pt2_" + targetName).c_str(), "pt2", nubin, pt2minX, pt2maxX)),
+      h_phih(new TH1F(("phih_" + targetName).c_str(), "phih", nubin, phihminX, phihmaxX)),
+      h_vertexZ(new TH1F(("targetVz_" + targetName).c_str(), "vertex4target", 100, -40, 40)),
+      h_pid(new TH1F(("pid_" + targetName).c_str(), "pid", 100, -250, 250)),
+      counterel_R(0) {
+    // Add more histograms as needed
 }
 
-//h_xbpre
-//h_ypre
-//h_nupre
-//h_W2pre
-//h_zpre
-//h_pt2pre
-//h_phihpre
 
 //void Monitoring::FillQ2pre(const Event& event ){
 //    h_Q2pre->Fill(event.GetQ2());
@@ -57,34 +46,32 @@ Monitoring::Monitoring(CutSet a)//:   h_Q2("Q2", "Q2", nubin, QminX, QmaxX),
 
 void Monitoring::FillHistograms(const Event& event) {
     if (cut1.PassCutsElectrons(event)==false) return;
-    //
     //std::cout << " -> electron cuts passed successfully  " << std::endl;
-    //
     counterel_R ++;
-    h_vertexZ->Fill(event.GetVz()); //Vz only exists when an electron is detecte !!!!
+    h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detecte !!!!
     h_Q2->Fill(event.GetQ2());
     h_xb->Fill(event.Getxb());
     h_y->Fill(event.Gety());
     h_nu->Fill(event.Getnu());
     h_W2->Fill(event.GetW2());
-    h_nuposel->Fill(event.GetQ2());
-    h_Q2posel->Fill(event.Getnu());
-    
-    //
+    //h_Q2posel->Fill(event.GetQ2());
+    //h_nuposel->Fill(event.Getnu());     //throw hists in mratio.cpp(filling) TBD
     //std::cout << " kinel " << event.GetQ2()<<" , " << event.Getxb()<<" , " << event.Gety()<<" , "<< event.Getnu()<<" , "<< event.GetW2()<<std::endl;  
-    //
     for (const Particle& hadron : event.GetHadrons()) {
         if (cut1.PassCutsHadrons(hadron)==true){
-            if (hadron.GetPID() == Constants::PION_PLUS_PID){   //adding this condition for pion+ and erasing the condit at evtprocessr
-            //
+            
+            if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
+                                                                // PID condition added for CLAS COLL        //DELETE THIS 
+                                                                //should be replaced in CUTSET
+
             //std::cout << " -> hadron cuts passed successfully  " << std::endl;
-            //
             //if passcuts(given hadron )
             //fill histogram with hadron variables 
-            h_Q2_had->Fill(event.GetQ2());
-            h_nu_had->Fill(event.Getnu());
-            h_z_had->Fill(hadron.Getz());
-            h_pt2_had->Fill(hadron.Getpt2());
+            h_pid->Fill(hadron.GetPID());
+            //h_Q2_had->Fill(event.GetQ2());
+            //h_nu_had->Fill(event.Getnu());
+            //h_z_had->Fill(hadron.Getz());
+            //h_pt2_had->Fill(hadron.Getpt2());
             h_z->Fill(hadron.Getz());
             h_pt2->Fill(hadron.Getpt2());
             h_phih->Fill(hadron.Getphih());
@@ -101,6 +88,7 @@ void Monitoring::FillHistograms(const Event& event) {
 void Monitoring::WriteHistogramsToFile(const std::string filename) {
     //this function recreates a new rootfile everytime is called 
     //useful to have different rootfiles if different cuts were implemented
+    //useful since monitoring class is called with a cutset as an argument
     //argument: title of the wanted output file 
     // save histograms to the specified ROOT file
     TFile file = TFile(filename.c_str(), "RECREATE");
@@ -113,12 +101,13 @@ void Monitoring::WriteHistogramsToFile(const std::string filename) {
     h_pt2->Write();
     h_phih->Write();
     h_vertexZ->Write();
-    h_nuposel->Write();
-    h_Q2posel->Write();
-    h_Q2_had->Write();
-    h_nu_had->Write();
-    h_z_had->Write();
-    h_pt2_had->Write();
+    //h_nuposel->Write();
+    //h_Q2posel->Write();
+    //h_Q2_had->Write();
+    //h_nu_had->Write();
+    //h_z_had->Write();
+    //h_pt2_had->Write();
+    h_pid->Write();
     TTree tree("treecounter","treecounter");
     tree.Branch("counterel_R", &counterel_R, "counterel_R/I");
     tree.Fill();
@@ -160,4 +149,24 @@ void Monitoring::DrawHistograms(const std::string filename) {
 
 
     MonC.Print((filename + ".pdf").c_str());
+}
+
+Monitoring::~Monitoring() {
+    // Delete dynamically allocated histograms
+    delete h_Q2;
+    delete h_xb;
+    delete h_y;
+    delete h_nu;
+    delete h_W2;
+    delete h_z;
+    delete h_pt2;
+    delete h_phih;
+    delete h_vertexZ;
+    delete h_pid;
+    //delete h_Q2posel;
+    //delete h_nuposel;
+    //delete h_Q2_had;
+    //delete h_nu_had;
+    //delete h_z_had;
+    //delete h_pt2_had;
 }
