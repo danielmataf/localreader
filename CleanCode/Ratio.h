@@ -28,6 +28,7 @@ public:
     void WriteHistos(const std::string );
     void calcR();
     void PlotRatio(const std::string );
+    void writeMatrixToFile(const std::string& );
     void calculateMRat(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
 
 
@@ -40,13 +41,16 @@ private:
     //BINNING 4 MULTIBINNING
     int nubin = 100;
     int phibin= 10;
-    int Rbin = 10;
+    int Rbin = 5;
     int Qbin  ;  //=  
     int vbin  ;  //=  
     int xbin  ;  //=  
     int zbin  ;  //= 
     int pt2bin;  //=  
 
+    //counter electrons only for pt2 & z (for nu we use a new histo see below)
+    int counter_elSn = 0;
+    int counter_elLD2 = 0;
 
 
 
@@ -90,8 +94,21 @@ private:
     //TH1F *h_pt2_A= new TH1F("pt2_A", "pt2_A", Rbin, pt2minX, pt2maxX) ;
     //TH1F *h_phih_A= new TH1F("phih_A", "phih_A", phibin, phihminX, phihmaxX) ;
 
+    //histos after passcuthadrons 
     TH3F *h_nu_z_pt2D = new TH3F("nu,z,pt2,D", "histo nu,z,pt2 for D", Rbin,numinX,numaxX,Rbin,zminX, zmaxX,Rbin, pt2minX, pt2maxX  );
     TH3F *h_nu_z_pt2A = new TH3F("nu,z,pt2,A", "histo nu,z,pt2 for A", Rbin,numinX,numaxX,Rbin,zminX, zmaxX,Rbin, pt2minX, pt2maxX  );
+    //histo after passcutelectrons only e for nu unse only
+    TH3F *h_nu_z_pt2A_onlye = new TH3F("nu,z,pt2,A onlye", "histo_e nu,z,pt2 for A", Rbin,numinX,numaxX,Rbin,zminX, zmaxX,Rbin, pt2minX, pt2maxX  );
+    TH3F *h_nu_z_pt2D_onlye = new TH3F("nu,z,pt2,D onlye", "histo_e nu,z,pt2 for A", Rbin,numinX,numaxX,Rbin,zminX, zmaxX,Rbin, pt2minX, pt2maxX  );
+    TH1F *h_nuA = new TH1F("nu_A", "nu_A", Rbin,numinX,numaxX) ;
+    TH1F *h_nuD = new TH1F("nu_D", "nu_D", Rbin,numinX,numaxX) ;
+
+    //Graphs
+    TGraphErrors* graph_rat= new TGraphErrors();
+
+    //Storage of points (and errors)
+    std::vector<std::vector<std::vector<double>>> ratMatrix;    //three vectors for 3D matrix
+    std::vector<std::vector<std::vector<double>>> errorMatrix;
 
     //TFile* outputFile;
     CutSet cutsD;

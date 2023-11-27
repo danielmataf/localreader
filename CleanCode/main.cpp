@@ -84,32 +84,32 @@ int main() {
 */
 
 int main() {
-        std::vector<std::string> filenames = {
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00010-00014.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00015-00019.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00020-00024.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00025-00029.hipo"};
-    //std::vector<std::string> filenames = {"../../../files2read/r_eD-01.hipo", "../../../files2read/r_eD-01.hipo", "../../../files2read/r_eD-02.hipo"};
-    //std::vector<std::string> filenamesSn = {"../../../files2read/r_eSn-01.hipo", "../../../files2read/r_eSn-01.hipo", "../../../files2read/r_eSn-02.hipo"};
+    
     std::vector<std::string> filenamesLD2 = {
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00000-00004.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00005-00009.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00010-00014.hipo",
     "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00015-00019.hipo",
     "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00020-00024.hipo",
     "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00025-00029.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00010-00014.hipo"
+    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00030-00034.hipo",
     };
 
     std::vector<std::string> filenamesCuSn = {
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00010-00014.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00015-00019.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00020-00024.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00025-00029.hipo"
+    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00000-00004.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00005-00009.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00010-00014.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00015-00019.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00020-00024.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00025-00029.hipo",
+    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00030-00034.hipo"
     };
 
     std::cout<< "Hello world \n";
-    EventReader MC(filenames);
+    //EventReader MC(filenames);
     EventReader MC_LD2(filenamesLD2);
     EventReader MC_CuSn(filenamesCuSn);
-    std::optional<Event> test;
+    //std::optional<Event> test;
     std::optional<Event> testLD2;
     std::optional<Event> testCuSn;
     CutSet Sncuts;   //Sn
@@ -119,6 +119,7 @@ int main() {
     Sncuts.SetCutW(6,30);
     Sncuts.SetCutZ(0.3,0.7);
     Sncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
+
     LDcuts.SetCutQ(1.5,10);
     LDcuts.SetCutY(0.25, 0.85);
     LDcuts.SetCutW(6,30);
@@ -152,20 +153,22 @@ int main() {
             testLD2 = MC_LD2.ProcessEventsInFile();
             //std::optional<Event> 
             testCuSn = MC_CuSn.ProcessEventsInFile();
-            test = MC.ProcessEventsInFile();
+            //test = MC.ProcessEventsInFile();
             if (testLD2.has_value()) {
                 counter_elLD2++;
                 Event eventtestLD2 = testLD2.value();
                 eventtestLD2.calcAll();
                 monLD.FillHistograms(eventtestLD2);
+                rat.FillHistograms(eventtestLD2, "D");  
             }
             if (testCuSn.has_value()) {
                 counter_elSn++;
                 Event eventtestCuSn = testCuSn.value();
                 eventtestCuSn.calcAll();
                 monSn.FillHistograms(eventtestCuSn);
+                rat.FillHistograms(eventtestCuSn, "Sn");
             }
-           
+
            
            //if (test.has_value()==false) continue;
            // counter_el ++;
@@ -189,6 +192,9 @@ int main() {
 
     monLD.DrawHistograms("after_cuts_LD2");
     monSn.DrawHistograms("after_cuts_CuSn");
+    rat.calcR();
+    rat.PlotRatio("test");
+    rat.writeMatrixToFile("matrix_output.txt");
 
     return 0;
 }
