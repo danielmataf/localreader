@@ -30,6 +30,7 @@ public:
     void PlotRatio(const std::string );
     void writeMatrixToFile(const std::string& );
     void calculateMRat(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
+    void multiplotR();
 
 
 
@@ -41,7 +42,7 @@ private:
     //BINNING 4 MULTIBINNING
     int nubin = 100;
     int phibin= 10;
-    int Rbin = 5;
+    int Rbin = 5   ;
     int Qbin  ;  //=  
     int vbin  ;  //=  
     int xbin  ;  //=  

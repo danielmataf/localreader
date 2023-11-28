@@ -5,6 +5,7 @@
 #include <TCanvas.h>
 #include <TGraph.h>
 #include <TGraphErrors.h>
+#include <TPad.h>
 #include <fstream>
 #include <TPDF.h>
 #include "Event.h" 
@@ -129,9 +130,33 @@ void Ratio::writeMatrixToFile(const std::string& filename) {
         }
         outputFile << std::endl << std::endl;
     }
-
-    // Close the file
     outputFile.close();
+}
+
+
+void Ratio::multiplotR() {
+    for (int x = 0; x < Rbin; ++x) {
+        std::string pdfFileName = "multiplotR_nu" + std::to_string(x) + ".pdf";
+        TCanvas canvas("c", "Multiplot R", 1200, 800);
+        canvas.Divide(3, 2); 
+        for (int z = 0; z < Rbin; ++z) {
+            canvas.cd(z + 1);
+            TGraphErrors *graph = new TGraphErrors();
+            for (int y = 0; y < Rbin; ++y) {
+                double value = ratMatrix[x][y][z];
+                double error = errorMatrix[x][y][z];
+                graph->SetPoint(y, y, value);
+                graph->SetPointError(y, 0.0, error); 
+            }
+            graph->SetTitle(("R vs z, pt2=" + std::to_string(z)).c_str());
+            graph->GetXaxis()->SetTitle("z");
+            graph->GetYaxis()->SetTitle("R");
+            graph->SetMarkerStyle(20);
+            graph->Draw("AP");
+        }
+
+        canvas.SaveAs(pdfFileName.c_str());
+    }
 }
 
 void Ratio::PlotRatio(const std::string filename) {

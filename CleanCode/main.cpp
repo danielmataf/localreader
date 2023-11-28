@@ -195,6 +195,7 @@ int main() {
     rat.calcR();
     rat.PlotRatio("test");
     rat.writeMatrixToFile("matrix_output.txt");
+    rat.multiplotR();
 
     return 0;
 }
