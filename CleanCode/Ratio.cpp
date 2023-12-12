@@ -38,13 +38,13 @@ void Ratio::FillHistograms(const Event& event, const std::string target) {
     //forget condition on taarget, that should directly be a cut !!!! TBD 
     if (target == "D" && cutd.PassCutsElectrons(event)==true) {
         counter_elLD2 ++;
-        h_nuD->Fill(event.Getnu());
         //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?)
+        h_nuD->Fill(event.Getnu());
         for (const Particle& hadron : event.GetHadrons()) {
             if (cutd.PassCutsHadrons(hadron)==true){
                 ////not using the if (==false) return statement 
+
                 h_nu_z_pt2D->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
-            
             }
         }
     }
@@ -55,7 +55,6 @@ void Ratio::FillHistograms(const Event& event, const std::string target) {
         for (const Particle& hadron : event.GetHadrons()) {
             if (cuta.PassCutsHadrons(hadron)==true){
                 h_nu_z_pt2A->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
-                
             }
         }
         //Add Here Cu
@@ -82,9 +81,12 @@ void Ratio::calcR(){
     int numBinsX = h_nu_z_pt2D->GetNbinsX();    //same bins 4 Deut and A 
     int numBinsY = h_nu_z_pt2D->GetNbinsY(); 
     int numBinsZ = h_nu_z_pt2D->GetNbinsZ(); 
+    std::cout<< "numBinsX = " << numBinsX<<std::endl;
     for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {  
         double val_nuelD = h_nuD->GetBinContent(Xbin);   
-        double val_nuelA = h_nuA->GetBinContent(Xbin);   
+        double val_nuelA = h_nuA->GetBinContent(Xbin); 
+        std::cout<< "Xbinctr = " << h_nuD->GetXaxis()->GetBinCenter(Xbin)<<std::endl;
+          
         for (int Ybin = 1; Ybin <= numBinsY; Ybin++ ){
             for (int Zbin = 1; Zbin <= numBinsZ; Zbin++ ){
                 // loop with 125 values (5 per axis)
@@ -96,6 +98,7 @@ void Ratio::calcR(){
                 double raterr = ratvalue * sqrt(1/valA + 1/valD + 1/val_nuelA + 1/val_nuelD);
                 ratMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
                 errorMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
+                std::cout<< "Xbinctr_other = " << h_nu_z_pt2D->GetXaxis()->GetBinCenter(Xbin)<<std::endl;
 
 
 
@@ -114,10 +117,11 @@ void Ratio::calcR(){
 
 void Ratio::writeMatrixToFile(const std::string& filename) {
     std::ofstream outputFile(filename);
-
-    for (int z = 0; z < Rbin; ++z) {
-        outputFile << "z = " << z << std::endl;
-        for (int x = 0; x < Rbin; ++x) {
+    //IN 3d HISTO x=nu; y= z; z=pt2;
+    for (int x = 0; x < Rbin; ++x) {
+        double xaxisval = h_nu_z_pt2A->GetXaxis()->GetBinCenter(x + 1);
+        outputFile << "nu = " << xaxisval << std::endl;
+        for (int z = 0; z < Rbin; ++z) {
             for (int y = 0; y < Rbin; ++y) {
                 double value = ratMatrix[x][y][z];
                 double error = errorMatrix[x][y][z];
@@ -136,19 +140,23 @@ void Ratio::writeMatrixToFile(const std::string& filename) {
 
 void Ratio::multiplotR() {
     for (int x = 0; x < Rbin; ++x) {
-        std::string pdfFileName = "multiplotR_nu" + std::to_string(x) + ".pdf";
+
+        double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "multiplotR_nu" + std::to_string(nuValue) + ".pdf";
         TCanvas canvas("c", "Multiplot R", 1200, 800);
         canvas.Divide(3, 2); 
         for (int z = 0; z < Rbin; ++z) {
+            double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
             canvas.cd(z + 1);
             TGraphErrors *graph = new TGraphErrors();
             for (int y = 0; y < Rbin; ++y) {
+                double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
                 double value = ratMatrix[x][y][z];
                 double error = errorMatrix[x][y][z];
-                graph->SetPoint(y, y, value);
+                graph->SetPoint(y, zValue, value);
                 graph->SetPointError(y, 0.0, error); 
             }
-            graph->SetTitle(("R vs z, pt2=" + std::to_string(z)).c_str());
+            graph->SetTitle(("R vs z, pt2=" + std::to_string(pt2Value)).c_str());
             graph->GetXaxis()->SetTitle("z");
             graph->GetYaxis()->SetTitle("R");
             graph->SetMarkerStyle(20);

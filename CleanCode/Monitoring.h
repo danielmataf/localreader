@@ -17,6 +17,8 @@ public:
     void FillHistograms(const Event& );
     void WriteHistogramsToFile(const std::string ); 
     void DrawHistograms(const std::string);
+    void Fill_R_Histograms(const Event& event, const std::string target) ;
+    void DrawR_Histograms(const std::string filename);
     //void FillQ2pre(const Event&  );
     //void Fillypre(const Event&  );
     //void Fillnupre(const Event&  );
@@ -33,7 +35,7 @@ private:
     int QmaxX = 6;
     int nubin = 100;
     int phibin= 10;
-    int Rbin = 10;
+    int Rbin = 5;
     int xminX = 0;
     int xmaxX = 0.4;
     int yminX = 0;
@@ -51,6 +53,17 @@ private:
 
     int counterel_R = 0;
 
+    //borders 4 ratio
+    //the values here should take the values of the implemented cuts
+    int numinR = 4;
+    int numaxR = 9;
+    int zminR = 0.2;
+    int zmaxR = 0.7;    
+    int pt2minR = 0;
+    int pt2maxR = 2;
+
+
+
     //create pointer and init them here
     TH1F *h_Q2; // = new TH1F(("Q2_" + targetName).c_str(), "Q2", nubin, QminX , QmaxX);
     TH1F *h_xb; //= new TH1F("xb", "xb", nubin, xminX, xmaxX) ;
@@ -65,6 +78,11 @@ private:
 
     //add more histograms for other variables here
     
+
+    TH1F *R_nu_el;
+    TH1F *R_nu_had;
+    TH1F *R_z;
+    TH1F *R_pt2;
 
     //commenting histos that dont belong here. DELETE
     //TH1F *h_Q2posel = new TH1F("Q2truePOS", "Q2truePOS", 10, QminX , QmaxX);

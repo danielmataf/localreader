@@ -43,6 +43,10 @@ private:
     int nubin = 100;
     int phibin= 10;
     int Rbin = 5   ;
+    int Rbin_nu  = 5   ;
+    int Rbin_z   = 5   ;
+    int Rbin_pt2 = 5   ;
+    
     int Qbin  ;  //=  
     int vbin  ;  //=  
     int xbin  ;  //=  
@@ -72,6 +76,15 @@ private:
     int phihminX = 0;
     int phihmaxX = 360;
 
+
+
+    double numinR = 4;
+    double numaxR = 9;
+    double zminR = 0.3;
+    double zmaxR = 0.7;    
+    double pt2minR = 0;
+    double pt2maxR = 2;
+
     //HISTOS FOR DEUTERIUM
     //create pointer and init them here
     //TH1F *h_Q2_D = new TH1F("Q2_D", "Q2_D", Rbin, QminX , QmaxX);
@@ -96,13 +109,13 @@ private:
     //TH1F *h_phih_A= new TH1F("phih_A", "phih_A", phibin, phihminX, phihmaxX) ;
 
     //histos after passcuthadrons 
-    TH3F *h_nu_z_pt2D = new TH3F("nu,z,pt2,D", "histo nu,z,pt2 for D", Rbin,numinX,numaxX,Rbin,zminX, zmaxX,Rbin, pt2minX, pt2maxX  );
-    TH3F *h_nu_z_pt2A = new TH3F("nu,z,pt2,A", "histo nu,z,pt2 for A", Rbin,numinX,numaxX,Rbin,zminX, zmaxX,Rbin, pt2minX, pt2maxX  );
+    TH3F *h_nu_z_pt2D = new TH3F("nu,z,pt2,D", "histo nu,z,pt2 for D", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
+    TH3F *h_nu_z_pt2A = new TH3F("nu,z,pt2,A", "histo nu,z,pt2 for A", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
     //histo after passcutelectrons only e for nu unse only
-    TH3F *h_nu_z_pt2A_onlye = new TH3F("nu,z,pt2,A onlye", "histo_e nu,z,pt2 for A", Rbin,numinX,numaxX,Rbin,zminX, zmaxX,Rbin, pt2minX, pt2maxX  );
-    TH3F *h_nu_z_pt2D_onlye = new TH3F("nu,z,pt2,D onlye", "histo_e nu,z,pt2 for A", Rbin,numinX,numaxX,Rbin,zminX, zmaxX,Rbin, pt2minX, pt2maxX  );
-    TH1F *h_nuA = new TH1F("nu_A", "nu_A", Rbin,numinX,numaxX) ;
-    TH1F *h_nuD = new TH1F("nu_D", "nu_D", Rbin,numinX,numaxX) ;
+    TH3F *h_nu_z_pt2A_onlye = new TH3F("nu,z,pt2,A onlye", "histo_e nu,z,pt2 for A", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
+    TH3F *h_nu_z_pt2D_onlye = new TH3F("nu,z,pt2,D onlye", "histo_e nu,z,pt2 for A", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
+    TH1F *h_nuA = new TH1F("nu_A", "nu_A", Rbin_nu,numinR,numaxR) ;
+    TH1F *h_nuD = new TH1F("nu_D", "nu_D", Rbin_nu,numinR,numaxR) ;
 
     //Graphs
     TGraphErrors* graph_rat= new TGraphErrors();

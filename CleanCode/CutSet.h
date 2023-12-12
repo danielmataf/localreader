@@ -34,6 +34,9 @@ public:
     bool PassCutCuTarget (const Event& ) ;
     bool PassCutsElectrons(const Event& ) ;
     bool PassCutsHadrons(const Particle& ) ;
+    bool PassCuts4R(const Event& , const Particle& );
+    
+    
     void Chop(const std::string );
     void DrawChop(const std::string );
     

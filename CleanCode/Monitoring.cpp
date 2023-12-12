@@ -13,6 +13,11 @@
 
 Monitoring::Monitoring(CutSet a, const std::string& targetName)
     : cut1(a), targetName(targetName),
+      R_nu_el(new TH1F (("R_nuel_" + targetName).c_str(), "R_nuel", Rbin , numinR, numaxR)),
+      R_nu_had(new TH1F (("R_nuhad_" + targetName).c_str(), "R_nuhad", Rbin , numinR, numaxR)),
+      R_z(new TH1F (("R_z_" + targetName).c_str(), "R_z", Rbin , zminR, zmaxR)),
+      R_pt2(new TH1F (("R_pt2_" + targetName).c_str(), "R_pt2", Rbin , pt2minR, pt2maxR)),
+
       h_Q2(new TH1F(("Q2_" + targetName).c_str(), "Q2", nubin, QminX, QmaxX)),
       h_xb(new TH1F(("xb_" + targetName).c_str(), "xb", nubin, xminX, xmaxX)),
       h_y(new TH1F(("y_" + targetName).c_str(), "y", nubin, yminX, ymaxX)),
@@ -85,6 +90,31 @@ void Monitoring::FillHistograms(const Event& event) {
 
 }
 
+
+void Monitoring::Fill_R_Histograms(const Event& event, const std::string target) {
+    if (target == "D" && cut1.PassCutsElectrons(event)==true) {
+        R_nu_el->Fill(event.Getnu());
+        for (const Particle& hadron : event.GetHadrons()) {
+            if (cut1.PassCutsHadrons(hadron)==true){
+                R_nu_had->Fill(event.Getnu());
+                R_z->Fill(hadron.Getz());
+                R_pt2->Fill(hadron.Getpt2());
+            }
+        }
+    }
+    //else if (target == "Sn" && cuta.PassCutsElectrons(event)==true) {
+    //    R_nu_el->Fill(event.Getnu());
+    //    for (const Particle& hadron : event.GetHadrons()) {
+    //        if (cuta.PassCutsHadrons(hadron)==true){
+    //            R_nu_had->Fill(event.Getnu());
+    //            R_z->Fill(hadron.Getz());
+    //            R_pt2->Fill(hadron.Getpt2());
+//
+    //        }
+    //    }
+    //}
+}
+
 void Monitoring::WriteHistogramsToFile(const std::string filename) {
     //this function recreates a new rootfile everytime is called 
     //useful to have different rootfiles if different cuts were implemented
@@ -115,6 +145,37 @@ void Monitoring::WriteHistogramsToFile(const std::string filename) {
     // Write other histograms here
     file.Close();
 }
+
+void Monitoring::DrawR_Histograms(const std::string filename) {
+    TCanvas MonR("MonitoringR canvas", "Monitoring R Histograms");
+    MonR.Divide(2, 2);
+    MonR.cd(1);
+    R_nu_el->SetMinimum(0);
+    R_nu_el->Draw("hist");
+    R_nu_el->SetTitle("nu(el) Distribution for R");
+    MonR.cd(2);
+    R_nu_had->SetMinimum(0);
+    R_nu_had->Draw("hist");
+    R_nu_had->SetTitle("nu(had) Distribution for R");
+    MonR.cd(3);
+    R_z->SetMinimum(0);
+    R_z->Draw("hist");
+    R_z->SetTitle("z Distribution for R");
+    MonR.cd(4);
+    R_pt2->SetMinimum(0);
+    R_pt2->Draw("hist");
+    R_pt2->SetTitle("pt2 Distribution for R");
+    
+    MonR.Print((filename + ".pdf").c_str());
+    std::cout<<R_pt2->GetXaxis()->GetBinCenter(1)<<std::endl;
+    std::cout<<R_pt2->GetXaxis()->GetBinCenter(2)<<std::endl;
+    std::cout<<R_pt2->GetXaxis()->GetBinCenter(3)<<std::endl;
+    std::cout<<R_pt2->GetXaxis()->GetBinCenter(4)<<std::endl;
+    std::cout<<R_pt2->GetXaxis()->GetBinCenter(5)<<std::endl;
+    
+
+}
+
 
 void Monitoring::DrawHistograms(const std::string filename) {
     TCanvas MonC("Monitoring canvas", "Monitoring Histograms");

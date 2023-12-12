@@ -118,13 +118,17 @@ int main() {
     Sncuts.SetCutY(0.25, 0.85);
     Sncuts.SetCutW(6,30);
     Sncuts.SetCutZ(0.3,0.7);
+    Sncuts.SetCutPt2(0.0,2.0);
     Sncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
 
     LDcuts.SetCutQ(1.5,10);
     LDcuts.SetCutY(0.25, 0.85);
     LDcuts.SetCutW(6,30);
     LDcuts.SetCutZ(0.3,0.7);
+    LDcuts.SetCutPt2(0.0,2.0);
     LDcuts.SetCutVz(-7.5,-2.5);     //vz cut for precision in LD2 target
+
+    //TBD : set al this values in constants so they can be recovered for cuts and/or binnning (auto propagation) 
 
     //bcuts.SetCutPt2(3,10);        //this cut has not been added yet to passcuts
     int sumevts = 0;
@@ -159,6 +163,7 @@ int main() {
                 Event eventtestLD2 = testLD2.value();
                 eventtestLD2.calcAll();
                 monLD.FillHistograms(eventtestLD2);
+                monLD.Fill_R_Histograms(eventtestLD2, "D");
                 rat.FillHistograms(eventtestLD2, "D");  
             }
             if (testCuSn.has_value()) {
@@ -192,6 +197,7 @@ int main() {
 
     monLD.DrawHistograms("after_cuts_LD2");
     monSn.DrawHistograms("after_cuts_CuSn");
+    monLD.DrawR_Histograms("RmonitoringLD2");
     rat.calcR();
     rat.PlotRatio("test");
     rat.writeMatrixToFile("matrix_output.txt");

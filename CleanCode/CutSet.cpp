@@ -130,6 +130,7 @@ bool CutSet::PassCutSnTarget(const Event& event){
     if (Vz >= VzminSn && Vz <= VzmaxSn ){
         return true;
     }
+    return false;
 }
 
 bool CutSet::PassCutLD2Target(const Event& event){
@@ -137,6 +138,7 @@ bool CutSet::PassCutLD2Target(const Event& event){
     if (Vz >= VzminLD2 && Vz <= VzmaxLD2 ){
         return true;
     }
+    return false;
 }
 
 bool CutSet::PassCutCuTarget(const Event& event){
@@ -144,6 +146,7 @@ bool CutSet::PassCutCuTarget(const Event& event){
     if (Vz >= VzminCu && Vz <= VzmaxCu ){    
         return true;
     }
+    return false;
 }
 
 
@@ -200,7 +203,7 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
 //  return true ;    
 //}
 
-bool CutSet::PassCutsHadrons(const Particle& hadron)  {
+bool CutSet::PassCutsHadrons( const Particle& hadron)  {
     double z = hadron.Getz();
     double pt2 = hadron.Getpt2();
     double phih = hadron.Getphih();
@@ -217,13 +220,24 @@ bool CutSet::PassCutsHadrons(const Particle& hadron)  {
     return false;
 }
 
-
 //do another  fct for hadron cutts (-count hadrons, call function passcuts de l'electron )
 //returns  
   
 //create funct to recover hadrons in event.cpp 
 //fct how many hadrons in an evt 
 //create passcutshadron w/ argument is particle hadron  
+
+bool CutSet::PassCuts4R(const Event& event, const Particle& hadron)  {
+
+    double pt2 = hadron.Getpt2();
+    double v  = event.Getnu();
+    if (pt2 >= 0 && pt2 <= 2) {
+        if (v >= 4 && v <=9 ) {
+            return true;
+        }
+    }
+    return false;
+}
 
 
 
