@@ -120,16 +120,12 @@ void CutSet::SetCutVz(double vzmin, double vzmax){
 void CutSet::SetCutGen4Rat(){
     
     
-    cutQMin = Constants::RcutminQ ;
-    cutQMax = Constants::RcutmaxQ ;
-    cutYMin = Constants::RcutminY ;
-    cutYMax = Constants::RcutmaxY ;
-    cutWMin = Constants::RcutminW ;
-    cutWMax = Constants::RcutmaxW ;
-    cutZMin = Constants::RcutminZ ;
-    cutZMax = Constants::RcutmaxZ ;
-    cutPt2Min = Constants::RcutminPt2 ;
-    cutPt2Max = Constants::RcutmaxPt2 ;
+
+    SetCutQ(Constants::RcutminQ,Constants::RcutmaxQ );
+    SetCutY(Constants::RcutminY,Constants::RcutmaxY );
+    SetCutW(Constants::RcutminW,Constants::RcutmaxW );
+    SetCutZ(Constants::RcutminZ,Constants::RcutmaxZ );
+    SetCutPt2(Constants::RcutminPt2,Constants::RcutmaxPt2 );    
 
 }
 
@@ -176,37 +172,11 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     double Vz = event.GetVz();
     double Vx = event.GetVx();
     double Vy = event.GetVy();
-
-    //for (const Particle& hadron : event.GetHadrons()) {
-    //    double z = hadron.Getz();
-    //    std::cout << " z value ok ? = "<< z << std::endl;
-    //    
-    //} 
-    //double z  = event.GetZ();             //hadron variable TBD!!
-    // Check if the event's kinematic variables pass the cuts
-    //std::cout<< Q2<<" .........Q2......"<<std::endl;
-    //std::cout<< y<<" .........y......"<<std::endl;
-    //std::cout<< v<<" .........v......"<<std::endl;
-    //std::cout<< w<<" .........W......"<<std::endl;
-    // h_Vzpre->Fill(Vz);
     if (Vz >= cutVzMin && Vz <= cutVzMax ){
-        //h_Vxpre->Fill(Vx);
-        //h_Vypre->Fill(Vy);
-        //h_Vzpos->Fill(Vz);
-        //h_Q2pre->Fill(Q2);
         if (Q2 >= cutQMin && Q2 <= cutQMax ){
-            //h_Q2pos->Fill(Q2); 
-            //h_xbpre->Fill(event.Getxb());
-            //h_Qvx->Fill(event.Getxb(), Q2);
-            //h_ypre->Fill(y);
             if (y >= cutYMin && y <= cutYMax){
-                //h_nupre->Fill(v);
                 if (v >= cutVMin && v <= cutVMax ){
-                    //h_W2pre->Fill(w);
                     if (w >= cutWMin && w <= cutWMax ){
-                        //h_Q4R->Fill(Q2);
-                        //h_nu4R->Fill(v);
-
                         return true;
                     }
                 }
@@ -216,9 +186,6 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     return false;
 }
     // checks if the event's kinematic variables pass the cuts
-//bool CutSet::PassCut(double Q2, double y, double v, double w, double z) const {
-//  return true ;    
-//}
 
 bool CutSet::PassCutsHadrons( const Particle& hadron)  {
     double z = hadron.Getz();
@@ -256,120 +223,3 @@ bool CutSet::PassCuts4R(const Event& event, const Particle& hadron)  {
     return false;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-//====Writing and Drawing histos saved below=======//
-
-void CutSet::Chop(const std::string filename) {
-    //this function recreates a new rootfile everytime is called 
-    //useful to have different rootfiles if different cuts were implemented
-    //argument: title of the wanted output file 
-    // save histograms to the specified ROOT file
-    TFile file = TFile(filename.c_str(), "RECREATE");
-    h_Q2pre->Write();
-    h_Q2pos->Write();
-    h_xbpre->Write();
-    h_ypre->Write();
-    h_nupre->Write();
-    h_W2pre->Write();
-    h_zpre->Write();
-    h_pt2pre->Write();
-    h_phihpre->Write();
-    h_Vzpre->Write();
-    h_Vxpre->Write();
-    h_Vypre->Write();
-    h_Vzpos->Write();
-    h_Qvx->Write();
-    h_Q4R->Write();
-    h_nu4R->Write();
-    h_z4R->Write();
-    h_pt4R->Write();
-    //file.Write();
-    // Write other histograms here
-    file.Close();
-}
-
-
-
-
-
-
-
-void CutSet::DrawChop(const std::string filename) {
-    TCanvas ChopC("Chop canvas", "Chop Histograms");
-    ChopC.Divide(3, 3);
-    ChopC.cd(1);
-    h_Q2pre->Draw("hist");
-    h_Q2pre->SetTitle("Q2 Distribution");
-    ChopC.Update();
-    TLine *cutQ=new TLine(cutQMin,ChopC.cd(1)->GetUymin(),cutQMin,ChopC.cd(1)->GetUymax());
-    cutQ->SetLineWidth(2);
-    cutQ->SetLineStyle(kDashed);
-    cutQ->Draw("same");
-
-
-    ChopC.cd(2);
-    h_xbpre->Draw("hist");
-    h_xbpre->SetTitle("xb Distribution");
-    ChopC.cd(3);
-    h_ypre->Draw("hist");
-    h_ypre->SetTitle("y Distribution");
-    
-    ChopC.Update();
-    TLine *cutY=new TLine(cutYMax,ChopC.cd(3)->GetUymin(),cutYMax,ChopC.cd(3)->GetUymax());
-    cutY->SetLineWidth(2);
-    cutY->SetLineStyle(kDashed);
-    cutY->Draw("");
-    
-    ChopC.cd(4);
-    h_nupre->Draw("hist");
-    h_nupre->SetTitle("nu Distribution");
-
-    ChopC.cd(5);
-    h_W2pre->Draw("hist");
-    h_W2pre->SetTitle("W2 Distribution");
-    
-    ChopC.Update();
-    TLine *cutW=new TLine(cutWMax,ChopC.cd(5)->GetUymin(),cutWMax,ChopC.cd(5)->GetUymax());
-    cutW->SetLineWidth(2);
-    cutW->SetLineStyle(kDashed);
-    cutW->Draw("");
-
-    ChopC.cd(6);
-    h_zpre->Draw("hist");
-    h_zpre->SetTitle("z Distribution");
-    ChopC.Update();
-    TLine *cutzlow=new TLine(cutZMin,ChopC.cd(6)->GetUymin(),cutZMin,ChopC.cd(6)->GetUymax());
-    cutzlow->SetLineWidth(2);
-    cutzlow->SetLineStyle(kDashed);
-    cutzlow->Draw("");
-    TLine *cutzhigh=new TLine(cutZMax,ChopC.cd(6)->GetUymin(),cutZMax,ChopC.cd(6)->GetUymax());
-    cutzhigh->SetLineWidth(2);
-    cutzhigh->SetLineStyle(kDashed);
-    cutzhigh->Draw("");
-
-    ChopC.cd(7);
-    h_pt2pre->Draw("hist");
-    h_pt2pre->SetTitle("pt2 Distribution");
-    ChopC.cd(8);
-    h_phihpre->Draw("hist");
-    h_phihpre->SetTitle("phih Distribution");
-
-
-    ChopC.Print((filename + ".pdf").c_str());
-}
-
-*/

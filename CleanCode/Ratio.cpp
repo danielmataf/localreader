@@ -30,6 +30,8 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA): //: cutsD(cutsD), cutsSn(cutsSn) {
 
 void Ratio::FillHistograms(const Event& event, const std::string target) {
         
+    int targetType = event.GetTargetType();
+        
     //add passcut el onlyu once ten cut on target. inverse to =false
     //then add  ALu o cut needed + pass cut hadrons 
 

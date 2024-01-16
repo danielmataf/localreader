@@ -114,11 +114,10 @@ int main() {
     std::optional<Event> testCuSn;
     CutSet Sncuts;   //Sn
     CutSet LDcuts;   //LD2
+    
     Sncuts.SetCutGen4Rat();
     LDcuts.SetCutGen4Rat();
 
-
-    //TBD : set al this values in constants so they can be recovered for cuts and/or binnning (auto propagation) 
 
     //bcuts.SetCutPt2(3,10);        //this cut has not been added yet to passcuts
     int sumevts = 0;
