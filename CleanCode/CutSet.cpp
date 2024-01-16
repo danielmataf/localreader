@@ -118,15 +118,13 @@ void CutSet::SetCutVz(double vzmin, double vzmax){
 }
 
 void CutSet::SetCutGen4Rat(){
-    
-    
 
     SetCutQ(Constants::RcutminQ,Constants::RcutmaxQ );
     SetCutY(Constants::RcutminY,Constants::RcutmaxY );
     SetCutW(Constants::RcutminW,Constants::RcutmaxW );
     SetCutZ(Constants::RcutminZ,Constants::RcutmaxZ );
     SetCutPt2(Constants::RcutminPt2,Constants::RcutmaxPt2 );    
-
+    //cut in vertex should be fixed here (?)
 }
 
 
@@ -185,19 +183,13 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     }    
     return false;
 }
-    // checks if the event's kinematic variables pass the cuts
 
 bool CutSet::PassCutsHadrons( const Particle& hadron)  {
     double z = hadron.Getz();
     double pt2 = hadron.Getpt2();
     double phih = hadron.Getphih();
     double h_pid= hadron.GetPID();
-    //h_zpre->Fill(z);
     if (z >= cutZMin && z <= cutZMax) {
-        //h_pt2pre->Fill(pt2);
-        //h_pt4R->Fill(pt2);
-        //h_z4R->Fill(hadron.Getz());
-        //h_phihpre->Fill(phih);
         return true;
     }
     

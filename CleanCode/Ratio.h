@@ -24,7 +24,7 @@ public:
     
     //void WriteHistogramsToFile(const std::string ); 
     //void DrawHistograms(const std::string);
-    void FillHistograms(const Event& , const std::string );
+    void FillHistograms(const Event& );
     void WriteHistos(const std::string );
     void calcR();
     void PlotRatio(const std::string );

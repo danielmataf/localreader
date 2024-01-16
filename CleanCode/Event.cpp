@@ -137,4 +137,5 @@ int Event::GetTargetType() const {
 }
 void Event::SetTargetType(int type) {
     target_type = type;
+    //0=D, 1=Sn, 2=Cu   
 }

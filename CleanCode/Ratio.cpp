@@ -28,7 +28,7 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA): //: cutsD(cutsD), cutsSn(cutsSn) {
 //~ add deletes 
 
 
-void Ratio::FillHistograms(const Event& event, const std::string target) {
+void Ratio::FillHistograms(const Event& event) {
         
     int targetType = event.GetTargetType();
         
@@ -38,9 +38,9 @@ void Ratio::FillHistograms(const Event& event, const std::string target) {
 
                                                 //using a flag for targets 
     //forget condition on taarget, that should directly be a cut !!!! TBD 
-    if (target == "D" && cutd.PassCutsElectrons(event)==true) {
+    if (targetType == 0 && cutd.PassCutsElectrons(event)==true) {
         counter_elLD2 ++;
-        //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?)
+        //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
         h_nuD->Fill(event.Getnu());
         for (const Particle& hadron : event.GetHadrons()) {
             if (cutd.PassCutsHadrons(hadron)==true){
@@ -50,7 +50,7 @@ void Ratio::FillHistograms(const Event& event, const std::string target) {
             }
         }
     }
-    else if (target == "Sn" && cuta.PassCutsElectrons(event)==true) {
+    else if (targetType == 1 && cuta.PassCutsElectrons(event)==true) {
         counter_elSn++; //counter for only electrons for z and pt
         //here change the else if to just else in order to have a generic target 
         h_nuA->Fill(event.Getnu());

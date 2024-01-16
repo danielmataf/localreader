@@ -114,9 +114,11 @@ int main() {
     std::optional<Event> testCuSn;
     CutSet Sncuts;   //Sn
     CutSet LDcuts;   //LD2
-    
+
     Sncuts.SetCutGen4Rat();
+    Sncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
     LDcuts.SetCutGen4Rat();
+    LDcuts.SetCutVz(-7.5,-2.5);     //vz cut for precision in LD2 target
 
 
     //bcuts.SetCutPt2(3,10);        //this cut has not been added yet to passcuts
@@ -153,17 +155,18 @@ int main() {
             if (testLD2.has_value()) {
                 counter_elLD2++;
                 Event eventtestLD2 = testLD2.value();
+                eventtestLD2.SetTargetType(0);
                 eventtestLD2.calcAll();
                 monLD.FillHistograms(eventtestLD2);
-                monLD.Fill_R_Histograms(eventtestLD2, "D");
-                rat.FillHistograms(eventtestLD2, "D");  
+                rat.FillHistograms(eventtestLD2);  
             }
             if (testCuSn.has_value()) {
                 counter_elSn++;
                 Event eventtestCuSn = testCuSn.value();
+                eventtestCuSn.SetTargetType(1);
                 eventtestCuSn.calcAll();
                 monSn.FillHistograms(eventtestCuSn);
-                rat.FillHistograms(eventtestCuSn, "Sn");
+                rat.FillHistograms(eventtestCuSn);
             }
 
            
