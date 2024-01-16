@@ -25,6 +25,7 @@ public:
     void SetVertexX(double );
     void SetVertexY(double );
 
+
     double GetVz()const ;
     double GetVx()const ;
     double GetVy()const ;
@@ -38,6 +39,10 @@ public:
     double Gety() const ;
     double GetW2() const ;
     double Getxb() const ;
+
+    int GetTargetType() const; 
+    void SetTargetType(int );
+
     //double Getz()    const;
     //double Getpt2()  const;
     //double Getphih() const;
@@ -48,6 +53,8 @@ public:
 
 private:
     int eventIndex;
+    int target_type;
+     
     Particle electron;
     std::vector<Particle> hadrons; 
     double Q2=0,nu=0,w2=0,y=0,xb=0;

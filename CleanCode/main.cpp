@@ -114,19 +114,9 @@ int main() {
     std::optional<Event> testCuSn;
     CutSet Sncuts;   //Sn
     CutSet LDcuts;   //LD2
-    Sncuts.SetCutQ(1.5,10);
-    Sncuts.SetCutY(0.25, 0.85);
-    Sncuts.SetCutW(6,30);
-    Sncuts.SetCutZ(0.3,0.7);
-    Sncuts.SetCutPt2(0.0,2.0);
-    Sncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
+    Sncuts.SetCutGen4Rat();
+    LDcuts.SetCutGen4Rat();
 
-    LDcuts.SetCutQ(1.5,10);
-    LDcuts.SetCutY(0.25, 0.85);
-    LDcuts.SetCutW(6,30);
-    LDcuts.SetCutZ(0.3,0.7);
-    LDcuts.SetCutPt2(0.0,2.0);
-    LDcuts.SetCutVz(-7.5,-2.5);     //vz cut for precision in LD2 target
 
     //TBD : set al this values in constants so they can be recovered for cuts and/or binnning (auto propagation) 
 
@@ -135,6 +125,9 @@ int main() {
     Monitoring monSn(Sncuts, "Sn");
     Monitoring monLD(LDcuts, "LD2");
     Ratio rat(LDcuts, Sncuts); //calling the class with the corresponding cuts
+
+    //add only 1 cut, contains all targets
+
 //    for (auto & f : filenames ){
 //        try{ 
 //        std::cout << "Processing file: " << f << std::endl; 

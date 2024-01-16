@@ -30,6 +30,26 @@ namespace Constants {
     // Vectors     
     const TLorentzVector elBeam(0.0, 0.0, 11.0, 11.0); // incident lepton
 
+
+    //Cut values for Ratio 
+    //SetCutQ(1.5,10);
+    //SetCutY(0.25, 0.85);
+    //SetCutW(6,30);
+    //SetCutZ(0.3,0.7);
+    //SetCutPt2(0.0,2.0);
+    static const double RcutminQ = 1.5 ;
+    static const double RcutminY = 0.25 ;
+    static const double RcutminW = 6.0 ;
+    static const double RcutminZ = 0.3 ;
+    static const double RcutminPt2 = 0.0 ;
+    static const double RcutmaxQ = 10.0 ;
+    static const double RcutmaxY = 0.85 ;
+    static const double RcutmaxW = 30.0 ;
+    static const double RcutmaxZ = 0.7 ;
+    static const double RcutmaxPt2 = 2.0 ;   
+    static const double Rcutminnu = 4.0 ;
+    static const double Rcutmaxnu = 9.0 ;
+    
 }
 
 #endif 

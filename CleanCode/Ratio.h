@@ -58,6 +58,16 @@ private:
     int counter_elLD2 = 0;
 
 
+    //Constants::RcutminQ
+    //Constants::RcutmaxQ
+    //Constants::RcutminY
+    //Constants::RcutmaxY
+    //Constants::RcutminW
+    //Constants::RcutmaxW
+    //
+    //
+    //
+    //
 
     int QminX = 0;
     int QmaxX = 6;
@@ -80,10 +90,10 @@ private:
 
     double numinR = 4;
     double numaxR = 9;
-    double zminR = 0.3;
-    double zmaxR = 0.7;    
-    double pt2minR = 0;
-    double pt2maxR = 2;
+    double zminR = Constants::RcutminZ;
+    double zmaxR = Constants::RcutmaxZ;    
+    double pt2minR = Constants::RcutminPt2;
+    double pt2maxR = Constants::RcutmaxPt2;
 
     //HISTOS FOR DEUTERIUM
     //create pointer and init them here

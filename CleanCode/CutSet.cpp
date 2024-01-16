@@ -117,6 +117,23 @@ void CutSet::SetCutVz(double vzmin, double vzmax){
     
 }
 
+void CutSet::SetCutGen4Rat(){
+    
+    
+    cutQMin = Constants::RcutminQ ;
+    cutQMax = Constants::RcutmaxQ ;
+    cutYMin = Constants::RcutminY ;
+    cutYMax = Constants::RcutmaxY ;
+    cutWMin = Constants::RcutminW ;
+    cutWMax = Constants::RcutmaxW ;
+    cutZMin = Constants::RcutminZ ;
+    cutZMax = Constants::RcutmaxZ ;
+    cutPt2Min = Constants::RcutminPt2 ;
+    cutPt2Max = Constants::RcutmaxPt2 ;
+
+}
+
+
 
 //
 

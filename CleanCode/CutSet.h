@@ -5,6 +5,7 @@
 #include "Event.h"  
 #include <TH1F.h>
 #include <TH2F.h>
+#include "constants.h"
 
 
 
@@ -19,6 +20,9 @@ public:
     void SetCutW(double minW, double maxW);
     void SetCutZ(double minZ, double maxZ);
     void SetCutPt2(double minPt2, double maxPt2);
+
+    void SetCutGen4Rat();
+
 
     void SetCutVx(double, double);
     void SetCutVy(double, double);

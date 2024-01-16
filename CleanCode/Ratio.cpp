@@ -57,7 +57,7 @@ void Ratio::FillHistograms(const Event& event, const std::string target) {
                 h_nu_z_pt2A->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
             }
         }
-        //Add Here Cu
+        //Add Here Cu && change cut for Sn here. 1st cut is passelectrons 
     }
 
     //Add CxC
@@ -81,11 +81,9 @@ void Ratio::calcR(){
     int numBinsX = h_nu_z_pt2D->GetNbinsX();    //same bins 4 Deut and A 
     int numBinsY = h_nu_z_pt2D->GetNbinsY(); 
     int numBinsZ = h_nu_z_pt2D->GetNbinsZ(); 
-    std::cout<< "numBinsX = " << numBinsX<<std::endl;
     for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {  
         double val_nuelD = h_nuD->GetBinContent(Xbin);   
         double val_nuelA = h_nuA->GetBinContent(Xbin); 
-        std::cout<< "Xbinctr = " << h_nuD->GetXaxis()->GetBinCenter(Xbin)<<std::endl;
           
         for (int Ybin = 1; Ybin <= numBinsY; Ybin++ ){
             for (int Zbin = 1; Zbin <= numBinsZ; Zbin++ ){
@@ -98,12 +96,6 @@ void Ratio::calcR(){
                 double raterr = ratvalue * sqrt(1/valA + 1/valD + 1/val_nuelA + 1/val_nuelD);
                 ratMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
                 errorMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
-                std::cout<< "Xbinctr_other = " << h_nu_z_pt2D->GetXaxis()->GetBinCenter(Xbin)<<std::endl;
-
-
-
-
-
             }
         }
 

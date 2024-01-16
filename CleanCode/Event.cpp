@@ -131,3 +131,10 @@ double Event::Getxb() const{
 //double Event::Getphih()  const {
 //    return hadron.Getphih(); 
 //}
+
+int Event::GetTargetType() const {
+    return target_type; 
+}
+void Event::SetTargetType(int type) {
+    target_type = type;
+}
