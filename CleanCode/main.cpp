@@ -9,6 +9,8 @@
 #include "CutSet.h"
 #include "Monitoring.h"
 #include "Ratio.h"
+#include "Dpt.h"
+#include "cratio.h"
 
 
 //compile :
@@ -126,6 +128,10 @@ int main() {
     Monitoring monSn(Sncuts, "Sn");
     Monitoring monLD(LDcuts, "LD2");
     Ratio rat(LDcuts, Sncuts); //calling the class with the corresponding cuts
+    deltaptsq dpt(LDcuts, Sncuts);
+    cratio crat(LDcuts, Sncuts);
+
+    
 
     //add only 1 cut, contains all targets
 
@@ -157,16 +163,23 @@ int main() {
                 Event eventtestLD2 = testLD2.value();
                 eventtestLD2.SetTargetType(0);
                 eventtestLD2.calcAll();
+                //LDcuts.SetCutGentest(eventtestLD2);
                 monLD.FillHistograms(eventtestLD2);
                 rat.FillHistograms(eventtestLD2);  
+                dpt.FillHistograms(eventtestLD2);
+                crat.FillHistograms(eventtestLD2);
             }
             if (testCuSn.has_value()) {
                 counter_elSn++;
                 Event eventtestCuSn = testCuSn.value();
                 eventtestCuSn.SetTargetType(1);
                 eventtestCuSn.calcAll();
+
+                //Sncuts.SetCutGentest(eventtestCuSn);
                 monSn.FillHistograms(eventtestCuSn);
                 rat.FillHistograms(eventtestCuSn);
+                dpt.FillHistograms(eventtestCuSn);
+                crat.FillHistograms(eventtestCuSn);
             }
 
            
@@ -187,16 +200,24 @@ int main() {
     std::cout << "Events processed for LD2: " << counter_elLD2 << std::endl;
     std::cout << "Events processed for Sn: " << counter_elSn << std::endl;
 
-    monLD.WriteHistogramsToFile("output_LD2.root");
-    monSn.WriteHistogramsToFile("output_CuSn.root");
-
-    monLD.DrawHistograms("after_cuts_LD2");
-    monSn.DrawHistograms("after_cuts_CuSn");
-    monLD.DrawR_Histograms("RmonitoringLD2");
+    //monLD.WriteHistogramsToFile("output_LD2.root");
+    //monSn.WriteHistogramsToFile("output_CuSn.root");
+////
+    //monLD.DrawHistograms("after_cuts_LD2");
+    //monSn.DrawHistograms("after_cuts_CuSn");
+    //monLD.DrawR_Histograms("RmonitoringLD2");
     rat.calcR();
     rat.PlotRatio("test");
     rat.writeMatrixToFile("matrix_output.txt");
     rat.multiplotR();
+    dpt.calcDpt();
+    dpt.writeMatrixToFile("matrix_Dpt.txt");
+    dpt.multiplotDpt();
+    crat.calcCratio();
+    crat.writeMatrixToFile("matrix_Cratio.txt");
+    crat.multiplotCratio();
+    
+
 
     return 0;
 }

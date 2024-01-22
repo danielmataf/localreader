@@ -127,9 +127,28 @@ void CutSet::SetCutGen4Rat(){
     //cut in vertex should be fixed here (?)
 }
 
-
-
-//
+//both functions could be used? propagate to main if below is used.
+void CutSet::SetCutGentest(const Event& event){
+    int target = event.GetTargetType();
+    SetCutQ(Constants::RcutminQ,Constants::RcutmaxQ );
+    SetCutY(Constants::RcutminY,Constants::RcutmaxY );
+    SetCutW(Constants::RcutminW,Constants::RcutmaxW );
+    SetCutZ(Constants::RcutminZ,Constants::RcutmaxZ );
+    SetCutPt2(Constants::RcutminPt2,Constants::RcutmaxPt2 );    
+    // switch statement could be used, but almost same thing as if statement
+    if (target == 0) {
+        SetCutVz(Constants::RcutminVzLD2,Constants::RcutmaxVzLD2 );
+    }
+    if (target == 1) {
+        SetCutVz(Constants::RcutminVzSn,Constants::RcutmaxVzSn );
+    }
+    if (target == 2) {
+        SetCutVz(Constants::RcutminVzCu,Constants::RcutmaxVzCu );
+    }
+    if (target == 3) {
+        SetCutVz(Constants::RcutminVzC,Constants::RcutmaxVzC );
+    }
+}
 
 
 void CutSet::SetCutHadPID( int hadronPID){

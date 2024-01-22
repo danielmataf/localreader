@@ -49,6 +49,20 @@ namespace Constants {
     static const double RcutmaxPt2 = 2.0 ;   
     static const double Rcutminnu = 4.0 ;
     static const double Rcutmaxnu = 9.0 ;
+
+
+    //cuts for Target specific vertex 
+    static const double RcutminVzLD2 = -7.5 ;   
+    static const double RcutmaxVzLD2 = -2.5 ;   
+    static const double RcutminVzSn = -3.5 ;
+    static const double RcutmaxVzSn = -1.5 ;
+        //not used yet
+    static const double RcutminVzCu = -8.5 ;    //arbitrary +-.5
+    static const double RcutmaxVzCu = -6.5 ;    //arbitrary +-.5
+    static const double RcutminVzC = -7.5 ;     //default (for LD2)
+    static const double RcutmaxVzC = -2.5 ;     //default (for LD2)
+    
+
     
 }
 

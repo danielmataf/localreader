@@ -23,6 +23,7 @@ public:
 
     void SetCutGen4Rat();
 
+    void SetCutGentest(const Event&);
 
     void SetCutVx(double, double);
     void SetCutVy(double, double);
