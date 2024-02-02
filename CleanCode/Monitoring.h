@@ -7,6 +7,8 @@
 #include <vector>
 #include "Event.h" // 
 #include "CutSet.h"
+#include "constants.h"
+
 
 class Monitoring {
 public:
@@ -19,6 +21,8 @@ public:
     void DrawHistograms(const std::string);
     void Fill_R_Histograms(const Event& event, const std::string target) ;
     void DrawR_Histograms(const std::string filename);
+    void FillHistogramsNoCuts( const Event&);
+    void DrawHistogramsPos(const std::string);
     //void FillQ2pre(const Event&  );
     //void Fillypre(const Event&  );
     //void Fillnupre(const Event&  );
@@ -53,6 +57,8 @@ private:
 
     int counterel_R = 0;
 
+    //PROPAGATE BORDERS AND LIMITS TO CONSTANTS.H AND USE THEM HERE!!!!! urgent TBD 
+
     //borders 4 ratio
     //the values here should take the values of the implemented cuts
     int numinR = 4;
@@ -75,6 +81,8 @@ private:
     TH1F *h_phih;   //= new TH1F("phih", "phih", nubin, phihminX, phihmaxX) ;
     TH1F *h_vertexZ;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
     TH1F *h_pid;    //= new TH1F("pid", "pid", 100, -250, 250) ;
+    TH2F *h_xQ2;    //= new TH2F("xQ2", "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
+    TH2F *h_xQ2pos; //= new TH2F("xQ2pos", "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
 
     //add more histograms for other variables here
     
@@ -83,6 +91,37 @@ private:
     TH1F *R_nu_had;
     TH1F *R_z;
     TH1F *R_pt2;
+
+
+        //==default histograms (no cuts)==//
+    //physics histos
+   // TH1F *h_Q2_defaultD = new TH1F("Q2_defaultD", "Q2_defaultD", Constants::bin_default ,Constants::Qmin_default , Constants::Qmax_default);
+   // TH1F *h_xb_defaultD= new TH1F("xb_defaultD", "xb_defaultD", Constants::bin_default, Constants::xmin_default, Constants::xmax_default) ;
+   // TH1F *h_y_defaultD= new TH1F ("y_defaultD" , "y_defaultD" , Constants::bin_default, Constants::Ymin_default, Constants::Ymax_default) ;
+   // TH1F *h_nu_defaultD= new TH1F("nu_defaultD", "nu_defaultD", Constants::bin_default, Constants::numin_default, Constants::numax_default) ;
+   // TH1F *h_nu_defaultD_had= new TH1F("nu_defaultDhad", "nu_defaultDhad ", Constants::bin_default, Constants::numin_default, Constants::numax_default) ; //(useful?? TBD)
+   // TH1F *h_W2_defaultD= new TH1F("W2_defaultD", "W2_defaultD", Constants::bin_default, Constants::Wmin_default, 30) ;
+   // TH1F *h_z_defaultD= new TH1F("z_defaultD", "z_defaultD", Constants::bin_default, Constants::zmin_default, Constants::zmax_default) ;
+   // TH1F *h_pt2_defaultD= new TH1F("pt2_defaultD", "pt2_defaultD", Constants::bin_default, Constants::pt2min_default, Constants::pt2max_default) ;
+   // TH1F *h_phih_defaultD= new TH1F("phih_defaultD", "phih_defaultD", Constants::phihbin_default, Constants::phihmin_default, Constants::phihmax_default) ;
+//
+   // //coord histos
+   // TH1F *h_phiel_defaultD = new TH1F("phiel_defaultD", "phiel_defaultD", Constants::bin_default, Constants::phielmin_default, Constants::phielmax_default) ;
+   // TH1F *h_thetael_defaultD = new TH1F("thetael_defaultD", "thetael_defaultD", Constants::bin_default, Constants::thetaelmin_default, Constants::thetaelmax_default) ;
+   // TH1F *h_phipi_defaultD = new TH1F("phipi_defaultD", "phipi_defaultD", Constants::bin_default, Constants::phipimin_default, Constants::phipimax_default) ;
+   // TH1F *h_thetapi_defaultD = new TH1F("thetapi_defaultD", "thetapi_defaultD", Constants::bin_default, Constants::thetapimin_default, Constants::thetapimax_default) ;
+   // 
+//
+//
+   // //vertex histos
+   // TH1F *h_Vx_defaultD= new TH1F("Vx_defaultD", "Vx_defaultD", Constants::bin_default, Constants::Vxmin_default, Constants::Vxmax_default) ;
+   // TH1F *h_Vy_defaultD= new TH1F("Vy_defaultD", "Vy_defaultD", Constants::bin_default, Constants::Vymin_default, Constants::Vymax_default) ;
+   // TH1F *h_Vz_defaultD= new TH1F("Vz_defaultD", "Vz_defaultD", Constants::bin_default, Constants::Vzmin_default, Constants::Vzmax_default) ;
+//
+   // //calo histos
+   // TH2F *h_calxy_defaultD= new TH2F("calxy_defaultD", "calxy_defaultD", Constants::bin_default, Constants::cal_xmin, Constants::cal_xmax, Constants::bin_default, Constants::cal_ymin, Constants::cal_ymax) ;
+    //define a 2D histo with lu (lv or lw) in X axis anf E/p in Y axis (check what E/p is? TBD)
+
 
     //commenting histos that dont belong here. DELETE
     //TH1F *h_Q2posel = new TH1F("Q2truePOS", "Q2truePOS", 10, QminX , QmaxX);

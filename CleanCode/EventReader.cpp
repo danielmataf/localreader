@@ -25,14 +25,18 @@
         return pid != Constants::ELECTRON_PID && pid != Constants::POSITRON_PID;
     }
     
-    void EventReader::ProcessParticle(const TLorentzVector& momentum, int pid, double vertx,double verty,double vertz ) {
+    void EventReader::ProcessParticle(const TLorentzVector& momentum, int pid, double vertx,double verty,double vertz, int row ) {
         if (pid == Constants::ELECTRON_PID) {
-            currentEvent.AddElectron(momentum);
+            currentEvent.AddElectron(momentum, row);
             currentEvent.SetVertexZ(vertz);
             currentEvent.SetVertexX(vertx);
             currentEvent.SetVertexY(verty);
+            //currentEvent.SetParticleRow(row);
+            
         } else if (IsHadron(pid)) {
-            currentEvent.AddHadron(momentum, pid);
+            currentEvent.AddHadron(momentum, pid,row);
+            currentEvent.SetVertexZ(vertz);
+            //currentEvent.SetParticleRow(row);
         }
         
     }
@@ -59,10 +63,11 @@
         bool el_detect = false;
         double max_energy_electron = 0.0; 
         event.getStructure(RECgen);
+        event.getStructure(RECcalo);
         //RECgen.show();
         bool flag_el = false;
         int counter_el= 0.0;
-
+        
         for (int i = 0; i < RECgen.getRows(); ++i) {
             
             if ( RECgen.getInt("pid", i) == 11 ){
@@ -70,7 +75,15 @@
             }
         }
         if (flag_el == false )return std::nullopt;
-        for (int i = 0; i < RECgen.getRows(); ++i) {
+        for (int c_row = 0; c_row < RECcalo.getRows(); ++c_row) {
+            int index = RECcalo.getInt("index", c_row);
+            int pindex = RECcalo.getInt("pindex", c_row);
+            
+            
+            
+            
+        }
+        for (int i = 0; i <RECgen.getRows(); ++i) {
             int pid = RECgen.getInt("pid", i);
             if (pid == Constants::POSITRON_PID) {
                 return std::nullopt;    
@@ -96,17 +109,18 @@
                 if ( electron_status < 0) {     //momentum.E() > max_energy_electron &&
                     max_energy_electron = momentum.E();
                     //coinsider trigger electron , not most energetic one 
-                    ProcessParticle(momentum , Constants::ELECTRON_PID,targetvx,targetvy,targetvz);
+                    ProcessParticle(momentum , Constants::ELECTRON_PID,targetvx,targetvy,targetvz, i );
                     
                 }
                 el_detect = true;
             } else if (IsHadron(pid) && el_detect ==true) {
                 //if (pid == Constants::PION_PLUS_PID){
-                    ProcessParticle(momentum, pid,targetvx,targetvy,targetvz ); 
+                    ProcessParticle(momentum, pid,targetvx,targetvy,targetvz,i ); 
                 //}
             }
         }
-        return currentEvent; 
+        return currentEvent;
+
     }
     int EventReader::getevtnbr(){
         std::string filename;
@@ -166,11 +180,11 @@ std::optional<Event> EventReader::ProcessEventsWithPositivePions(hipo::event eve
             double electron_status = RECgen.getInt("status", i);
             if (electron_status < 0) {
                 max_energy_electron = momentum.E();
-                ProcessParticle(momentum, Constants::ELECTRON_PID, targetvx, targetvy, targetvz);
+                ProcessParticle(momentum, Constants::ELECTRON_PID, targetvx, targetvy, targetvz, i);
             }
             el_detect = true;
         } else if (IsHadron(pid) && el_detect == true) {
-            ProcessParticle(momentum, pid, targetvx, targetvy, targetvz); 
+            ProcessParticle(momentum, pid, targetvx, targetvy, targetvz, i); 
         }
     }
     return currentEvent; 
@@ -190,6 +204,7 @@ std::optional<Event> EventReader::ProcessEventsWithPositivePions(hipo::event eve
                 reader.readDictionary(factory);
                 RUNconfig = factory.getSchema("RUN::config");
                 RECgen = factory.getSchema("REC::Particle");
+                RECcalo = factory.getSchema("REC::Calorimeter");
 
                 std::cout << "Processing file: " << filename << std::endl;
             } 

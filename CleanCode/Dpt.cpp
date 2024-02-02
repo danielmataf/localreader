@@ -67,19 +67,19 @@ void deltaptsq::calcDpt(){
         for (int Ybin=1; Ybin <= numBinsY; Ybin++) {
             for (int Zbin= 1; Zbin <= numBinsZ; Zbin++){
                 // loop with 125 values (still using 5 per axis-binning))
-                double valD = h_wD_pt->GetBinContent(Xbin,Ybin,Zbin);
+                double valD = h_wD_pt->GetBinContent(Xbin,Ybin,Zbin);       //weighted histo 3D
                 double valA = h_wA_pt->GetBinContent(Xbin,Ybin,Zbin);
-                double countD = h_D_pt3D->GetBinContent(Xbin,Ybin,Zbin);    //3D histo no counts
-                double countA = h_A_pt3D->GetBinContent(Xbin,Ybin,Zbin);
-                double sqvalD = h_wD_sqpt2->GetBinContent(Xbin,Ybin,Zbin);
-                double sqvalA = h_wA_sqpt2->GetBinContent(Xbin,Ybin,Zbin);
-                double wavg_ptD = (countD > 0) ? valD/countD : 0.0;
-                double wavg_ptA = (countA > 0) ? valA/countA : 0.0;
+                double countD = h_D_pt3D->GetBinContent(Xbin,Ybin,Zbin);    //3D histo same values w/o weight
+                double countA = h_A_pt3D->GetBinContent(Xbin,Ybin,Zbin);    //same for A
+                double sqvalD = h_wD_sqpt2->GetBinContent(Xbin,Ybin,Zbin);  //square-weighted histo 3D
+                double sqvalA = h_wA_sqpt2->GetBinContent(Xbin,Ybin,Zbin);  //same for A
+                double wavg_ptD = (countD != 0) ? valD/countD : 0.0;
+                double wavg_ptA = (countA != 0) ? valA/countA : 0.0;
                 double dpt_point = wavg_ptA - wavg_ptD;
-                double varianceD = (countD > 0) ? sqvalD/countD - wavg_ptD*wavg_ptD : 0.0;
-                double varianceA = (countA > 0) ? sqvalA/countA - wavg_ptA*wavg_ptA : 0.0;
-                double Err_valD = (countD > 0) ? sqrt(varianceD/countD) : 0.0;
-                double Err_valA = (countA > 0) ? sqrt(varianceA/countA) : 0.0;
+                double varianceD = (countD != 0) ? sqvalD/countD - wavg_ptD*wavg_ptD : 0.0;
+                double varianceA = (countA != 0) ? sqvalA/countA - wavg_ptA*wavg_ptA : 0.0;
+                double Err_valD = (countD != 0) ? sqrt(varianceD/countD) : 0.0;
+                double Err_valA = (countA != 0) ? sqrt(varianceA/countA) : 0.0;
                 double Err_dpt_point = sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
                 DptMatrix[Xbin-1][Ybin-1][Zbin-1] = dpt_point;
                 errorDptMatrix[Xbin-1][Ybin-1][Zbin-1] = Err_dpt_point;
@@ -91,16 +91,18 @@ void deltaptsq::calcDpt(){
         
 void deltaptsq::writeMatrixToFile(const std::string& filename){
     std::ofstream outputFile(filename);
-
+    std::cout<< " Dptbin? -> "<<Dptbin<<std::endl;
     //x=xbj; y= Q2; z=z;
     for (int x = 0; x < Dptbin; ++x) {
         double xaxisval = h_wD_pt->GetXaxis()->GetBinCenter(x + 1);
         outputFile << "xb = " << xaxisval << std::endl;
         for (int y = 0; y < Dptbin; ++y) {
+            double yaxisval = h_wD_pt->GetYaxis()->GetBinCenter(y + 1);
             for (int z = 0; z < Dptbin; ++z) {
+                double zaxisval = h_wD_pt->GetZaxis()->GetBinCenter(z + 1);
                 double value = DptMatrix[x][y][z];
                 double error = errorDptMatrix[x][y][z];
-                outputFile << value << " +- " << error << "\t\t";
+                outputFile << "("<< xaxisval<<" ,"<<yaxisval <<" ,"<< zaxisval<< " ) = "<< value << " +- " << error << "\t\t";
                 //std::cout << value << " +- " << error << "\t\t";
             }
             outputFile << std::endl;
@@ -121,21 +123,23 @@ void deltaptsq::multiplotDpt(){
 
         for (int y=0; y < Dptbin; ++y) {
             double Q2Value = h_wD_pt->GetYaxis()->GetBinCenter(y + 1);
-            canvasDpt.cd(y + 1);
             TGraphErrors *graphDpt = new TGraphErrors();
+            canvasDpt.cd(y + 1);
             for (int z=0; z < Dptbin; ++z) {
                 double zValue = h_wD_pt->GetZaxis()->GetBinCenter(z + 1);
                 double value = DptMatrix[x][y][z];
                 double error = errorDptMatrix[x][y][z];
-                graphDpt->SetPoint(y, zValue, value);
-                graphDpt->SetPointError(y, 0.0, error); 
+                //std::cout << "("<< x<<" ,"<<y <<" ,"<< z<< " ) = "<<std::endl;   // value << " +- " << error << "\t\t";
+
+                graphDpt->SetPoint(z, zValue, value);
+                graphDpt->SetPointError(z, 0.0, error); 
 
 
                 //graph_rat->SetPoint(graph_pointnb, value, error);
                 //graph_pointnb++;
             }
             graphDpt->SetTitle(("#Delta <p_{t}^{2}> vs z, Q^{2}=" + std::to_string(Q2Value)).c_str());
-            graphDpt->GetXaxis()->SetTitle("Q^{2}");
+            graphDpt->GetXaxis()->SetTitle("z");
             graphDpt->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
             graphDpt->SetMarkerStyle(20);
             graphDpt->Draw("AP");

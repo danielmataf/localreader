@@ -32,8 +32,14 @@ CutSet::CutSet() {
     cutPt2Min= 0.0;
     cutPt2Max=3.0 ;
 
+
+
+    //PID defaults
     hadPID = Constants::PION_PLUS_PID;
 
+    //Chi2 defaults
+    elchi2min= -5.0;
+    elchi2max= 5.0;
 
     // target Sn (-3.5, -1.5)
     VzminSn= -3.5;       
@@ -150,11 +156,43 @@ void CutSet::SetCutGentest(const Event& event){
     }
 }
 
-
+//PID
 void CutSet::SetCutHadPID( int hadronPID){
     hadPID = hadronPID;
 }
 
+void CutSet::SetCutelPID(int elPID){
+    elPID = Constants::ELECTRON_PID;
+}
+//
+
+
+//CHI2
+void CutSet::SetCutChi2el(double minChi2, double maxChi2){
+    elchi2min = minChi2;
+    elchi2max = maxChi2;
+}
+
+
+//u,v,w cuts
+void CutSet::SetCutlu(double minlu, double maxlu){
+    cutluMin = minlu;
+    cutluMax = maxlu;
+}
+void CutSet::SetCutlv(double minlv, double maxlv){
+    cutlvMin = minlv;
+    cutlvMax = maxlv;
+}
+void CutSet::SetCutlw(double minlw, double maxlw){
+    cutlwMin = minlw;
+    cutlwMax = maxlw;
+}
+
+
+
+
+
+//check if an event passes the cuts
 bool CutSet::PassCutSnTarget(const Event& event){
     double Vz = event.GetVz();
     if (Vz >= VzminSn && Vz <= VzmaxSn ){
@@ -179,6 +217,13 @@ bool CutSet::PassCutCuTarget(const Event& event){
     return false;
 }
 
+bool CutSet::PassCutOnlyVz(const Event& event){     //assimilate to cutset class with event.GetTarget to generalize TBD!!
+    double Vz = event.GetVz();
+    if (Vz >= Constants::RcutminVzLD2 && Vz <= Constants::RcutmaxVzLD2 ){    
+        return true;
+    }
+    return false;
+}
 
 bool CutSet::PassCutsElectrons(const Event& event)  {
     // recover kinematic variables from the event

@@ -18,13 +18,14 @@
 class Event {
 public:
     Event ();
-    void AddElectron(const TLorentzVector& ); 
-    void AddHadron(const TLorentzVector& , int ); 
+    void AddElectron(const TLorentzVector& , int); 
+    void AddHadron(const TLorentzVector& , int, int ); 
     int GetEventIndex() const ;
     void SetVertexZ(double );
     void SetVertexX(double );
     void SetVertexY(double );
 
+     void CalcPol(Particle&);
 
     double GetVz()const ;
     double GetVx()const ;

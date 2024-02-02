@@ -10,8 +10,8 @@
 
 
 
-    Particle::Particle(const TLorentzVector& momentum,  int pid) 
-        : momentum(momentum),  pid(pid) {
+    Particle::Particle(const TLorentzVector& momentum, int pid, int row)
+        : momentum(momentum), pid(pid), particleRow(row) {
 
         }
     const TLorentzVector& Particle::GetMomentum() const {
@@ -45,6 +45,22 @@
         vy = vertY;
     }
 
+    void Particle::SetParticleRow(int row) {
+        particleRow = row;
+    }
+
+    int Particle::GetParticleRow() const {
+        return particleRow  ;
+    }
+
+    double Particle::GetTheta() const {
+        return theta;
+    }
+
+    double Particle::GetPhi() const {
+        return phi;
+    }
+
     double Particle::GetQ2() const {
         return Q2;
     }
@@ -69,6 +85,15 @@
     double Particle::Getphih()  const {
         return phih; 
     }
+
+    void Particle::SetTheta(double t) {
+        theta = t;
+    }
+
+    void Particle::SetPhi(double p) {
+        phi = p;
+    }
+
     void Particle::SetMomentum( TLorentzVector momentum){
 
         this-> momentum = momentum;
@@ -82,8 +107,6 @@
     double Particle::GetVy() const {
         return vy;
     }
-
-
 
 
                                 //vec1=scatterdelec (scal)    vec2=scatteredhadron (scapip)

@@ -71,7 +71,7 @@ private:
 
     double numinDpt = 4;
     double numaxDpt = 9;
-    double xminDpt = 0;
+    double xminDpt = 0.2;   
     double xmaxDpt = 0.4;
     double QminDpt = Constants::RcutminQ;       //correct these  4 Dpt. To be changed in constants  TBD   
     double QmaxDpt = Constants::RcutmaxQ;       //correct these  4 Dpt. To be changed in constants.h

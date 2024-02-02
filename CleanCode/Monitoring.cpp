@@ -28,6 +28,8 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
       h_phih(new TH1F(("phih_" + targetName).c_str(), "phih", nubin, phihminX, phihmaxX)),
       h_vertexZ(new TH1F(("targetVz_" + targetName).c_str(), "vertex4target", 100, -40, 40)),
       h_pid(new TH1F(("pid_" + targetName).c_str(), "pid", 100, -250, 250)),
+      h_xQ2(new TH2F(("xQ2_" + targetName).c_str(), "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
+      h_xQ2pos(new TH2F(("xQ2pos_" + targetName).c_str(), "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
       counterel_R(0) {
     // Add more histograms as needed
 }
@@ -50,19 +52,28 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
 //}
 
 void Monitoring::FillHistograms(const Event& event) {
+    //if (cut1.PassCutLD2Target(event)==false) return;
+    //h_xQ2->Fill(event.Getxb(), event.GetQ2());
+
     if (cut1.PassCutsElectrons(event)==false) return;
     //std::cout << " -> electron cuts passed successfully  " << std::endl;
     counterel_R ++;
-    h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detecte !!!!
+    h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detected !!!!
     h_Q2->Fill(event.GetQ2());
     h_xb->Fill(event.Getxb());
-    h_y->Fill(event.Gety());
+    h_y->Fill(event.Gety());    
     h_nu->Fill(event.Getnu());
     h_W2->Fill(event.GetW2());
+    
+    //h_xQ2pos->Fill(event.Getxb(), event.GetQ2());
+
     //h_Q2posel->Fill(event.GetQ2());
     //h_nuposel->Fill(event.Getnu());     //throw hists in mratio.cpp(filling) TBD
     //std::cout << " kinel " << event.GetQ2()<<" , " << event.Getxb()<<" , " << event.Gety()<<" , "<< event.Getnu()<<" , "<< event.GetW2()<<std::endl;  
     for (const Particle& hadron : event.GetHadrons()) {
+                    h_z->Fill(hadron.Getz());
+            h_pt2->Fill(hadron.Getpt2());
+
         if (cut1.PassCutsHadrons(hadron)==true){
             
             if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
@@ -198,9 +209,16 @@ void Monitoring::DrawHistograms(const std::string filename) {
     MonC.cd(6);
     h_z->Draw("hist");
     h_z->SetTitle("z Distribution");
+    MonC.cd(6)->SetLogy();  // Set logarithmic scale on y-axis for h_z
+    //add log scale on y axis to z distribution
     MonC.cd(7);
     h_pt2->Draw("hist");
     h_pt2->SetTitle("pt2 Distribution");
+    MonC.cd(7)->SetLogy();  // Set logarithmic scale on y-axis for h_z
+    //add log scale on y axis to pt distribution
+
+
+
     MonC.cd(8);
     h_phih->Draw("hist");
     h_phih->SetTitle("phih Distribution");
@@ -211,6 +229,61 @@ void Monitoring::DrawHistograms(const std::string filename) {
 
     MonC.Print((filename + ".pdf").c_str());
 }
+
+void Monitoring::DrawHistogramsPos(const std::string filename) {
+    TCanvas MonC("Monitoring canvas", "Monitoring Histograms");
+    MonC.Divide(2, 2);
+    MonC.cd(1);
+    h_xQ2->Draw("COLZ");
+    h_xQ2->SetTitle("x vs Q2 Distribution (LD2)");
+    h_xQ2->GetXaxis()->SetTitle("x_{B}");
+    h_xQ2->GetYaxis()->SetTitle("Q^{2}");
+    MonC.cd(2);
+    h_xQ2pos->Draw("COLZ");
+    h_xQ2pos->SetTitle("x vs Q2 Distribution (LD2)");
+    h_xQ2pos->GetXaxis()->SetTitle("x_{B}");
+    h_xQ2pos->GetYaxis()->SetTitle("Q^{2}");
+
+
+//    MonC.cd(3);
+//    MonC.cd(4);
+
+
+    MonC.Print((filename + ".pdf").c_str());
+}
+
+
+void Monitoring::FillHistogramsNoCuts( const Event& event){
+    int targetType = event.GetTargetType();//using a flag for targets 
+/*
+    if (targetType == 0 && cutd.PassCutsElectrons(event)==true) {
+        
+        //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
+        h_nuD->Fill(event.Getnu());
+        for (const Particle& hadron : event.GetHadrons()) {
+            if (cutd.PassCutsHadrons(hadron)==true){
+                ////not using the if (==false) return statement 
+
+                h_nu_z_pt2D->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
+            }
+        }
+    }
+    else if (targetType == 1 && cuta.PassCutsElectrons(event)==true) {
+        counter_elSn++; //counter for only electrons for z and pt
+        //here change the else if to just else in order to have a generic target 
+        h_nuA->Fill(event.Getnu());
+        for (const Particle& hadron : event.GetHadrons()) {
+            if (cuta.PassCutsHadrons(hadron)==true){
+                h_nu_z_pt2A->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
+            }
+        }
+        //Add Here Cu && change cut for Sn here. 1st cut is passelectrons 
+    }
+
+    //Add CxC
+*/
+}
+
 
 Monitoring::~Monitoring() {
     // Delete dynamically allocated histograms

@@ -9,21 +9,21 @@
 #include "Particle.h"
 #include "constants.h"
     
-Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0) {
+Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0, 0) {
     m_D = (Constants::MASS_NEUTRON + Constants::MASS_PROTON)/2 ;
 
 }
 
-void Event::AddElectron(const TLorentzVector& electronMomentum) {
-        electron = Particle(electronMomentum, 11);  
+void Event::AddElectron(const TLorentzVector& electronMomentum, int row) {
+        electron = Particle(electronMomentum, 11 , row);  
         electron.SetMomentum(electronMomentum);
         
 }
 
 
 
-void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid) {
-    hadrons.push_back(Particle(hadronMomentum,  pid));
+void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid, int row) {
+    hadrons.push_back(Particle(hadronMomentum,  pid, row));
 }
 
 int Event::GetEventIndex() const {
@@ -60,6 +60,8 @@ void Event::Print() {   //add int v=0 as argument 4 different types of verbose T
         std::cout << "  Particle ID: " << electron.GetPID() << std::endl;
         std::cout << "  Momentum: (" << electron.GetMomentum().Px() << ", "
                   << electron.GetMomentum().Py() << ", " << electron.GetMomentum().Pz() << ")" << std::endl;
+        std::cout << "  Polar Angles: (" << electron.GetMomentum().Theta() << ", "
+                  << electron.GetMomentum().Phi() << ")" << std::endl;
         std::cout << " Total Momentum: " << electron.GetMomentum().P() << std::endl;
         std::cout << " Q2 value : " << Q2<< std::endl;
         std::cout << " nu value : " << nu<< std::endl;
@@ -75,12 +77,25 @@ void Event::Print() {   //add int v=0 as argument 4 different types of verbose T
             std::cout << "  ____________ " <<  std::endl;
             std::cout << "  Particle ID: " << hadron.GetPID() << std::endl;
             std::cout << " Total Momentum: " << hadron.GetMomentum().P() << std::endl;
+            std::cout << " Polar Angles: (" << hadron.GetMomentum().Theta() << ", "
+                      << hadron.GetMomentum().Phi() << ")" << std::endl;
             std::cout << " z value : " << hadron.Getz()<< std::endl;
             std::cout << " pt2 value : " << hadron.Getpt2()<< std::endl;
             std::cout << " phih value : " << hadron.Getphih()<< std::endl;
 
         //}
     }
+}
+
+void Event::CalcPol(Particle& particle) {
+    //making a generalized polar angle function so it can be appplied to any particle.
+    //call this function in the calcAll function
+    double theta = particle.GetMomentum().Theta();      //from root utilities 
+    double phi = particle.GetMomentum().Phi();
+    
+    //store the angles in the Particle class
+    particle.SetTheta(theta);
+    particle.SetPhi(phi);
 }
 
 int Event::CalcKinematics(){
@@ -101,8 +116,10 @@ int Event::CalcKinematics(){
 
 void Event::calcAll(){
     CalcKinematics( );
+    CalcPol(electron);
     for (Particle& hadron : hadrons) {
         hadron.CalcHadronKin(electron.GetMomentum(), hadron.GetMomentum());
+        CalcPol(hadron);
         
     }
 }

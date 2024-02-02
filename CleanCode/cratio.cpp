@@ -69,16 +69,18 @@ void cratio::calcCratio(){
                 double countA = h_A_Cratio3D->GetBinContent(Xbin,Ybin,Zbin);
                 double sqvalD = h_wD_sqCratio->GetBinContent(Xbin,Ybin,Zbin);
                 double sqvalA = h_wA_sqCratio->GetBinContent(Xbin,Ybin,Zbin);
-                double wavg_CratioD = (countD > 0) ? valD/countD : 0.0;   //weighted average ok 
-                double wavg_CratioA = (countA > 0) ? valA/countA : 0.0;
-                double Cratio_point = wavg_CratioA / wavg_CratioD;
+                double wavg_CratioD = (countD != 0) ? valD/countD : 0.0;   //weighted average ok 
+                double wavg_CratioA = (countA != 0) ? valA/countA : 0.0;
+                double Cratio_point = (wavg_CratioD != 0) ? wavg_CratioA / wavg_CratioD : 0.0;
 
-                double varianceD = (countD > 0) ? sqvalD/countD - wavg_CratioD*wavg_CratioD : 0.0;
-                double varianceA = (countA > 0) ? sqvalA/countA - wavg_CratioA*wavg_CratioA : 0.0;
-                double Err_valD = (countD > 0) ? sqrt(varianceD/countD) : 0.0;
-                double Err_valA = (countA > 0) ? sqrt(varianceA/countA) : 0.0;
+
+                double varianceD = (countD != 0) ? sqvalD/countD - wavg_CratioD*wavg_CratioD : 0.0;
+                double varianceA = (countA != 0) ? sqvalA/countA - wavg_CratioA*wavg_CratioA : 0.0;
+                double Err_valD = (countD != 0) ? sqrt(varianceD/countD) : 0.0;
+                double Err_valA = (countA != 0) ? sqrt(varianceA/countA) : 0.0;
                 //double Err_Cratio_point = Cratio_point * sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
-                double Err_Cratio_point = Cratio_point * sqrt(pow(Err_valA / wavg_CratioA, 2) + pow(Err_valD / wavg_CratioD, 2));
+                //double Err_Cratio_point = Cratio_point * sqrt(pow(Err_valA / wavg_CratioA, 2) + pow(Err_valD / wavg_CratioD, 2));
+                double Err_Cratio_point = (wavg_CratioA != 0 && wavg_CratioD != 0) ? Cratio_point * sqrt(pow(Err_valA / wavg_CratioA, 2) + pow(Err_valD / wavg_CratioD, 2)) : 0.0;
 
 //                double Err_dpt_point = sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
                 CratioMatrix[Xbin-1][Ybin-1][Zbin-1] = Cratio_point;
@@ -131,8 +133,9 @@ void cratio::multiplotCratio(){
                 double zValue = h_wD_Cratio->GetZaxis()->GetBinCenter(z + 1);
                 double value = CratioMatrix[x][y][z];
                 double error = errorCratioMatrix[x][y][z];
-                graphCratio->SetPoint(y, zValue, value);
-                graphCratio->SetPointError(y, 0.0, error); 
+                graphCratio->SetPoint(z, zValue, value);
+                graphCratio->SetPointError(z, 0.0, error); 
+
                 
             }
             graphCratio->SetTitle(("<cos #phi_{h}>_A / <cos #phi_{h}>_D vs z, Q^{2}=" + std::to_string(Q2Value)).c_str());

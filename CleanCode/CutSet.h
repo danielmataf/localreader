@@ -14,6 +14,9 @@ public:
     CutSet(); //initialize the cut values
     ~CutSet();
 
+
+    //==Physics cuts==// 
+    
     void SetCutQ(double minQ, double maxQ);
     void SetCutY(double minY, double maxY);
     void SetCutV(double minV, double maxV);
@@ -21,16 +24,28 @@ public:
     void SetCutZ(double minZ, double maxZ);
     void SetCutPt2(double minPt2, double maxPt2);
 
-    void SetCutGen4Rat();
 
-    void SetCutGentest(const Event&);
 
+    //==Detector cuts==// 
+    
     void SetCutVx(double, double);
     void SetCutVy(double, double);
     void SetCutVz(double, double);
 
+    //PID cuts
     void SetCutHadPID( int );
+    void SetCutelPID(int);
 
+    //Chi2 cuts
+    void SetCutChi2el(double, double);
+
+    //u,v,w cuts
+    void SetCutlu(double, double);
+    void SetCutlv(double, double);
+    void SetCutlw(double, double);
+    void SetCutdu(double, double);
+    void SetCutdv(double, double);
+    void SetCutdw(double, double);
 
     
     //check if an event passes the cuts
@@ -40,8 +55,15 @@ public:
     bool PassCutsElectrons(const Event& ) ;
     bool PassCutsHadrons(const Particle& ) ;
     bool PassCuts4R(const Event& , const Particle& );
+    bool PassCutOnlyVz(const Event& );
     
     
+    //==Grouped Cuts==//
+    void SetCutGen4Rat();
+    void SetCutGentest(const Event&);
+
+
+    //==Other==//
     void Chop(const std::string );
     void DrawChop(const std::string );
     
@@ -66,7 +88,20 @@ private:
     double VzminCu, VzmaxCu;
     double VzminCxC, VzmaxCxC;
 
+    //for PID cuts
     double hadPID;
+
+    //for chi2 cuts
+    double elchi2min, elchi2max;    //electron chi2
+
+    //for u,v,w cutq
+    double cutluMin, cutluMax;
+    double cutlvMin, cutlvMax;
+    double cutlwMin, cutlwMax;
+    double cutduMin, cutduMax;
+    double cutdvMin, cutdvMax;
+    double cutdwMin, cutdwMax;
+
 
     //for histograms
     int QminX = 0;

@@ -81,8 +81,8 @@ private:
     double zmaxCratio = Constants::RcutmaxZ;       //correct these  4 Dpt. To be changed in constants.h    
     double pt2minCratio = Constants::RcutminPt2;       //correct these  4 Dpt. To be changed in constants.h
     double pt2maxCratio = Constants::RcutmaxPt2;       //correct these  4 Dpt. To be changed in constants.h
-    double phihminCratio = 0;   //propagate this to constants TBD
-    double phihmaxCratio = 360; //propagate this to constants TBD
+    double phihminCratio = Constants::phihmin_default;   
+    double phihmaxCratio = Constants::phihmax_default;  
 
 
 
@@ -99,16 +99,16 @@ private:
 
 
 
-    //Weighted histograms for Delta pt
+    //Weighted histograms for Cratio
     TH3F *h_wD_Cratio = new TH3F("wD_Cratio", "wD_Cratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio);
     TH3F *h_wA_Cratio = new TH3F("wA_Cratio", "wA_Cratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio);
     
-    //count histograms for Delta pt (3D)
+    //count histograms for Cratio (3D)
     TH3F *h_D_Cratio3D = new TH3F("countCratio:D", "count:wD_Cratio", Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );
     TH3F *h_A_Cratio3D = new TH3F("countCratio:A", "count:wD_Cratio", Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );
     
 
-    //histograms (3D, x,Q,z) for weighted  in squared pt2 (pt4) useful for VARIANCE
+    //histograms (3D, x,Q,z) for weighted  in squared cos  useful for VARIANCE
     TH3 *h_wD_sqCratio = new TH3F("wD_sqCratio", "wD_sqCratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );//definition w/ 3 args
     TH3 *h_wA_sqCratio = new TH3F("wA_sqCratio", "wA_sqCratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );
 

@@ -126,10 +126,11 @@ int main() {
     //bcuts.SetCutPt2(3,10);        //this cut has not been added yet to passcuts
     int sumevts = 0;
     Monitoring monSn(Sncuts, "Sn");
-    Monitoring monLD(LDcuts, "LD2");
+    Monitoring monLD(LDcuts, "LD2");    // Modify the class so it doesnt have to take target name. (get targetevent) TBD!
     Ratio rat(LDcuts, Sncuts); //calling the class with the corresponding cuts
-    deltaptsq dpt(LDcuts, Sncuts);
-    cratio crat(LDcuts, Sncuts);
+    deltaptsq dpt(LDcuts, Sncuts);  
+    cratio crat(LDcuts, Sncuts);    
+
 
     
 
@@ -203,8 +204,9 @@ int main() {
     //monLD.WriteHistogramsToFile("output_LD2.root");
     //monSn.WriteHistogramsToFile("output_CuSn.root");
 ////
-    //monLD.DrawHistograms("after_cuts_LD2");
+    //monLD.DrawHistograms("newPtandZ");
     //monSn.DrawHistograms("after_cuts_CuSn");
+    //monLD.DrawHistogramsPos("comp2D");  
     //monLD.DrawR_Histograms("RmonitoringLD2");
     rat.calcR();
     rat.PlotRatio("test");
@@ -216,7 +218,7 @@ int main() {
     crat.calcCratio();
     crat.writeMatrixToFile("matrix_Cratio.txt");
     crat.multiplotCratio();
-    
+    //
 
 
     return 0;
