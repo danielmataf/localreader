@@ -75,15 +75,12 @@
             }
         }
         if (flag_el == false )return std::nullopt;
-        for (int c_row = 0; c_row < RECcalo.getRows(); ++c_row) {
-            int index = RECcalo.getInt("index", c_row);
-            int pindex = RECcalo.getInt("pindex", c_row);
-            
-            
-            
-            
-        }
-        for (int i = 0; i <RECgen.getRows(); ++i) {
+        //for (int c_row = 0; c_row < RECcalo.getRows(); ++c_row) {
+        //    int index = RECcalo.getInt("index", c_row);
+        //    int pindex = RECcalo.getInt("pindex", c_row);
+        //}
+
+        for (int i = 0; i <RECcalo.getRows(); ++i) {
             int pid = RECgen.getInt("pid", i);
             if (pid == Constants::POSITRON_PID) {
                 return std::nullopt;    
