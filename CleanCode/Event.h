@@ -24,6 +24,17 @@ public:
     void SetVertexZ(double );
     void SetVertexX(double );
     void SetVertexY(double );
+    //Setters of CALO data (only available for electrons)
+    void SetCalSector(int );
+    void Setlu(double );
+    void Setlv(double );
+    void Setlw(double );
+    void SetEpcal(double ); //can be grouped in one function for all enrgs and add sum energy
+    void SetEcalin(double );    //can be grouped in one function for all enrgs and add sum energy
+    void SetEcalout(double );   //can be grouped in one function for all enrgs and add sum energy TBD
+    void SetCalX(double );  //can be grouped in one fct XYZ
+    void SetCalY(double );  //can be grouped in one fct XYZ
+    void SetCalZ(double );  //can be grouped in one fct XYZ TBD
 
      void CalcPol(Particle&);
 
@@ -40,6 +51,23 @@ public:
     double Gety() const ;
     double GetW2() const ;
     double Getxb() const ;
+    
+    //Getters of CALO data (only available for electrons)
+    double GetCalSector( )const;
+    double Getlu( )const;
+    double Getlv( )const;
+    double Getlw( )const;
+    double GetEpcal( )const;
+    double GetEcalin( )const;
+    double GetEcalout( )const;
+
+    double GetCalX( ) const;
+    double GetCalY( ) const;
+    double GetCalZ( ) const;
+
+
+
+
 
     int GetTargetType() const; 
     void SetTargetType(int );
@@ -63,6 +91,14 @@ private:
     double vz;  //vertex of the event (?) (should be the same every time)
     double vx;
     double vy;
+    //CALO data (only available for electrons)
+    double cal_sector;
+    double lu;
+    double lv;
+    double lw;
+    double Epcal=0, Ecalin=0, Ecalout = 0;
+    double calox=0, caloy=0, caloz=0;
+
 
 };
 //

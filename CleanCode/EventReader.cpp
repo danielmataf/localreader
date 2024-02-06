@@ -40,6 +40,56 @@
         }
         
     }
+
+    void EventReader::ProcessParticleMomentum(int pid, double pxValue, double pyValue, double pzValue) {
+        if (pid == Constants::ELECTRON_PID) {
+            //SetPx(pxValue);
+            //SetPy(pyValue);
+            //SetPz(pzValue);
+        } else if (IsHadron(pid)) {
+            //SetPx(pxValue);
+            //SetPy(pyValue);
+            //SetPz(pzValue);
+        }
+    }
+
+    void EventReader::AddCaloInfo(int pid, int sector, double u, double v, double w, double epcal, double ecalin, double ecalout ){
+        if (pid == Constants::ELECTRON_PID) {
+            currentEvent.SetCalSector(sector);
+            currentEvent.Setlu(u);
+            currentEvent.Setlv(v);
+            currentEvent.Setlw(w);
+            currentEvent.SetEpcal(epcal);
+            currentEvent.SetEcalin(ecalin);
+            currentEvent.SetEcalout(ecalout);
+
+        } else if (IsHadron(pid)) {
+            //SetU(u);
+            //SetV(v);
+            //SetW(w);
+            //SetEpcal(epcal);
+            //SetEecalin(ecalin);
+            //SetEecalout(ecalout);
+        }
+    }
+
+    void EventReader::AddCaloXYZ(int pid , double xcal , double ycal , double zcal ){
+        //testing a first function, only recovering xyz for first layer of calo and only for electrons
+
+        if (pid == Constants::ELECTRON_PID) {
+            currentEvent.SetCalX(xcal);
+            currentEvent.SetCalY(ycal);
+            currentEvent.SetCalZ(zcal); //porbalby useless TBD
+        }
+        // else if (IsHadron(pid)) {
+        //    SetCalX(xcal);
+        //    SetCalY(ycal);
+        //    SetCalZ(zcal); //porbalby useless TBD
+        //}
+
+    }
+
+
     double EventReader::GetMassID(int id) {
             //a function that retunrs the mass according to the particle PID in argument
     switch (id) {
@@ -75,12 +125,8 @@
             }
         }
         if (flag_el == false )return std::nullopt;
-        //for (int c_row = 0; c_row < RECcalo.getRows(); ++c_row) {
-        //    int index = RECcalo.getInt("index", c_row);
-        //    int pindex = RECcalo.getInt("pindex", c_row);
-        //}
 
-        for (int i = 0; i <RECcalo.getRows(); ++i) {
+        for (int i = 0; i <RECgen.getRows(); ++i) {
             int pid = RECgen.getInt("pid", i);
             if (pid == Constants::POSITRON_PID) {
                 return std::nullopt;    
@@ -115,7 +161,54 @@
                     ProcessParticle(momentum, pid,targetvx,targetvy,targetvz,i ); 
                 //}
             }
+            for (int c_row = 0; c_row < RECcalo.getRows(); ++c_row) {
+                //int index = RECcalo.getInt("index", c_row);
+                int pindex = RECcalo.getInt("pindex", c_row);
+                //check if  i matches the pindex
+                double e_pcal ;
+                double e_ecalin ;
+                double e_ecalout ;
+                double lu_pcal ;
+                double lv_pcal ;
+                double lw_pcal ;
+                double sector_pcal ;
+                double x_cal;
+                double y_cal;
+                double z_cal;       //porbalby useless TBD
+                
+                    //once pindex changes  cal values are reset
+                if (pindex == i) {
+                    int cal_layer = RECcalo.getInt("layer", pindex);
+                        e_pcal = RECcalo.getFloat("energy", pindex);
+                        lu_pcal = RECcalo.getFloat("lu", pindex);
+                        lv_pcal = RECcalo.getFloat("lv", pindex);
+                        lw_pcal = RECcalo.getFloat("lw", pindex);
+                        sector_pcal = RECcalo.getInt("sector", pindex);
+                        x_cal = RECcalo.getFloat("x", pindex);
+                        y_cal = RECcalo.getFloat("y", pindex);
+                        z_cal = RECcalo.getFloat("z", pindex); //porbalby useless TBD
+
+                    if (cal_layer == 1) {   //pcal
+                         e_pcal = RECcalo.getFloat("energy", pindex);
+                         lu_pcal = RECcalo.getFloat("lu", pindex);
+                         lv_pcal = RECcalo.getFloat("lv", pindex);
+                         lw_pcal = RECcalo.getFloat("lw", pindex);
+                         sector_pcal = RECcalo.getInt("sector", pindex);
+                    }
+                    if (cal_layer == 4) {   //ecal_in
+                         e_ecalin = RECcalo.getFloat("energy", pindex);
+                    }
+                    if (cal_layer == 7) {   //ecal_out
+                         e_ecalout = RECcalo.getFloat("energy", pindex);
+                    } 
+                    AddCaloInfo(pid, sector_pcal, lu_pcal, lv_pcal, lw_pcal, e_pcal, e_ecalin, e_ecalout);
+                    AddCaloXYZ(pid, x_cal, y_cal, z_cal);
+                }
+            }
+            
+
         }
+        
         return currentEvent;
 
     }

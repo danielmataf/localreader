@@ -30,6 +30,20 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
       h_pid(new TH1F(("pid_" + targetName).c_str(), "pid", 100, -250, 250)),
       h_xQ2(new TH2F(("xQ2_" + targetName).c_str(), "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
       h_xQ2pos(new TH2F(("xQ2pos_" + targetName).c_str(), "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
+      h_px_el(new TH1F(("px_ele_" + targetName).c_str(), "px_ele", nubin, 0, 10)),
+      h_py_el(new TH1F(("py_ele_" + targetName).c_str(), "py_ele", nubin, 0, 10)),
+      h_pz_el(new TH1F(("pz_ele_" + targetName).c_str(), "pz_ele", nubin, 0, 10)),
+      h_px_pi(new TH1F(("px_pro_" + targetName).c_str(), "px_pro", nubin, 0, 10)),
+      h_py_pi(new TH1F(("py_pro_" + targetName).c_str(), "py_pro", nubin, 0, 10)),
+      h_pz_pi(new TH1F(("pz_pro_" + targetName).c_str(), "pz_pro", nubin, 0, 10)),
+      h_lu(new TH1F(("lu_el" + targetName).c_str(), "lu", nubin, 0, 400)),
+      h_lv(new TH1F(("lv_el" + targetName).c_str(), "lv", nubin, 0, 400)),
+      h_lw(new TH1F(("lw_el" + targetName).c_str(), "lw", nubin, 0, 400)),
+      h_epcal(new TH1F(("epcal_el" + targetName).c_str(), "epcal", nubin, 0, 1)),
+      h_eecalin(new TH1F(("eecalin_el" + targetName).c_str(), "eecalin", nubin, 0, 1)),
+      h_epcalout(new TH1F(("epcalout_el" + targetName).c_str(), "epcalout", nubin, 0, 1)),
+      h_calXY(new TH2F(("calxy_el" + targetName).c_str(), "calxy", nubin, -400, 400, nubin, -400, 400)),
+      h_calEall(new TH2F(("calEall_el" + targetName).c_str(), "calEall", nubin, 0, 1, nubin, 0, 1)),
       counterel_R(0) {
     // Add more histograms as needed
 }
@@ -64,6 +78,15 @@ void Monitoring::FillHistograms(const Event& event) {
     h_y->Fill(event.Gety());    
     h_nu->Fill(event.Getnu());
     h_W2->Fill(event.GetW2());
+    h_calXY->Fill(event.GetCalX(), event.GetCalY());
+    h_lu->Fill(event.Getlu());
+    h_lv->Fill(event.Getlv());
+    h_lw->Fill(event.Getlw());
+    h_epcal->Fill(event.GetEpcal());
+    h_eecalin->Fill(event.GetEcalin());
+    h_epcalout->Fill(event.GetEcalout());
+    h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
+
     
     //h_xQ2pos->Fill(event.Getxb(), event.GetQ2());
 
@@ -71,8 +94,8 @@ void Monitoring::FillHistograms(const Event& event) {
     //h_nuposel->Fill(event.Getnu());     //throw hists in mratio.cpp(filling) TBD
     //std::cout << " kinel " << event.GetQ2()<<" , " << event.Getxb()<<" , " << event.Gety()<<" , "<< event.Getnu()<<" , "<< event.GetW2()<<std::endl;  
     for (const Particle& hadron : event.GetHadrons()) {
-                    h_z->Fill(hadron.Getz());
-            h_pt2->Fill(hadron.Getpt2());
+            //         h_z->Fill(hadron.Getz());
+            // h_pt2->Fill(hadron.Getpt2());
 
         if (cut1.PassCutsHadrons(hadron)==true){
             
@@ -251,6 +274,42 @@ void Monitoring::DrawHistogramsPos(const std::string filename) {
 
     MonC.Print((filename + ".pdf").c_str());
 }
+
+
+
+
+void Monitoring::DrawCaloHistograms(const std::string filename) {
+    TCanvas MonCal("Monitoring calocanvas", "Monitoring caloHistograms");
+    MonCal.Divide(3, 3);
+    MonCal.cd(1);
+    h_lu->Draw("hist");
+    h_lu->SetTitle("lu el_LD2");
+    MonCal.cd(2);
+    h_lv->Draw("hist");
+    h_lv->SetTitle("lv el_LD2");
+    MonCal.cd(3);
+    h_lw->Draw("hist");
+    h_lw->SetTitle("lw el_LD2");
+    MonCal.cd(4);
+    h_epcal->Draw("hist");
+    h_epcal->SetTitle("epcal el_LD2");
+    MonCal.cd(5);
+    h_eecalin->Draw("hist");
+    h_eecalin->SetTitle("Ecal_inner el_LD2");
+    MonCal.cd(6);
+    h_epcalout->Draw("hist");
+    h_epcalout->SetTitle("Ecal_outer el_LD2");
+    MonCal.cd(7);
+    h_calEall->Draw("COLZ");
+    h_calEall->SetTitle("Ecal vs Epcal el_LD2");
+    MonCal.cd(8);
+    h_calXY->Draw("COLZ");
+    h_calXY->SetTitle("PCalXY");
+
+
+    MonCal.Print((filename + ".pdf").c_str());
+}
+
 
 
 void Monitoring::FillHistogramsNoCuts( const Event& event){

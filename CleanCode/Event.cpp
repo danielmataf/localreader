@@ -53,6 +53,39 @@ double Event::GetVx()const {
 }double Event::GetVy()const {
     return vy;
 }
+
+void Event::SetCalSector(int sector){
+    cal_sector = sector;
+}
+void Event::Setlu(double u){
+    lu = u;
+}
+void Event::Setlv(double v){
+    lv = v;
+}
+void Event::Setlw(double w){
+    lw = w;
+}
+void Event::SetCalX(double calx){
+    calox = calx;
+}
+void Event::SetCalY(double caly){
+    caloy = caly;
+}
+void Event::SetCalZ(double calz){
+    caloz = calz;
+}
+void Event::SetEpcal(double epcal){
+    Epcal = epcal;
+}
+void Event::SetEcalin(double ecalin){
+    Ecalin = ecalin;
+}
+void Event::SetEcalout(double ecalout){
+    Ecalout = ecalout;
+}
+
+
 void Event::Print() {   //add int v=0 as argument 4 different types of verbose TBD
 
     std::cout << "Electrons:" << std::endl;
@@ -148,6 +181,34 @@ double Event::Getxb() const{
 //double Event::Getphih()  const {
 //    return hadron.Getphih(); 
 //}
+double Event::Getlu( )const{
+    return lu;
+}
+double Event::Getlv( )const{
+    return lv;
+}
+double Event::Getlw( )const{
+    return lw;
+}
+double Event::GetEpcal( )const{
+    return Epcal;
+}
+double Event::GetEcalin( )const{
+    return Ecalin;
+}
+double Event::GetEcalout( )const{
+    return Ecalout;
+}
+double Event::GetCalX() const{
+    return calox;
+}
+double Event::GetCalY() const{
+    return caloy;
+}
+double Event::GetCalZ() const{
+    return caloz;
+}
+
 
 int Event::GetTargetType() const {
     return target_type; 

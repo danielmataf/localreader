@@ -205,6 +205,7 @@ int main() {
     //monSn.WriteHistogramsToFile("output_CuSn.root");
 ////
     //monLD.DrawHistograms("newPtandZ");
+    monLD.DrawCaloHistograms("caloLD2");
     //monSn.DrawHistograms("after_cuts_CuSn");
     //monLD.DrawHistogramsPos("comp2D");  
     //monLD.DrawR_Histograms("RmonitoringLD2");

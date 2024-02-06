@@ -25,6 +25,9 @@ public:
     void SetVy(double); 
     void SetParticleRow(int);
     void SetParticleIndex(int);
+    void SetPx(double );
+    void SetPy(double );
+    void SetPz(double );
 
     double GetQ2() const ;
     double Getnu()  const ;
@@ -37,7 +40,11 @@ public:
     double GetTheta() const;
     double GetPhi() const;
     double GetVx() const; 
-    double GetVy() const; 
+    double GetVy() const;
+    double GetPx() const;
+    double GetPy() const;
+    double GetPz() const;
+ 
     int GetParticleRow() const;
     int GetParticleIndex() const;
 
@@ -53,11 +60,32 @@ private:
     int pid; 
     double z=0, pt2=0, phih=0;
     double Q2=0, nu=0, w2=0 ,y=0 ,xb=0;
+    
     double vx, vy;
     double phi , theta ;
+    double px, py, pz;
     int particleRow;
     int particleIndex;
 
+    struct CalorimeterInfo {
+        //int layer;
+        //int sector;
+        //double lu;
+        //double lv;
+        //double lw;
+        //double e_pcal = 0, e_ecalin= 0,  e_ecalout=0 ;
+    };
+
+    //Not sure if a struct for calorimeter data is needed.
+    //int layer; 
+    //LAYERS not useful to stor, is mainly useful to determine which layere we're in to recover different energies 
+    int sector; //suppose that if a particle crosses all 3 layers, it will be in the same sector CHECK!!!!
+    double lu;
+    double lv;
+    double lw;
+    double e_pcal = 0, e_ecalin= 0,  e_ecalout=0 ;
+    //differentiationg Edep per layer, this should be associated to the layer nb the particle crossed. 
+    // assigning default 0 values. Allows to see wich layer has been crossed. 
 };
 #endif
 

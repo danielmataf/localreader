@@ -43,9 +43,6 @@ public:
     void SetCutlu(double, double);
     void SetCutlv(double, double);
     void SetCutlw(double, double);
-    void SetCutdu(double, double);
-    void SetCutdv(double, double);
-    void SetCutdw(double, double);
 
     
     //check if an event passes the cuts
@@ -56,6 +53,7 @@ public:
     bool PassCutsHadrons(const Particle& ) ;
     bool PassCuts4R(const Event& , const Particle& );
     bool PassCutOnlyVz(const Event& );
+    bool PassCutsCalo(const Event& );
     
     
     //==Grouped Cuts==//

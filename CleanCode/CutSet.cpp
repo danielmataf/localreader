@@ -260,6 +260,21 @@ bool CutSet::PassCutsHadrons( const Particle& hadron)  {
     return false;
 }
 
+bool CutSet::PassCutsCalo(const Event& event)  {
+    // recover calo data from the event
+    double lu = event.Getlu();
+    double lv = event.Getlv();
+    double lw = event.Getlw();
+    if (lu >= cutluMin && lu <= cutluMax ){
+        if (lv >= cutlvMin && lv <= cutlvMax ){
+            if (lw >= cutlwMin && lw <= cutlwMax ){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 //do another  fct for hadron cutts (-count hadrons, call function passcuts de l'electron )
 //returns  
   

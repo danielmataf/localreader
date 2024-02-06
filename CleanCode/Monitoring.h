@@ -23,6 +23,10 @@ public:
     void DrawR_Histograms(const std::string filename);
     void FillHistogramsNoCuts( const Event&);
     void DrawHistogramsPos(const std::string);
+    void FillMomentumHistograms(const Event& );
+    void DrawMomentumHistograms(const std::string);
+    void DrawCaloHistograms(const std::string );
+
     //void FillQ2pre(const Event&  );
     //void Fillypre(const Event&  );
     //void Fillnupre(const Event&  );
@@ -83,6 +87,23 @@ private:
     TH1F *h_pid;    //= new TH1F("pid", "pid", 100, -250, 250) ;
     TH2F *h_xQ2;    //= new TH2F("xQ2", "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
     TH2F *h_xQ2pos; //= new TH2F("xQ2pos", "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
+    //momentum histograms
+    TH1F *h_px_el;  //= new TH1F("px_ele", "px_ele", 100, 0, 10) ;
+    TH1F *h_py_el;  //= new TH1F("py_ele", "py_ele", 100, 0, 10) ;
+    TH1F *h_pz_el;  //= new TH1F("pz_ele", "pz_ele", 100, 0, 10) ;
+    TH1F *h_px_pi;  //= new TH1F("px_pro", "px_pro", 100, 0, 10) ;
+    TH1F *h_py_pi;  //= new TH1F("py_pro", "py_pro", 100, 0, 10) ;
+    TH1F *h_pz_pi;  //= new TH1F("pz_pro", "pz_pro", 100, 0, 10) ;
+
+    //Calo histograms
+    TH1F *h_lu; // = new TH1F("lu", "lu", 100, 0, 400) ;    //units cm can be zoomed in to 40 
+    TH1F *h_lv; // = new TH1F("lv", "lv", 100, 0, 400) ;    //units cm can be zoomed in to 40
+    TH1F *h_lw; // = new TH1F("lw", "lw", 100, 0, 400) ;    //units cm can be zoomed in to 40
+    TH1F *h_epcal ; // = new TH1F("epcal", "epcal", 100, 0, 1) ;    
+    TH1F *h_eecalin ; // = new TH1F("eecalin", "eecalin", 100, 0, 1) ;
+    TH1F *h_epcalout ; // = new TH1F("epcalout", "epcalout", 100, 0, 1) ;
+    TH2F *h_calXY; // = new TH2F("calxy", "calxy", 100, -400, 400, 100, -400, 400) ;
+    TH2F *h_calEall; // = new TH2F("calEall", "calEall", 100, 0, 1, 100, 0, 1) ;
 
     //add more histograms for other variables here
     

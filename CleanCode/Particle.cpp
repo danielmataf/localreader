@@ -109,6 +109,35 @@
     }
 
 
+
+    double Particle::GetPx() const {
+    return px;
+}
+
+double Particle::GetPy() const {
+    return py;
+}
+
+double Particle::GetPz() const {
+    return pz;
+}
+
+void Particle::SetPx(double pxValue) {
+    px = pxValue;
+}
+
+void Particle::SetPy(double pyValue) {
+    py = pyValue;
+}
+
+void Particle::SetPz(double pzValue) {
+    pz = pzValue;
+}
+
+
+
+
+
                                 //vec1=scatterdelec (scal)    vec2=scatteredhadron (scapip)
     int Particle::CalcHadronKin(TLorentzVector vec1 ,TLorentzVector vec2){
         TLorentzVector vipho = Constants::elBeam - vec1; 
