@@ -149,7 +149,7 @@ int main() {
 //            continue; // skips to next file if error
 //        }
 //    }
-    std::cout << "Total number of events: " << sumevts << std::endl;
+    std::cout << "Total number of events: " << sumevts << std::endl;        //this line counts events if we run the commented (up) lines first
     int counter_el= 0.0;
     int counter_elLD2 = 0;
     int counter_elSn= 0.0;
@@ -165,7 +165,9 @@ int main() {
                 eventtestLD2.SetTargetType(0);
                 eventtestLD2.calcAll();
                 //LDcuts.SetCutGentest(eventtestLD2);
-                monLD.FillHistograms(eventtestLD2);
+                //monLD.FillHistograms(eventtestLD2);
+                //monLD.FillHistogramsNoCuts(eventtestLD2);
+                monLD.FillHistogramswCuts(eventtestLD2);
                 rat.FillHistograms(eventtestLD2);  
                 dpt.FillHistograms(eventtestLD2);
                 crat.FillHistograms(eventtestLD2);
@@ -204,11 +206,16 @@ int main() {
     //monLD.WriteHistogramsToFile("output_LD2.root");
     //monSn.WriteHistogramsToFile("output_CuSn.root");
 ////
-    //monLD.DrawHistograms("newPtandZ");
-    monLD.DrawCaloHistograms("caloLD2");
-    //monSn.DrawHistograms("after_cuts_CuSn");
-    //monLD.DrawHistogramsPos("comp2D");  
-    //monLD.DrawR_Histograms("RmonitoringLD2");
+
+    monLD.DrawHistograms("withCutsVarLD2");
+    monLD.DrawCaloHistograms("withCutscaloLD2");
+    monLD.DrawCherenkovHistograms("withCutscherenkovLD2");
+    monLD.DrawMomentumHistograms("withCutsmomentumLD2");
+    monLD.DrawEnergyHistograms("withCutsEnergyLD2");
+    monSn.DrawHistograms("after_cuts_CuSn");
+    monLD.DrawHistogramsPos("comp2D");  
+    monLD.DrawR_Histograms("RmonitoringLD2");
+
     rat.calcR();
     rat.PlotRatio("test");
     rat.writeMatrixToFile("matrix_output.txt");

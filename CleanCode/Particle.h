@@ -41,9 +41,9 @@ public:
     double GetPhi() const;
     double GetVx() const; 
     double GetVy() const;
-    double GetPx() const;
-    double GetPy() const;
-    double GetPz() const;
+    double GetPx(TLorentzVector) const;
+    double GetPy(TLorentzVector) const;
+    double GetPz(TLorentzVector) const;
  
     int GetParticleRow() const;
     int GetParticleIndex() const;

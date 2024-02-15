@@ -188,6 +188,14 @@ void CutSet::SetCutlw(double minlw, double maxlw){
     cutlwMax = maxlw;
 }
 
+//Nphe cuts
+void CutSet::SetCutNphe15(double minNphe_15){
+    cutNphe15 = minNphe_15;
+}
+void CutSet::SetCutNphe16(double minNphe_16){
+    cutNphe16 = minNphe_16;
+}
+
 
 
 
@@ -254,10 +262,24 @@ bool CutSet::PassCutsHadrons( const Particle& hadron)  {
     double phih = hadron.Getphih();
     double h_pid= hadron.GetPID();
     if (z >= cutZMin && z <= cutZMax) {
-        return true;
+        if (pt2 >= Constants::RcutminPt2 && pt2 <= Constants::RcutmaxPt2) {
+            return true;
+        }
     }
     
     return false;
+}
+
+bool CutSet::PassCutsVariables(const Event& event){
+    if (PassCutsElectrons(event) ){
+        for (const Particle& hadron : event.GetHadrons()) {
+            if (PassCutsHadrons(hadron)){
+                return true;
+            }
+        }
+    }
+    return false;
+
 }
 
 bool CutSet::PassCutsCalo(const Event& event)  {
@@ -265,15 +287,52 @@ bool CutSet::PassCutsCalo(const Event& event)  {
     double lu = event.Getlu();
     double lv = event.Getlv();
     double lw = event.Getlw();
-    if (lu >= cutluMin && lu <= cutluMax ){
-        if (lv >= cutlvMin && lv <= cutlvMax ){
-            if (lw >= cutlwMin && lw <= cutlwMax ){
-                return true;
+    double epcal = event.GetEpcal();
+    double eecalin = event.GetEcalin();
+    double ecalout = event.GetEcalout();
+
+    if (lu >= Constants::cal_lumin  ){
+        if (lv >= Constants::cutlv_min ){
+            if (lw >= Constants::cutlw_min){
+                if (epcal >= Constants::cutEpcal_min  ){
+                    return true;
+                }
             }
         }
     }
     return false;
 }
+
+bool CutSet::PassCutsCherenkov(const Event& event ) {
+    // recover cherenkov data from the event
+    double Nphe15 = event.Getnphe15();
+    double Nphe16 = event.Getnphe16();
+    if (Nphe15 >= Constants::Nphe15min   ){
+        if (Nphe16 >= Constants::Nphe16min   ){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool CutSet::PassCutsDetectors(const Event& event)  {
+    if (PassCutsCalo(event) && PassCutsCherenkov(event) ){
+        return true;
+    }
+    return false;
+}
+
+
+bool CutSet::PassCutsAll(const Event& event)  {
+    if ( PassCutsDetectors(event) ){
+        if ( PassCutsVariables(event)){
+            return true;
+        }        
+    }
+    return false;
+
+}
+
 
 //do another  fct for hadron cutts (-count hadrons, call function passcuts de l'electron )
 //returns  

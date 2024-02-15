@@ -35,6 +35,8 @@ public:
     void SetCalX(double );  //can be grouped in one fct XYZ
     void SetCalY(double );  //can be grouped in one fct XYZ
     void SetCalZ(double );  //can be grouped in one fct XYZ TBD
+    void Setnphe15(double );
+    void Setnphe16(double );
 
      void CalcPol(Particle&);
 
@@ -43,6 +45,7 @@ public:
     double GetVy()const ;
 
     const std::vector<Particle>& GetHadrons() const;
+    const Particle& GetElectron() const;
     int CalcKinematics( );
     void Print();
     void calcAll();
@@ -64,6 +67,10 @@ public:
     double GetCalX( ) const;
     double GetCalY( ) const;
     double GetCalZ( ) const;
+    //Getters of Cherenkov nphe data (only available for electrons)
+    double Getnphe15( ) const;
+    double Getnphe16( ) const;
+
 
 
 
@@ -91,13 +98,17 @@ private:
     double vz;  //vertex of the event (?) (should be the same every time)
     double vx;
     double vy;
+    double px_el, py_el, pz_el;
+    double theta_el, phi_el;
     //CALO data (only available for electrons)
-    double cal_sector;
+    double cal_sector = -1;
     double lu;
     double lv;
     double lw;
     double Epcal=0, Ecalin=0, Ecalout = 0;
     double calox=0, caloy=0, caloz=0;
+    double nphe15=0, nphe16=10;
+
 
 
 };

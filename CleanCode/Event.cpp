@@ -34,6 +34,10 @@ const std::vector<Particle>& Event::GetHadrons() const {
     return hadrons;
 }
 
+const Particle& Event::GetElectron() const {
+    return electron;
+}
+
 void Event::SetVertexZ(double vertexz){
     vz = vertexz;
 }
@@ -83,6 +87,13 @@ void Event::SetEcalin(double ecalin){
 }
 void Event::SetEcalout(double ecalout){
     Ecalout = ecalout;
+}
+
+void Event::Setnphe15(double nphe_15){
+    nphe15 = nphe_15;
+}
+void Event::Setnphe16(double nphe_16){
+    nphe16 = nphe_16;
 }
 
 
@@ -207,6 +218,15 @@ double Event::GetCalY() const{
 }
 double Event::GetCalZ() const{
     return caloz;
+}
+double Event::GetCalSector( )const{
+    return cal_sector;
+}
+double Event::Getnphe15( ) const{
+    return nphe15;
+}
+double Event::Getnphe16( ) const{
+    return nphe16;
 }
 
 

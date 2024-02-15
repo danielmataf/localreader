@@ -16,16 +16,22 @@ public:
     //Monitoring(CutSet);
     ~Monitoring();          
 
-    void FillHistograms(const Event& );
     void WriteHistogramsToFile(const std::string ); 
-    void DrawHistograms(const std::string);
+    void FillHistograms(const Event& );
     void Fill_R_Histograms(const Event& event, const std::string target) ;
-    void DrawR_Histograms(const std::string filename);
     void FillHistogramsNoCuts( const Event&);
-    void DrawHistogramsPos(const std::string);
+    void FillHistogramswCuts(const Event& );
+
     void FillMomentumHistograms(const Event& );
+    void DrawHistograms(const std::string);
+    void DrawR_Histograms(const std::string filename);
+    void DrawHistogramsPos(const std::string);
     void DrawMomentumHistograms(const std::string);
+    void DrawEnergyHistograms(const std::string );
     void DrawCaloHistograms(const std::string );
+    void DrawCherenkovHistograms(const std::string ) ;
+    void DrawHistogramsNoCuts(const std::string);
+
 
     //void FillQ2pre(const Event&  );
     //void Fillypre(const Event&  );
@@ -87,6 +93,7 @@ private:
     TH1F *h_pid;    //= new TH1F("pid", "pid", 100, -250, 250) ;
     TH2F *h_xQ2;    //= new TH2F("xQ2", "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
     TH2F *h_xQ2pos; //= new TH2F("xQ2pos", "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
+    
     //momentum histograms
     TH1F *h_px_el;  //= new TH1F("px_ele", "px_ele", 100, 0, 10) ;
     TH1F *h_py_el;  //= new TH1F("py_ele", "py_ele", 100, 0, 10) ;
@@ -94,6 +101,22 @@ private:
     TH1F *h_px_pi;  //= new TH1F("px_pro", "px_pro", 100, 0, 10) ;
     TH1F *h_py_pi;  //= new TH1F("py_pro", "py_pro", 100, 0, 10) ;
     TH1F *h_pz_pi;  //= new TH1F("pz_pro", "pz_pro", 100, 0, 10) ;
+    TH1F *h_theta_el;   //= new TH1F("theta_ele", "theta_ele", 100, 0, 3.5) ;
+    TH1F *h_phi_el; //= new TH1F("phi_ele", "phi_ele", 100, 0, 6.5) ;
+    TH1F *h_theta_pi;   //= new TH1F("theta_pro", "theta_pro", 100, 0, 3.5) ;
+    TH1F *h_phi_pi; //= new TH1F("phi_pro", "phi_pro", 100, 0, 6.5) ;
+    TH2F *h_polcoord_el;
+    TH2F *h_polcoord_pi;
+
+
+    //Energy plots 
+    TH1F *h_E_el;  //= new TH1F("E_ele", "E_ele", 100, 0, 10) ;
+    TH1F *h_E_pi;  //= new TH1F("E_pro", "E_pro", 100, 0, 10) ;
+    TH2F *h_E_el_theta; //= new TH2F("E_ele_theta", "E_ele_theta", 100, 0, 50, 100, 0, 10) ;
+    TH2F *h_E_pi_theta; //= new TH2F("E_pro_theta", "E_pro_theta", 100, 0, 50, 100, 0, 10) ;
+    TH2F *h_E_el_phi;   //= new TH2F("E_ele_phi", "E_ele_phi", 100, 0, 360, 100, 0, 10) ;
+    TH2F *h_E_pi_phi;   //= new TH2F("E_pro_phi", "E_pro_phi", 100, 0, 360, 100, 0, 10) ;
+
 
     //Calo histograms
     TH1F *h_lu; // = new TH1F("lu", "lu", 100, 0, 400) ;    //units cm can be zoomed in to 40 
@@ -104,6 +127,24 @@ private:
     TH1F *h_epcalout ; // = new TH1F("epcalout", "epcalout", 100, 0, 1) ;
     TH2F *h_calXY; // = new TH2F("calxy", "calxy", 100, -400, 400, 100, -400, 400) ;
     TH2F *h_calEall; // = new TH2F("calEall", "calEall", 100, 0, 1, 100, 0, 1) ;
+    TH1F *h_calSector; // = new TH1F("calSector", "calSector", 100, 0, 8) ;
+
+    //Cherenkov histograms
+    TH1F *h_Nphe15; // = new TH1F("Nphe15", "Nphe15", 100, 0, 60) ;
+    TH1F *h_Nphe16; // = new TH1F("Nphe16", "Nphe16", 100, 0, 60) ;
+    TH1F *h_Nphe15pos; // = new TH1F("Nphe15pos", "Nphe15pos", 100, 0, 60) ;
+    TH1F *h_Nphe16pos; // = new TH1F("Nphe16pos", "Nphe16pos", 100, 0, 60) ;
+
+
+            //===Lines for Cuts(TBD)===// 
+    //==variable lines==//
+
+    //==calorimeter lines==//
+
+    //==cherenkov lines==//
+    //pending TBD
+
+
 
     //add more histograms for other variables here
     

@@ -31,6 +31,7 @@
             currentEvent.SetVertexZ(vertz);
             currentEvent.SetVertexX(vertx);
             currentEvent.SetVertexY(verty);
+            
             //currentEvent.SetParticleRow(row);
             
         } else if (IsHadron(pid)) {
@@ -43,9 +44,9 @@
 
     void EventReader::ProcessParticleMomentum(int pid, double pxValue, double pyValue, double pzValue) {
         if (pid == Constants::ELECTRON_PID) {
-            //SetPx(pxValue);
-            //SetPy(pyValue);
-            //SetPz(pzValue);
+            //currentEvent.SetPx(pxValue);
+            //currentEvent.SetPy(pyValue);
+            //currentEvent.SetPz(pzValue);
         } else if (IsHadron(pid)) {
             //SetPx(pxValue);
             //SetPy(pyValue);
@@ -89,6 +90,13 @@
 
     }
 
+    void EventReader::AddCherInfo(int pid, double nphe15, double nphe16){
+        if (pid == Constants::ELECTRON_PID) {
+            currentEvent.Setnphe15(nphe15);
+            currentEvent.Setnphe16(nphe16);
+        }
+    }
+
 
     double EventReader::GetMassID(int id) {
             //a function that retunrs the mass according to the particle PID in argument
@@ -114,6 +122,7 @@
         double max_energy_electron = 0.0; 
         event.getStructure(RECgen);
         event.getStructure(RECcalo);
+        event.getStructure(RECcher);
         //RECgen.show();
         bool flag_el = false;
         int counter_el= 0.0;
@@ -145,6 +154,8 @@
             momentum.SetPx(RECgen.getFloat("px", i));
             momentum.SetPy(RECgen.getFloat("py", i));
             momentum.SetPz(RECgen.getFloat("pz", i));
+            //std::cout<< "phi : "<< momentum.Phi() << std::endl;
+            //std::cout<< "theta : "<< momentum.Theta() << std::endl;
             TVector3 momentum3D = momentum.Vect();
             momentum.SetVectM(momentum3D, mass);
             if (pid == Constants::ELECTRON_PID) {
@@ -179,6 +190,16 @@
                     //once pindex changes  cal values are reset
                 if (pindex == i) {
                     int cal_layer = RECcalo.getInt("layer", pindex);
+                        //e_pcal = RECcalo.getFloat("energy", pindex);
+                        //lu_pcal = RECcalo.getFloat("lu", pindex);
+                        //lv_pcal = RECcalo.getFloat("lv", pindex);
+                        //lw_pcal = RECcalo.getFloat("lw", pindex);
+                        //sector_pcal = RECcalo.getInt("sector", pindex);
+                        //x_cal = RECcalo.getFloat("x", pindex);
+                        //y_cal = RECcalo.getFloat("y", pindex);
+                        //z_cal = RECcalo.getFloat("z", pindex); //porbalby useless TBD
+
+                    if (cal_layer == 1) {   //pcal
                         e_pcal = RECcalo.getFloat("energy", pindex);
                         lu_pcal = RECcalo.getFloat("lu", pindex);
                         lv_pcal = RECcalo.getFloat("lv", pindex);
@@ -188,12 +209,6 @@
                         y_cal = RECcalo.getFloat("y", pindex);
                         z_cal = RECcalo.getFloat("z", pindex); //porbalby useless TBD
 
-                    if (cal_layer == 1) {   //pcal
-                         e_pcal = RECcalo.getFloat("energy", pindex);
-                         lu_pcal = RECcalo.getFloat("lu", pindex);
-                         lv_pcal = RECcalo.getFloat("lv", pindex);
-                         lw_pcal = RECcalo.getFloat("lw", pindex);
-                         sector_pcal = RECcalo.getInt("sector", pindex);
                     }
                     if (cal_layer == 4) {   //ecal_in
                          e_ecalin = RECcalo.getFloat("energy", pindex);
@@ -204,6 +219,27 @@
                     AddCaloInfo(pid, sector_pcal, lu_pcal, lv_pcal, lw_pcal, e_pcal, e_ecalin, e_ecalout);
                     AddCaloXYZ(pid, x_cal, y_cal, z_cal);
                 }
+            }
+            for (int cher_row = 0; cher_row < RECcher.getRows(); ++cher_row){
+                int pindex_cher = RECcher.getInt("pindex", cher_row);
+                
+                double nphe15;
+                double nphe16 ;
+                if (pindex_cher == i){
+                    int cher_detectornb = RECcher.getInt("detector", pindex_cher);
+                    //AddCherInfo(pid, nphe, cher_detectornb);
+                    if (cher_detectornb == 16){
+                        nphe16 = RECcher.getFloat("nphe", pindex_cher);
+                        //std::cout << "nphe16: " << nphe16 << std::endl;
+                    }
+                    if (cher_detectornb == 15){
+                        nphe15 = RECcher.getFloat("nphe", pindex_cher);
+                        //std::cout << "nphe15: " << nphe15 << std::endl;
+                    }
+                    AddCherInfo(pid, nphe15, nphe16);
+                }
+
+
             }
             
 
@@ -295,6 +331,7 @@ std::optional<Event> EventReader::ProcessEventsWithPositivePions(hipo::event eve
                 RUNconfig = factory.getSchema("RUN::config");
                 RECgen = factory.getSchema("REC::Particle");
                 RECcalo = factory.getSchema("REC::Calorimeter");
+                RECcher = factory.getSchema("REC::Cherenkov");
 
                 std::cout << "Processing file: " << filename << std::endl;
             } 

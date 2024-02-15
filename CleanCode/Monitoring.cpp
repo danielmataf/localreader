@@ -1,6 +1,10 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH1F.h>
+#include <TH2F.h>
+#include <TGraphErrors.h>
+#include <TGraph.h>
+#include <TLine.h>
 #include <vector>
 #include <TCanvas.h>
 #include <TPDF.h>
@@ -13,37 +17,52 @@
 
 Monitoring::Monitoring(CutSet a, const std::string& targetName)
     : cut1(a), targetName(targetName),
-      R_nu_el(new TH1F (("R_nuel_" + targetName).c_str(), "R_nuel", Rbin , numinR, numaxR)),
-      R_nu_had(new TH1F (("R_nuhad_" + targetName).c_str(), "R_nuhad", Rbin , numinR, numaxR)),
-      R_z(new TH1F (("R_z_" + targetName).c_str(), "R_z", Rbin , zminR, zmaxR)),
-      R_pt2(new TH1F (("R_pt2_" + targetName).c_str(), "R_pt2", Rbin , pt2minR, pt2maxR)),
+    R_nu_el(new TH1F (("R_nuel_" + targetName).c_str(), "R_nuel", Rbin , numinR, numaxR)),
+    R_nu_had(new TH1F (("R_nuhad_" + targetName).c_str(), "R_nuhad", Rbin , numinR, numaxR)),
+    R_z(new TH1F (("R_z_" + targetName).c_str(), "R_z", Rbin , zminR, zmaxR)),
+    R_pt2(new TH1F (("R_pt2_" + targetName).c_str(), "R_pt2", Rbin , pt2minR, pt2maxR)),
 
-      h_Q2(new TH1F(("Q2_" + targetName).c_str(), "Q2", nubin, QminX, QmaxX)),
-      h_xb(new TH1F(("xb_" + targetName).c_str(), "xb", nubin, xminX, xmaxX)),
-      h_y(new TH1F(("y_" + targetName).c_str(), "y", nubin, yminX, ymaxX)),
-      h_nu(new TH1F(("nu_" + targetName).c_str(), "nu", nubin, numinX, numaxX)),
-      h_W2(new TH1F(("W2_" + targetName).c_str(), "W2", nubin, WminX, WmaxX)),
-      h_z(new TH1F(("z_" + targetName).c_str(), "z", nubin, zminX, zmaxX)),
-      h_pt2(new TH1F(("pt2_" + targetName).c_str(), "pt2", nubin, pt2minX, pt2maxX)),
-      h_phih(new TH1F(("phih_" + targetName).c_str(), "phih", nubin, phihminX, phihmaxX)),
-      h_vertexZ(new TH1F(("targetVz_" + targetName).c_str(), "vertex4target", 100, -40, 40)),
-      h_pid(new TH1F(("pid_" + targetName).c_str(), "pid", 100, -250, 250)),
-      h_xQ2(new TH2F(("xQ2_" + targetName).c_str(), "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
-      h_xQ2pos(new TH2F(("xQ2pos_" + targetName).c_str(), "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
-      h_px_el(new TH1F(("px_ele_" + targetName).c_str(), "px_ele", nubin, 0, 10)),
-      h_py_el(new TH1F(("py_ele_" + targetName).c_str(), "py_ele", nubin, 0, 10)),
-      h_pz_el(new TH1F(("pz_ele_" + targetName).c_str(), "pz_ele", nubin, 0, 10)),
-      h_px_pi(new TH1F(("px_pro_" + targetName).c_str(), "px_pro", nubin, 0, 10)),
-      h_py_pi(new TH1F(("py_pro_" + targetName).c_str(), "py_pro", nubin, 0, 10)),
-      h_pz_pi(new TH1F(("pz_pro_" + targetName).c_str(), "pz_pro", nubin, 0, 10)),
-      h_lu(new TH1F(("lu_el" + targetName).c_str(), "lu", nubin, 0, 400)),
-      h_lv(new TH1F(("lv_el" + targetName).c_str(), "lv", nubin, 0, 400)),
-      h_lw(new TH1F(("lw_el" + targetName).c_str(), "lw", nubin, 0, 400)),
-      h_epcal(new TH1F(("epcal_el" + targetName).c_str(), "epcal", nubin, 0, 1)),
-      h_eecalin(new TH1F(("eecalin_el" + targetName).c_str(), "eecalin", nubin, 0, 1)),
-      h_epcalout(new TH1F(("epcalout_el" + targetName).c_str(), "epcalout", nubin, 0, 1)),
-      h_calXY(new TH2F(("calxy_el" + targetName).c_str(), "calxy", nubin, -400, 400, nubin, -400, 400)),
-      h_calEall(new TH2F(("calEall_el" + targetName).c_str(), "calEall", nubin, 0, 1, nubin, 0, 1)),
+    h_Q2(new TH1F(("Q2_" + targetName).c_str(), "Q2", nubin, QminX, QmaxX)),
+    h_xb(new TH1F(("xb_" + targetName).c_str(), "xb", nubin, xminX, xmaxX)),
+    h_y(new TH1F(("y_" + targetName).c_str(), "y", nubin, yminX, ymaxX)),
+    h_nu(new TH1F(("nu_" + targetName).c_str(), "nu", nubin, numinX, numaxX)),
+    h_W2(new TH1F(("W2_" + targetName).c_str(), "W2", nubin, WminX, WmaxX)),
+    h_z(new TH1F(("z_" + targetName).c_str(), "z", nubin, zminX, zmaxX)),
+    h_pt2(new TH1F(("pt2_" + targetName).c_str(), "pt2", nubin, pt2minX, pt2maxX)),
+    h_phih(new TH1F(("phih_" + targetName).c_str(), "phih", nubin, phihminX, phihmaxX)),
+    h_vertexZ(new TH1F(("targetVz_" + targetName).c_str(), "vertex4target", 100, -40, 40)),
+    h_pid(new TH1F(("pid_" + targetName).c_str(), "pid", 100, -250, 250)),
+    h_xQ2(new TH2F(("xQ2_" + targetName).c_str(), "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
+    h_xQ2pos(new TH2F(("xQ2pos_" + targetName).c_str(), "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
+    h_px_el(new TH1F(("px_ele_" + targetName).c_str(), "px_ele", nubin, 0, 10)),
+    h_py_el(new TH1F(("py_ele_" + targetName).c_str(), "py_ele", nubin, 0, 10)),
+    h_pz_el(new TH1F(("pz_ele_" + targetName).c_str(), "pz_ele", nubin, 0, 10)),
+    h_px_pi(new TH1F(("px_pro_" + targetName).c_str(), "px_pro", nubin, 0, 10)),
+    h_py_pi(new TH1F(("py_pro_" + targetName).c_str(), "py_pro", nubin, 0, 10)),
+    h_pz_pi(new TH1F(("pz_pro_" + targetName).c_str(), "pz_pro", nubin, 0, 10)),
+    h_theta_el(new TH1F(("theta_el" + targetName).c_str(), "theta", nubin, 0, 30)),
+    h_phi_el(new TH1F(("phi_el" + targetName).c_str(), "phi", nubin, 0, 360)),
+    h_polcoord_el(new TH2F(("pol_el"+ targetName).c_str(), "polcoord", nubin, 0,40, nubin, 0, 360)),
+    h_theta_pi(new TH1F(("theta_pi" + targetName).c_str(), "theta", nubin, 0, 150)),
+    h_phi_pi(new TH1F(("phi_pi" + targetName).c_str(), "phi", nubin, 0, 360)),
+    h_polcoord_pi(new TH2F(("pol_pi"+ targetName).c_str(), "polcoordphi", nubin, 0,150, nubin, 0, 360)),
+    h_E_el(new TH1F(("E_el" + targetName).c_str(), "E", nubin, 0, 10)),
+    h_E_el_theta(new TH2F(("E_el_theta" + targetName).c_str(), "E_theta", nubin, 0, 30, nubin, 0, 10)),
+    h_E_el_phi(new TH2F(("E_el_phi" + targetName).c_str(), "E_phi", nubin, 0, 360, nubin, 0, 10)),
+    h_E_pi(new TH1F(("E_pi" + targetName).c_str(), "E", nubin, 0, 10)),
+    h_E_pi_theta(new TH2F(("E_pi_theta" + targetName).c_str(), "E_theta", nubin, 0, 150, nubin, 0, 10)),
+    h_E_pi_phi(new TH2F(("E_pi_phi" + targetName).c_str(), "E_phi", nubin, 0, 360, nubin, 0, 10)),
+    h_lu(new TH1F(("lu_el" + targetName).c_str(), "lu", nubin, 0, 450)),
+    h_lv(new TH1F(("lv_el" + targetName).c_str(), "lv", nubin, 0, 350)),
+    h_lw(new TH1F(("lw_el" + targetName).c_str(), "lw", nubin, 0, 350)),
+    h_epcal(new TH1F(("epcal_el" + targetName).c_str(), "epcal", nubin, 0, 1)),
+    h_eecalin(new TH1F(("eecalin_el" + targetName).c_str(), "eecalin", nubin, 0, 1)),
+    h_epcalout(new TH1F(("epcalout_el" + targetName).c_str(), "epcalout", nubin, 0, 1)),
+    h_calXY(new TH2F(("calxy_el" + targetName).c_str(), "calxy", nubin, -400, 400, nubin, -400, 400)),
+    h_calEall(new TH2F(("calEall_el" + targetName).c_str(), "calEall", nubin, 0, 1, nubin, 0, 1)),
+    h_Nphe15(new TH1F(("Nphe15_" + targetName).c_str(), "Nphe15", nubin, 0, 60)),
+    h_Nphe16(new TH1F(("Nphe16_" + targetName).c_str(), "Nphe16", nubin, 0, 60)),
+    h_calSector(new TH1F(("calSector_" + targetName).c_str(), "calSector", nubin, -1, 10)),
       counterel_R(0) {
     // Add more histograms as needed
 }
@@ -65,9 +84,80 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
 //    h_W2pre->Fill(event.GetW2());
 //}
 
+void Monitoring::FillHistogramswCuts(const Event& event) {
+    if (cut1.PassCutsDetectors(event)==true){
+        // Fill Detector histograms after cuts
+        h_calXY->Fill(event.GetCalX(), event.GetCalY());
+        h_lu->Fill(event.Getlu());
+        h_lv->Fill(event.Getlv());
+        h_lw->Fill(event.Getlw());
+        h_epcal->Fill(event.GetEpcal());
+        h_eecalin->Fill(event.GetEcalin());
+        h_epcalout->Fill(event.GetEcalout());
+        h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
+        h_Nphe15->Fill(event.Getnphe15());
+        h_Nphe16->Fill(event.Getnphe16());
+        h_calSector->Fill(event.GetCalSector());
+
+        if (cut1.PassCutsElectrons(event)==true) {
+            // Fill Electron variable histograms after cuts on electron
+            h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detected !!!!
+            h_Q2->Fill(event.GetQ2());
+            h_xb->Fill(event.Getxb());
+            h_y->Fill(event.Gety());    
+            h_nu->Fill(event.Getnu());
+            h_W2->Fill(event.GetW2());
+            //h_xQ2pos->Fill(event.Getxb(), event.GetQ2());
+            Particle electron = event.GetElectron();
+            h_px_el->Fill(electron.GetMomentum().X());
+            h_py_el->Fill(electron.GetMomentum().Y());
+            h_pz_el->Fill(electron.GetMomentum().Z());
+            h_theta_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI);
+            h_phi_el->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180);
+            h_polcoord_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().Phi()*180/Constants::PI +180);
+            h_E_el->Fill(electron.GetMomentum().E());
+            h_E_el_theta->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().E());
+            h_E_el_phi->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180, electron.GetMomentum().E());
+            for (const Particle& hadron : event.GetHadrons()) {
+                if (cut1.PassCutsHadrons(hadron)==true){
+                    if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
+
+                        h_z->Fill(hadron.Getz());
+                        h_pt2->Fill(hadron.Getpt2());
+                        h_phih->Fill(hadron.Getphih());
+                        h_px_pi->Fill(hadron.GetMomentum().X());
+                        h_py_pi->Fill(hadron.GetMomentum().Y());
+                        h_pz_pi->Fill(hadron.GetMomentum().Z());
+                        h_theta_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI);
+                        h_phi_pi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180);
+                        h_polcoord_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().Phi()*180/Constants::PI +180);
+                        h_E_pi->Fill(hadron.GetMomentum().E());
+                        h_E_pi_theta->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().E());
+                        h_E_pi_phi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180, hadron.GetMomentum().E());
+
+                    }
+                }
+
+
+            }
+        }
+    }
+}
+
 void Monitoring::FillHistograms(const Event& event) {
     //if (cut1.PassCutLD2Target(event)==false) return;
     //h_xQ2->Fill(event.Getxb(), event.GetQ2());
+    h_calXY->Fill(event.GetCalX(), event.GetCalY());
+    h_lu->Fill(event.Getlu());
+    h_lv->Fill(event.Getlv());
+    h_lw->Fill(event.Getlw());
+    h_epcal->Fill(event.GetEpcal());
+    h_eecalin->Fill(event.GetEcalin());
+    h_epcalout->Fill(event.GetEcalout());
+    h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
+    h_Nphe15->Fill(event.Getnphe15());
+    h_Nphe16->Fill(event.Getnphe16());
+    h_calSector->Fill(event.GetCalSector());
 
     if (cut1.PassCutsElectrons(event)==false) return;
     //std::cout << " -> electron cuts passed successfully  " << std::endl;
@@ -78,14 +168,6 @@ void Monitoring::FillHistograms(const Event& event) {
     h_y->Fill(event.Gety());    
     h_nu->Fill(event.Getnu());
     h_W2->Fill(event.GetW2());
-    h_calXY->Fill(event.GetCalX(), event.GetCalY());
-    h_lu->Fill(event.Getlu());
-    h_lv->Fill(event.Getlv());
-    h_lw->Fill(event.Getlw());
-    h_epcal->Fill(event.GetEpcal());
-    h_eecalin->Fill(event.GetEcalin());
-    h_epcalout->Fill(event.GetEcalout());
-    h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
 
     
     //h_xQ2pos->Fill(event.Getxb(), event.GetQ2());
@@ -122,6 +204,62 @@ void Monitoring::FillHistograms(const Event& event) {
     }
  //add histos 
 
+}
+
+void Monitoring::FillHistogramsNoCuts(const Event& event) {
+    // Fill histograms with no cuts
+    h_Q2->Fill(event.GetQ2());
+    h_xb->Fill(event.Getxb());
+    h_y->Fill(event.Gety());
+    h_nu->Fill(event.Getnu());
+    h_W2->Fill(event.GetW2());
+    h_vertexZ->Fill(event.GetVz());
+    h_xQ2->Fill(event.Getxb(), event.GetQ2());
+    h_calSector->Fill(event.GetCalSector());
+    h_calXY->Fill(event.GetCalX(), event.GetCalY());
+    h_lu->Fill(event.Getlu());
+    h_lv->Fill(event.Getlv());
+    h_lw->Fill(event.Getlw());
+    h_epcal->Fill(event.GetEpcal());
+    h_eecalin->Fill(event.GetEcalin());
+    h_epcalout->Fill(event.GetEcalout());
+    h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
+    h_Nphe15->Fill(event.Getnphe15());
+    h_Nphe16->Fill(event.Getnphe16());
+    h_calSector->Fill(event.GetCalSector());
+    Particle electron = event.GetElectron();
+    h_px_el->Fill(electron.GetMomentum().X());
+    h_py_el->Fill(electron.GetMomentum().Y());
+    h_pz_el->Fill(electron.GetMomentum().Z());
+    h_theta_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI);
+    h_phi_el->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180);
+    h_polcoord_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().Phi()*180/Constants::PI +180);
+    h_E_el->Fill(electron.GetMomentum().E());
+    h_E_el_theta->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().E());
+    h_E_el_phi->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180, electron.GetMomentum().E());
+
+    
+    
+    for (const Particle& hadron : event.GetHadrons()) {
+        if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
+        h_z->Fill(hadron.Getz());
+        h_pt2->Fill(hadron.Getpt2());
+        h_phih->Fill(hadron.Getphih());
+        h_px_pi->Fill(hadron.GetMomentum().X());
+        h_py_pi->Fill(hadron.GetMomentum().Y());
+        h_pz_pi->Fill(hadron.GetMomentum().Z());
+        h_theta_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI);
+        h_phi_pi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180);
+        h_polcoord_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().Phi()*180/Constants::PI +180);
+        h_E_pi->Fill(hadron.GetMomentum().E());
+        h_E_pi_theta->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().E());
+        h_E_pi_phi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180, hadron.GetMomentum().E());
+        
+        //
+        //std::cout << " kinhad " << hadron.Getz()<<" , " << hadron.Getpt2()<<" , " << hadron.Getphih()<<std::endl;  
+        //
+        }
+    }
 }
 
 
@@ -217,28 +355,51 @@ void Monitoring::DrawHistograms(const std::string filename) {
     MonC.cd(1);
     h_Q2->Draw("hist");
     h_Q2->SetTitle("Q2 Distribution");
+    TLine *line_Q2 = new TLine(Constants::RcutminQ, h_Q2->GetMinimum(), Constants::RcutminQ, h_Q2->GetMaximum());
+    line_Q2->SetLineStyle(2); // Dashed line style
+    line_Q2->Draw();
     MonC.cd(2);
     h_xb->Draw("hist");
     h_xb->SetTitle("xb Distribution");
     MonC.cd(3);
     h_y->Draw("hist");
     h_y->SetTitle("y Distribution");
+    TLine *line_y = new TLine(Constants::RcutminY, h_y->GetMinimum(), Constants::RcutminY, h_y->GetMaximum());  
+    line_y->SetLineStyle(2); // Dashed line style
+    line_y->Draw();
     MonC.cd(4);
     h_nu->Draw("hist");
     h_nu->SetTitle("nu Distribution");
     MonC.cd(5);
     h_W2->Draw("hist");
     h_W2->SetTitle("W2 Distribution");
+    TLine *line_W2 = new TLine(Constants::RcutminW, h_W2->GetMinimum(), Constants::RcutminW, h_W2->GetMaximum());
+    line_W2->SetLineStyle(2); // Dashed line style
+    line_W2->Draw();
     MonC.cd(6);
     h_z->Draw("hist");
     h_z->SetTitle("z Distribution");
+    TLine *line_z = new TLine(Constants::RcutminZ, h_z->GetMinimum(), Constants::RcutminZ, h_z->GetMaximum());
+    line_z->SetLineStyle(2); // Dashed line style
+    line_z->Draw();
+    TLine *line_zmax = new TLine(Constants::RcutmaxZ, h_z->GetMinimum(), Constants::RcutmaxZ, h_z->GetMaximum());
+    line_zmax->SetLineStyle(2); // Dashed line style
+    line_zmax->Draw();
     MonC.cd(6)->SetLogy();  // Set logarithmic scale on y-axis for h_z
     //add log scale on y axis to z distribution
     MonC.cd(7);
     h_pt2->Draw("hist");
     h_pt2->SetTitle("pt2 Distribution");
+    TLine *line_pt2 = new TLine(Constants::RcutminPt2, h_pt2->GetMinimum(), Constants::RcutminPt2, h_pt2->GetMaximum());
+    line_pt2->SetLineStyle(2); // Dashed line style
+    line_pt2->Draw();
+    TLine *line_pt2max = new TLine(Constants::RcutmaxPt2, h_pt2->GetMinimum(), Constants::RcutmaxPt2, h_pt2->GetMaximum());
+    line_pt2max->SetLineStyle(2); // Dashed line style
+    line_pt2max->Draw();
+
     MonC.cd(7)->SetLogy();  // Set logarithmic scale on y-axis for h_z
     //add log scale on y axis to pt distribution
+
 
 
 
@@ -287,12 +448,21 @@ void Monitoring::DrawCaloHistograms(const std::string filename) {
     MonCal.cd(2);
     h_lv->Draw("hist");
     h_lv->SetTitle("lv el_LD2");
+    TLine *line_lv = new TLine(Constants::cutlv_min, h_lv->GetMinimum(), Constants::cutlv_min, h_lv->GetMaximum());
+    line_lv->SetLineStyle(2); // Dashed line style
+    line_lv->Draw();
     MonCal.cd(3);
     h_lw->Draw("hist");
     h_lw->SetTitle("lw el_LD2");
+    TLine *line_lw = new TLine(Constants::cutlw_min, h_lw->GetMinimum(), Constants::cutlw_min, h_lw->GetMaximum());
+    line_lw->SetLineStyle(2); // Dashed line style
+    line_lw->Draw();
     MonCal.cd(4);
     h_epcal->Draw("hist");
     h_epcal->SetTitle("epcal el_LD2");
+    TLine *line_epcal = new TLine(Constants::cutEpcal_min, h_epcal->GetMinimum(), Constants::cutEpcal_min, h_epcal->GetMaximum());
+    line_epcal->SetLineStyle(2); // Dashed line style
+    line_epcal->Draw();
     MonCal.cd(5);
     h_eecalin->Draw("hist");
     h_eecalin->SetTitle("Ecal_inner el_LD2");
@@ -302,18 +472,121 @@ void Monitoring::DrawCaloHistograms(const std::string filename) {
     MonCal.cd(7);
     h_calEall->Draw("COLZ");
     h_calEall->SetTitle("Ecal vs Epcal el_LD2");
+    TLine *line_calEall = new TLine(Constants::cutEpcal_min, h_calEall->GetYaxis()->GetXmin(), Constants::cutEpcal_min, h_calEall->GetYaxis()->GetXmax());
+    line_calEall->SetLineStyle(2); 
+    line_calEall->SetLineColor(kRed); 
+    line_calEall->SetLineWidth(2); 
+    line_calEall->Draw();
+    //TLine *line_Ecal = new TLine(Constants::cutEpcal_min, h_epcal->GetMinimum(), Constants::cutEpcal_min, h_epcal->GetMaximum());
     MonCal.cd(8);
     h_calXY->Draw("COLZ");
     h_calXY->SetTitle("PCalXY");
-
+    MonCal.cd(9);
+    h_calSector->Draw("hist");
+    h_calSector->SetTitle("calSector el_LD2");
 
     MonCal.Print((filename + ".pdf").c_str());
 }
 
 
+void Monitoring::DrawCherenkovHistograms(const std::string filename) {
+    TCanvas MonCher("Monitoring cherencanvas", "Monitoring cherenkovHistograms");
+    MonCher.Divide(2, 1);
+    MonCher.cd(1);
+    h_Nphe15->Draw("hist");
+    h_Nphe15->SetTitle("Nphe15 el_LD2");
+    h_Nphe15->GetXaxis()->SetTitle("Nphe15");
+    TLine *line_Nphe15 = new TLine(Constants::Nphe15min, h_Nphe15->GetMinimum(), Constants::Nphe15min, h_Nphe15->GetMaximum());
+    line_Nphe15->SetLineStyle(2); // Dashed line style
+    line_Nphe15->Draw();
+    MonCher.cd(2);
+    h_Nphe16->Draw("hist");
+    h_Nphe16->GetXaxis()->SetTitle("Nphe16");
+    h_Nphe16->SetTitle("Nphe16 el_LD2");
+    TLine *line_Nphe16 = new TLine(Constants::Nphe16min, h_Nphe16->GetMinimum(), Constants::Nphe16min, h_Nphe16->GetMaximum());
+    line_Nphe16->SetLineStyle(2); // Dashed line style
+    line_Nphe16->Draw();
+    
 
-void Monitoring::FillHistogramsNoCuts( const Event& event){
-    int targetType = event.GetTargetType();//using a flag for targets 
+
+    MonCher.Print((filename + ".pdf").c_str());
+}
+
+
+void Monitoring::DrawMomentumHistograms(const std::string filename){
+    TCanvas MonMom("Monitoring momcanvas", "Monitoring momHistograms");
+    MonMom.Divide(4, 3);
+    MonMom.cd(1);
+    h_px_el->Draw("hist");
+    h_px_el->SetTitle("px el_LD2");
+    MonMom.cd(2);
+    h_py_el->Draw("hist");
+    h_py_el->SetTitle("py el_LD2");
+    MonMom.cd(3);
+    h_pz_el->Draw("hist");
+    h_pz_el->SetTitle("pz el_LD2");
+    MonMom.cd(4);
+    h_px_pi->Draw("hist");
+    h_px_pi->SetTitle("px pi_LD2");
+    MonMom.cd(5);
+    h_py_pi->Draw("hist");
+    h_py_pi->SetTitle("py pi_LD2");
+    MonMom.cd(6);
+    h_pz_pi->Draw("hist");
+    h_pz_pi->SetTitle("pz pi_LD2");
+    MonMom.cd(7);
+    h_theta_el->Draw("hist");
+    h_theta_el->SetTitle("theta el_LD2");
+    MonMom.cd(8);
+    h_phi_el->Draw("hist");
+    h_phi_el->SetTitle("phi el_LD2");
+    MonMom.cd(9);
+    h_theta_pi->Draw("hist");
+    h_theta_pi->SetTitle("theta pi_LD2");
+    MonMom.cd(10);
+    h_phi_pi->Draw("hist");
+    h_phi_pi->SetTitle("phi pi_LD2");
+    MonMom.cd(11);
+    h_polcoord_el->Draw("COLZ");
+    h_polcoord_el->SetTitle("polar el_LD2");
+    MonMom.cd(12);
+    h_polcoord_pi->Draw("COLZ");
+    h_polcoord_pi->SetTitle("polar pi_LD2");
+
+    
+
+    MonMom.Print((filename + ".pdf").c_str());
+
+}
+
+void Monitoring::DrawEnergyHistograms(const std::string filename){
+    TCanvas MonEnrg("Monitoring Enrgcanvas", "Monitoring EnrgHistograms");
+    MonEnrg.Divide(3, 2);
+    MonEnrg.cd(1);
+    h_E_el->Draw("hist");
+    h_E_el->SetTitle("E el_LD2");
+    MonEnrg.cd(2);
+    h_E_el_theta->Draw("COLZ");
+    h_E_el_theta->SetTitle("E vs theta el_LD2");
+    MonEnrg.cd(3);
+    h_E_el_phi->Draw("COLZ");
+    h_E_el_phi->SetTitle("E vs phi el_LD2");
+    MonEnrg.cd(4);
+    h_E_pi->Draw("hist");
+    h_E_pi->SetTitle("E pi_LD2");
+    MonEnrg.cd(5);
+    h_E_pi_theta->Draw("COLZ");
+    h_E_pi_theta->SetTitle("E vs theta pi_LD2");
+    MonEnrg.cd(6);
+    h_E_pi_phi->Draw("COLZ");
+    h_E_pi_phi->SetTitle("E vs phi pi_LD2");
+
+    MonEnrg.Print((filename + ".pdf").c_str());
+
+}
+
+//void Monitoring::FillHistogramsNoCuts( const Event& event){
+//    int targetType = event.GetTargetType();//using a flag for targets 
 /*
     if (targetType == 0 && cutd.PassCutsElectrons(event)==true) {
         
@@ -341,7 +614,7 @@ void Monitoring::FillHistogramsNoCuts( const Event& event){
 
     //Add CxC
 */
-}
+//}
 
 
 Monitoring::~Monitoring() {

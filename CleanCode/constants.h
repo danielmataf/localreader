@@ -93,9 +93,12 @@ namespace Constants {
     static const double cal_lvmax = 50.0;
     static const double cal_lwmin = 0.0;
     static const double cal_lwmax = 50.0;   
-    static const double cal_Epmin = 0.0;
+    static const double cal_Epmin = 0.06;
     static const double cal_Epmax = 0.40;  
 
+    //Cherenkov Values
+    static const double Nphe15min = 2.0;
+    static const double Nphe16min = 2.0;
 
     //Binning & limits for Ratios
 
@@ -128,14 +131,17 @@ namespace Constants {
     
 
     //RGA cuts 
-    static const double cutlv_min = 0.0;
-    static const double cutlv_max = 100.0;
-    static const double cutlw_min = 0.0;
-    static const double cutlw_max = 100.0;
-    static const double cutlu_min = 0.0;
-    static const double cutlu_max = 100.0;  
+    static const double cutlv_min = 14.0;    //in cm ?  cuts: loose >9cm ; medium >14cm; tight >19cm  
+    static const double cutlv_max = 1000.0;
+    static const double cutlw_min = 14.0;    //in cm ? 
+    static const double cutlw_max = 1000.0;
+    static const double cutlu_min = 0.0;    //doen't seem to have cuts in RGA
+    static const double cutlu_max = 10000.0;  
+
+    //Calo Cuts
+    static const double cutEpcal_min = 0.06; //see 8.1.1 in RGA, in DST unit in GeV  (here is 60 MeV -> 0.06 GeV)
     
-    static const double cutcalEp_max = 0.60; //see 8.1.1 in RGA, in DST unit in GeV  (here is 60 MeV)
+    static const double cutcalEp_max = 2.00; //see 8.1.1 in RGA, in DST unit in GeV  (here is 60 MeV)
     
 }
 

@@ -14,6 +14,7 @@ public:
     void ProcessParticleMomentum(int, double , double , double );
     void AddCaloInfo(int,  int, double, double,double,double,double,double); 
     void AddCaloXYZ(int, double , double , double );
+    void AddCherInfo(int, double, double);
     bool IsHadron(int );
     double GetMassID(int); 
     void PrintEventInfo(int eventIndex);
@@ -28,7 +29,8 @@ private:
     //Banks
     hipo::bank RECgen;
     hipo::bank RUNconfig;
-    hipo::bank RECcalo;
+    hipo::bank RECcalo; //for three calorimeters (pcal ecal_in and ecal_out)
+    hipo::bank RECcher; //for both cherenkov detectors (15 and 16)
     //if other banks shoul be added, add here then propagate to ProcessEventsInFile in the .cpp
 
     hipo::reader reader;

@@ -53,14 +53,7 @@
         return particleRow  ;
     }
 
-    double Particle::GetTheta() const {
-        return theta;
-    }
-
-    double Particle::GetPhi() const {
-        return phi;
-    }
-
+   
     double Particle::GetQ2() const {
         return Q2;
     }
@@ -98,6 +91,10 @@
 
         this-> momentum = momentum;
     }
+    //void Particle::SetPolarAngle( double theta, double phi){
+    //    this->theta = theta;
+    //    this->phi = phi;
+    //}
     //void Particle::SetVertexZ ( double vertz) {
     //    this->
     //}
@@ -110,30 +107,24 @@
 
 
 
-    double Particle::GetPx() const {
-    return px;
-}
+    double Particle::GetPx(TLorentzVector momentum) const {
+        return momentum.Px();
+    }
 
-double Particle::GetPy() const {
-    return py;
-}
+    double Particle::GetPy(TLorentzVector momentum) const {
+        return momentum.Py();
+    }
 
-double Particle::GetPz() const {
-    return pz;
-}
+    double Particle::GetPz(TLorentzVector momentum) const {
+        return momentum.Pz();
+    }
 
-void Particle::SetPx(double pxValue) {
-    px = pxValue;
-}
-
-void Particle::SetPy(double pyValue) {
-    py = pyValue;
-}
-
-void Particle::SetPz(double pzValue) {
-    pz = pzValue;
-}
-
+    //double Particle::GetPhi(TLorentzVecotr momentum) const {
+    //    return momentum.Phi();
+    //}
+    //double Particle::GetTheta(TLorentzVector momentum) const {
+    //    return momentum.Theta();
+    //}
 
 
 

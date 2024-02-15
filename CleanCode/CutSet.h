@@ -38,11 +38,18 @@ public:
 
     //Chi2 cuts
     void SetCutChi2el(double, double);
-
+        //==Calo Cuts==//
     //u,v,w cuts
     void SetCutlu(double, double);
     void SetCutlv(double, double);
     void SetCutlw(double, double);
+    //Energy cuts
+
+
+        //==Cherenkov Cuts==//
+    //Nphe cuts
+    void SetCutNphe15(double);
+    void SetCutNphe16(double);
 
     
     //check if an event passes the cuts
@@ -51,11 +58,18 @@ public:
     bool PassCutCuTarget (const Event& ) ;
     bool PassCutsElectrons(const Event& ) ;
     bool PassCutsHadrons(const Particle& ) ;
+    bool PassCutsVariables(const Event& );
+
     bool PassCuts4R(const Event& , const Particle& );
     bool PassCutOnlyVz(const Event& );
     bool PassCutsCalo(const Event& );
+    bool PassCutsCherenkov(const Event& );
+    bool PassCutsDetectors(const Event& );
     
     
+    bool PassCutsAll(const Event&);
+
+
     //==Grouped Cuts==//
     void SetCutGen4Rat();
     void SetCutGentest(const Event&);
@@ -96,9 +110,9 @@ private:
     double cutluMin, cutluMax;
     double cutlvMin, cutlvMax;
     double cutlwMin, cutlwMax;
-    double cutduMin, cutduMax;
-    double cutdvMin, cutdvMax;
-    double cutdwMin, cutdwMax;
+
+    //for cherenkov cuts
+    double cutNphe15, cutNphe16;
 
 
     //for histograms
