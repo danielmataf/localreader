@@ -308,9 +308,9 @@ bool CutSet::PassCutsCherenkov(const Event& event ) {
     double Nphe15 = event.Getnphe15();
     double Nphe16 = event.Getnphe16();
     if (Nphe15 >= Constants::Nphe15min   ){
-        if (Nphe16 >= Constants::Nphe16min   ){
+        //if (Nphe16 >= Constants::Nphe16min   ){
             return true;
-        }
+        //}
     }
     return false;
 }
