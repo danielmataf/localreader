@@ -427,6 +427,7 @@ void Monitoring::DrawHistogramsPos(const std::string filename) {
     h_xQ2pos->SetTitle("x vs Q2 Distribution (LD2)");
     h_xQ2pos->GetXaxis()->SetTitle("x_{B}");
     h_xQ2pos->GetYaxis()->SetTitle("Q^{2}");
+    
 
 
 //    MonC.cd(3);

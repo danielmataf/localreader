@@ -11,6 +11,7 @@
 #include "Ratio.h"
 #include "Dpt.h"
 #include "cratio.h"
+#include "FilePathGenerator.h"
 
 
 //compile :
@@ -86,26 +87,12 @@ int main() {
 */
 
 int main() {
-    
-    std::vector<std::string> filenamesLD2 = {
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00000-00004.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00005-00009.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00010-00014.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00015-00019.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00020-00024.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00025-00029.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/rec_clas_018428.evio.00030-00034.hipo",
-    };
+    FilePathGenerator files;
+    std::vector<std::string> filenamesLD2;
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesLD2);
+    std::vector<std::string> filenamesCuSn;
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
 
-    std::vector<std::string> filenamesCuSn = {
-    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00000-00004.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00005-00009.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00010-00014.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00015-00019.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00020-00024.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00025-00029.hipo",
-    "/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/rec_clas_018348.evio.00030-00034.hipo"
-    };
 
     std::cout<< "Hello world \n";
     //EventReader MC(filenames);
@@ -218,13 +205,13 @@ int main() {
 
     rat.calcR();
     rat.PlotRatio("test");
-    rat.writeMatrixToFile("matrix_output.txt");
+    //rat.writeMatrixToFile("matrix_output.txt");
     rat.multiplotR();
     dpt.calcDpt();
-    dpt.writeMatrixToFile("matrix_Dpt.txt");
+    //dpt.writeMatrixToFile("matrix_Dpt.txt");
     dpt.multiplotDpt();
     crat.calcCratio();
-    crat.writeMatrixToFile("matrix_Cratio.txt");
+    //crat.writeMatrixToFile("matrix_Cratio.txt");
     crat.multiplotCratio();
     //
 
