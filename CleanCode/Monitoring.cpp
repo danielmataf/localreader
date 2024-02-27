@@ -446,33 +446,41 @@ void Monitoring::DrawCaloHistograms(const std::string filename) {
     MonCal.cd(1);
     h_lu->Draw("hist");
     h_lu->SetTitle("lu el_LD2");
+    h_lu->GetXaxis()->SetTitle("u (cm)");
     MonCal.cd(2);
     h_lv->Draw("hist");
     h_lv->SetTitle("lv el_LD2");
+    h_lv->GetXaxis()->SetTitle("v (cm)");
     TLine *line_lv = new TLine(Constants::cutlv_min, h_lv->GetMinimum(), Constants::cutlv_min, h_lv->GetMaximum());
     line_lv->SetLineStyle(2); // Dashed line style
     line_lv->Draw();
     MonCal.cd(3);
     h_lw->Draw("hist");
     h_lw->SetTitle("lw el_LD2");
+    h_lw->GetXaxis()->SetTitle("w (cm)");
     TLine *line_lw = new TLine(Constants::cutlw_min, h_lw->GetMinimum(), Constants::cutlw_min, h_lw->GetMaximum());
     line_lw->SetLineStyle(2); // Dashed line style
     line_lw->Draw();
     MonCal.cd(4);
     h_epcal->Draw("hist");
     h_epcal->SetTitle("epcal el_LD2");
+    h_epcal->GetXaxis()->SetTitle("E (GeV)");
     TLine *line_epcal = new TLine(Constants::cutEpcal_min, h_epcal->GetMinimum(), Constants::cutEpcal_min, h_epcal->GetMaximum());
     line_epcal->SetLineStyle(2); // Dashed line style
     line_epcal->Draw();
     MonCal.cd(5);
     h_eecalin->Draw("hist");
     h_eecalin->SetTitle("Ecal_inner el_LD2");
+    h_eecalin->GetXaxis()->SetTitle("E (GeV)");
     MonCal.cd(6);
     h_epcalout->Draw("hist");
     h_epcalout->SetTitle("Ecal_outer el_LD2");
+    h_epcalout->GetXaxis()->SetTitle("E (GeV)");
     MonCal.cd(7);
     h_calEall->Draw("COLZ");
     h_calEall->SetTitle("Ecal vs Epcal el_LD2");
+    h_calEall->GetXaxis()->SetTitle("Epcal (GeV)");
+    h_calEall->GetYaxis()->SetTitle("Ecal In+Out (GeV)");
     TLine *line_calEall = new TLine(Constants::cutEpcal_min, h_calEall->GetYaxis()->GetXmin(), Constants::cutEpcal_min, h_calEall->GetYaxis()->GetXmax());
     line_calEall->SetLineStyle(2); 
     line_calEall->SetLineColor(kRed); 
@@ -482,9 +490,12 @@ void Monitoring::DrawCaloHistograms(const std::string filename) {
     MonCal.cd(8);
     h_calXY->Draw("COLZ");
     h_calXY->SetTitle("PCalXY");
+    h_calXY->GetXaxis()->SetTitle("x (cm)");
+    h_calXY->GetYaxis()->SetTitle("y (cm)");
     MonCal.cd(9);
     h_calSector->Draw("hist");
     h_calSector->SetTitle("calSector el_LD2");
+    h_calSector->GetXaxis()->SetTitle("Sectors (1 - 6)");
 
     MonCal.Print((filename + ".pdf").c_str());
 }
@@ -496,13 +507,13 @@ void Monitoring::DrawCherenkovHistograms(const std::string filename) {
     MonCher.cd(1);
     h_Nphe15->Draw("hist");
     h_Nphe15->SetTitle("Nphe15 el_LD2");
-    h_Nphe15->GetXaxis()->SetTitle("Nphe15");
+    h_Nphe15->GetXaxis()->SetTitle("Nphe 15");
     TLine *line_Nphe15 = new TLine(Constants::Nphe15min, h_Nphe15->GetMinimum(), Constants::Nphe15min, h_Nphe15->GetMaximum());
     line_Nphe15->SetLineStyle(2); // Dashed line style
     line_Nphe15->Draw();
     MonCher.cd(2);
     h_Nphe16->Draw("hist");
-    h_Nphe16->GetXaxis()->SetTitle("Nphe16");
+    h_Nphe16->GetXaxis()->SetTitle("Nphe 16");
     h_Nphe16->SetTitle("Nphe16 el_LD2");
     TLine *line_Nphe16 = new TLine(Constants::Nphe16min, h_Nphe16->GetMinimum(), Constants::Nphe16min, h_Nphe16->GetMaximum());
     line_Nphe16->SetLineStyle(2); // Dashed line style
@@ -520,39 +531,53 @@ void Monitoring::DrawMomentumHistograms(const std::string filename){
     MonMom.cd(1);
     h_px_el->Draw("hist");
     h_px_el->SetTitle("px el_LD2");
+    h_px_el->GetXaxis()->SetTitle("px (GeV)");
     MonMom.cd(2);
     h_py_el->Draw("hist");
     h_py_el->SetTitle("py el_LD2");
+    h_py_el->GetXaxis()->SetTitle("py (GeV)");
     MonMom.cd(3);
     h_pz_el->Draw("hist");
     h_pz_el->SetTitle("pz el_LD2");
+    h_pz_el->GetXaxis()->SetTitle("pz (GeV)");
     MonMom.cd(4);
     h_px_pi->Draw("hist");
     h_px_pi->SetTitle("px pi_LD2");
+    h_px_pi->GetXaxis()->SetTitle("px (GeV)");
     MonMom.cd(5);
     h_py_pi->Draw("hist");
     h_py_pi->SetTitle("py pi_LD2");
+    h_py_pi->GetXaxis()->SetTitle("py (GeV)");
     MonMom.cd(6);
     h_pz_pi->Draw("hist");
     h_pz_pi->SetTitle("pz pi_LD2");
+    h_pz_pi->GetXaxis()->SetTitle("pz (GeV)");
     MonMom.cd(7);
     h_theta_el->Draw("hist");
     h_theta_el->SetTitle("theta el_LD2");
+    h_theta_el->GetXaxis()->SetTitle("theta (degrees)");
     MonMom.cd(8);
     h_phi_el->Draw("hist");
     h_phi_el->SetTitle("phi el_LD2");
+    h_phi_el->GetXaxis()->SetTitle("phi (degrees)");
     MonMom.cd(9);
     h_theta_pi->Draw("hist");
     h_theta_pi->SetTitle("theta pi_LD2");
+    h_theta_pi->GetXaxis()->SetTitle("theta (degrees)");
     MonMom.cd(10);
     h_phi_pi->Draw("hist");
     h_phi_pi->SetTitle("phi pi_LD2");
+    h_phi_pi->GetXaxis()->SetTitle("phi (degrees)");
     MonMom.cd(11);
     h_polcoord_el->Draw("COLZ");
     h_polcoord_el->SetTitle("polar el_LD2");
+    h_polcoord_el->GetXaxis()->SetTitle("theta (degrees)");
+    h_polcoord_el->GetYaxis()->SetTitle("phi (degrees)");
     MonMom.cd(12);
     h_polcoord_pi->Draw("COLZ");
     h_polcoord_pi->SetTitle("polar pi_LD2");
+    h_polcoord_pi->GetXaxis()->SetTitle("theta (degrees)");
+    h_polcoord_pi->GetYaxis()->SetTitle("phi (degrees)");
 
     
 
