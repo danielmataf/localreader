@@ -154,8 +154,8 @@ int main() {
                 eventtestLD2.calcAll();
                 //LDcuts.SetCutGentest(eventtestLD2);
                 //monLD.FillHistograms(eventtestLD2);
-                //monLD.FillHistogramsNoCuts(eventtestLD2);
-                monLD.FillHistogramswCuts(eventtestLD2);
+                monLD.FillHistogramsNoCuts(eventtestLD2);
+                //monLD.FillHistogramswCuts(eventtestLD2);
                 rat.FillHistograms(eventtestLD2);  
                 dpt.FillHistograms(eventtestLD2);
                 crat.FillHistograms(eventtestLD2);
@@ -193,11 +193,11 @@ int main() {
 
     //monLD.WriteHistogramsToFile("output_LD2.root");
     //monSn.WriteHistogramsToFile("output_CuSn.root");
-    monLD.DrawHistograms("withCutsVarLD2");
-    monLD.DrawCaloHistograms("withCutscaloLD2");
-    monLD.DrawCherenkovHistograms("withCutscherenkovLD2");
-    monLD.DrawMomentumHistograms("withCutsmomentumLD2");
-    monLD.DrawEnergyHistograms("withCutsEnergyLD2");
+    monLD.DrawHistograms("noCutsVarLD2");
+    monLD.DrawCaloHistograms("noCutscaloLD2");
+    monLD.DrawCherenkovHistograms("noCutscherenkovLD2");
+    monLD.DrawMomentumHistograms("noCutsmomentumLD2");
+    monLD.DrawEnergyHistograms("noCutsEnergyLD2");
     monSn.DrawHistograms("after_cuts_CuSn");
     monLD.DrawHistogramsPos("comp2D");  
     //monLD.DrawR_Histograms("RmonitoringLD2");

@@ -215,7 +215,6 @@ void Monitoring::FillHistogramsNoCuts(const Event& event) {
     h_W2->Fill(event.GetW2());
     h_vertexZ->Fill(event.GetVz());
     h_xQ2->Fill(event.Getxb(), event.GetQ2());
-    h_calSector->Fill(event.GetCalSector());
     h_calXY->Fill(event.GetCalX(), event.GetCalY());
     h_lu->Fill(event.Getlu());
     h_lv->Fill(event.Getlv());
@@ -355,30 +354,38 @@ void Monitoring::DrawHistograms(const std::string filename) {
     MonC.cd(1);
     h_Q2->Draw("hist");
     h_Q2->SetTitle("Q2 Distribution");
+    h_Q2->GetXaxis()->SetTitle("Q^{2} (GeV^{2})");
+    h_Q2->GetXaxis()->SetRangeUser(1,5);
     TLine *line_Q2 = new TLine(Constants::RcutminQ, h_Q2->GetMinimum(), Constants::RcutminQ, h_Q2->GetMaximum());
     line_Q2->SetLineStyle(2); // Dashed line style
     line_Q2->Draw();
     MonC.cd(2);
     h_xb->Draw("hist");
     h_xb->SetTitle("xb Distribution");
+    h_xb->GetXaxis()->SetTitle("x_{B}");
     MonC.cd(3);
     h_y->Draw("hist");
     h_y->SetTitle("y Distribution");
+    h_y->GetXaxis()->SetTitle("y");
     TLine *line_y = new TLine(Constants::RcutminY, h_y->GetMinimum(), Constants::RcutminY, h_y->GetMaximum());  
     line_y->SetLineStyle(2); // Dashed line style
     line_y->Draw();
     MonC.cd(4);
     h_nu->Draw("hist");
     h_nu->SetTitle("nu Distribution");
+    h_nu->GetXaxis()->SetTitle("nu (GeV)");
+    h_nu->GetXaxis()->SetRangeUser(3,10);
     MonC.cd(5);
     h_W2->Draw("hist");
-    h_W2->SetTitle("W2 Distribution");
+    h_W2->SetTitle("W^{2} Distribution");
+    h_W2->GetXaxis()->SetTitle("W^{2} (GeV^{2})");
     TLine *line_W2 = new TLine(Constants::RcutminW, h_W2->GetMinimum(), Constants::RcutminW, h_W2->GetMaximum());
     line_W2->SetLineStyle(2); // Dashed line style
     line_W2->Draw();
     MonC.cd(6);
     h_z->Draw("hist");
     h_z->SetTitle("z Distribution");
+    h_z->GetXaxis()->SetTitle("z");
     TLine *line_z = new TLine(Constants::RcutminZ, h_z->GetMinimum(), Constants::RcutminZ, h_z->GetMaximum());
     line_z->SetLineStyle(2); // Dashed line style
     line_z->Draw();
@@ -390,6 +397,7 @@ void Monitoring::DrawHistograms(const std::string filename) {
     MonC.cd(7);
     h_pt2->Draw("hist");
     h_pt2->SetTitle("pt2 Distribution");
+    h_pt2->GetXaxis()->SetTitle("p_{t}^{2} (GeV^{2})");
     TLine *line_pt2 = new TLine(Constants::RcutminPt2, h_pt2->GetMinimum(), Constants::RcutminPt2, h_pt2->GetMaximum());
     line_pt2->SetLineStyle(2); // Dashed line style
     line_pt2->Draw();
@@ -406,10 +414,12 @@ void Monitoring::DrawHistograms(const std::string filename) {
     MonC.cd(8);
     h_phih->Draw("hist");
     h_phih->SetTitle("phih Distribution");
+    h_phih->GetXaxis()->SetTitle("phi_{h} (degrees)");
     MonC.cd(9);
     h_vertexZ->Draw("hist");
     h_vertexZ->SetTitle("Vertex Z Distribution");
-
+    h_vertexZ->GetXaxis()->SetTitle("V_{z} (cm)");
+    h_vertexZ->GetXaxis()->SetRangeUser(-20,10);
 
     MonC.Print((filename + ".pdf").c_str());
 }
@@ -506,7 +516,7 @@ void Monitoring::DrawCherenkovHistograms(const std::string filename) {
     MonCher.Divide(2, 1);
     MonCher.cd(1);
     h_Nphe15->Draw("hist");
-    h_Nphe15->SetTitle("Nphe15 el_LD2");
+    h_Nphe15->SetTitle("Nphe HTCC el_LD2");
     h_Nphe15->GetXaxis()->SetTitle("Nphe 15");
     TLine *line_Nphe15 = new TLine(Constants::Nphe15min, h_Nphe15->GetMinimum(), Constants::Nphe15min, h_Nphe15->GetMaximum());
     line_Nphe15->SetLineStyle(2); // Dashed line style
@@ -514,10 +524,10 @@ void Monitoring::DrawCherenkovHistograms(const std::string filename) {
     MonCher.cd(2);
     h_Nphe16->Draw("hist");
     h_Nphe16->GetXaxis()->SetTitle("Nphe 16");
-    h_Nphe16->SetTitle("Nphe16 el_LD2");
-    TLine *line_Nphe16 = new TLine(Constants::Nphe16min, h_Nphe16->GetMinimum(), Constants::Nphe16min, h_Nphe16->GetMaximum());
-    line_Nphe16->SetLineStyle(2); // Dashed line style
-    line_Nphe16->Draw();
+    h_Nphe16->SetTitle("Nphe LTCC el_LD2");
+    //TLine *line_Nphe16 = new TLine(Constants::Nphe16min, h_Nphe16->GetMinimum(), Constants::Nphe16min, h_Nphe16->GetMaximum());
+    //line_Nphe16->SetLineStyle(2); // Dashed line style
+    //line_Nphe16->Draw();
     
 
 

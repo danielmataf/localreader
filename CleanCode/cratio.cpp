@@ -5,6 +5,7 @@
 #include <TCanvas.h>
 #include <TGraph.h>
 #include <TGraphErrors.h>
+#include <TLine.h>
 #include <TPad.h>
 #include <fstream>
 #include <math.h>
@@ -142,7 +143,14 @@ void cratio::multiplotCratio(){
             graphCratio->GetXaxis()->SetTitle("z");
             graphCratio->GetYaxis()->SetTitle("<cos #phi_{h}>_A / <cos #phi_{h}>_D");
             graphCratio->SetMarkerStyle(20);
+            graphCratio->GetYaxis()->SetRangeUser(-10.0, 10.0); // Set Y axis range from 0.0 to 2.0
             graphCratio->Draw("AP");
+            TLine *line = new TLine(graphCratio->GetXaxis()->GetXmin(), 1.0, graphCratio->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+            line->Draw("same");
+
+
+
 
         }
         canvasCratio.SaveAs(pdfFileName.c_str());

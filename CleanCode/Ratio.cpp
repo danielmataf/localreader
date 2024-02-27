@@ -4,6 +4,7 @@
 #include <vector>
 #include <TCanvas.h>
 #include <TGraph.h>
+#include <TLine.h>
 #include <TGraphErrors.h>
 #include <TPad.h>
 #include <fstream>
@@ -38,7 +39,7 @@ void Ratio::FillHistograms(const Event& event) {
 
                                                 //using a flag for targets 
     //forget condition on taarget, that should directly be a cut !!!! TBD 
-    if (targetType == 0 && cutd.PassCutsElectrons(event)==true) {
+    if (targetType == 0 && cutd.PassCutsElectrons(event)==true && cutd.PassCutsDetectors(event)==true) {
         counter_elLD2 ++;
         //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
         h_nuD->Fill(event.Getnu());
@@ -50,7 +51,7 @@ void Ratio::FillHistograms(const Event& event) {
             }
         }
     }
-    else if (targetType == 1 && cuta.PassCutsElectrons(event)==true) {
+    else if (targetType == 1 && cuta.PassCutsElectrons(event)==true && cuta.PassCutsDetectors(event)==true) {
         counter_elSn++; //counter for only electrons for z and pt
         //here change the else if to just else in order to have a generic target 
         h_nuA->Fill(event.Getnu());
@@ -154,7 +155,13 @@ void Ratio::multiplotR() {
             graph->GetXaxis()->SetTitle("z");
             graph->GetYaxis()->SetTitle("R");
             graph->SetMarkerStyle(20);
+            graph->SetMarkerStyle(20);
+            graph->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
             graph->Draw("AP");
+            
+            TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+            line->Draw("same");
         }
 
         canvas.SaveAs(pdfFileName.c_str());

@@ -104,7 +104,7 @@ namespace Constants {
 
     static const double RcutminQ = 1.5 ;
     static const double RcutminY = 0.25 ;
-    static const double RcutminW = 6.0 ;
+    static const double RcutminW = 4.0 ;
     static const double RcutminZ = 0.3 ;
     static const double RcutminPt2 = 0.0 ;
     static const double RcutmaxQ = 5.0 ;

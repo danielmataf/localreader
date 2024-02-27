@@ -246,7 +246,7 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
         if (Q2 >= cutQMin && Q2 <= cutQMax ){
             if (y >= cutYMin && y <= cutYMax){
                 if (v >= cutVMin && v <= cutVMax ){
-                    if (w >= cutWMin && w <= cutWMax ){
+                    if (w >= Constants::RcutminW && w <= Constants::RcutmaxW ){
                         return true;
                     }
                 }

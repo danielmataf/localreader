@@ -4,6 +4,7 @@
 #include <vector>
 #include <TCanvas.h>
 #include <TGraph.h>
+#include <TLine.h>
 #include <TGraphErrors.h>
 #include <TPad.h>
 #include <fstream>
@@ -142,7 +143,12 @@ void deltaptsq::multiplotDpt(){
             graphDpt->GetXaxis()->SetTitle("z");
             graphDpt->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
             graphDpt->SetMarkerStyle(20);
+            graphDpt->GetYaxis()->SetRangeUser(-1.0, 1.0); // Set Y axis range from -0.1 to 0.1
             graphDpt->Draw("AP");
+            TLine *line = new TLine(graphDpt->GetXaxis()->GetXmin(), 0.0, graphDpt->GetXaxis()->GetXmax(), 0.0);
+            line->SetLineStyle(2); // Dotted line
+            line->Draw("same");
+
 
 
         }
