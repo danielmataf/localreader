@@ -89,7 +89,7 @@ int main() {
 int main() {
     FilePathGenerator files;
     std::vector<std::string> filenamesLD2;
-    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/019033/", filenamesLD2);
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesLD2);
     std::vector<std::string> filenamesCuSn;
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
 
@@ -141,7 +141,7 @@ int main() {
     int counter_el= 0.0;
     int counter_elLD2 = 0;
     int counter_elSn= 0.0;
-    for (int i=0; i<500; i++){
+    for (int i=0; i<900000; i++){
             //std::optional<Event> 
             testLD2 = MC_LD2.ProcessEventsInFile();
             //std::optional<Event> 
@@ -168,6 +168,8 @@ int main() {
 
                 //Sncuts.SetCutGentest(eventtestCuSn);
                 monSn.FillHistograms(eventtestCuSn);
+                //monSn.FillHistogramsNoCuts(eventtestCuSn);
+                monSn.FillHistogramswCuts(eventtestCuSn);
                 rat.FillHistograms(eventtestCuSn);
                 dpt.FillHistograms(eventtestCuSn);
                 crat.FillHistograms(eventtestCuSn);
@@ -193,11 +195,15 @@ int main() {
 
     //monLD.WriteHistogramsToFile("output_LD2.root");
     //monSn.WriteHistogramsToFile("output_CuSn.root");
-    //monLD.DrawHistograms("noCutsVarLD2");
+    monLD.DrawHistograms("noCutsVarLD2");
     monLD.DrawCaloHistograms("REwCutscaloLD2");
-    //monLD.DrawCherenkovHistograms("noCutscherenkovLD2");
+    monLD.DrawCherenkovHistograms("REwCutscherenkovLD2");
     //monLD.DrawMomentumHistograms("noCutsmomentumLD2");
-    //monLD.DrawEnergyHistograms("noCutsEnergyLD2");
+    monSn.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2Sn");
+    monLD.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2");
+
+    monLD.DrawMomentumHadronHistograms("noCutsmomentumHadronLD2");
+    monLD.DrawEnergyHistograms("noCutsEnergyLD2");
     //monSn.DrawHistograms("after_cuts_CuSn");
     //monLD.DrawHistogramsPos("comp2D");  
     //monLD.DrawR_Histograms("RmonitoringLD2");

@@ -23,10 +23,13 @@ public:
     void FillHistogramswCuts(const Event& );
 
     void FillMomentumHistograms(const Event& );
+
     void DrawHistograms(const std::string);
     void DrawR_Histograms(const std::string filename);
     void DrawHistogramsPos(const std::string);
     void DrawMomentumHistograms(const std::string);
+    void DrawMomentumElectronHistograms(const std::string );
+    void DrawMomentumHadronHistograms(const std::string );
     void DrawEnergyHistograms(const std::string );
     void DrawCaloHistograms(const std::string );
     void DrawCherenkovHistograms(const std::string ) ;
@@ -98,9 +101,11 @@ private:
     TH1F *h_px_el;  //= new TH1F("px_ele", "px_ele", 100, 0, 10) ;
     TH1F *h_py_el;  //= new TH1F("py_ele", "py_ele", 100, 0, 10) ;
     TH1F *h_pz_el;  //= new TH1F("pz_ele", "pz_ele", 100, 0, 10) ;
+    TH1F *h_ptot_el;    //= new TH1F("ptotal_ele", "ptotal_ele", 100, 0, 10) ;
     TH1F *h_px_pi;  //= new TH1F("px_pro", "px_pro", 100, 0, 10) ;
     TH1F *h_py_pi;  //= new TH1F("py_pro", "py_pro", 100, 0, 10) ;
     TH1F *h_pz_pi;  //= new TH1F("pz_pro", "pz_pro", 100, 0, 10) ;
+    TH1F *h_ptot_pi;    //= new TH1F("ptotal_pro", "ptotal_pro", 100, 0, 10) ;
     TH1F *h_theta_el;   //= new TH1F("theta_ele", "theta_ele", 100, 0, 3.5) ;
     TH1F *h_phi_el; //= new TH1F("phi_ele", "phi_ele", 100, 0, 6.5) ;
     TH1F *h_theta_pi;   //= new TH1F("theta_pro", "theta_pro", 100, 0, 3.5) ;

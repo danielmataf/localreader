@@ -112,6 +112,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {
             h_px_el->Fill(electron.GetMomentum().X());
             h_py_el->Fill(electron.GetMomentum().Y());
             h_pz_el->Fill(electron.GetMomentum().Z());
+            //h_ptot_el->Fill(electron.GetMomentum().Mag());
             h_theta_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI);
             h_phi_el->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180);
             h_polcoord_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().Phi()*180/Constants::PI +180);
@@ -128,6 +129,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {
                         h_px_pi->Fill(hadron.GetMomentum().X());
                         h_py_pi->Fill(hadron.GetMomentum().Y());
                         h_pz_pi->Fill(hadron.GetMomentum().Z());
+                        //h_ptot_pi->Fill(hadron.GetMomentum().Mag());
                         h_theta_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI);
                         h_phi_pi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180);
                         h_polcoord_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().Phi()*180/Constants::PI +180);
@@ -230,6 +232,7 @@ void Monitoring::FillHistogramsNoCuts(const Event& event) {
     h_px_el->Fill(electron.GetMomentum().X());
     h_py_el->Fill(electron.GetMomentum().Y());
     h_pz_el->Fill(electron.GetMomentum().Z());
+    //h_ptot_el->Fill(electron.GetMomentum().Mag());
     h_theta_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI);
     h_phi_el->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180);
     h_polcoord_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().Phi()*180/Constants::PI +180);
@@ -247,6 +250,7 @@ void Monitoring::FillHistogramsNoCuts(const Event& event) {
         h_px_pi->Fill(hadron.GetMomentum().X());
         h_py_pi->Fill(hadron.GetMomentum().Y());
         h_pz_pi->Fill(hadron.GetMomentum().Z());
+        //h_ptot_pi->Fill(hadron.GetMomentum().Mag());
         h_theta_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI);
         h_phi_pi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180);
         h_polcoord_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().Phi()*180/Constants::PI +180);
@@ -416,10 +420,6 @@ void Monitoring::DrawHistograms(const std::string filename) {
     h_phih->SetTitle("phih Distribution");
     h_phih->GetXaxis()->SetTitle("phi_{h} (degrees)");
     MonC.cd(9);
-    h_vertexZ->Draw("hist");
-    h_vertexZ->SetTitle("Vertex Z Distribution");
-    h_vertexZ->GetXaxis()->SetTitle("V_{z} (cm)");
-    h_vertexZ->GetXaxis()->SetRangeUser(-20,10);
 
     MonC.Print((filename + ".pdf").c_str());
 }
@@ -594,6 +594,95 @@ void Monitoring::DrawMomentumHistograms(const std::string filename){
     MonMom.Print((filename + ".pdf").c_str());
 
 }
+
+void Monitoring::DrawMomentumElectronHistograms(const std::string filename){
+    TCanvas MonMomEl("Monitoring momelcanvas", "Monitoring momelHistograms");
+    MonMomEl.Divide(4, 2);
+    MonMomEl.cd(1);
+    h_px_el->Draw("hist");
+    h_px_el->SetTitle("px el_LD2");
+    h_px_el->GetXaxis()->SetTitle("px (GeV)");
+    MonMomEl.cd(2);
+    h_py_el->Draw("hist");
+    h_py_el->SetTitle("py el_LD2");
+    h_py_el->GetXaxis()->SetTitle("py (GeV)");
+    MonMomEl.cd(3);
+    h_pz_el->Draw("hist");
+    h_pz_el->SetTitle("pz el_LD2");
+    h_pz_el->GetXaxis()->SetTitle("pz (GeV)");
+    MonMomEl.cd(4);
+    //Ptotal histo 
+    //h_ptot_el->Draw("hist");
+    //h_ptot_el->SetTitle("ptot el_LD2");
+    //h_ptot_el->GetXaxis()->SetTitle("ptot (GeV)");
+    MonMomEl.cd(5);
+    h_theta_el->Draw("hist");
+    h_theta_el->SetTitle("theta el_LD2");
+    h_theta_el->GetXaxis()->SetTitle("theta (degrees)");
+    MonMomEl.cd(6);
+    h_phi_el->Draw("hist");
+    h_phi_el->SetTitle("phi el_LD2");
+    h_phi_el->GetXaxis()->SetTitle("phi (degrees)");
+    MonMomEl.cd(7);
+    h_polcoord_el->Draw("COLZ");
+    h_polcoord_el->SetTitle("polar el_LD2");
+    h_polcoord_el->GetXaxis()->SetTitle("theta (degrees)");
+    h_polcoord_el->GetYaxis()->SetTitle("phi (degrees)");
+    MonMomEl.cd(8);
+    //Vertex histo plots
+    h_vertexZ->Draw("hist");
+    h_vertexZ->SetTitle("Vertex Z Distribution");
+    h_vertexZ->GetXaxis()->SetTitle("V_{z} (cm)");
+    h_vertexZ->GetXaxis()->SetRangeUser(-20,10);
+
+    MonMomEl.Print((filename + ".pdf").c_str());
+
+}
+
+void Monitoring::DrawMomentumHadronHistograms(const std::string filename){
+    TCanvas MonMomHad("Monitoring momhadcanvas", "Monitoring momhadHistograms");
+    MonMomHad.Divide(4, 2);
+    MonMomHad.cd(1);
+    h_px_pi->Draw("hist");
+    h_px_pi->SetTitle("px pi_LD2");
+    h_px_pi->GetXaxis()->SetTitle("px (GeV)");
+    MonMomHad.cd(2);
+    h_py_pi->Draw("hist");
+    h_py_pi->SetTitle("py pi_LD2");
+    h_py_pi->GetXaxis()->SetTitle("py (GeV)");
+    MonMomHad.cd(3);
+    h_pz_pi->Draw("hist");
+    h_pz_pi->SetTitle("pz pi_LD2");
+    h_pz_pi->GetXaxis()->SetTitle("pz (GeV)");
+    MonMomHad.cd(4);
+    //Ptotal histo 
+    //h_ptot_pi->Draw("hist");
+    //h_ptot_pi->SetTitle("ptot pi_LD2");
+    //h_ptot_pi->GetXaxis()->SetTitle("ptot (GeV)"); 
+    MonMomHad.cd(5);
+    h_theta_pi->Draw("hist");
+    h_theta_pi->SetTitle("theta pi_LD2");
+    h_theta_pi->GetXaxis()->SetTitle("theta (degrees)");
+    MonMomHad.cd(6);
+    h_phi_pi->Draw("hist");
+    h_phi_pi->SetTitle("phi pi_LD2");
+    h_phi_pi->GetXaxis()->SetTitle("phi (degrees)");
+    MonMomHad.cd(7);
+    h_polcoord_pi->Draw("COLZ");
+    h_polcoord_pi->SetTitle("polar pi_LD2");
+    h_polcoord_pi->GetXaxis()->SetTitle("theta (degrees)");
+    h_polcoord_pi->GetYaxis()->SetTitle("phi (degrees)");
+    MonMomHad.cd(8);
+    //Vertex histo plots
+    h_vertexZ->Draw("hist");
+    h_vertexZ->SetTitle("Vertex Z Distribution");
+    h_vertexZ->GetXaxis()->SetTitle("V_{z} (cm)");
+    h_vertexZ->GetXaxis()->SetRangeUser(-20,10);
+
+    MonMomHad.Print((filename + ".pdf").c_str());
+
+}
+
 
 void Monitoring::DrawEnergyHistograms(const std::string filename){
     TCanvas MonEnrg("Monitoring Enrgcanvas", "Monitoring EnrgHistograms");

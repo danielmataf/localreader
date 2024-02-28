@@ -233,14 +233,14 @@
                 double nphe15;
                 double nphe16 ;
                 if (pindex_cher == i){
-                    int cher_detectornb = RECcher.getInt("detector", pindex_cher);
+                    int cher_detectornb = RECcher.getInt("detector", cher_row);
                     //AddCherInfo(pid, nphe, cher_detectornb);
                     if (cher_detectornb == 16){
-                        nphe16 = RECcher.getFloat("nphe", pindex_cher);
+                        nphe16 = RECcher.getFloat("nphe", cher_row);
                         //std::cout << "nphe16: " << nphe16 << std::endl;
                     }
                     if (cher_detectornb == 15){
-                        nphe15 = RECcher.getFloat("nphe", pindex_cher);
+                        nphe15 = RECcher.getFloat("nphe", cher_row);
                         //std::cout << "nphe15: " << nphe15 << std::endl;
                     }
                     AddCherInfo(pid, nphe15, nphe16);
