@@ -172,24 +172,27 @@
                     ProcessParticle(momentum, pid,targetvx,targetvy,targetvz,i ); 
                 //}
             }
+            if (pid == Constants::ELECTRON_PID) {
+
+                double e_pcal = 0 ;
+                double e_ecalin = 0 ;
+                double e_ecalout = 0 ;
+                double lu_pcal = 0 ;
+                double lv_pcal = 0 ;
+                double lw_pcal = 0 ;
+                double sector_pcal = 0 ;
+                double x_cal = 0;
+                double y_cal = 0;
+                double z_cal = 0;       //porbalby useless TBD
+            //RECcalo.show();
             for (int c_row = 0; c_row < RECcalo.getRows(); ++c_row) {
                 //int index = RECcalo.getInt("index", c_row);
                 int pindex = RECcalo.getInt("pindex", c_row);
                 //check if  i matches the pindex
-                double e_pcal ;
-                double e_ecalin ;
-                double e_ecalout ;
-                double lu_pcal ;
-                double lv_pcal ;
-                double lw_pcal ;
-                double sector_pcal ;
-                double x_cal;
-                double y_cal;
-                double z_cal;       //porbalby useless TBD
                 
                     //once pindex changes  cal values are reset
                 if (pindex == i) {
-                    int cal_layer = RECcalo.getInt("layer", pindex);
+                    int cal_layer = RECcalo.getInt("layer", c_row);
                         //e_pcal = RECcalo.getFloat("energy", pindex);
                         //lu_pcal = RECcalo.getFloat("lu", pindex);
                         //lv_pcal = RECcalo.getFloat("lv", pindex);
@@ -200,25 +203,29 @@
                         //z_cal = RECcalo.getFloat("z", pindex); //porbalby useless TBD
 
                     if (cal_layer == 1) {   //pcal
-                        e_pcal = RECcalo.getFloat("energy", pindex);
-                        lu_pcal = RECcalo.getFloat("lu", pindex);
-                        lv_pcal = RECcalo.getFloat("lv", pindex);
-                        lw_pcal = RECcalo.getFloat("lw", pindex);
-                        sector_pcal = RECcalo.getInt("sector", pindex);
-                        x_cal = RECcalo.getFloat("x", pindex);
-                        y_cal = RECcalo.getFloat("y", pindex);
-                        z_cal = RECcalo.getFloat("z", pindex); //porbalby useless TBD
+                        e_pcal = RECcalo.getFloat("energy", c_row);
+                        lu_pcal = RECcalo.getFloat("lu", c_row);
+                        lv_pcal = RECcalo.getFloat("lv", c_row);
+                        lw_pcal = RECcalo.getFloat("lw", c_row);
+                        sector_pcal = RECcalo.getInt("sector", c_row);
+                        x_cal = RECcalo.getFloat("x", c_row);
+                        y_cal = RECcalo.getFloat("y", c_row);
+                        z_cal = RECcalo.getFloat("z", c_row); //porbalby useless TBD
 
                     }
                     if (cal_layer == 4) {   //ecal_in
-                         e_ecalin = RECcalo.getFloat("energy", pindex);
+                         e_ecalin = RECcalo.getFloat("energy", c_row);
                     }
                     if (cal_layer == 7) {   //ecal_out
-                         e_ecalout = RECcalo.getFloat("energy", pindex);
+                         e_ecalout = RECcalo.getFloat("energy", c_row);
                     } 
-                    AddCaloInfo(pid, sector_pcal, lu_pcal, lv_pcal, lw_pcal, e_pcal, e_ecalin, e_ecalout);
-                    AddCaloXYZ(pid, x_cal, y_cal, z_cal);
                 }
+            }
+            //std::cout << "e_pcal: " << e_pcal << std::endl;
+            //std::cout << "e_in: " << e_ecalin << std::endl;
+            //std::cout << "e_out: " << e_ecalout << std::endl;
+                                AddCaloInfo(pid, sector_pcal, lu_pcal, lv_pcal, lw_pcal, e_pcal, e_ecalin, e_ecalout);
+                    AddCaloXYZ(pid, x_cal, y_cal, z_cal);
             }
             for (int cher_row = 0; cher_row < RECcher.getRows(); ++cher_row){
                 int pindex_cher = RECcher.getInt("pindex", cher_row);
