@@ -11,7 +11,7 @@
 
 class Particle {
 public:
-    Particle(const TLorentzVector& , int, int );   
+    Particle(const TLorentzVector& , int, int , double);   
     const TLorentzVector& GetMomentum() const; 
     int GetEventIndex() const ;
     int GetPID() const ;  
@@ -23,6 +23,7 @@ public:
     void SetKinVariables(double, double, double, double, double);
     void SetVx(double); 
     void SetVy(double); 
+    void SetVz(double);
     void SetParticleRow(int);
     void SetParticleIndex(int);
     void SetPx(double );
@@ -41,12 +42,14 @@ public:
     double GetPhi() const;
     double GetVx() const; 
     double GetVy() const;
+    double GetVz() const; 
     double GetPx(TLorentzVector) const;
     double GetPy(TLorentzVector) const;
     double GetPz(TLorentzVector) const;
  
     int GetParticleRow() const;
     int GetParticleIndex() const;
+    double GetParticleVertexZ() const;
 
 
 
@@ -61,11 +64,14 @@ private:
     double z=0, pt2=0, phih=0;
     double Q2=0, nu=0, w2=0 ,y=0 ,xb=0;
     
-    double vx, vy;
+    double vx, vy ;
+    double vz=0;
+    double particleVertexZ = 0;
     double phi , theta ;
     double px, py, pz;
     int particleRow;
     int particleIndex;
+    //double particleVertexZ;
 
     struct CalorimeterInfo {
         //int layer;

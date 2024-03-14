@@ -102,7 +102,7 @@ namespace Constants {
 
     //Binning & limits for Ratios
 
-    static const double RcutminQ = 1.5 ;
+    static const double RcutminQ = 1 ;
     static const double RcutminY = 0.25 ;
     static const double RcutminW = 4.0 ;
     static const double RcutminZ = 0.3 ;
@@ -111,9 +111,14 @@ namespace Constants {
     static const double RcutmaxY = 0.85 ;
     static const double RcutmaxW = 30.0 ;
     static const double RcutmaxZ = 0.7 ;
-    static const double RcutmaxPt2 = 2.0 ;   
+    static const double RcutmaxPt2 = 1.5 ;   
     static const double Rcutminnu = 4.0 ;
     static const double Rcutmaxnu = 9.0 ;
+    static const int Rbin = 100;
+    static const int Rbin_nu = 5;
+    static const int Rbin_z  = 5;
+    static const int Rbin_pt2= 5;
+
 
 
     //cuts for Target specific vertex 

@@ -18,8 +18,8 @@
 class Event {
 public:
     Event ();
-    void AddElectron(const TLorentzVector& , int); 
-    void AddHadron(const TLorentzVector& , int, int ); 
+    void AddElectron(const TLorentzVector& , int,double); 
+    void AddHadron(const TLorentzVector& , int, int,double ); 
     int GetEventIndex() const ;
     void SetVertexZ(double );
     void SetVertexX(double );
@@ -37,6 +37,8 @@ public:
     void SetCalZ(double );  //can be grouped in one fct XYZ TBD
     void Setnphe15(double );
     void Setnphe16(double );
+    void SetHel(int);
+    void SetHelRaw(int);
 
      void CalcPol(Particle&);
 
@@ -70,6 +72,9 @@ public:
     //Getters of Cherenkov nphe data (only available for electrons)
     double Getnphe15( ) const;
     double Getnphe16( ) const;
+    //Getters for Helicity
+    int GetHel( ) const;
+    int GetHelRaw( ) const;
 
 
 
@@ -95,7 +100,7 @@ private:
     std::vector<Particle> hadrons; 
     double Q2=0,nu=0,w2=0,y=0,xb=0;
     double m_D, m_Sn, m_Cu; //GeV/c^2
-    double vz;  //vertex of the event (?) (should be the same every time)
+    double vz=0;  //vertex of the event (?) (should be the same every time)
     double vx;
     double vy;
     double px_el, py_el, pz_el;
@@ -108,6 +113,7 @@ private:
     double Epcal=0, Ecalin=0, Ecalout = 0;
     double calox=0, caloy=0, caloz=0;
     double nphe15=0, nphe16=10;
+    int hel =-2, helraw=-2;
 
 
 

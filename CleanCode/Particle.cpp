@@ -10,16 +10,25 @@
 
 
 
-    Particle::Particle(const TLorentzVector& momentum, int pid, int row)
-        : momentum(momentum), pid(pid), particleRow(row) {
+    Particle::Particle(const TLorentzVector& momentum, int pid, int row, double particleVertexZ)
+        : momentum(momentum), pid(pid), particleRow(row), particleVertexZ(particleVertexZ) {
 
         }
     const TLorentzVector& Particle::GetMomentum() const {
         return momentum;
     }
+    //    double Particle::GetVz() const {
+    //    return particleVertexZ;
+    //}
+        double Particle::GetParticleVertexZ() const {
+        return particleVertexZ;
+    }
+
+
     int Particle::GetEventIndex() const {
         return eventIndex;
     }
+
     int Particle::GetPID() const {
         return pid;
     }
@@ -44,6 +53,10 @@
     void Particle::SetVy(double vertY) {
         vy = vertY;
     }
+    void Particle::SetVz(double particleVertexZ) {
+        this-> particleVertexZ = particleVertexZ;
+        
+    }
 
     void Particle::SetParticleRow(int row) {
         particleRow = row;
@@ -52,6 +65,7 @@
     int Particle::GetParticleRow() const {
         return particleRow  ;
     }
+
 
    
     double Particle::GetQ2() const {
@@ -139,12 +153,14 @@
         double sign = n3.Dot(vipho.Vect()); 
         z= (vec2.E())/(       Constants::elBeam.E() - vec1.E() ); // 
         pt2 =  pow(  (n2.Mag() )/ (vipho.Vect().Mag() )  ,    2);
-        if (sign<0 ){
-            phih =  acos(angle_norm) *180.0/Constants::PI +180;       
-        }
-        if (sign>0 ){   
-            phih =  acos(angle_norm) *-180.0/Constants::PI+180; 
-        }
+        //if (sign<0 ){
+        //    phih =  acos(angle_norm) *180.0/Constants::PI +180;       
+        //}
+        //if (sign>0 ){   
+        //    phih =  acos(angle_norm) *-180.0/Constants::PI+180; 
+        //}
+        //double acos_angle_norm_deg = acos(angle_norm) * 180.0 / Constants::PI;
+        phih = (sign < 0) ? acos(angle_norm) * 180.0 / Constants::PI + 180 : acos(angle_norm) * -180.0 / Constants::PI + 180;
         //consider BSA 4 phih TBD
         return 0;
     }

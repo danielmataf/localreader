@@ -15,6 +15,7 @@ class deltaptsq {
 
 public: 
     deltaptsq(CutSet cutsD, CutSet cutsA);  //cutsA is for the Nucleus considered 
+    
                                             //correction (TBD)in ratio needs to be propagated here too
 
     void FillHistograms(const Event& );

@@ -34,7 +34,8 @@ public:
     void DrawCaloHistograms(const std::string );
     void DrawCherenkovHistograms(const std::string ) ;
     void DrawHistogramsNoCuts(const std::string);
-
+    void DrawVertexHistograms(const std::string);
+    void DrawHelicityHistograms(const std::string);
 
     //void FillQ2pre(const Event&  );
     //void Fillypre(const Event&  );
@@ -93,6 +94,8 @@ private:
     TH1F *h_pt2;    //= new TH1F("pt2", "pt2", nubin, pt2minX, pt2maxX) ;
     TH1F *h_phih;   //= new TH1F("phih", "phih", nubin, phihminX, phihmaxX) ;
     TH1F *h_vertexZ;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
+    TH1F *h_vertexZ_pi;    //= new TH1F("targetVx", "vertex4target", 100, -40, 40) ;
+    TH1F *h_DeltaVz;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
     TH1F *h_pid;    //= new TH1F("pid", "pid", 100, -250, 250) ;
     TH2F *h_xQ2;    //= new TH2F("xQ2", "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
     TH2F *h_xQ2pos; //= new TH2F("xQ2pos", "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
@@ -139,6 +142,10 @@ private:
     TH1F *h_Nphe16; // = new TH1F("Nphe16", "Nphe16", 100, 0, 60) ;
     TH1F *h_Nphe15pos; // = new TH1F("Nphe15pos", "Nphe15pos", 100, 0, 60) ;
     TH1F *h_Nphe16pos; // = new TH1F("Nphe16pos", "Nphe16pos", 100, 0, 60) ;
+
+    //Helicity histograms
+    TH1F *h_helicity; // = new TH1F("helicity", "helicity", 100, -1, 1) ;
+    TH1F *h_helicity_raw; // = new TH1F("helicity_pos", "helicity_pos", 100, -1, 1) ;
 
 
             //===Lines for Cuts(TBD)===// 

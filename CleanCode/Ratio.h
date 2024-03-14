@@ -15,7 +15,7 @@
 class Ratio {
 public:
     //Ratio(CutSet);
-    Ratio(CutSet cutsD, CutSet cutsA);  //cutsA is for the Nucleus considered 
+    Ratio(CutSet cutsD, CutSet cutsA, const std::string& targetName);  //cutsA is for the Nucleus considered 
                                         //propaate different nucleus to the eventreader mass as a n argument 
                                         // :!! TBD !
     
@@ -31,6 +31,14 @@ public:
     void writeMatrixToFile(const std::string& );
     void calculateMRat(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
     void multiplotR();
+    void multiplotR( Ratio& );
+    std::vector<std::vector<std::vector<double>>> getRatMatrix() const{
+        return ratMatrix;
+    }
+    std::vector<std::vector<std::vector<double>>> getErrorMatrix() const{
+        return errorMatrix;
+    }
+    
 
 
 
@@ -39,6 +47,7 @@ private:
     //CutSet cut1;
     CutSet cutd;
     CutSet cuta;
+    std::string targetName;
     //BINNING 4 MULTIBINNING
     int nubin = 100;
     int phibin= 10;
@@ -119,13 +128,13 @@ private:
     //TH1F *h_phih_A= new TH1F("phih_A", "phih_A", phibin, phihminX, phihmaxX) ;
 
     //histos after passcuthadrons 
-    TH3F *h_nu_z_pt2D = new TH3F("nu,z,pt2,D", "histo nu,z,pt2 for D", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
-    TH3F *h_nu_z_pt2A = new TH3F("nu,z,pt2,A", "histo nu,z,pt2 for A", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
+    TH3F *h_nu_z_pt2D; // = new TH3F("nu,z,pt2,D", "histo nu,z,pt2 for D", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
+    TH3F *h_nu_z_pt2A; // = new TH3F("nu,z,pt2,A", "histo nu,z,pt2 for A", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
     //histo after passcutelectrons only e for nu unse only
-    TH3F *h_nu_z_pt2A_onlye = new TH3F("nu,z,pt2,A onlye", "histo_e nu,z,pt2 for A", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
-    TH3F *h_nu_z_pt2D_onlye = new TH3F("nu,z,pt2,D onlye", "histo_e nu,z,pt2 for A", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
-    TH1F *h_nuA = new TH1F("nu_A", "nu_A", Rbin_nu,numinR,numaxR) ;
-    TH1F *h_nuD = new TH1F("nu_D", "nu_D", Rbin_nu,numinR,numaxR) ;
+    TH3F *h_nu_z_pt2A_onlye; // = new TH3F("nu,z,pt2,A onlye", "histo_e nu,z,pt2 for A", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
+    TH3F *h_nu_z_pt2D_onlye; // = new TH3F("nu,z,pt2,D onlye", "histo_e nu,z,pt2 for A", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
+    TH1F *h_nuA; // = new TH1F("nu_A", "nu_A", Rbin_nu,numinR,numaxR) ;
+    TH1F *h_nuD; // = new TH1F("nu_D", "nu_D", Rbin_nu,numinR,numaxR) ;
 
     //Graphs
     TGraphErrors* graph_rat= new TGraphErrors();

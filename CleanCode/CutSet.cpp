@@ -243,7 +243,7 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     double Vx = event.GetVx();
     double Vy = event.GetVy();
     if (Vz >= cutVzMin && Vz <= cutVzMax ){
-        if (Q2 >= cutQMin && Q2 <= cutQMax ){
+        if (Q2 >= cutQMin && Q2 <= Constants::RcutmaxQ ){
             if (y >= cutYMin && y <= cutYMax){
                 if (v >= cutVMin && v <= cutVMax ){
                     if (w >= Constants::RcutminW && w <= Constants::RcutmaxW ){

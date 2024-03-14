@@ -30,16 +30,21 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_z(new TH1F(("z_" + targetName).c_str(), "z", nubin, zminX, zmaxX)),
     h_pt2(new TH1F(("pt2_" + targetName).c_str(), "pt2", nubin, pt2minX, pt2maxX)),
     h_phih(new TH1F(("phih_" + targetName).c_str(), "phih", nubin, phihminX, phihmaxX)),
-    h_vertexZ(new TH1F(("targetVz_" + targetName).c_str(), "vertex4target", 100, -40, 40)),
+    h_vertexZ(new TH1F(("targetVz_" + targetName).c_str(), "vertex4target", 100, -20, 10)),
+    h_vertexZ_pi(new TH1F(("targetVz_pi_" + targetName).c_str(), "vertex4target", 100, -20, 10)),
+    h_DeltaVz(new TH1F(("DeltaVz_" + targetName).c_str(), "DeltaVz", 100, -5, 5)),
+    
     h_pid(new TH1F(("pid_" + targetName).c_str(), "pid", 100, -250, 250)),
     h_xQ2(new TH2F(("xQ2_" + targetName).c_str(), "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
     h_xQ2pos(new TH2F(("xQ2pos_" + targetName).c_str(), "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
     h_px_el(new TH1F(("px_ele_" + targetName).c_str(), "px_ele", nubin, 0, 10)),
     h_py_el(new TH1F(("py_ele_" + targetName).c_str(), "py_ele", nubin, 0, 10)),
     h_pz_el(new TH1F(("pz_ele_" + targetName).c_str(), "pz_ele", nubin, 0, 10)),
+    h_ptot_el(new TH1F(("ptot_ele_" + targetName).c_str(), "ptot_ele", nubin, 0, 10)),
     h_px_pi(new TH1F(("px_pro_" + targetName).c_str(), "px_pro", nubin, 0, 10)),
     h_py_pi(new TH1F(("py_pro_" + targetName).c_str(), "py_pro", nubin, 0, 10)),
     h_pz_pi(new TH1F(("pz_pro_" + targetName).c_str(), "pz_pro", nubin, 0, 10)),
+    h_ptot_pi(new TH1F(("ptot_pro_" + targetName).c_str(), "ptot_pro", nubin, 0, 10)),
     h_theta_el(new TH1F(("theta_el" + targetName).c_str(), "theta", nubin, 0, 30)),
     h_phi_el(new TH1F(("phi_el" + targetName).c_str(), "phi", nubin, 0, 360)),
     h_polcoord_el(new TH2F(("pol_el"+ targetName).c_str(), "polcoord", nubin, 0,40, nubin, 0, 360)),
@@ -63,6 +68,8 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_Nphe15(new TH1F(("Nphe15_" + targetName).c_str(), "Nphe15", nubin, 0, 60)),
     h_Nphe16(new TH1F(("Nphe16_" + targetName).c_str(), "Nphe16", nubin, 0, 60)),
     h_calSector(new TH1F(("calSector_" + targetName).c_str(), "calSector", nubin, -1, 10)),
+    h_helicity(new TH1F(("helicity_" + targetName).c_str(), "helicity", nubin, -2, 2)),
+    h_helicity_raw(new TH1F(("helicity_raw_" + targetName).c_str(), "helicity_raw", nubin, -2, 2)),
       counterel_R(0) {
     // Add more histograms as needed
 }
@@ -92,16 +99,23 @@ void Monitoring::FillHistogramswCuts(const Event& event) {
         h_lv->Fill(event.Getlv());
         h_lw->Fill(event.Getlw());
         h_epcal->Fill(event.GetEpcal());
-        h_eecalin->Fill(event.GetEcalin());
-        h_epcalout->Fill(event.GetEcalout());
-        h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
+
+        //h_eecalin->Fill(event.GetEcalin());
+        if (event.GetEcalin()>0.01){h_eecalin->Fill(event.GetEcalin());}
+        //h_epcalout->Fill(event.GetEcalout());
+        if (event.GetEcalout()>0.01){h_epcalout->Fill(event.GetEcalout());}
+        //h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
+        if (event.GetEcalout()>0.01 & event.GetEcalout()>0.01){h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());}
         h_Nphe15->Fill(event.Getnphe15());
         h_Nphe16->Fill(event.Getnphe16());
         h_calSector->Fill(event.GetCalSector());
+        h_helicity->Fill(event.GetHel());
+        h_helicity_raw->Fill(event.GetHelRaw());
 
         if (cut1.PassCutsElectrons(event)==true) {
             // Fill Electron variable histograms after cuts on electron
             h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detected !!!!
+                                                //add Vz for the hadron too
             h_Q2->Fill(event.GetQ2());
             h_xb->Fill(event.Getxb());
             h_y->Fill(event.Gety());    
@@ -112,7 +126,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {
             h_px_el->Fill(electron.GetMomentum().X());
             h_py_el->Fill(electron.GetMomentum().Y());
             h_pz_el->Fill(electron.GetMomentum().Z());
-            //h_ptot_el->Fill(electron.GetMomentum().Mag());
+            h_ptot_el->Fill(sqrt(electron.GetMomentum().P()));
             h_theta_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI);
             h_phi_el->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180);
             h_polcoord_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().Phi()*180/Constants::PI +180);
@@ -129,13 +143,15 @@ void Monitoring::FillHistogramswCuts(const Event& event) {
                         h_px_pi->Fill(hadron.GetMomentum().X());
                         h_py_pi->Fill(hadron.GetMomentum().Y());
                         h_pz_pi->Fill(hadron.GetMomentum().Z());
-                        //h_ptot_pi->Fill(hadron.GetMomentum().Mag());
+                        h_ptot_pi->Fill(hadron.GetMomentum().P());
                         h_theta_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI);
                         h_phi_pi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180);
                         h_polcoord_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().Phi()*180/Constants::PI +180);
                         h_E_pi->Fill(hadron.GetMomentum().E());
                         h_E_pi_theta->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().E());
                         h_E_pi_phi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180, hadron.GetMomentum().E());
+                        h_vertexZ_pi->Fill(hadron.GetParticleVertexZ());
+                        h_DeltaVz->Fill(event.GetVz()-hadron.GetParticleVertexZ());
 
                     }
                 }
@@ -154,9 +170,12 @@ void Monitoring::FillHistograms(const Event& event) {
     h_lv->Fill(event.Getlv());
     h_lw->Fill(event.Getlw());
     h_epcal->Fill(event.GetEpcal());
-    h_eecalin->Fill(event.GetEcalin());
-    h_epcalout->Fill(event.GetEcalout());
-    h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
+        //h_eecalin->Fill(event.GetEcalin());
+    if (event.GetEcalin()>0.5){h_eecalin->Fill(event.GetEcalin());}
+    //h_epcalout->Fill(event.GetEcalout());
+    if (event.GetEcalout()>0.02){h_epcalout->Fill(event.GetEcalout());}
+    if (event.GetEcalout()>0.02 & event.GetEcalout()>0.02){h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());}
+    //h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
     h_Nphe15->Fill(event.Getnphe15());
     h_Nphe16->Fill(event.Getnphe16());
     h_calSector->Fill(event.GetCalSector());
@@ -222,17 +241,25 @@ void Monitoring::FillHistogramsNoCuts(const Event& event) {
     h_lv->Fill(event.Getlv());
     h_lw->Fill(event.Getlw());
     h_epcal->Fill(event.GetEpcal());
-    h_eecalin->Fill(event.GetEcalin());
-    h_epcalout->Fill(event.GetEcalout());
-    h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
+    //h_eecalin->Fill(event.GetEcalin());
+    //h_epcalout->Fill(event.GetEcalout());
+    //h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
+            //h_eecalin->Fill(event.GetEcalin());
+    if (event.GetEcalin()>0.01){h_eecalin->Fill(event.GetEcalin());}
+    //h_epcalout->Fill(event.GetEcalout());
+    if (event.GetEcalout()>0.01){h_epcalout->Fill(event.GetEcalout());}
+    if (event.GetEcalout()>0.01 & event.GetEcalout()>0.01){h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());}
+    //h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
     h_Nphe15->Fill(event.Getnphe15());
     h_Nphe16->Fill(event.Getnphe16());
     h_calSector->Fill(event.GetCalSector());
+    h_helicity->Fill(event.GetHel());
+    h_helicity_raw->Fill(event.GetHelRaw());
     Particle electron = event.GetElectron();
     h_px_el->Fill(electron.GetMomentum().X());
     h_py_el->Fill(electron.GetMomentum().Y());
     h_pz_el->Fill(electron.GetMomentum().Z());
-    //h_ptot_el->Fill(electron.GetMomentum().Mag());
+    h_ptot_el->Fill(electron.GetMomentum().P());
     h_theta_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI);
     h_phi_el->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180);
     h_polcoord_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().Phi()*180/Constants::PI +180);
@@ -250,13 +277,19 @@ void Monitoring::FillHistogramsNoCuts(const Event& event) {
         h_px_pi->Fill(hadron.GetMomentum().X());
         h_py_pi->Fill(hadron.GetMomentum().Y());
         h_pz_pi->Fill(hadron.GetMomentum().Z());
-        //h_ptot_pi->Fill(hadron.GetMomentum().Mag());
+        h_ptot_pi->Fill(hadron.GetMomentum().P());
         h_theta_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI);
         h_phi_pi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180);
         h_polcoord_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().Phi()*180/Constants::PI +180);
         h_E_pi->Fill(hadron.GetMomentum().E());
         h_E_pi_theta->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().E());
         h_E_pi_phi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180, hadron.GetMomentum().E());
+        h_vertexZ_pi->Fill(hadron.GetParticleVertexZ());
+        //std::cout<<"hadron vertex z = "<<hadron.GetParticleVertexZ()<<std::endl;
+        //std::cout<<"electron vertex z = "<<event.GetVz()<<std::endl;
+
+        h_DeltaVz->Fill(event.GetVz()-hadron.GetParticleVertexZ());
+        
         
         //
         //std::cout << " kinhad " << hadron.Getz()<<" , " << hadron.Getpt2()<<" , " << hadron.Getphih()<<std::endl;  
@@ -367,6 +400,7 @@ void Monitoring::DrawHistograms(const std::string filename) {
     h_xb->Draw("hist");
     h_xb->SetTitle("xb Distribution");
     h_xb->GetXaxis()->SetTitle("x_{B}");
+    h_xb->GetXaxis()->SetRangeUser(0,0.6);
     MonC.cd(3);
     h_y->Draw("hist");
     h_y->SetTitle("y Distribution");
@@ -420,7 +454,8 @@ void Monitoring::DrawHistograms(const std::string filename) {
     h_phih->SetTitle("phih Distribution");
     h_phih->GetXaxis()->SetTitle("phi_{h} (degrees)");
     MonC.cd(9);
-
+    h_vertexZ->Draw("hist");
+    h_vertexZ->SetTitle("Vertex Z Distribution");
     MonC.Print((filename + ".pdf").c_str());
 }
 
@@ -612,9 +647,9 @@ void Monitoring::DrawMomentumElectronHistograms(const std::string filename){
     h_pz_el->GetXaxis()->SetTitle("pz (GeV)");
     MonMomEl.cd(4);
     //Ptotal histo 
-    //h_ptot_el->Draw("hist");
-    //h_ptot_el->SetTitle("ptot el_LD2");
-    //h_ptot_el->GetXaxis()->SetTitle("ptot (GeV)");
+    h_ptot_el->Draw("hist");
+    h_ptot_el->SetTitle("ptot el_LD2");
+    h_ptot_el->GetXaxis()->SetTitle("ptot (GeV)");
     MonMomEl.cd(5);
     h_theta_el->Draw("hist");
     h_theta_el->SetTitle("theta el_LD2");
@@ -634,6 +669,12 @@ void Monitoring::DrawMomentumElectronHistograms(const std::string filename){
     h_vertexZ->SetTitle("Vertex Z Distribution");
     h_vertexZ->GetXaxis()->SetTitle("V_{z} (cm)");
     h_vertexZ->GetXaxis()->SetRangeUser(-20,10);
+    //TLine *line_vzmin = new TLine(Constants::cutvz_min, h_vertexZ->GetMinimum(), Constants::cutvz_min, h_vertexZ->GetMaximum());
+    //line_vzmin->SetLineStyle(2); // Dashed line style
+    //line_vzmin->Draw();
+    //TLine *line_vzmax = new TLine(Constants::cutvz_max, h_vertexZ->GetMinimum(), Constants::cutvz_max, h_vertexZ->GetMaximum());
+    //line_vzmax->SetLineStyle(2); // Dashed line style
+    //line_vzmax->Draw();
 
     MonMomEl.Print((filename + ".pdf").c_str());
 
@@ -656,9 +697,9 @@ void Monitoring::DrawMomentumHadronHistograms(const std::string filename){
     h_pz_pi->GetXaxis()->SetTitle("pz (GeV)");
     MonMomHad.cd(4);
     //Ptotal histo 
-    //h_ptot_pi->Draw("hist");
-    //h_ptot_pi->SetTitle("ptot pi_LD2");
-    //h_ptot_pi->GetXaxis()->SetTitle("ptot (GeV)"); 
+    h_ptot_pi->Draw("hist");
+    h_ptot_pi->SetTitle("ptot pi_LD2");
+    h_ptot_pi->GetXaxis()->SetTitle("ptot (GeV)"); 
     MonMomHad.cd(5);
     h_theta_pi->Draw("hist");
     h_theta_pi->SetTitle("theta pi_LD2");
@@ -690,23 +731,69 @@ void Monitoring::DrawEnergyHistograms(const std::string filename){
     MonEnrg.cd(1);
     h_E_el->Draw("hist");
     h_E_el->SetTitle("E el_LD2");
+    h_E_el->GetXaxis()->SetTitle("E electron (GeV)");
     MonEnrg.cd(2);
     h_E_el_theta->Draw("COLZ");
     h_E_el_theta->SetTitle("E vs theta el_LD2");
+    h_E_el_theta->GetXaxis()->SetTitle("theta electron (degrees)");
     MonEnrg.cd(3);
     h_E_el_phi->Draw("COLZ");
     h_E_el_phi->SetTitle("E vs phi el_LD2");
+    h_E_el_phi->GetXaxis()->SetTitle("phi electron (degrees)");
     MonEnrg.cd(4);
     h_E_pi->Draw("hist");
     h_E_pi->SetTitle("E pi_LD2");
+    h_E_pi->GetXaxis()->SetTitle("E pion (GeV)");
     MonEnrg.cd(5);
     h_E_pi_theta->Draw("COLZ");
     h_E_pi_theta->SetTitle("E vs theta pi_LD2");
+    h_E_pi_theta->GetXaxis()->SetTitle("theta pion (degrees)");
     MonEnrg.cd(6);
     h_E_pi_phi->Draw("COLZ");
     h_E_pi_phi->SetTitle("E vs phi pi_LD2");
+    h_E_pi_phi->GetXaxis()->SetTitle("phi pion (degrees)");
 
     MonEnrg.Print((filename + ".pdf").c_str());
+
+}
+
+void Monitoring::DrawVertexHistograms(const std::string filename){
+    //if you want a plot of vZ for Sn and LD2, you need to call this function twice with different filenames and monLD2/monSn
+    //there is no way to have both Vz of both nuclei in the same canvas
+    TCanvas MonVtz("Monitoring Vtxcanvas", "Monitoring VtxHistograms");
+    MonVtz.Divide(2, 2);
+    MonVtz.cd(1);
+    h_vertexZ->Draw("hist");
+    h_vertexZ->SetTitle("Vz_el Distribution");
+    h_vertexZ->GetXaxis()->SetTitle("V_{z} (cm)");
+    h_vertexZ->GetXaxis()->SetRangeUser(-20,10);
+    MonVtz.cd(2);
+    h_vertexZ_pi->Draw("hist");
+    h_vertexZ_pi->SetTitle("Vz_pi Distribution");
+    h_vertexZ_pi->GetXaxis()->SetTitle("V_{z} (cm)");
+    MonVtz.cd(3);
+    h_DeltaVz->Draw("hist");
+    h_DeltaVz->SetTitle("DeltaVz Distribution");
+    h_DeltaVz->GetXaxis()->SetTitle("DeltaV_{z} (cm)");
+
+
+    MonVtz.Print((filename + ".pdf").c_str());
+
+}
+
+void Monitoring::DrawHelicityHistograms(const std::string filename){
+    TCanvas MonHel("Monitoring Heli", "Monitoring Heli");
+    MonHel.Divide(2, 2);
+    MonHel.cd(1);
+    h_helicity->Draw("hist");
+    h_helicity->SetTitle("Helicity Distribution");
+    h_helicity->GetXaxis()->SetTitle("Helicity");
+    MonHel.cd(2);
+    h_helicity_raw->Draw("hist");
+    h_helicity_raw->SetTitle("Raw Helicity Distribution");
+    h_helicity_raw->GetXaxis()->SetTitle("Raw Helicity");
+    MonHel.Print((filename + ".pdf").c_str());
+
 
 }
 

@@ -27,7 +27,7 @@
     
     void EventReader::ProcessParticle(const TLorentzVector& momentum, int pid, double vertx,double verty,double vertz, int row ) {
         if (pid == Constants::ELECTRON_PID) {
-            currentEvent.AddElectron(momentum, row);
+            currentEvent.AddElectron(momentum, row, vertz);
             currentEvent.SetVertexZ(vertz);
             currentEvent.SetVertexX(vertx);
             currentEvent.SetVertexY(verty);
@@ -35,9 +35,14 @@
             //currentEvent.SetParticleRow(row);
             
         } else if (IsHadron(pid)) {
-            currentEvent.AddHadron(momentum, pid,row);
-            currentEvent.SetVertexZ(vertz);
+            currentEvent.AddHadron(momentum, pid,row, vertz);
+            //currentEvent.SetVertexZ(vertz);
             //currentEvent.SetParticleRow(row);
+            for (const Particle& hadron : currentEvent.GetHadrons()) {
+                //proceed from here to set vertex info !!!
+                //std::cout << "Hadron momentum: " << hadron.GetMomentum().Px() << std::endl;
+                //hadron.SetVz(vertz);
+            }
         }
         
     }
@@ -98,6 +103,11 @@
     }
 
 
+    void EventReader::AddHelInfo(int hel, int hel_raw){
+        currentEvent.SetHel(hel);
+        currentEvent.SetHelRaw(hel_raw);
+    }
+
     double EventReader::GetMassID(int id) {
             //a function that retunrs the mass according to the particle PID in argument
     switch (id) {
@@ -123,6 +133,7 @@
         event.getStructure(RECgen);
         event.getStructure(RECcalo);
         event.getStructure(RECcher);
+        event.getStructure(HELbank);
         //RECgen.show();
         bool flag_el = false;
         int counter_el= 0.0;
@@ -170,6 +181,7 @@
             } else if (IsHadron(pid) && el_detect ==true) {
                 //if (pid == Constants::PION_PLUS_PID){
                     ProcessParticle(momentum, pid,targetvx,targetvy,targetvz,i ); 
+
                 //}
             }
             if (pid == Constants::ELECTRON_PID) {
@@ -214,10 +226,15 @@
 
                     }
                     if (cal_layer == 4) {   //ecal_in
-                         e_ecalin = RECcalo.getFloat("energy", c_row);
+                        if (RECcalo.getFloat("energy", c_row) > 0.01){
+                            //filetring the 0 energy hits (non existent after first calo layer)
+                            e_ecalin = RECcalo.getFloat("energy", c_row);
+                        }
                     }
                     if (cal_layer == 7) {   //ecal_out
-                         e_ecalout = RECcalo.getFloat("energy", c_row);
+                        if (RECcalo.getFloat("energy", c_row) > 0.01){
+                            e_ecalout = RECcalo.getFloat("energy", c_row);
+                        }
                     } 
                 }
             }
@@ -248,6 +265,14 @@
 
 
             }
+            int hel_evt = 0;
+            int hel_raw = 0;
+            //for (int hel_row = 0; hel_row < HELbank.getRows(); ++hel_row){
+            hel_evt = HELbank.getInt("helicity", 0);
+            hel_raw = HELbank.getInt("helicityRaw", 0);
+            AddHelInfo(hel_evt, hel_raw);
+                
+            //}
             
 
         }
@@ -339,6 +364,10 @@ std::optional<Event> EventReader::ProcessEventsWithPositivePions(hipo::event eve
                 RECgen = factory.getSchema("REC::Particle");
                 RECcalo = factory.getSchema("REC::Calorimeter");
                 RECcher = factory.getSchema("REC::Cherenkov");
+                RECevt  = factory.getSchema("REC::Event");  //using bank to recover helicity and helicity raw
+                HELbank = factory.getSchema("HEL::online"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
+                //HELbank = factory.getSchema("REC::Event"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
+                //HELbank = factory.getSchema("HEL::flip"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
 
                 std::cout << "Processing file: " << filename << std::endl;
             } 

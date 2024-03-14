@@ -9,21 +9,21 @@
 #include "Particle.h"
 #include "constants.h"
     
-Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0, 0) {
+Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0, 0, 0.0) {
     m_D = (Constants::MASS_NEUTRON + Constants::MASS_PROTON)/2 ;
 
 }
 
-void Event::AddElectron(const TLorentzVector& electronMomentum, int row) {
-        electron = Particle(electronMomentum, 11 , row);  
+void Event::AddElectron(const TLorentzVector& electronMomentum, int row, double vertexZ) {
+        electron = Particle(electronMomentum, 11 , row, vertexZ);  
         electron.SetMomentum(electronMomentum);
         
 }
 
 
 
-void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid, int row) {
-    hadrons.push_back(Particle(hadronMomentum,  pid, row));
+void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid, int row, double vertexZ) {
+    hadrons.push_back(Particle(hadronMomentum,  pid, row, vertexZ));
 }
 
 int Event::GetEventIndex() const {
@@ -95,7 +95,12 @@ void Event::Setnphe15(double nphe_15){
 void Event::Setnphe16(double nphe_16){
     nphe16 = nphe_16;
 }
-
+void Event::SetHel(int input_hel){
+    hel = input_hel;
+}
+void Event::SetHelRaw(int input_helraw){
+    helraw = input_helraw;
+}
 
 void Event::Print() {   //add int v=0 as argument 4 different types of verbose TBD
 
@@ -236,4 +241,11 @@ int Event::GetTargetType() const {
 void Event::SetTargetType(int type) {
     target_type = type;
     //0=D, 1=Sn, 2=Cu   
+}
+
+int Event::GetHel() const {
+    return hel; 
+}
+int Event::GetHelRaw() const {
+    return helraw; 
 }

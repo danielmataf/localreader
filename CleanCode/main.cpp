@@ -102,10 +102,13 @@ int main() {
     std::optional<Event> testLD2;
     std::optional<Event> testCuSn;
     CutSet Sncuts;   //Sn
+    CutSet Cucuts;   //Cu
     CutSet LDcuts;   //LD2
 
     Sncuts.SetCutGen4Rat();
     Sncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
+    Cucuts.SetCutGen4Rat();
+    Cucuts.SetCutVz(-8.5,-6.5);     //vz cut for Cu filter in the double target
     LDcuts.SetCutGen4Rat();
     LDcuts.SetCutVz(-7.5,-2.5);     //vz cut for precision in LD2 target
 
@@ -114,9 +117,13 @@ int main() {
     int sumevts = 0;
     Monitoring monSn(Sncuts, "Sn");
     Monitoring monLD(LDcuts, "LD2");    // Modify the class so it doesnt have to take target name. (get targetevent) TBD!
-    Ratio rat(LDcuts, Sncuts); //calling the class with the corresponding cuts
-    deltaptsq dpt(LDcuts, Sncuts);  
-    cratio crat(LDcuts, Sncuts);    
+    Monitoring monCu(Cucuts, "Cu");
+    Ratio rat(LDcuts, Sncuts, "Sn"); //calling the class with the corresponding cuts
+    //deltaptsq dpt(LDcuts, Sncuts);  
+    //cratio crat(LDcuts, Sncuts);   
+    Ratio rat2(LDcuts, Cucuts, "Cu"); // RE calling the class with the corresponding cuts for study with Cu
+    //deltaptsq dpt2(LDcuts, Cucuts);
+    //cratio crat2(LDcuts, Cucuts); 
 
 
     
@@ -153,12 +160,13 @@ int main() {
                 eventtestLD2.SetTargetType(0);
                 eventtestLD2.calcAll();
                 //LDcuts.SetCutGentest(eventtestLD2);
-                //monLD.FillHistograms(eventtestLD2);
-                //monLD.FillHistogramsNoCuts(eventtestLD2);
-                monLD.FillHistogramswCuts(eventtestLD2);
+                //monLD.FillHistograms(eventtestLD2);       //WHAT is this again ? 
+                monLD.FillHistogramsNoCuts(eventtestLD2);
+                //monLD.FillHistogramswCuts(eventtestLD2);
                 rat.FillHistograms(eventtestLD2);  
-                dpt.FillHistograms(eventtestLD2);
-                crat.FillHistograms(eventtestLD2);
+                rat2.FillHistograms(eventtestLD2);
+                //dpt.FillHistograms(eventtestLD2);
+                //crat.FillHistograms(eventtestLD2);
             }
             if (testCuSn.has_value()) {
                 counter_elSn++;
@@ -167,12 +175,15 @@ int main() {
                 eventtestCuSn.calcAll();
 
                 //Sncuts.SetCutGentest(eventtestCuSn);
-                monSn.FillHistograms(eventtestCuSn);
-                //monSn.FillHistogramsNoCuts(eventtestCuSn);
-                monSn.FillHistogramswCuts(eventtestCuSn);
+                //monSn.FillHistograms(eventtestCuSn);
+                monSn.FillHistogramsNoCuts(eventtestCuSn);
+                monCu.FillHistogramsNoCuts(eventtestCuSn);
+                //monSn.FillHistogramswCuts(eventtestCuSn);
                 rat.FillHistograms(eventtestCuSn);
-                dpt.FillHistograms(eventtestCuSn);
-                crat.FillHistograms(eventtestCuSn);
+                rat2.FillHistograms(eventtestCuSn);
+
+                //dpt.FillHistograms(eventtestCuSn);
+                //crat.FillHistograms(eventtestCuSn);
             }
 
            
@@ -197,26 +208,33 @@ int main() {
     //monSn.WriteHistogramsToFile("output_CuSn.root");
     monLD.DrawHistograms("noCutsVarLD2");
     monLD.DrawCaloHistograms("REwCutscaloLD2");
-    monLD.DrawCherenkovHistograms("REwCutscherenkovLD2");
+    //monLD.DrawHelicityHistograms("REwCutshelicityLD2");
+    //monLD.DrawCherenkovHistograms("REwCutscherenkovLD2");
     //monLD.DrawMomentumHistograms("noCutsmomentumLD2");
-    monSn.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2Sn");
-    monLD.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2");
+    //monSn.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2Sn");
+    //monLD.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2");
+    monLD.DrawVertexHistograms("noCutsVertexLD2");
+    //monLD.DrawMomentumHadronHistograms("noCutsmomentumHadronLD2");
+    //monLD.DrawEnergyHistograms("noCutsEnergyLD2");
 
-    monLD.DrawMomentumHadronHistograms("noCutsmomentumHadronLD2");
-    monLD.DrawEnergyHistograms("noCutsEnergyLD2");
     //monSn.DrawHistograms("after_cuts_CuSn");
     //monLD.DrawHistogramsPos("comp2D");  
     //monLD.DrawR_Histograms("RmonitoringLD2");
 
     rat.calcR();
-    //rat.writeMatrixToFile("matrix_output.txt");
-    rat.multiplotR();
-    dpt.calcDpt();
-    //dpt.writeMatrixToFile("matrix_Dpt.txt");
-    dpt.multiplotDpt();
-    crat.calcCratio();
-    //crat.writeMatrixToFile("matrix_Cratio.txt");
-    crat.multiplotCratio();
+    //rat.writeMatrixToFile("matrix_test.txt");
+    rat2.calcR();
+    rat2.writeMatrixToFile("matrix2_test.txt");
+    //rat.multiplotR();
+    //rat2.multiplotR();
+    rat.multiplotR(rat2);
+
+    //dpt.calcDpt();
+        //dpt.writeMatrixToFile("matrix_Dpt.txt");
+    //dpt.multiplotDpt();
+    //crat.calcCratio();
+        //crat.writeMatrixToFile("matrix_Cratio.txt");
+    //crat.multiplotCratio();
     //
 
 
