@@ -113,7 +113,7 @@ private:
     double Epcal=0, Ecalin=0, Ecalout = 0;
     double calox=0, caloy=0, caloz=0;
     double nphe15=0, nphe16=10;
-    int hel =-2, helraw=-2;
+    int hel =0, helraw=0;
 
 
 

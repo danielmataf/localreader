@@ -70,6 +70,9 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_calSector(new TH1F(("calSector_" + targetName).c_str(), "calSector", nubin, -1, 10)),
     h_helicity(new TH1F(("helicity_" + targetName).c_str(), "helicity", nubin, -2, 2)),
     h_helicity_raw(new TH1F(("helicity_raw_" + targetName).c_str(), "helicity_raw", nubin, -2, 2)),
+    h_phih_plus(new TH1F(("phih_plus_" + targetName).c_str(), "phih_plus", 10, 0, 360)),
+    h_phih_minus(new TH1F(("phih_minus_" + targetName).c_str(), "phih_minus", 10, 0, 360)),
+    h_BSA(new TH1F(("BSA_" + targetName).c_str(), "BSA", 10, 0, 360)),
       counterel_R(0) {
     // Add more histograms as needed
 }
@@ -289,6 +292,12 @@ void Monitoring::FillHistogramsNoCuts(const Event& event) {
         //std::cout<<"electron vertex z = "<<event.GetVz()<<std::endl;
 
         h_DeltaVz->Fill(event.GetVz()-hadron.GetParticleVertexZ());
+        if (event.GetHel() > 0){
+            h_phih_plus->Fill(hadron.Getphih());
+        }
+        else if (event.GetHel() < 0){
+            h_phih_minus->Fill(hadron.Getphih());
+        }
         
         
         //
@@ -785,13 +794,27 @@ void Monitoring::DrawHelicityHistograms(const std::string filename){
     TCanvas MonHel("Monitoring Heli", "Monitoring Heli");
     MonHel.Divide(2, 2);
     MonHel.cd(1);
-    h_helicity->Draw("hist");
-    h_helicity->SetTitle("Helicity Distribution");
-    h_helicity->GetXaxis()->SetTitle("Helicity");
+    //h_helicity->Draw("hist");
+    //h_helicity->SetTitle("Helicity Distribution");
+    //h_helicity->GetXaxis()->SetTitle("Helicity");
+    h_phih_plus->Draw("hist");
+    h_phih_plus->SetTitle("phih Hel + Distribution");
+    h_phih_plus->GetXaxis()->SetTitle("phih (degrees)");
+
     MonHel.cd(2);
-    h_helicity_raw->Draw("hist");
-    h_helicity_raw->SetTitle("Raw Helicity Distribution");
-    h_helicity_raw->GetXaxis()->SetTitle("Raw Helicity");
+    //h_helicity_raw->Draw("hist");
+    //h_helicity_raw->SetTitle("Raw Helicity Distribution");
+    //h_helicity_raw->GetXaxis()->SetTitle("Raw Helicity");
+    h_phih_minus->Draw("hist");
+    h_phih_minus->SetTitle("phih Hel - Distribution");
+    h_phih_minus->GetXaxis()->SetTitle("phih (degrees)");
+
+    MonHel.cd(3);
+    MonHel.cd(4);
+
+    h_BSA = h_phih_plus->GetAsymmetry(h_phih_minus); 
+    h_BSA->Draw();
+
     MonHel.Print((filename + ".pdf").c_str());
 
 

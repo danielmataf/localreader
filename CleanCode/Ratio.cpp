@@ -194,7 +194,7 @@ void Ratio::multiplotR() {
     }
 }
 
-void Ratio::multiplotR( Ratio& ratioOther){
+void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
     for (int x = 0; x < Rbin; ++x) {
 
         double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
@@ -208,6 +208,7 @@ void Ratio::multiplotR( Ratio& ratioOther){
             canvas.cd(z + 1);
             TGraphErrors *graph = new TGraphErrors();
             TGraphErrors *graphOther = new TGraphErrors();
+            TGraphErrors *graphThird = new TGraphErrors();
             
             for (int y = 0; y < Rbin; ++y) {
                 double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
@@ -215,11 +216,17 @@ void Ratio::multiplotR( Ratio& ratioOther){
                 double error = errorMatrix[x][y][z];
                 double valueOther = ratioOther.getRatMatrix()[x][y][z];
                 double errorOther = ratioOther.getErrorMatrix()[x][y][z];
+                double valueThird = ratiothird.getRatMatrix()[x][y][z];
+                double errorThird = ratiothird.getErrorMatrix()[x][y][z];
+
                 //std::cout << "Sn= " << value << "; Cu= " << valueOther << std::endl;
                 graph->SetPoint(y, zValue, value);
-                graphOther->SetPoint(y, zValue, valueOther);
                 graph->SetPointError(y, 0.0, error); 
-                graphOther->SetPointError(y, 0.0, errorOther);
+                graphOther->SetPoint(y, zValue+0.01, valueOther);
+                graphOther->SetPointError(y+0.01, 0.0, errorOther);
+                graphThird->SetPoint(y, zValue+0.02, valueThird);
+                graphThird->SetPointError(y+0.02, 0.0, errorThird);
+                
 
             }
             graph->SetTitle(("R vs z, pt2=" + std::to_string(pt2Value)).c_str());
@@ -227,17 +234,20 @@ void Ratio::multiplotR( Ratio& ratioOther){
             graph->GetYaxis()->SetTitle("R");
             graph->SetMarkerStyle(20);
             graphOther->SetMarkerStyle(20);
+            graphThird->SetMarkerStyle(20);
             graph->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
             //graph->Draw("AP");
             graphOther->SetMarkerColor(kBlue);
 
             graph->SetMarkerColor(kRed);
+            graphThird->SetMarkerColor(kGreen);
             //graphOther->Draw("P");
             
             TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
             line->SetLineStyle(2); // Dotted line
             mg->Add(graph);
             mg->Add(graphOther);
+            mg->Add(graphThird);
             mg->Draw("APE1");
             line->Draw("same");
         

@@ -31,7 +31,7 @@ public:
     void writeMatrixToFile(const std::string& );
     void calculateMRat(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
     void multiplotR();
-    void multiplotR( Ratio& );
+    void multiplotR( Ratio& , Ratio&);
     std::vector<std::vector<std::vector<double>>> getRatMatrix() const{
         return ratMatrix;
     }

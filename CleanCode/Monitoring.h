@@ -146,6 +146,11 @@ private:
     //Helicity histograms
     TH1F *h_helicity; // = new TH1F("helicity", "helicity", 100, -1, 1) ;
     TH1F *h_helicity_raw; // = new TH1F("helicity_pos", "helicity_pos", 100, -1, 1) ;
+    //4 Asymmetries 
+    TH1F *h_phih_plus; // = new TH1F("phih_plus", "phih_plus", 10, 0, 360) ;
+    TH1F *h_phih_minus; // = new TH1F("phih_minus", "phih_minus", 10, 0, 360) ;
+    TH1 *h_BSA; // = new TH1F("BSA", "BSA", 10, 0, 360) ; 
+    
 
 
             //===Lines for Cuts(TBD)===// 

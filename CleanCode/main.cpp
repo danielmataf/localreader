@@ -92,18 +92,24 @@ int main() {
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesLD2);
     std::vector<std::string> filenamesCuSn;
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
+    std::vector<std::string> filenamesCxC;
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCxC);
 
 
     std::cout<< "Hello world \n";
     //EventReader MC(filenames);
     EventReader MC_LD2(filenamesLD2);
     EventReader MC_CuSn(filenamesCuSn);
+    EventReader MC_CxC(filenamesCxC);
+
     //std::optional<Event> test;
     std::optional<Event> testLD2;
     std::optional<Event> testCuSn;
+    std::optional<Event> testCxC;
     CutSet Sncuts;   //Sn
     CutSet Cucuts;   //Cu
     CutSet LDcuts;   //LD2
+    CutSet CCcuts;   //CxC
 
     Sncuts.SetCutGen4Rat();
     Sncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
@@ -111,18 +117,21 @@ int main() {
     Cucuts.SetCutVz(-8.5,-6.5);     //vz cut for Cu filter in the double target
     LDcuts.SetCutGen4Rat();
     LDcuts.SetCutVz(-7.5,-2.5);     //vz cut for precision in LD2 target
-
+    CCcuts.SetCutGen4Rat();
+    CCcuts.SetCutVz(-7.5,-2.5);     //vz cut for CxC target
 
     //bcuts.SetCutPt2(3,10);        //this cut has not been added yet to passcuts
     int sumevts = 0;
     Monitoring monSn(Sncuts, "Sn");
     Monitoring monLD(LDcuts, "LD2");    // Modify the class so it doesnt have to take target name. (get targetevent) TBD!
     Monitoring monCu(Cucuts, "Cu");
+    Monitoring monCC(CCcuts, "CxC");
     Ratio rat(LDcuts, Sncuts, "Sn"); //calling the class with the corresponding cuts
-    //deltaptsq dpt(LDcuts, Sncuts);  
-    //cratio crat(LDcuts, Sncuts);   
     Ratio rat2(LDcuts, Cucuts, "Cu"); // RE calling the class with the corresponding cuts for study with Cu
+    Ratio rat3(LDcuts, CCcuts, "CxC"); // RE calling the class with the corresponding cuts for study with CxC
+    //deltaptsq dpt(LDcuts, Sncuts);  
     //deltaptsq dpt2(LDcuts, Cucuts);
+    //cratio crat(LDcuts, Sncuts);   
     //cratio crat2(LDcuts, Cucuts); 
 
 
@@ -148,6 +157,7 @@ int main() {
     int counter_el= 0.0;
     int counter_elLD2 = 0;
     int counter_elSn= 0.0;
+    int counter_elCxC= 0.0;
     for (int i=0; i<900000; i++){
             //std::optional<Event> 
             testLD2 = MC_LD2.ProcessEventsInFile();
@@ -165,6 +175,7 @@ int main() {
                 //monLD.FillHistogramswCuts(eventtestLD2);
                 rat.FillHistograms(eventtestLD2);  
                 rat2.FillHistograms(eventtestLD2);
+                rat3.FillHistograms(eventtestLD2);
                 //dpt.FillHistograms(eventtestLD2);
                 //crat.FillHistograms(eventtestLD2);
             }
@@ -184,6 +195,16 @@ int main() {
 
                 //dpt.FillHistograms(eventtestCuSn);
                 //crat.FillHistograms(eventtestCuSn);
+            }
+            if (testCxC.has_value()) {
+                counter_elCxC++;
+                Event eventtestCxC = testCxC.value();
+                eventtestCxC.SetTargetType(1);              //is it targettype 1 or targettype 2? needs to be checked and modified accordingly
+                eventtestCxC.calcAll();
+                monCC.FillHistogramsNoCuts(eventtestCxC);
+                //monCC.FillHistogramswCuts(eventtestCxC);
+                rat.FillHistograms(eventtestCxC);
+                rat3.FillHistograms(eventtestCxC);
             }
 
            
@@ -208,7 +229,7 @@ int main() {
     //monSn.WriteHistogramsToFile("output_CuSn.root");
     monLD.DrawHistograms("noCutsVarLD2");
     monLD.DrawCaloHistograms("REwCutscaloLD2");
-    //monLD.DrawHelicityHistograms("REwCutshelicityLD2");
+    monLD.DrawHelicityHistograms("REwCutshelicityLD2");
     //monLD.DrawCherenkovHistograms("REwCutscherenkovLD2");
     //monLD.DrawMomentumHistograms("noCutsmomentumLD2");
     //monSn.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2Sn");
@@ -227,7 +248,7 @@ int main() {
     rat2.writeMatrixToFile("matrix2_test.txt");
     //rat.multiplotR();
     //rat2.multiplotR();
-    rat.multiplotR(rat2);
+    rat.multiplotR(rat2,rat3);
 
     //dpt.calcDpt();
         //dpt.writeMatrixToFile("matrix_Dpt.txt");
