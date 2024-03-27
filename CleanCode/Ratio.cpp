@@ -7,12 +7,14 @@
 #include <TLine.h>
 #include <TGraphErrors.h>
 #include <TMultiGraph.h>
+#include <TLegend.h>
 #include <TPad.h>
 #include <fstream>
 #include <TPDF.h>
 #include "Event.h" 
 #include "Ratio.h"
 #include "CutSet.h"
+#include <iomanip> // including <iomanip> for formatting digits for pt2 precision
 
 Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cutsD(cutsD), cutsSn(cutsSn) {
     targetName(targetName),
@@ -198,7 +200,7 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
     for (int x = 0; x < Rbin; ++x) {
 
         double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
-        std::string pdfFileName = "multiplotdoubleR_nu" + std::to_string(nuValue) + ".pdf";
+        std::string pdfFileName = "tripleTargetR_nu" + std::to_string(nuValue) + ".pdf";
         TCanvas canvas("c", "Multiplot double R", 1200, 800);
         canvas.Divide(3, 2); 
         for (int z = 0; z < Rbin; ++z) {
@@ -229,6 +231,12 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
                 
 
             }
+
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << pt2Value;
+            std::string formattedPt2Value = ss.str();
+            //std::cout << "formattedPt2Value = " << formattedPt2Value << std::endl;
+
             graph->SetTitle(("R vs z, pt2=" + std::to_string(pt2Value)).c_str());
             graph->GetXaxis()->SetTitle("z");
             graph->GetYaxis()->SetTitle("R");
@@ -243,12 +251,23 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
             graphThird->SetMarkerColor(kGreen);
             //graphOther->Draw("P");
             
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graph, "Sn", "lp");
+            legend->AddEntry(graphOther, "Cu", "lp");
+            legend->AddEntry(graphThird, "CxC", "lp");
+
             TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
             line->SetLineStyle(2); // Dotted line
+
             mg->Add(graph);
             mg->Add(graphOther);
             mg->Add(graphThird);
+            mg->SetTitle(("R vs z, pt2=" + formattedPt2Value).c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("R");
+
             mg->Draw("APE1");
+            legend->Draw("same");
             line->Draw("same");
         
         }

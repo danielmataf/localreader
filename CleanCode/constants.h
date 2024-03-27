@@ -119,6 +119,19 @@ namespace Constants {
     static const int Rbin_z  = 5;
     static const int Rbin_pt2= 5;
 
+    static const int Dptbin_nu  = 5;
+    static const int Dptbin_z   = 5;
+    static const int Dptbin_Q = 5;
+    static const int Dptbin_x = 5;
+
+
+
+    static const double numinDpt = 4;
+    static const double numaxDpt = 9;
+    static const double xminDpt = 0;
+    static const double xmaxDpt = 0;
+    static const double phihminDpt = 0;
+    static const double phihmaxDpt = 360;
 
 
     //cuts for Target specific vertex 
