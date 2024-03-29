@@ -11,6 +11,8 @@
 #include "Ratio.h"
 #include "Dpt.h"
 #include "cratio.h"
+#include "sratio.h"
+#include "c2ratio.h"
 #include "FilePathGenerator.h"
 
 
@@ -132,8 +134,16 @@ int main() {
     deltaptsq dpt(LDcuts, Sncuts, "Sn");  
     deltaptsq dpt2(LDcuts, Cucuts, "Cu");
     deltaptsq dpt3(LDcuts, CCcuts, "CxC");
-    //cratio crat(LDcuts, Sncuts);   
-    //cratio crat2(LDcuts, Cucuts); 
+    cratio crat(LDcuts, Sncuts, "Sn");   
+    cratio crat2(LDcuts, Cucuts, "Cu");
+    cratio crat3(LDcuts, CCcuts, "CxC"); 
+    sratio srat (LDcuts, Sncuts, "Sn");
+    sratio srat2 (LDcuts, Cucuts, "Cu");
+    sratio srat3 (LDcuts, CCcuts, "CxC");
+    c2ratio c2rat (LDcuts, Sncuts, "Sn");
+    c2ratio c2rat2 (LDcuts, Cucuts, "Cu");
+    c2ratio c2rat3 (LDcuts, CCcuts, "CxC");
+
 
 
     
@@ -179,7 +189,17 @@ int main() {
                 rat2.FillHistograms(eventtestLD2);
                 rat3.FillHistograms(eventtestLD2);
                 dpt.FillHistograms(eventtestLD2);
-                //crat.FillHistograms(eventtestLD2);
+                dpt2.FillHistograms(eventtestLD2);
+                dpt3.FillHistograms(eventtestLD2);
+                crat.FillHistograms(eventtestLD2);
+                crat2.FillHistograms(eventtestLD2);
+                crat3.FillHistograms(eventtestLD2);
+                srat.FillHistograms(eventtestLD2);
+                srat2.FillHistograms(eventtestLD2);
+                srat3.FillHistograms(eventtestLD2);
+                c2rat.FillHistograms(eventtestLD2);
+                c2rat2.FillHistograms(eventtestLD2);
+                c2rat3.FillHistograms(eventtestLD2);
             }
             if (testCuSn.has_value()) {
                 counter_elSn++;
@@ -197,7 +217,15 @@ int main() {
 
                 dpt.FillHistograms(eventtestCuSn);
                 dpt2.FillHistograms(eventtestCuSn);
-                //crat.FillHistograms(eventtestCuSn);
+
+                crat.FillHistograms(eventtestCuSn);
+                crat2.FillHistograms(eventtestCuSn);
+
+                srat.FillHistograms(eventtestCuSn);
+                srat2.FillHistograms(eventtestCuSn);
+
+                c2rat.FillHistograms(eventtestCuSn);
+                c2rat2.FillHistograms(eventtestCuSn);
             }
             if (testCxC.has_value()) {
                 counter_elCxC++;
@@ -208,7 +236,11 @@ int main() {
                 //monCC.FillHistogramswCuts(eventtestCxC);
                 //rat.FillHistograms(eventtestCxC);
                 rat3.FillHistograms(eventtestCxC);
-                dpt.FillHistograms(eventtestCxC);
+                dpt3.FillHistograms(eventtestCxC);
+                crat3.FillHistograms(eventtestCxC);
+                srat3.FillHistograms(eventtestCxC);
+                c2rat3.FillHistograms(eventtestCxC);
+                
             }
 
            
@@ -254,19 +286,29 @@ int main() {
     rat2.calcR();
     rat2.writeMatrixToFile("matrix2_test.txt");
     rat3.calcR();
-    //rat.multiplotR();
-    //rat2.multiplotR();
     rat.multiplotR(rat2, rat3);
 
     dpt.calcDpt();
     dpt2.calcDpt();
     dpt3.calcDpt();
-
-        //dpt.writeMatrixToFile("matrix_Dpt.txt");
+    //dpt.writeMatrixToFile("matrix_Dpt.txt");
     dpt.multiplotDpt(dpt2, dpt3);
-    //crat.calcCratio();
-        //crat.writeMatrixToFile("matrix_Cratio.txt");
-    //crat.multiplotCratio();
+    
+    crat.calcCratio();
+    crat2.calcCratio();
+    crat3.calcCratio();
+    //crat.writeMatrixToFile("matrix_Cratio.txt");
+    crat.multiplotCratio( crat2, crat3);
+    
+    srat.calcSratio();
+    srat2.calcSratio();
+    srat3.calcSratio();
+    srat.multiplotSratio(srat2, srat3);
+
+    c2rat.calcC2ratio();
+    c2rat2.calcC2ratio();
+    c2rat3.calcC2ratio();
+    c2rat.multiplotC2ratio(c2rat2, c2rat3);
     //
 
 

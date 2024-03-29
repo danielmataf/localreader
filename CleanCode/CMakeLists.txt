@@ -10,7 +10,7 @@ include(${ROOT_USE_FILE})
 # Enable debugging information
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
-add_executable(ReadHipoFile main.cpp Event.h  EventReader.cpp  Particle.cpp Event.cpp  EventReader.h Particle.h EventProcessor.cpp EventProcessor.h constants.h CutSet.h CutSet.cpp Monitoring.cpp Monitoring.h Ratio.h Ratio.cpp Dpt.cpp Dpt.cpp cratio.cpp cratio.h FilePathGenerator.cpp FilePathGenerator.h  )
+add_executable(ReadHipoFile main.cpp Event.h  EventReader.cpp  Particle.cpp Event.cpp  EventReader.h Particle.h EventProcessor.cpp EventProcessor.h constants.h CutSet.h CutSet.cpp Monitoring.cpp Monitoring.h Ratio.h Ratio.cpp Dpt.cpp Dpt.cpp cratio.cpp cratio.h sratio.cpp sratio.h c2ratio.cpp c2ratio.h FilePathGenerator.cpp FilePathGenerator.h  )
 
 
 target_link_libraries(ReadHipoFile ${ROOT_LIBRARIES})

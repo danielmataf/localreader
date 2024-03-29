@@ -233,25 +233,26 @@ void deltaptsq::multiplotDpt(deltaptsq& dptother, deltaptsq& dptthird){
             graphDpt->SetMarkerStyle(20);
             graphDpt->GetYaxis()->SetRangeUser(-1.0, 1.0); // Set Y axis range from -0.1 to 0.1
             graphDpt->Draw("AP");
+            graphDpt->SetMarkerStyle(20);
             graphOther->SetMarkerStyle(20);
             graphThird->SetMarkerStyle(20);
             graph->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
             //graph->Draw("AP");
             graphOther->SetMarkerColor(kBlue);
 
-            graph->SetMarkerColor(kRed);
+            graphDpt->SetMarkerColor(kRed);
             graphThird->SetMarkerColor(kGreen);
             //graphOther->Draw("P");
             
             TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
-            legend->AddEntry(graph, "Sn", "lp");
+            legend->AddEntry(graphDpt, "Sn", "lp");
             legend->AddEntry(graphOther, "Cu", "lp");
             legend->AddEntry(graphThird, "CxC", "lp");
 
             TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 0.0, graphDpt->GetXaxis()->GetXmax(), 0.0);
             line->SetLineStyle(2); // Dotted line
 
-            mg->Add(graph);
+            mg->Add(graphDpt);
             mg->Add(graphOther);
             mg->Add(graphThird);
             mg->SetTitle(("#Delta <p_{t}^{2}> vs z, Q^{2}=" + formattedQ2Value).c_str());
