@@ -26,7 +26,8 @@ public:
 
     void DrawHistograms(const std::string);
     void DrawR_Histograms(const std::string filename);
-    void DrawHistogramsPos(const std::string);
+    void DrawHistogramsPos(const std::string ,const std::string );
+
     void DrawMomentumHistograms(const std::string);
     void DrawMomentumElectronHistograms(const std::string );
     void DrawMomentumHadronHistograms(const std::string );

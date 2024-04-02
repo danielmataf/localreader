@@ -167,7 +167,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {
 
 void Monitoring::FillHistograms(const Event& event) {
     //if (cut1.PassCutLD2Target(event)==false) return;
-    //h_xQ2->Fill(event.Getxb(), event.GetQ2());
+    h_xQ2->Fill(event.Getxb(), event.GetQ2());
     h_calXY->Fill(event.GetCalX(), event.GetCalY());
     h_lu->Fill(event.Getlu());
     h_lv->Fill(event.Getlv());
@@ -194,7 +194,6 @@ void Monitoring::FillHistograms(const Event& event) {
     h_W2->Fill(event.GetW2());
 
     
-    //h_xQ2pos->Fill(event.Getxb(), event.GetQ2());
 
     //h_Q2posel->Fill(event.GetQ2());
     //h_nuposel->Fill(event.Getnu());     //throw hists in mratio.cpp(filling) TBD
@@ -220,6 +219,8 @@ void Monitoring::FillHistograms(const Event& event) {
             h_z->Fill(hadron.Getz());
             h_pt2->Fill(hadron.Getpt2());
             h_phih->Fill(hadron.Getphih());
+            h_xQ2pos->Fill(event.Getxb(), event.GetQ2());
+
             //
             //std::cout << " kinhad " << hadron.Getz()<<" , " << hadron.Getpt2()<<" , " << hadron.Getphih()<<std::endl;  
             //
@@ -468,17 +469,19 @@ void Monitoring::DrawHistograms(const std::string filename) {
     MonC.Print((filename + ".pdf").c_str());
 }
 
-void Monitoring::DrawHistogramsPos(const std::string filename) {
+void Monitoring::DrawHistogramsPos(const std::string targetName, const std::string filename){
     TCanvas MonC("Monitoring canvas", "Monitoring Histograms");
     MonC.Divide(2, 2);
     MonC.cd(1);
     h_xQ2->Draw("COLZ");
-    h_xQ2->SetTitle("x vs Q2 Distribution (LD2)");
+    h_xQ2->SetTitle(("x vs Q2 Distribution (" + targetName + ")").c_str());
     h_xQ2->GetXaxis()->SetTitle("x_{B}");
     h_xQ2->GetYaxis()->SetTitle("Q^{2}");
+    h_xQ2->GetXaxis()->SetRangeUser(0, 1);
+    h_xQ2->SetBins(nubin, 0, 1); // 
     MonC.cd(2);
     h_xQ2pos->Draw("COLZ");
-    h_xQ2pos->SetTitle("x vs Q2 Distribution (LD2)");
+    h_xQ2pos->SetTitle(("x vs Q2 Distribution (" + targetName + ")").c_str());
     h_xQ2pos->GetXaxis()->SetTitle("x_{B}");
     h_xQ2pos->GetYaxis()->SetTitle("Q^{2}");
     
