@@ -478,7 +478,7 @@ void Monitoring::DrawHistogramsPos(const std::string targetName, const std::stri
     h_xQ2->GetXaxis()->SetTitle("x_{B}");
     h_xQ2->GetYaxis()->SetTitle("Q^{2}");
     h_xQ2->GetXaxis()->SetRangeUser(0, 1);
-    h_xQ2->SetBins(nubin, 0, 1); // 
+    //h_xQ2->SetBins(nubin, 0, 1); // 
     MonC.cd(2);
     h_xQ2pos->Draw("COLZ");
     h_xQ2pos->SetTitle(("x vs Q2 Distribution (" + targetName + ")").c_str());

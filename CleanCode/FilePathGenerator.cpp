@@ -53,3 +53,35 @@ void FilePathGenerator::Files2Vector(const std::string& directory, std::vector<s
         }
     }
 }
+
+void FilePathGenerator::ParDir2Vector(const std::string& parentDirectory, std::vector<std::string>& filepaths) {
+    //This function takes a folder, and goes inside all the directories inside to recover every hipo file and put it in a vector
+    std::vector<std::string> allFolders;
+
+    for (const auto& entry : fs::directory_iterator(parentDirectory)) {
+        if (entry.is_directory()) {
+            allFolders.push_back(entry.path().string());
+            //folderpaths.push_back(entry.path().string()); // Store the folder path
+            //std::cout<<entry.path().string()<<std::endl;
+            std::cout<<"Folder path: "<< allFolders.back()<<std::endl;
+            // Call Files2Vector for each subdirectory
+            Files2Vector(entry.path().string(), filepaths);
+        }
+    }
+}
+
+ void FilePathGenerator::SnDir2Vector(const std::string& parentDirectory, std::vector<std::string>& filepaths) {
+        // this should go through all folders inside  '/volatile/clas12/dmat/gen/Sn/'
+        for (const auto& entry : fs::directory_iterator(parentDirectory)) {
+            if (entry.is_directory()) {
+                std::string subdirectory = entry.path().string();
+                std::cout << "Subdirectory path: " << subdirectory << std::endl;
+                // Check if the subdirectory contains the desired file
+                std::string targetFile = subdirectory + "/generator/sidis_mc-master/r_ttest3S.hipo";
+                if (fs::exists(targetFile)) {
+                    std::cout << "Target file found: " << targetFile << std::endl;
+                    filepaths.push_back(targetFile);
+                }
+            }
+        }
+    }

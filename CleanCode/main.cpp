@@ -91,7 +91,10 @@ int main() {
 int main() {
     FilePathGenerator files;
     std::vector<std::string> filenamesLD2;
+    std::vector<std::string> simufilesLD2;
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesLD2);
+    //files.ParDir2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/", simufilesLD2);
+    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesLD2);
     std::vector<std::string> filenamesCuSn;
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
     std::vector<std::string> filenamesCxC;
@@ -343,10 +346,10 @@ int main() {
     //monLD.DrawEnergyHistograms("noCutsEnergyLD2");
 
     //monSn.DrawHistograms("after_cuts_CuSn");
-    monLD.DrawHistogramsPos("LD2","comp2D_LD");    //  plots for RD
-    monSn.DrawHistogramsPos("Sn","comp2D_Sn"); //  plots for RD
-    monCu.DrawHistogramsPos("Cu","comp2D_Cu"); //  plots for RD
-    monCC.DrawHistogramsPos("CxC","comp2DCxC");    //  plots for RD  
+    //monLD.DrawHistogramsPos("LD2","comp2D_LD");    //  plots for RD
+    //monSn.DrawHistogramsPos("Sn","comp2D_Sn"); //  plots for RD
+    //monCu.DrawHistogramsPos("Cu","comp2D_Cu"); //  plots for RD
+    //monCC.DrawHistogramsPos("CxC","comp2DCxC");    //  plots for RD  
     //monLD.DrawR_Histograms("RmonitoringLD2");
 
     rat.calcR();
