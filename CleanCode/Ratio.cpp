@@ -277,6 +277,104 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
 }
 
 
+void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird, Ratio& ratiosimone,   Ratio& ratiosimtwo){
+    for (int x = 0; x < Rbin; ++x) {
+
+        double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "triplesimTargetR_nu" + std::to_string(nuValue) + ".pdf";
+        TCanvas canvas("c", "Multiplot sim double R", 1200, 800);
+        canvas.Divide(3, 2); 
+        for (int z = 0; z < Rbin; ++z) {
+            TMultiGraph *mg = new TMultiGraph();
+
+            double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
+            canvas.cd(z + 1);
+            TGraphErrors *graph = new TGraphErrors();
+            TGraphErrors *graphOther = new TGraphErrors();
+            TGraphErrors *graphThird = new TGraphErrors();
+            TGraphErrors *graphSimone = new TGraphErrors();
+            TGraphErrors *graphSimtwo = new TGraphErrors();
+            
+            for (int y = 0; y < Rbin; ++y) {
+                double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
+                double value = ratMatrix[x][y][z];
+                double error = errorMatrix[x][y][z];
+                double valueOther = ratioOther.getRatMatrix()[x][y][z];
+                double errorOther = ratioOther.getErrorMatrix()[x][y][z];
+                double valueThird = ratiothird.getRatMatrix()[x][y][z];
+                double errorThird = ratiothird.getErrorMatrix()[x][y][z];
+                double valueSimone = ratiosimone.getRatMatrix()[x][y][z];
+                double errorSimone = ratiosimone.getErrorMatrix()[x][y][z];
+                double valueSimtwo = ratiosimtwo.getRatMatrix()[x][y][z];
+                double errorSimtwo = ratiosimtwo.getErrorMatrix()[x][y][z];
+
+                //std::cout << "Sn= " << value << "; Cu= " << valueOther << std::endl;
+                graph->SetPoint(y, zValue, value);
+                graph->SetPointError(y, 0.0, error); 
+                graphOther->SetPoint(y, zValue+0.01, valueOther);
+                graphOther->SetPointError(y+0.01, 0.0, errorOther);
+                graphThird->SetPoint(y, zValue+0.02, valueThird);
+                graphThird->SetPointError(y+0.02, 0.0, errorThird);
+                graphSimone->SetPoint(y, zValue+0.005, valueSimone); //+0.005 to avoid overlap and putting it next its correcponding REC data 
+                graphSimone->SetPointError(y+0.005, 0.0, errorSimone);
+                graphSimtwo->SetPoint(y, zValue+0.015, valueSimtwo);
+                graphSimtwo->SetPointError(y+0.015, 0.0, errorSimtwo);
+                
+
+            }
+
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << pt2Value;
+            std::string formattedPt2Value = ss.str();
+            //std::cout << "formattedPt2Value = " << formattedPt2Value << std::endl;
+
+            graph->SetTitle(("R vs z, pt2=" + std::to_string(pt2Value)).c_str());
+            graph->GetXaxis()->SetTitle("z");
+            graph->GetYaxis()->SetTitle("R");
+            graph->SetMarkerStyle(20);
+            graphOther->SetMarkerStyle(20);
+            graphThird->SetMarkerStyle(20);
+            graph->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
+            //graph->Draw("AP");
+            graphOther->SetMarkerColor(kBlue);
+
+            graph->SetMarkerColor(kRed);
+            graphThird->SetMarkerColor(kGreen);
+            //graphOther->Draw("P");
+            graphSimone->SetMarkerColor(kRed);
+            graphSimtwo->SetMarkerColor(kBlue+1);
+
+            
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graph, "Sn", "lp");
+            legend->AddEntry(graphOther, "Cu", "lp");
+            legend->AddEntry(graphThird, "CxC", "lp");
+            legend->AddEntry(graphSimone, "Sn (sim)", "lp");
+            legend->AddEntry(graphSimtwo, "Cu (sim)", "lp");
+
+            TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+
+            mg->Add(graph);
+            mg->Add(graphOther);
+            mg->Add(graphThird);
+            mg->Add(graphSimone);
+            mg->Add(graphSimtwo);
+            mg->SetTitle(("R vs z, pt2=" + formattedPt2Value).c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("R");
+
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+        
+        }
+
+        canvas.SaveAs(pdfFileName.c_str());
+    }
+}
+
+
 
 void Ratio::PlotRatio(const std::string filename) {
     TCanvas Rcanv("Ratio canvas", "Ratio Plots");

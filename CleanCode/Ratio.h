@@ -32,6 +32,7 @@ public:
     void calculateMRat(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
     void multiplotR();
     void multiplotR( Ratio& , Ratio&);
+    void multiplotR( Ratio& , Ratio& , Ratio& ,   Ratio& );
     std::vector<std::vector<std::vector<double>>> getRatMatrix() const{
         return ratMatrix;
     }
