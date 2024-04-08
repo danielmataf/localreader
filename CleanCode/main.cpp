@@ -92,18 +92,31 @@ int main() {
     FilePathGenerator files;
     std::vector<std::string> filenamesLD2;
     std::vector<std::string> simufilesLD2;
+    std::vector<std::string> simufilesSn;
+    std::vector<std::string> filenamesCuSn;
+    std::vector<std::string> filenamesCxC;
+
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesLD2);
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCxC);
     //files.ParDir2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/", simufilesLD2);
     
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesLD2);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesSn);  //uncomment for sim
+
+
+
+    //Uncomment 4 test on ifarm, comment all above
+    //files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_LD2/dst/recon/019033/", filenamesLD2);
+    //files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_CuSn/dst/recon/019130/", filenamesCuSn);
+    //files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_CxC/dst/recon/018835/", filenamesCxC);
+    //uncommment also below for sim  on ifarm
     //files.SnDir2Vector("/volatile/clas12/dmat/gen/Deut/", simufilesLD2);  //uncomment for sim
+    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesSn);  //uncomment for sim 
 
-    std::vector<std::string> simufilesSn;
-    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesLD2);  //uncomment for sim 
 
-    std::vector<std::string> filenamesCuSn;
-    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
-    std::vector<std::string> filenamesCxC;
-    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCxC);
+    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesSn);  //uncomment for sim 
+
 
     //std::vector<std::string> filenamesSimLD2;
     //files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesSimLD2);
@@ -128,15 +141,15 @@ int main() {
     std::optional<Event> testCuSn;
     std::optional<Event> testCxC;
     std::optional<Event> simLD2;
-    std::optional<Event> simCuSn;
+    //std::optional<Event> simCuSn;
     //std::optional<Event> simCxC;
 
     CutSet Sncuts;   //Sn
     CutSet Cucuts;   //Cu
     CutSet LDcuts;   //LD2
     CutSet CCcuts;   //CxC
-    CutSet simSncuts;   //Sn
-    CutSet simCucuts;   //Cu    
+    //CutSet simSncuts;   //Sn
+    //CutSet simCucuts;   //Cu    
     CutSet simLDcuts;   //LD2
     //CutSet simCCcuts;   //CxC
 
@@ -148,10 +161,10 @@ int main() {
     LDcuts.SetCutVz(-7.5,-2.5);     //vz cut for precision in LD2 target
     CCcuts.SetCutGen4Rat();
     CCcuts.SetCutVz(-8.5,-6.5);     //vz cut for CxC target
-    simSncuts.SetCutGen4Rat();
-    simSncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
-    simCucuts.SetCutGen4Rat();
-    simCucuts.SetCutVz(-8.5,-6.5);     //vz cut for Cu filter in the double target
+    //simSncuts.SetCutGen4Rat();
+    //simSncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
+    //simCucuts.SetCutGen4Rat();
+    //simCucuts.SetCutVz(-8.5,-6.5);     //vz cut for Cu filter in the double target
     simLDcuts.SetCutGen4Rat();
     simLDcuts.SetCutVz(-7.5,-2.5);     //vz cut for precision in LD2 target
     //simCCcuts.SetCutGen4Rat();
@@ -166,15 +179,16 @@ int main() {
     Monitoring monLD(LDcuts, "LD2");    // Modify the class so it doesnt have to take target name. (get targetevent) TBD!
     Monitoring monCu(Cucuts, "Cu");
     Monitoring monCC(CCcuts, "CxC");
-    Monitoring monSimLD(simLDcuts, "LD2");
-    Monitoring monSimSn(simSncuts, "Sn");
-    Monitoring monSimCu(simCucuts, "Cu");
+    //Monitoring monSimLD(simLDcuts, "LD2");
+    //Monitoring monSimSn(simSncuts, "Sn");
+    //Monitoring monSimCu(simCucuts, "Cu");
     //Monitoring monSimCC(simCCcuts, "CxC");
     Ratio rat(LDcuts, Sncuts, "Sn"); //calling the class with the corresponding cuts
     Ratio rat2(LDcuts, Cucuts, "Cu"); // RE calling the class with the corresponding cuts for study with Cu
     Ratio rat3(LDcuts, CCcuts, "CxC"); // RE calling the class with the corresponding cuts for study with CxC
-    Ratio simrat( simLDcuts, simSncuts, "Sn"); //calling the class with the corresponding cuts
-    Ratio simrat2(simLDcuts, simCucuts, "Cu"); // RE calling the class with the corresponding cuts for study with Cu
+    //Ratio simrat( simLDcuts, simSncuts, "Sn"); //calling the class with the corresponding cuts
+    //Ratio simrat2(simLDcuts, simCucuts, "Cu"); // RE calling the class with the corresponding cuts for study with Cu
+
     //Ratio simrat3(simLDcuts, simCCcuts, "CxC"); // RE calling the class with the corresponding cuts for study with CxC
     deltaptsq dpt(LDcuts, Sncuts, "Sn");  
     deltaptsq dpt2(LDcuts, Cucuts, "Cu");
@@ -241,8 +255,10 @@ int main() {
                 counter_elLD2++;
                 Event eventtestLD2 = testLD2.value();
                 //Event eventsimLD2 = simLD2.value();
+                
                 eventtestLD2.SetTargetType(0);
                 //eventsimLD2.SetTargetType(0);
+                
                 eventtestLD2.calcAll();
                 //eventsimLD2.calcAll();
 
@@ -253,8 +269,8 @@ int main() {
                 rat.FillHistograms(eventtestLD2);  
                 rat2.FillHistograms(eventtestLD2);
                 rat3.FillHistograms(eventtestLD2);
-                simrat.FillHistograms(eventtestLD2);
-                simrat2.FillHistograms(eventtestLD2);
+                //simrat.FillHistograms(eventtestLD2);
+                //simrat2.FillHistograms(eventtestLD2);
                 dpt.FillHistograms(eventtestLD2);
                 //dpt2.FillHistograms(eventtestLD2);
                 //dpt3.FillHistograms(eventtestLD2);
@@ -273,8 +289,10 @@ int main() {
                 counter_elSn++;
                 Event eventtestCuSn = testCuSn.value();
                 //Event eventsimCuSn = simCuSn.value();
+                
                 eventtestCuSn.SetTargetType(1);
                 //eventsimCuSn.SetTargetType(1);
+                
                 eventtestCuSn.calcAll();
                 //eventsimCuSn.calcAll();
 
@@ -286,8 +304,8 @@ int main() {
                 //monSn.FillHistogramswCuts(eventtestCuSn);
                 rat.FillHistograms(eventtestCuSn);
                 rat2.FillHistograms(eventtestCuSn);
-                simrat.FillHistograms(eventtestCuSn);
-                simrat2.FillHistograms(eventtestCuSn);
+                //simrat.FillHistograms(eventtestCuSn);
+                //simrat2.FillHistograms(eventtestCuSn);
 
                 //dpt.FillHistograms(eventtestCuSn);
                 //dpt2.FillHistograms(eventtestCuSn);
@@ -366,8 +384,8 @@ int main() {
     rat2.calcR();
     rat2.writeMatrixToFile("matrix2_test.txt");
     rat3.calcR();
-    simrat2.calcR();
-    simrat.calcR(); 
+    //simrat2.calcR();
+    //simrat.calcR(); 
     rat.multiplotR(rat2, rat3);
     
     //rat.multiplotR(rat2, rat3, simrat, simrat2);  //uncomment for sim 

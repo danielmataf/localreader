@@ -64,7 +64,6 @@ void FilePathGenerator::ParDir2Vector(const std::string& parentDirectory, std::v
             //folderpaths.push_back(entry.path().string()); // Store the folder path
             //std::cout<<entry.path().string()<<std::endl;
             std::cout<<"Folder path: "<< allFolders.back()<<std::endl;
-            // Call Files2Vector for each subdirectory
             Files2Vector(entry.path().string(), filepaths);
         }
     }
@@ -75,13 +74,13 @@ void FilePathGenerator::ParDir2Vector(const std::string& parentDirectory, std::v
         for (const auto& entry : fs::directory_iterator(parentDirectory)) {
             if (entry.is_directory()) {
                 std::string subdirectory = entry.path().string();
-                std::cout << "Subdirectory path: " << subdirectory << std::endl;
-                // Check if the subdirectory contains the desired file
-                std::string targetFile = subdirectory + "/generator/sidis_mc-master/r_ttest3S.hipo";    //this is gonna be a problem... we need to change the name of the file in simu output 
+                std::cout << "subdirectory path: " << subdirectory << std::endl;
+                // check if the subdir has the file we want
+                std::string targetFile = subdirectory + "/sidis_mc-master/r_ttest3S.hipo";    //this is gonna be a problem... we need to change the name of the file in simu output 
                 //in the meantime another function LD2 specific has been created below
                 //wait, maybe not; To be continued  
                 if (fs::exists(targetFile)) {
-                    std::cout << "Target file found: " << targetFile << std::endl;
+                    std::cout << "target file found: " << targetFile << std::endl;
                     filepaths.push_back(targetFile);
                 }
             }
