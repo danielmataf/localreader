@@ -141,15 +141,15 @@ int main() {
     std::optional<Event> testCuSn;
     std::optional<Event> testCxC;
     std::optional<Event> simLD2;
-    //std::optional<Event> simCuSn;
+    std::optional<Event> simCuSn;
     //std::optional<Event> simCxC;
 
     CutSet Sncuts;   //Sn
     CutSet Cucuts;   //Cu
     CutSet LDcuts;   //LD2
     CutSet CCcuts;   //CxC
-    //CutSet simSncuts;   //Sn
-    //CutSet simCucuts;   //Cu    
+    CutSet simSncuts;   //Sn
+    CutSet simCucuts;   //Cu    
     CutSet simLDcuts;   //LD2
     //CutSet simCCcuts;   //CxC
 
@@ -161,8 +161,8 @@ int main() {
     LDcuts.SetCutVz(-7.5,-2.5);     //vz cut for precision in LD2 target
     CCcuts.SetCutGen4Rat();
     CCcuts.SetCutVz(-8.5,-6.5);     //vz cut for CxC target
-    //simSncuts.SetCutGen4Rat();
-    //simSncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
+    simSncuts.SetCutGen4Rat();
+    simSncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
     //simCucuts.SetCutGen4Rat();
     //simCucuts.SetCutVz(-8.5,-6.5);     //vz cut for Cu filter in the double target
     simLDcuts.SetCutGen4Rat();
@@ -179,22 +179,22 @@ int main() {
     Monitoring monLD(LDcuts, "LD2");    // Modify the class so it doesnt have to take target name. (get targetevent) TBD!
     Monitoring monCu(Cucuts, "Cu");
     Monitoring monCC(CCcuts, "CxC");
-    //Monitoring monSimLD(simLDcuts, "LD2");
-    //Monitoring monSimSn(simSncuts, "Sn");
+    Monitoring monSimLD(simLDcuts, "LD2");
+    Monitoring monSimSn(simSncuts, "Sn");
     //Monitoring monSimCu(simCucuts, "Cu");
     //Monitoring monSimCC(simCCcuts, "CxC");
     Ratio rat(LDcuts, Sncuts, "Sn"); //calling the class with the corresponding cuts
     Ratio rat2(LDcuts, Cucuts, "Cu"); // RE calling the class with the corresponding cuts for study with Cu
     Ratio rat3(LDcuts, CCcuts, "CxC"); // RE calling the class with the corresponding cuts for study with CxC
-    //Ratio simrat( simLDcuts, simSncuts, "Sn"); //calling the class with the corresponding cuts
-    //Ratio simrat2(simLDcuts, simCucuts, "Cu"); // RE calling the class with the corresponding cuts for study with Cu
+    Ratio simrat( simLDcuts, simSncuts, "Sn"); //calling the class with the corresponding cuts
+    Ratio simrat2(simLDcuts, simCucuts, "Cu"); // RE calling the class with the corresponding cuts for study with Cu
 
     //Ratio simrat3(simLDcuts, simCCcuts, "CxC"); // RE calling the class with the corresponding cuts for study with CxC
     deltaptsq dpt(LDcuts, Sncuts, "Sn");  
     deltaptsq dpt2(LDcuts, Cucuts, "Cu");
     deltaptsq dpt3(LDcuts, CCcuts, "CxC");
     //deltaptsq simdpt( simLDcuts, simSncuts, "Sn");
-    //deltaptsq simdpt2(simLDcuts, simCucuts, "Cu");
+    //deltaptsq simdpt2(simLDcuts, simCucuts, "Cus");
     //deltaptsq simdpt3(simLDcuts, simCCcuts, "CxC");
 
     cratio crat(LDcuts, Sncuts, "Sn");   
@@ -247,14 +247,13 @@ int main() {
             testCuSn = MC_CuSn.ProcessEventsInFile();
             testCxC = MC_CxC.ProcessEventsInFile();
             //simLD2 = Sim_LD2.ProcessEventsInFile();
-            //simCuSn = Sim_CuSn.ProcessEventsInFile();
+            simCuSn = Sim_CuSn.ProcessEventsInFile();
             //simCxC = Sim_CxC.ProcessEventsInFile();
 
             //test = MC.ProcessEventsInFile();
             if (testLD2.has_value()) {
                 counter_elLD2++;
                 Event eventtestLD2 = testLD2.value();
-                //Event eventsimLD2 = simLD2.value();
                 
                 eventtestLD2.SetTargetType(0);
                 //eventsimLD2.SetTargetType(0);
@@ -337,6 +336,28 @@ int main() {
                 //c2rat3.FillHistograms(eventtestCxC);
                 
             }
+            //Simulated data handler
+            if (simLD2.has_value()) {
+                Event eventsimLD2 = simLD2.value();
+                eventsimLD2.SetTargetType(0);
+                eventsimLD2.calcAll();
+                //monSimLD.FillHistograms(eventsimLD2);
+                monSimLD.FillHistogramsNoCuts(eventsimLD2);
+                //monSimLD.FillHistogramswCuts(eventsimLD2);
+                simrat.FillHistograms(eventsimLD2);  
+                simrat2.FillHistograms(eventsimLD2);
+
+            }
+            if (simCuSn.has_value()) {
+                Event eventsimCuSn = simCuSn.value();
+                eventsimCuSn.SetTargetType(1);
+                eventsimCuSn.calcAll();
+                //monSimSn.FillHistograms(eventsimCuSn);
+                monSimSn.FillHistogramsNoCuts(eventsimCuSn);
+                //monSimSn.FillHistogramswCuts(eventsimCuSn);
+                simrat.FillHistograms(eventsimCuSn);
+                simrat2.FillHistograms(eventsimCuSn);
+            }
 
            
            //if (test.has_value()==false) continue;
@@ -369,6 +390,8 @@ int main() {
     //monLD.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2");
     monLD.DrawVertexHistograms("noCutsVertexLD2");
     monCC.DrawVertexHistograms("noCutsVertexCxC");
+    monSimLD.DrawVertexHistograms("noCutsVertexSimLD2");
+    monSimSn.DrawVertexHistograms("noCutsVertexSimSn");
     //monLD.DrawMomentumHadronHistograms("noCutsmomentumHadronLD2");
     //monLD.DrawEnergyHistograms("noCutsEnergyLD2");
 
