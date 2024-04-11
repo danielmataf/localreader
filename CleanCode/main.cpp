@@ -96,23 +96,23 @@ int main() {
     std::vector<std::string> filenamesCuSn;
     std::vector<std::string> filenamesCxC;
 
-    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesLD2);
-    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
-    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCxC);
+    //files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesLD2);
+    //files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
+    //files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCxC);
     //files.ParDir2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/", simufilesLD2);
     
-    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesLD2);  //uncomment for sim
-    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesSn);  //uncomment for sim
+    //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesLD2);  //uncomment for sim
+    //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesSn);  //uncomment for sim
 
 
 
     //Uncomment 4 test on ifarm, comment all above
-    //files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_LD2/dst/recon/019033/", filenamesLD2);
-    //files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_CuSn/dst/recon/019130/", filenamesCuSn);
-    //files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_CxC/dst/recon/018835/", filenamesCxC);
+    files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_LD2/dst/recon/019033/", filenamesLD2);
+    files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_CuSn/dst/recon/019130/", filenamesCuSn);
+    files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_CxC/dst/recon/018835/", filenamesCxC);
     //uncommment also below for sim  on ifarm
-    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Deut/", simufilesLD2);  //uncomment for sim
-    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesSn);  //uncomment for sim 
+    files.SnDir2Vector("/volatile/clas12/dmat/gen/Deut/", simufilesLD2);  //uncomment for sim
+    files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesSn);  //uncomment for sim 
 
 
     //files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesSn);  //uncomment for sim 
@@ -162,11 +162,11 @@ int main() {
     CCcuts.SetCutGen4Rat();
     CCcuts.SetCutVz(-8.5,-6.5);     //vz cut for CxC target
     simSncuts.SetCutGen4Rat();
-    simSncuts.SetCutVz(-3.5,-1.5);     //vz cut for Sn filter in the double target
+    simSncuts.SetCutVz(-2.0,2.0);     //vz cut for Sn filter in the double target
     //simCucuts.SetCutGen4Rat();
     //simCucuts.SetCutVz(-8.5,-6.5);     //vz cut for Cu filter in the double target
     simLDcuts.SetCutGen4Rat();
-    simLDcuts.SetCutVz(-7.5,-2.5);     //vz cut for precision in LD2 target
+    simLDcuts.SetCutVz(-2.0,2.0);     //vz cut for precision in LD2 target
     //simCCcuts.SetCutGen4Rat();
     //simCCcuts.SetCutVz(-8.5,-6.5);     //vz cut for CxC target
     //Fix target borders in constants. remember is not the definite vz cut, but a cut for target separation 
@@ -246,7 +246,7 @@ int main() {
             testLD2 = MC_LD2.ProcessEventsInFile();
             testCuSn = MC_CuSn.ProcessEventsInFile();
             testCxC = MC_CxC.ProcessEventsInFile();
-            //simLD2 = Sim_LD2.ProcessEventsInFile();
+            simLD2 = Sim_LD2.ProcessEventsInFile();
             simCuSn = Sim_CuSn.ProcessEventsInFile();
             //simCxC = Sim_CxC.ProcessEventsInFile();
 
@@ -384,7 +384,9 @@ int main() {
     monCC.DrawHistograms("noCutsVarCxC");   //use this to check Vz for CxC 
     monLD.DrawCaloHistograms("REwCutscaloLD2");
     monLD.DrawHelicityHistograms("REwCutshelicityLD2");
-    //monLD.DrawCherenkovHistograms("REwCutscherenkovLD2");
+    monSimLD.DrawHistograms("noCutsSimVarLD2");
+    monSimSn.DrawHistograms("noCutsSimVarSn");    
+//monLD.DrawCherenkovHistograms("REwCutscherenkovLD2");
     //monLD.DrawMomentumHistograms("noCutsmomentumLD2");
     //monSn.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2Sn");
     //monLD.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2");
@@ -405,13 +407,13 @@ int main() {
     rat.calcR();
     //rat.writeMatrixToFile("matrix_test.txt");
     rat2.calcR();
-    rat2.writeMatrixToFile("matrix2_test.txt");
+    //rat2.writeMatrixToFile("matrix2_test.txt");
     rat3.calcR();
-    //simrat2.calcR();
-    //simrat.calcR(); 
-    rat.multiplotR(rat2, rat3);
-    
-    //rat.multiplotR(rat2, rat3, simrat, simrat2);  //uncomment for sim 
+    simrat2.calcR();
+    simrat.calcR(); 
+    //rat.multiplotR(rat2, rat3);
+    simrat.multiplotR(simrat2,simrat);    
+    rat.multiplotR(rat2, rat3, simrat, simrat2);  //uncomment for sim 
 
     //dpt.calcDpt();
     //dpt2.calcDpt();
