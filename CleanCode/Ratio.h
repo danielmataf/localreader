@@ -27,12 +27,14 @@ public:
     void FillHistograms(const Event& );
     void WriteHistos(const std::string );
     void calcR();
+    void calcRcarbon() ;        //new
     void PlotRatio(const std::string );
     void writeMatrixToFile(const std::string& );
     void calculateMRat(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
     void multiplotR();
     void multiplotR( Ratio& , Ratio&);
     void multiplotR( Ratio& , Ratio& , Ratio& ,   Ratio& );
+    
     std::vector<std::vector<std::vector<double>>> getRatMatrix() const{
         return ratMatrix;
     }
@@ -136,6 +138,12 @@ private:
     TH3F *h_nu_z_pt2D_onlye; // = new TH3F("nu,z,pt2,D onlye", "histo_e nu,z,pt2 for A", Rbin_nu,numinR,numaxR,Rbin_z,zminR, zmaxR,Rbin_pt2, pt2minR, pt2maxR  );
     TH1F *h_nuA; // = new TH1F("nu_A", "nu_A", Rbin_nu,numinR,numaxR) ;
     TH1F *h_nuD; // = new TH1F("nu_D", "nu_D", Rbin_nu,numinR,numaxR) ;
+
+    TH1F *h_nuC1; 
+    TH1F *h_nuC2; 
+    TH3F *h_nu_z_pt2C1; 
+    TH3F *h_nu_z_pt2C2; 
+
 
     //Graphs
     TGraphErrors* graph_rat= new TGraphErrors();

@@ -1,4 +1,4 @@
-#ifndef MONITORING_H
+ #ifndef MONITORING_H
 #define MONITORING_H
 
 #include <TFile.h>
@@ -25,6 +25,7 @@ public:
     void FillMomentumHistograms(const Event& );
 
     void DrawHistograms(const std::string);
+    void DrawHistTrueandSIM(Monitoring& , const std::string ) ;
     void DrawR_Histograms(const std::string filename);
     void DrawHistogramsPos(const std::string ,const std::string );
 

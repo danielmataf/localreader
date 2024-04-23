@@ -29,7 +29,9 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     h_nu_z_pt2A_onlye(new TH3F(("nu,z,pt2,A onlye_"+targetName).c_str(), ("histo_e nu,z,pt2 for A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu ,Constants::Rcutmaxnu ,Rbin_z,Constants::RcutminZ, Constants::RcutmaxZ,Rbin_pt2, Constants::RcutminPt2, Constants::RcutmaxPt2  )),
     h_nu_z_pt2D_onlye(new TH3F(("nu,z,pt2,D onlye_"+targetName).c_str(), ("histo_e nu,z,pt2 for A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu ,Constants::Rcutmaxnu ,Rbin_z,Constants::RcutminZ, Constants::RcutmaxZ,Rbin_pt2, Constants::RcutminPt2, Constants::RcutmaxPt2  )),
     h_nuA(new TH1F(("nu_A"+targetName).c_str(), ("nu_A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
-    h_nuD(new TH1F(("nu_D"+targetName).c_str(), ("nu_D"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu))
+    h_nuD(new TH1F(("nu_D"+targetName).c_str(), ("nu_D"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
+    h_nuC1(new TH1F(("nu_C1"+targetName).c_str(), ("nu_C1"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
+    h_nuC2(new TH1F(("nu_C2"+targetName).c_str(), ("nu_C2"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu))
 
     
      {
@@ -75,11 +77,23 @@ void Ratio::FillHistograms(const Event& event) {
         counter_elSn++; //counter for only electrons for z and pt
         //here change the else if to just else in order to have a generic target 
         h_nuA->Fill(event.Getnu());
+        if (targetName == "C1"){
+            h_nuC1->Fill(event.Getnu());
+        }
+        else if (targetName == "C2"){
+            h_nuC2->Fill(event.Getnu());
+        }
         for (const Particle& hadron : event.GetHadrons()) {
 
 
             if (cuta.PassCutsHadrons(hadron)==true){
                 h_nu_z_pt2A->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
+                //if targetName == "C1" || targetName == "C2" {
+                //    h_nu_z_pt2C1->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
+                //}
+                //else if targetName == "C2" {
+                //    h_nu_z_pt2C2->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
+                //}
             //std::cout << "nimporte quoi N" << event.Getnu()<< ";" << hadron.Getz()<<","<< hadron.Getpt2() <<std::endl;
 
             }
@@ -135,6 +149,38 @@ void Ratio::calcR(){
 	//	//	
     }   
 }
+
+
+
+void Ratio::calcRcarbon(){
+    int graph_pointnb = 0;
+    //IN 3d HISTO x=nu; y= z; z=pt2;
+    int counter_3D = 0;
+    int numBinsX = h_nu_z_pt2C2->GetNbinsX();    //same bins 4 Deut and A 
+    int numBinsY = h_nu_z_pt2C2->GetNbinsY(); 
+    int numBinsZ = h_nu_z_pt2C2->GetNbinsZ(); 
+    for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {  
+        double val_nuelC2 = h_nuC2->GetBinContent(Xbin); 
+        //std :: cout << "val_nuelD = " << val_nuelD << std::endl;  
+        double val_nuelC1 = h_nuC1->GetBinContent(Xbin); 
+        for (int Ybin = 1; Ybin <= numBinsY; Ybin++ ){
+            for (int Zbin = 1; Zbin <= numBinsZ; Zbin++ ){
+                // loop with 125 values (5 per axis)
+                double valC2 = h_nu_z_pt2C2->GetBinContent(Xbin,Ybin,Zbin);   //seems to properly recover value 
+                double valC1 = h_nu_z_pt2C1->GetBinContent(Xbin,Ybin,Zbin);
+                double interm1nu = (val_nuelC1 > 0) ? valC1 / val_nuelC1 : 0.0;
+                double interm2nu = (val_nuelC2 > 0) ? valC2 / val_nuelC2 : 0.0;
+                double ratvalue  = (interm2nu > 0) ?interm1nu/interm2nu : 0.0;
+                double raterr = ratvalue * sqrt(1/valC1 + 1/valC2 + 1/val_nuelC1 + 1/val_nuelC2);
+                ratMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
+                errorMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
+            }
+        }
+    }   
+}
+
+
+
 
 //TH3 getbins bini binj etc 
 

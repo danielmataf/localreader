@@ -96,23 +96,23 @@ int main() {
     std::vector<std::string> filenamesCuSn;
     std::vector<std::string> filenamesCxC;
 
-    //files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesLD2);
-    //files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
-    //files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCxC);
-    //files.ParDir2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/", simufilesLD2);
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesLD2);
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCxC);
+    files.ParDir2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/", simufilesLD2);
     
-    //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesLD2);  //uncomment for sim
-    //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesSn);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesLD2);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesSn);  //uncomment for sim
 
 
 
     //Uncomment 4 test on ifarm, comment all above
-    files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_LD2/dst/recon/019033/", filenamesLD2);
-    files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_CuSn/dst/recon/019130/", filenamesCuSn);
-    files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_CxC/dst/recon/018835/", filenamesCxC);
+    //files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_LD2/dst/recon/019033/", filenamesLD2);
+    //files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_CuSn/dst/recon/019130/", filenamesCuSn);
+    //files.Files2Vector("/volatile/clas12/rg-d/production/prod/v3_ob_CxC/dst/recon/018835/", filenamesCxC);
     //uncommment also below for sim  on ifarm
-    files.SnDir2Vector("/volatile/clas12/dmat/gen/Deut/", simufilesLD2);  //uncomment for sim
-    files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesSn);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Deut/", simufilesLD2);  //uncomment for sim
+    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesSn);  //uncomment for sim 
 
 
     //files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesSn);  //uncomment for sim 
@@ -178,16 +178,18 @@ int main() {
     Monitoring monSn(Sncuts, "Sn");
     Monitoring monLD(LDcuts, "LD2");    // Modify the class so it doesnt have to take target name. (get targetevent) TBD!
     Monitoring monCu(Cucuts, "Cu");
-    Monitoring monCC(CCcuts, "CxC");
-    Monitoring monSimLD(simLDcuts, "LD2");
-    Monitoring monSimSn(simSncuts, "Sn");
+    Monitoring monC1(CCcuts, "C1");
+    Monitoring monC2(CCcuts, "C2");
+    Monitoring monSimLD(simLDcuts, "LD2_sim");
+    Monitoring monSimSn(simSncuts, "Sn_sim");
     //Monitoring monSimCu(simCucuts, "Cu");
     //Monitoring monSimCC(simCCcuts, "CxC");
     Ratio rat(LDcuts, Sncuts, "Sn"); //calling the class with the corresponding cuts
     Ratio rat2(LDcuts, Cucuts, "Cu"); // RE calling the class with the corresponding cuts for study with Cu
-    Ratio rat3(LDcuts, CCcuts, "CxC"); // RE calling the class with the corresponding cuts for study with CxC
-    Ratio simrat( simLDcuts, simSncuts, "Sn"); //calling the class with the corresponding cuts
-    Ratio simrat2(simLDcuts, simCucuts, "Cu"); // RE calling the class with the corresponding cuts for study with Cu
+    Ratio rat3(LDcuts, CCcuts, "C1"); // RE calling the class with the corresponding cuts for study with C1
+    Ratio rat4(LDcuts, CCcuts, "C2"); // RE calling the class with the corresponding cuts for study with C2
+    Ratio simrat( simLDcuts, simSncuts, "Sn_sim"); //calling the class with the corresponding cuts
+    Ratio simrat2(simLDcuts, simCucuts, "Cu_sim"); // RE calling the class with the corresponding cuts for study with Cu
 
     //Ratio simrat3(simLDcuts, simCCcuts, "CxC"); // RE calling the class with the corresponding cuts for study with CxC
     deltaptsq dpt(LDcuts, Sncuts, "Sn");  
@@ -241,7 +243,7 @@ int main() {
     int counter_elLD2 = 0;
     int counter_elSn= 0.0;
     int counter_elCxC= 0.0;
-    for (int i=0; i<900000; i++){
+    for (int i=0; i<90000; i++){
             //std::optional<Event> 
             testLD2 = MC_LD2.ProcessEventsInFile();
             testCuSn = MC_CuSn.ProcessEventsInFile();
@@ -326,14 +328,8 @@ int main() {
 
                 eventtestCxC.calcAll();
                 //eventsimCxC.calcAll();
-                //monCC.FillHistogramsNoCuts(eventtestCxC);
-                monCC.FillHistograms(eventtestCxC);     //recomment this
-                //monCC.FillHistogramswCuts(eventtestCxC);
+                monC1.FillHistograms(eventtestCxC);     //recomment this
                 rat3.FillHistograms(eventtestCxC);
-                //dpt3.FillHistograms(eventtestCxC);
-                //crat3.FillHistograms(eventtestCxC);
-                //srat3.FillHistograms(eventtestCxC);
-                //c2rat3.FillHistograms(eventtestCxC);
                 
             }
             //Simulated data handler
@@ -381,19 +377,22 @@ int main() {
     //monLD.WriteHistogramsToFile("output_LD2.root");
     //monSn.WriteHistogramsToFile("output_CuSn.root");
     monLD.DrawHistograms("noCutsVarLD2");
-    monCC.DrawHistograms("noCutsVarCxC");   //use this to check Vz for CxC 
-    monLD.DrawCaloHistograms("REwCutscaloLD2");
-    monLD.DrawHelicityHistograms("REwCutshelicityLD2");
-    monSimLD.DrawHistograms("noCutsSimVarLD2");
-    monSimSn.DrawHistograms("noCutsSimVarSn");    
+    monSimLD.DrawHistTrueandSIM(monLD,"testsimLD2");
+    
+    
+    //monC1.DrawHistograms("dddd");   //use this to check Vz for CxC 
+    //monLD.DrawCaloHistograms("REwCutscaloLD2");
+    //monLD.DrawHelicityHistograms("REwCutshelicityLD2");
+    //monSimLD.DrawHistograms("noCutsSimVarLD2");
+    //monSimSn.DrawHistograms("noCutsSimVarSn");    
 //monLD.DrawCherenkovHistograms("REwCutscherenkovLD2");
     //monLD.DrawMomentumHistograms("noCutsmomentumLD2");
     //monSn.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2Sn");
     //monLD.DrawMomentumElectronHistograms("noCutsmomentumElectronLD2");
-    monLD.DrawVertexHistograms("noCutsVertexLD2");
-    monCC.DrawVertexHistograms("noCutsVertexCxC");
-    monSimLD.DrawVertexHistograms("noCutsVertexSimLD2");
-    monSimSn.DrawVertexHistograms("noCutsVertexSimSn");
+    //monLD.DrawVertexHistograms("noCutsVertexLD2");
+    //monC1.DrawVertexHistograms("noCutsVertexCxC");
+    //monSimLD.DrawVertexHistograms("noCutsVertexSimLD2");
+    //monSimSn.DrawVertexHistograms("noCutsVertexSimSn");
     //monLD.DrawMomentumHadronHistograms("noCutsmomentumHadronLD2");
     //monLD.DrawEnergyHistograms("noCutsEnergyLD2");
 
@@ -411,9 +410,11 @@ int main() {
     rat3.calcR();
     simrat2.calcR();
     simrat.calcR(); 
-    //rat.multiplotR(rat2, rat3);
-    simrat.multiplotR(simrat2,simrat);    
-    rat.multiplotR(rat2, rat3, simrat, simrat2);  //uncomment for sim 
+
+
+
+    //simrat.multiplotR(simrat2,simrat);    
+    //rat.multiplotR(rat2, rat3, simrat, simrat2);  //uncomment for sim 
 
     //dpt.calcDpt();
     //dpt2.calcDpt();

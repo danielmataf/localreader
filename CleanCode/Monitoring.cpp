@@ -1,10 +1,11 @@
-#include <TFile.h>
+ #include <TFile.h>
 #include <TTree.h>
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TGraphErrors.h>
 #include <TGraph.h>
 #include <TLine.h>
+#include <TLegend.h>
 #include <vector>
 #include <TCanvas.h>
 #include <TPDF.h>
@@ -468,6 +469,174 @@ void Monitoring::DrawHistograms(const std::string filename) {
     h_vertexZ->SetTitle("Vertex Z Distribution");
     MonC.Print((filename + ".pdf").c_str());
 }
+
+
+
+
+void Monitoring::DrawHistTrueandSIM(Monitoring& monTrue  , const std::string filename) {
+    TCanvas MonC("Monitoring canvas", "Monitoring Histograms");
+    MonC.Divide(3, 3);
+
+
+     MonC.cd(1);
+    h_Q2->SetLineColor(kRed); // Set different color for monRec histogram
+    h_Q2->Draw("hist ");
+
+    monTrue.h_Q2->Draw("hist same");
+    monTrue.h_Q2->SetTitle("Q2 Distribution");
+    monTrue.h_Q2->GetXaxis()->SetTitle("Q^{2} (GeV^{2})");
+    monTrue.h_Q2->GetXaxis()->SetRangeUser(1, 5);
+    TLine *line_Q2_true = new TLine(Constants::RcutminQ, monTrue.h_Q2->GetMinimum(), Constants::RcutminQ, monTrue.h_Q2->GetMaximum());
+    line_Q2_true->SetLineStyle(2); // Dashed line style
+    line_Q2_true->Draw();
+
+    //monRec.h_Q2->SetTitle("Q2 Distribution - Rec");
+    //monRec.h_Q2->GetXaxis()->SetTitle("Q^{2} (GeV^{2})");
+    //monRec.h_Q2->GetXaxis()->SetRangeUser(1, 5);
+    TLine *line_Q2_rec = new TLine(Constants::RcutminQ, h_Q2->GetMinimum(), Constants::RcutminQ, h_Q2->GetMaximum());
+    line_Q2_rec->SetLineStyle(2); // Dashed line style
+    line_Q2_rec->SetLineColor(kRed); // Set same color as histogram for consistency
+    line_Q2_rec->Draw();
+
+    // Create legend
+    TLegend *legend = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
+    legend->AddEntry(monTrue.h_Q2, "True Data", "l");
+    legend->AddEntry(h_Q2, "Sim Rec", "l");
+    legend->SetBorderSize(0); // Remove legend border
+    legend->Draw();
+
+    //now we should propagate the DrawHistograms function adapting it to this function 
+    //we should add the same for the other histograms
+
+    MonC.cd(2);
+    h_xb->SetLineColor(kRed); // Set different color for monRec histogram
+    h_xb->Draw("hist");
+    monTrue.h_xb->Draw("hist same");
+    monTrue.h_xb->SetTitle("xb Distribution");
+    monTrue.h_xb->GetXaxis()->SetTitle("x_{B}");
+    monTrue.h_xb->GetXaxis()->SetRangeUser(0, 0.6);
+    
+    TLegend *legendx = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
+    legendx->AddEntry(monTrue.h_xb, "True Data", "l");
+    legendx->AddEntry(h_xb, "Sim Rec", "l");
+
+    MonC.cd(3);
+    h_y->SetLineColor(kRed); // Set different color for monRec histogram
+    h_y->Draw("hist ");
+    monTrue.h_y->Draw("hist same");
+    monTrue.h_y->SetTitle("y Distribution");
+    monTrue.h_y->GetXaxis()->SetTitle("y");
+    TLine *line_y_true = new TLine(Constants::RcutminY, monTrue.h_y->GetMinimum(), Constants::RcutminY, monTrue.h_y->GetMaximum());
+    line_y_true->SetLineStyle(2); // Dashed line style
+    line_y_true->Draw();
+    TLine *line_y_rec = new TLine(Constants::RcutminY, h_y->GetMinimum(), Constants::RcutminY, h_y->GetMaximum());
+    line_y_rec->SetLineStyle(2); // Dashed line style
+    line_y_rec->SetLineColor(kRed); // Set same color as histogram for consistency
+    line_y_rec->Draw();
+    TLegend *legendy = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
+    legendy->AddEntry(monTrue.h_y, "True Data", "l");
+    legendy->AddEntry(h_y, "Sim Rec", "l");
+
+    MonC.cd(4);
+    h_nu->SetLineColor(kRed); // Set different color for monRec histogram
+    h_nu->Draw("hist ");
+    monTrue.h_nu->Draw("hist same");
+    monTrue.h_nu->SetTitle("nu Distribution");
+    monTrue.h_nu->GetXaxis()->SetTitle("nu (GeV)"); 
+    monTrue.h_nu->GetXaxis()->SetRangeUser(3, 10);
+    TLine *line_nu_true = new TLine(Constants::Rcutminnu, monTrue.h_nu->GetMinimum(), Constants::Rcutminnu, monTrue.h_nu->GetMaximum());
+    line_nu_true->SetLineStyle(2); // Dashed line style
+    line_nu_true->Draw();
+    TLine *line_nu_rec = new TLine(Constants::Rcutminnu, h_nu->GetMinimum(), Constants::Rcutminnu, h_nu->GetMaximum());
+    line_nu_rec->SetLineStyle(2); // Dashed line style
+    line_nu_rec->SetLineColor(kRed); // Set same color as histogram for consistency
+    line_nu_rec->Draw();
+    TLegend *legendnu = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
+    legendnu->AddEntry(monTrue.h_nu, "True Data", "l");
+    legendnu->AddEntry(h_nu, "Sim Rec", "l");
+
+    MonC.cd(5);
+    h_W2->SetLineColor(kRed); // Set different color for monRec histogram
+    h_W2->Draw("hist ");
+    monTrue.h_W2->Draw("hist same");
+    monTrue.h_W2->SetTitle("W^{2} Distribution");
+    monTrue.h_W2->GetXaxis()->SetTitle("W^{2} (GeV^{2})");
+    TLine *line_W2_true = new TLine(Constants::RcutminW, monTrue.h_W2->GetMinimum(), Constants::RcutminW, monTrue.h_W2->GetMaximum());
+    line_W2_true->SetLineStyle(2); // Dashed line style
+    TLine *line_W2_rec = new TLine(Constants::RcutminW, h_W2->GetMinimum(), Constants::RcutminW, h_W2->GetMaximum());
+    line_W2_rec->SetLineStyle(2); // Dashed line style
+    line_W2_rec->SetLineColor(kRed); // Set same color as histogram for consistency
+    line_W2_rec->Draw();
+    TLegend *legendW2 = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
+    legendW2->AddEntry(monTrue.h_W2, "True Data", "l");
+    legendW2->AddEntry(h_W2, "Sim Rec", "l");
+
+    MonC.cd(6);
+    h_z->SetLineColor(kRed); // Set different color for monRec histogram
+    h_z->Draw("hist ");
+    monTrue.h_z->Draw("hist same");
+    monTrue.h_z->SetTitle("z Distribution");
+    monTrue.h_z->GetXaxis()->SetTitle("z");
+    TLine *line_z_true = new TLine(Constants::RcutminZ, monTrue.h_z->GetMinimum(), Constants::RcutminZ, monTrue.h_z->GetMaximum());
+    line_z_true->SetLineStyle(2); // Dashed line style
+    line_z_true->Draw();
+    TLine *line_zmax_true = new TLine(Constants::RcutmaxZ, monTrue.h_z->GetMinimum(), Constants::RcutmaxZ, monTrue.h_z->GetMaximum());
+    line_zmax_true->SetLineStyle(2); // Dashed line style
+    line_zmax_true->Draw();
+    TLine *line_z_rec = new TLine(Constants::RcutminZ, h_z->GetMinimum(), Constants::RcutminZ, h_z->GetMaximum());
+    line_z_rec->SetLineStyle(2); // Dashed line style
+    line_z_rec->SetLineColor(kRed); // Set same color as histogram for consistency
+    line_z_rec->Draw();
+    TLine *line_zmax_rec = new TLine(Constants::RcutmaxZ, h_z->GetMinimum(), Constants::RcutmaxZ, h_z->GetMaximum());
+    line_zmax_rec->SetLineStyle(2); // Dashed line style
+    line_zmax_rec->SetLineColor(kRed); // Set same color as histogram for consistency
+    line_zmax_rec->Draw();
+    TLegend *legendz = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
+    legendz->AddEntry(monTrue.h_z, "True Data", "l");
+    legendz->AddEntry(h_z, "Sim Rec", "l");
+
+    MonC.cd(7);
+    h_pt2->SetLineColor(kRed); // Set different color for monRec histogram
+    h_pt2->Draw("hist ");
+    monTrue.h_pt2->Draw("hist same");
+    monTrue.h_pt2->SetTitle("pt2 Distribution");
+    monTrue.h_pt2->GetXaxis()->SetTitle("p_{t}^{2} (GeV^{2})");
+    TLine *line_pt2_true = new TLine(Constants::RcutminPt2, monTrue.h_pt2->GetMinimum(), Constants::RcutminPt2, monTrue.h_pt2->GetMaximum());
+    line_pt2_true->SetLineStyle(2); // Dashed line style
+    line_pt2_true->Draw();
+    TLine *line_pt2max_true = new TLine(Constants::RcutmaxPt2, monTrue.h_pt2->GetMinimum(), Constants::RcutmaxPt2, monTrue.h_pt2->GetMaximum());
+    line_pt2max_true->SetLineStyle(2); // Dashed line style
+    line_pt2max_true->Draw();
+    TLine *line_pt2_rec = new TLine(Constants::RcutminPt2, h_pt2->GetMinimum(), Constants::RcutminPt2, h_pt2->GetMaximum());
+    line_pt2_rec->SetLineStyle(2); // Dashed line style
+    line_pt2_rec->SetLineColor(kRed); // Set same color as histogram for consistency
+    line_pt2_rec->Draw();
+    TLine *line_pt2max_rec = new TLine(Constants::RcutmaxPt2, h_pt2->GetMinimum(), Constants::RcutmaxPt2, h_pt2->GetMaximum());
+    line_pt2max_rec->SetLineStyle(2); // Dashed line style
+    line_pt2max_rec->SetLineColor(kRed); // Set same color as histogram for consistency
+    line_pt2max_rec->Draw();
+    TLegend *legendpt2 = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
+    legendpt2->AddEntry(monTrue.h_pt2, "True Data", "l");
+    legendpt2->AddEntry(h_pt2, "Sim Rec", "l");
+
+    MonC.cd(8);
+    h_phih->SetLineColor(kRed); // Set different color for monRec histogram
+    h_phih->Draw("hist ");
+    monTrue.h_phih->Draw("hist same ");
+    monTrue.h_phih->SetTitle("phih Distribution");
+    monTrue.h_phih->GetXaxis()->SetTitle("phi_{h} (degrees)");
+    TLegend *legendphi = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
+    legendphi->AddEntry(monTrue.h_phih, "True Data", "l");
+    legendphi->AddEntry(h_phih, "Sim Rec", "l");
+
+
+    MonC.Print((filename + ".pdf").c_str());
+
+   
+}
+
+
+
 
 void Monitoring::DrawHistogramsPos(const std::string targetName, const std::string filename){
     TCanvas MonC("Monitoring canvas", "Monitoring Histograms");
