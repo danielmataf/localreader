@@ -23,7 +23,7 @@ public:
     int getevtnbr();
 
 private:
-    std::optional<Event> ProcessEvent( hipo::event event, int eventNumber);
+    std::optional<Event> ProcessEvent( hipo::event event, int eventNumber, bool isSimulated);
     std::optional<Event> ProcessEventsWithPositivePions(hipo::event event, int eventNumber) ;
 
 
@@ -34,6 +34,7 @@ private:
     hipo::bank RECcher; //for both cherenkov detectors (15 and 16)
     hipo::bank HELbank;
     hipo::bank RECevt;
+    hipo::bank MCpart;
     //if other banks shoul be added, add here then propagate to ProcessEventsInFile in the .cpp
 
     hipo::reader reader;

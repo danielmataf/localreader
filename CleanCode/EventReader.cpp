@@ -125,15 +125,17 @@
 }
 
 
-    std::optional<Event> EventReader::ProcessEvent( hipo::event event, int eventNumber) {
+    std::optional<Event> EventReader::ProcessEvent( hipo::event event, int eventNumber, bool isSimulated ) {
         currentEvent = Event();
-         
+        
         bool el_detect = false;
         double max_energy_electron = 0.0; 
         event.getStructure(RECgen);
         event.getStructure(RECcalo);
         event.getStructure(RECcher);
         event.getStructure(HELbank);
+        event.getStructure(MCpart);
+        if (MCpart.getRows()==0){isSimulated = true;  }
         //RECgen.show();
         bool flag_el = false;
         int counter_el= 0.0;
@@ -205,15 +207,6 @@
                     //once pindex changes  cal values are reset
                 if (pindex == i) {
                     int cal_layer = RECcalo.getInt("layer", c_row);
-                        //e_pcal = RECcalo.getFloat("energy", pindex);
-                        //lu_pcal = RECcalo.getFloat("lu", pindex);
-                        //lv_pcal = RECcalo.getFloat("lv", pindex);
-                        //lw_pcal = RECcalo.getFloat("lw", pindex);
-                        //sector_pcal = RECcalo.getInt("sector", pindex);
-                        //x_cal = RECcalo.getFloat("x", pindex);
-                        //y_cal = RECcalo.getFloat("y", pindex);
-                        //z_cal = RECcalo.getFloat("z", pindex); //porbalby useless TBD
-
                     if (cal_layer == 1) {   //pcal
                         e_pcal = RECcalo.getFloat("energy", c_row);
                         lu_pcal = RECcalo.getFloat("lu", c_row);
@@ -271,6 +264,40 @@
             hel_evt = HELbank.getInt("helicity", 0);
             hel_raw = HELbank.getInt("helicityRaw", 0);
             AddHelInfo(hel_evt, hel_raw);
+            if (isSimulated == true){
+                for (int j = 0; j <MCpart.getRows(); ++i) {
+                    int pid = MCpart.getInt("pid", j);
+                    if (pid == Constants::POSITRON_PID) {
+                        return std::nullopt;    
+                    }
+                    if ( pid == 0){    //mass == Constants::default_mass ||
+                        continue;
+                    }
+                    double MCmass = GetMassID(pid);
+                    double MCtargetvz = MCpart.getFloat("vz", j);
+                    double MCtargetvx = MCpart.getFloat("vx", j);
+                    double MCtargetvy = MCpart.getFloat("vy", j);
+
+                    TLorentzVector MCmomentum;
+                    MCmomentum.SetPx(MCpart.getFloat("px", j));
+                    MCmomentum.SetPy(MCpart.getFloat("py", j));
+                    MCmomentum.SetPz(MCpart.getFloat("pz", j));
+                    TVector3 MCmomentum3D = MCmomentum.Vect();
+                    MCmomentum.SetVectM(MCmomentum3D, mass);
+                    if (pid == Constants::ELECTRON_PID) {
+    	                double  electron_status = MCpart.getInt("status", j);
+                        if ( electron_status < 0) {     //momentum.E() > max_energy_electron &&
+                            max_energy_electron = MCmomentum.E();
+                            ProcessParticle(MCmomentum , Constants::ELECTRON_PID,MCtargetvx,MCtargetvy,MCtargetvz, j );
+
+                        }
+                        el_detect = true;
+                    } else if (IsHadron(pid) && el_detect ==true) {
+                            ProcessParticle(momentum, pid,MCtargetvx,MCtargetvy,MCtargetvz,j ); 
+
+                    }
+                }
+            }
                 
             //}
             
@@ -295,6 +322,7 @@
 std::optional<Event> EventReader::ProcessEventsWithPositivePions(hipo::event event, int eventNumber) {
     currentEvent = Event();
     bool el_detect = false;
+    bool flag_RECgen = false;
     double max_energy_electron = 0.0; 
     event.getStructure(RECgen);
     //RECgen.show();
@@ -368,6 +396,7 @@ std::optional<Event> EventReader::ProcessEventsWithPositivePions(hipo::event eve
                 HELbank = factory.getSchema("HEL::online"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
                 //HELbank = factory.getSchema("REC::Event"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
                 //HELbank = factory.getSchema("HEL::flip"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
+                MCpart = factory.getSchema("MC::Particle");
 
                 std::cout << "Processing file: " << filename << std::endl;
             } 
@@ -379,7 +408,7 @@ std::optional<Event> EventReader::ProcessEventsWithPositivePions(hipo::event eve
                 //std::cout<<"starting event"<<std::endl;
                 
                 
-                return ProcessEvent(hipoEvent, 0);    
+                return ProcessEvent(hipoEvent, 0, false);    
                 //prevoius line was commented and replace by the next one for CLAScollNOV
                 //return ProcessEventsWithPositivePions(hipoEvent, 0);
             } 

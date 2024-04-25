@@ -243,7 +243,7 @@ int main() {
     int counter_elLD2 = 0;
     int counter_elSn= 0.0;
     int counter_elCxC= 0.0;
-    for (int i=0; i<90000; i++){
+    for (int i=0; i<100; i++){
             //std::optional<Event> 
             testLD2 = MC_LD2.ProcessEventsInFile();
             testCuSn = MC_CuSn.ProcessEventsInFile();
@@ -342,18 +342,8 @@ int main() {
                 //monSimLD.FillHistogramswCuts(eventsimLD2);
                 simrat.FillHistograms(eventsimLD2);  
                 simrat2.FillHistograms(eventsimLD2);
-
             }
-            if (simCuSn.has_value()) {
-                Event eventsimCuSn = simCuSn.value();
-                eventsimCuSn.SetTargetType(1);
-                eventsimCuSn.calcAll();
-                //monSimSn.FillHistograms(eventsimCuSn);
-                monSimSn.FillHistogramsNoCuts(eventsimCuSn);
-                //monSimSn.FillHistogramswCuts(eventsimCuSn);
-                simrat.FillHistograms(eventsimCuSn);
-                simrat2.FillHistograms(eventsimCuSn);
-            }
+            
 
            
            //if (test.has_value()==false) continue;
