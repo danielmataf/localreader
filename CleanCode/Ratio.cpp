@@ -20,6 +20,9 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     targetName(targetName),
     ratMatrix(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
     errorMatrix(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
+    ratMatrixbis(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
+    errorMatrixbis(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
+
     //histos after passcuthadrons 
     //h_nu_z_pt2D(new TH3F("nu,z,pt2,D", "histo nu,z,pt2 for D", Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu , Constants::Rbin_z ,Constants::RcutminZ, Constants::RcutmaxZ, Constants::Rbin_pt2 , Constants::RcutminPt2, Constants::RcutmaxPt2  )),
     //h_nu_z_pt2A(new TH3F("nu,z,pt2,A", "histo nu,z,pt2 for A", Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu , Constants::Rbin_z ,Constants::RcutminZ, Constants::RcutmaxZ, Constants::Rbin_pt2 , Constants::RcutminPt2, Constants::RcutmaxPt2  )),
@@ -77,21 +80,21 @@ void Ratio::FillHistograms(const Event& event) {
         counter_elSn++; //counter for only electrons for z and pt
         //here change the else if to just else in order to have a generic target 
         h_nuA->Fill(event.Getnu());
-        if (targetName == "C1"){
-            h_nuC1->Fill(event.Getnu());
-        }
-        else if (targetName == "C2"){
-            h_nuC2->Fill(event.Getnu());
-        }
+        //if (targetName == "C1"){
+        //    h_nuC1->Fill(event.Getnu());
+        //}
+        //else if (targetName == "C2"){
+        //    h_nuC2->Fill(event.Getnu());
+        //}
         for (const Particle& hadron : event.GetHadrons()) {
 
 
             if (cuta.PassCutsHadrons(hadron)==true){
                 h_nu_z_pt2A->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
-                //if targetName == "C1" || targetName == "C2" {
+                //if (targetName == "C1" ) {
                 //    h_nu_z_pt2C1->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 //}
-                //else if targetName == "C2" {
+                //else if (targetName == "C2") {
                 //    h_nu_z_pt2C2->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 //}
             //std::cout << "nimporte quoi N" << event.Getnu()<< ";" << hadron.Getz()<<","<< hadron.Getpt2() <<std::endl;
@@ -150,30 +153,42 @@ void Ratio::calcR(){
     }   
 }
 
+TH1F* Ratio::getHNuA() {
+    return h_nuA;
+}
+TH3F* Ratio::getHNuzptA() {
+    return h_nu_z_pt2A;
+}
 
-
-void Ratio::calcRcarbon(){
+void Ratio::calcRcarbon( Ratio& ratioOther){
     int graph_pointnb = 0;
-    //IN 3d HISTO x=nu; y= z; z=pt2;
+    //TH1D* h_nuA2 = dynamic_cast<TH1D*>(ratioOther.h_nuA);
+    //TH1D* h_nu_z_pt2A2 = dynamic_cast<TH1D*>(ratioOther.h_nu_z_pt2A);
+    TH1F* h_nuA2 = ratioOther.getHNuA();
+    TH3F* h_nu_z_pt2A2 = ratioOther.getHNuzptA();
+    //IN 3d HISTO x=nu; y= z; z=pt2;    
     int counter_3D = 0;
-    int numBinsX = h_nu_z_pt2C2->GetNbinsX();    //same bins 4 Deut and A 
-    int numBinsY = h_nu_z_pt2C2->GetNbinsY(); 
-    int numBinsZ = h_nu_z_pt2C2->GetNbinsZ(); 
+    int numBinsX = h_nu_z_pt2A->GetNbinsX();    //same bins 4 Deut and A 
+    int numBinsY = h_nu_z_pt2A->GetNbinsY(); 
+    int numBinsZ = h_nu_z_pt2A->GetNbinsZ(); 
     for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {  
-        double val_nuelC2 = h_nuC2->GetBinContent(Xbin); 
-        //std :: cout << "val_nuelD = " << val_nuelD << std::endl;  
-        double val_nuelC1 = h_nuC1->GetBinContent(Xbin); 
+        double val_nuelC2 = h_nuA2->GetBinContent(Xbin); 
+        double val_nuelC1 = h_nuA->GetBinContent(Xbin); 
         for (int Ybin = 1; Ybin <= numBinsY; Ybin++ ){
             for (int Zbin = 1; Zbin <= numBinsZ; Zbin++ ){
                 // loop with 125 values (5 per axis)
-                double valC2 = h_nu_z_pt2C2->GetBinContent(Xbin,Ybin,Zbin);   //seems to properly recover value 
-                double valC1 = h_nu_z_pt2C1->GetBinContent(Xbin,Ybin,Zbin);
+                double valC2 = h_nu_z_pt2A2->GetBinContent(Xbin,Ybin,Zbin);   //seems to properly recover value 
+                double valC1 = h_nu_z_pt2A->GetBinContent(Xbin,Ybin,Zbin);
                 double interm1nu = (val_nuelC1 > 0) ? valC1 / val_nuelC1 : 0.0;
                 double interm2nu = (val_nuelC2 > 0) ? valC2 / val_nuelC2 : 0.0;
                 double ratvalue  = (interm2nu > 0) ?interm1nu/interm2nu : 0.0;
                 double raterr = ratvalue * sqrt(1/valC1 + 1/valC2 + 1/val_nuelC1 + 1/val_nuelC2);
-                ratMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
-                errorMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
+                ratMatrixbis[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
+                errorMatrixbis[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
+
+               //!!!!
+                //This doesnt seem to be working as planned. Try a function that plot all the 4 histos used here to see if we are properly recovering them from the other class
+
             }
         }
     }   
@@ -420,7 +435,40 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird, Ratio& ratiosimone
     }
 }
 
+void Ratio::multiplotRbis() {
+    for (int x = 0; x < Rbin; ++x) {
 
+        double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "sameTargetR_nu" + std::to_string(nuValue) + ".pdf";
+        TCanvas canvas("c", "Multiplot R", 1200, 800);
+        canvas.Divide(3, 2); 
+        for (int z = 0; z < Rbin; ++z) {
+            double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
+            canvas.cd(z + 1);
+            TGraphErrors *graph = new TGraphErrors();
+            for (int y = 0; y < Rbin; ++y) {
+                double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
+                double value = ratMatrixbis[x][y][z];
+                double error = errorMatrixbis[x][y][z];
+                graph->SetPoint(y, zValue, value);
+                graph->SetPointError(y, 0.0, error); 
+            }
+            graph->SetTitle(("R vs z, pt2=" + std::to_string(pt2Value)).c_str());
+            graph->GetXaxis()->SetTitle("z");
+            graph->GetYaxis()->SetTitle("R");
+            graph->SetMarkerStyle(20);
+            graph->SetMarkerStyle(20);
+            graph->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
+            graph->Draw("AP");
+            
+            TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+            line->Draw("same");
+        }
+
+        canvas.SaveAs(pdfFileName.c_str());
+    }
+}
 
 void Ratio::PlotRatio(const std::string filename) {
     TCanvas Rcanv("Ratio canvas", "Ratio Plots");

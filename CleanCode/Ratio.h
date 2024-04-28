@@ -27,13 +27,17 @@ public:
     void FillHistograms(const Event& );
     void WriteHistos(const std::string );
     void calcR();
-    void calcRcarbon() ;        //new
+    //void calcRcarbon() ;        //new
+    void calcRcarbon(Ratio&) ;        //new
     void PlotRatio(const std::string );
     void writeMatrixToFile(const std::string& );
     void calculateMRat(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
     void multiplotR();
     void multiplotR( Ratio& , Ratio&);
     void multiplotR( Ratio& , Ratio& , Ratio& ,   Ratio& );
+    void multiplotRbis();
+    TH1F* getHNuA() ;
+    TH3F* getHNuzptA() ;
     
     std::vector<std::vector<std::vector<double>>> getRatMatrix() const{
         return ratMatrix;
@@ -41,7 +45,13 @@ public:
     std::vector<std::vector<std::vector<double>>> getErrorMatrix() const{
         return errorMatrix;
     }
-    
+    std::vector<std::vector<std::vector<double>>> getRatMatrixbis() const{
+        return ratMatrixbis;
+    }
+    std::vector<std::vector<std::vector<double>>> getErrorMatrixbis() const{
+        return errorMatrixbis;
+    }
+
 
 
 
@@ -151,6 +161,10 @@ private:
     //Storage of points (and errors)
     std::vector<std::vector<std::vector<double>>> ratMatrix;    //three vectors for 3D matrix
     std::vector<std::vector<std::vector<double>>> errorMatrix;
+    
+    std::vector<std::vector<std::vector<double>>> ratMatrixbis;    //three vectors for 3D matrix
+    std::vector<std::vector<std::vector<double>>> errorMatrixbis;
+
 
     //TFile* outputFile;
     CutSet cutsD;

@@ -21,11 +21,14 @@ public:
     void Fill_R_Histograms(const Event& event, const std::string target) ;
     void FillHistogramsNoCuts( const Event&);
     void FillHistogramswCuts(const Event& );
+    void FillHistogramsNoCutsMC(const Event& ); 
+
 
     void FillMomentumHistograms(const Event& );
 
     void DrawHistograms(const std::string);
     void DrawHistTrueandSIM(Monitoring& , const std::string ) ;
+    //void DrawHistTrueRECandMC(const std::string);
     void DrawR_Histograms(const std::string filename);
     void DrawHistogramsPos(const std::string ,const std::string );
 
@@ -102,6 +105,18 @@ private:
     TH2F *h_xQ2;    //= new TH2F("xQ2", "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
     TH2F *h_xQ2pos; //= new TH2F("xQ2pos", "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
     
+
+    //Adding simulation MC histos for comparison (unfolding )
+    TH1F *h_Q2MC; // = new TH1F(("Q2_" + targetName).c_str(), "Q2", nubin, QminX , QmaxX);
+    TH1F *h_xbMC; //= new TH1F("xb", "xb", nubin, xminX, xmaxX) ;
+    TH1F *h_yMC;  //= new TH1F ("y" , "y" , nubin, yminX, ymaxX) ;
+    TH1F *h_nuMC; //= new TH1F("nu", "nu", nubin,numinX,numaxX) ;
+    TH1F *h_W2MC; //= new TH1F("W2", "W2", nubin, WminX, 30) ;
+    TH1F *h_zMC;  //= new TH1F("z", "z", nubin, zminX, zmaxX) ;
+    TH1F *h_pt2MC;    //= new TH1F("pt2", "pt2", nubin, pt2minX, pt2maxX) ;
+    TH1F *h_phihMC;   //= new TH1F("phih", "phih", nubin, phihminX, phihmaxX) ;
+    TH1F *h_vertexZMC;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
+
     //momentum histograms
     TH1F *h_px_el;  //= new TH1F("px_ele", "px_ele", 100, 0, 10) ;
     TH1F *h_py_el;  //= new TH1F("py_ele", "py_ele", 100, 0, 10) ;

@@ -9,7 +9,8 @@
 #include "Particle.h"
 #include "constants.h"
     
-Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0, 0, 0.0) {
+Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0, 0, 0.0),
+                 MCelectron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0, 0, 0.0){
     m_D = (Constants::MASS_NEUTRON + Constants::MASS_PROTON)/2 ;
 
 }
@@ -20,10 +21,19 @@ void Event::AddElectron(const TLorentzVector& electronMomentum, int row, double 
         
 }
 
+void Event::AddMCElectron(const TLorentzVector& electronMomentum, int row, double vertexZ) {
+        MCelectron = Particle(electronMomentum, 11 , row, vertexZ);  
+        MCelectron.SetMomentum(electronMomentum);
+        
+}
 
 
-void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid, int row, double vertexZ) {
-    hadrons.push_back(Particle(hadronMomentum,  pid, row, vertexZ));
+void Event::AddHadron(const TLorentzVector& MChadronMomentum, int MCpid, int MCrow, double MCvertexZ) {
+    hadrons.push_back(Particle(MChadronMomentum,  MCpid, MCrow, MCvertexZ));
+}
+
+void Event::AddMCHadron(const TLorentzVector& MChadronMomentum, int MCpid, int MCrow, double MCvertexZ) {
+    MChadrons.push_back(Particle(MChadronMomentum,  MCpid, MCrow, MCvertexZ));
 }
 
 int Event::GetEventIndex() const {
@@ -33,7 +43,9 @@ int Event::GetEventIndex() const {
 const std::vector<Particle>& Event::GetHadrons() const {
     return hadrons;
 }
-
+const std::vector<Particle>& Event::GetMCHadrons() const {
+    return MChadrons;
+}
 const Particle& Event::GetElectron() const {
     return electron;
 }
@@ -50,6 +62,9 @@ void Event::SetVertexY(double vertexy){
 
 double Event::GetVz()const {
     return vz;
+}
+double Event::GetVzMC()const {
+    return MCvz;
 }
 
 double Event::GetVx()const {
@@ -159,6 +174,17 @@ int Event::CalcKinematics(){
     return 0;
 
 }
+int Event::CalcMCKinematics(){
+    double theta_eMC = (Constants::elBeam.Vect().Dot(MCelectron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * MCelectron.GetMomentum().Vect().Mag()));
+    MCQ2 = 4 * Constants::elBeam.E() * MCelectron.GetMomentum().E() * pow(sin(theta_eMC / 2), 2);
+    MCnu  = Constants::elBeam.E() - MCelectron.GetMomentum().E();
+    MCy = MCnu / Constants::elBeam.E(); 
+    MCw2 =  m_D* m_D + 2 * m_D * MCnu - Q2;
+    //W = sqrt(Mn*Mn + 2*Mn*gamnu - Q2);
+    MCxb = Q2 / (2 * m_D * MCnu);
+    return 0;
+
+}
 
 //void SetKinVariables(double , double  , double , double, double);
 
@@ -173,9 +199,20 @@ void Event::calcAll(){
     }
 }
 
+void Event::calcMCAll(){
+    CalcMCKinematics( );
+    for (Particle& MChadron : MChadrons) {
+        MChadron.CalcMCHadronKin(MCelectron.GetMomentum(), MChadron.GetMomentum());
+    }
+}
+
 double Event::GetQ2() const {
         return Q2;
 }
+double Event::GetQ2MC() const {
+        return MCQ2;
+}
+
 double Event::Getnu() const {
     return nu;
 }
@@ -188,6 +225,19 @@ double Event::GetW2() const{
 double Event::Getxb() const{
     return xb;
 }
+double Event::GetnuMC() const {
+    return MCnu   ;
+}
+double Event::GetyMC() const {
+    return MCy;
+} 
+double Event::GetW2MC() const{
+    return MCw2;
+}
+double Event::GetxbMC() const{
+    return MCxb;
+}
+
 //double Event::Getz()     const {
 //    return hadron.GetZ(); 
 //}

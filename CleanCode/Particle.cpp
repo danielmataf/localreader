@@ -93,6 +93,17 @@
         return phih; 
     }
 
+    double Particle::GetzMC()     const {
+        return MCz; 
+    }
+    double Particle::Getpt2MC()   const {
+        return MCpt2; 
+    }
+    double Particle::GetphihMC()  const {
+        return MCphih; 
+    }
+
+
     void Particle::SetTheta(double t) {
         theta = t;
     }
@@ -161,6 +172,20 @@
         //}
         //double acos_angle_norm_deg = acos(angle_norm) * 180.0 / Constants::PI;
         phih = (sign < 0) ? acos(angle_norm) * 180.0 / Constants::PI + 180 : acos(angle_norm) * -180.0 / Constants::PI + 180;
+        //consider BSA 4 phih TBD
+        return 0;
+    }
+
+    int Particle::CalcMCHadronKin(TLorentzVector vec1 ,TLorentzVector vec2){
+        TLorentzVector vipho = Constants::elBeam - vec1; 
+        TVector3 n1 = vipho.Vect().Cross(Constants::elBeam.Vect());
+        TVector3 n2 = vipho.Vect().Cross(vec2.Vect());
+        TVector3 n3 = n1.Cross(n2);
+        double angle_norm = ( n1.Dot(n2) ) / ( n1.Mag()*n2.Mag() );
+        double sign = n3.Dot(vipho.Vect()); 
+        MCz=  (vec2.E())/(       Constants::elBeam.E() - vec1.E() ); // 
+        MCpt2 =   pow(  (n2.Mag() )/ (vipho.Vect().Mag() )  ,    2);
+        MCphih =  (sign < 0) ? acos(angle_norm) * 180.0 / Constants::PI + 180 : acos(angle_norm) * -180.0 / Constants::PI + 180;
         //consider BSA 4 phih TBD
         return 0;
     }

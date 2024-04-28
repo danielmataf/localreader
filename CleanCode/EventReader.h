@@ -11,6 +11,7 @@ class EventReader {
 public:
     EventReader(const std::vector<std::string>& );
     void ProcessParticle(const TLorentzVector& , int ,double, double, double, int );
+    void ProcessMCParticle(const TLorentzVector& , int ,double, double, double, int );
     void ProcessParticleMomentum(int, double , double , double );
     void AddCaloInfo(int,  int, double, double,double,double,double,double); 
     void AddCaloXYZ(int, double , double , double );

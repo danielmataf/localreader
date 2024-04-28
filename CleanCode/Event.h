@@ -19,7 +19,9 @@ class Event {
 public:
     Event ();
     void AddElectron(const TLorentzVector& , int,double); 
+    void AddMCElectron(const TLorentzVector& , int,double); 
     void AddHadron(const TLorentzVector& , int, int,double ); 
+    void AddMCHadron(const TLorentzVector& , int, int,double );
     int GetEventIndex() const ;
     void SetVertexZ(double );
     void SetVertexX(double );
@@ -43,20 +45,32 @@ public:
      void CalcPol(Particle&);
 
     double GetVz()const ;
+    double GetVzMC()const ;
     double GetVx()const ;
     double GetVy()const ;
 
     const std::vector<Particle>& GetHadrons() const;
+    const std::vector<Particle>& GetMCHadrons() const;
+
     const Particle& GetElectron() const;
     int CalcKinematics( );
+    int CalcMCKinematics( );
+
     void Print();
     void calcAll();
+    void calcMCAll();
     double GetQ2() const ;
-    double Getnu()  const ;
-    double Gety() const ;
-    double GetW2() const ;
-    double Getxb() const ;
+    double GetQ2MC() const ;
+
     
+    double Getnu()  const ;
+        double GetnuMC()  const ;
+    double Gety() const ;
+        double GetyMC() const ;
+    double GetW2() const ;
+        double GetW2MC() const ;
+    double Getxb() const ;
+        double GetxbMC() const ;
     //Getters of CALO data (only available for electrons)
     double GetCalSector( )const;
     double Getlu( )const;
@@ -97,10 +111,16 @@ private:
     int target_type;
      
     Particle electron;
+    Particle MCelectron;
     std::vector<Particle> hadrons; 
+    std::vector<Particle> MChadrons; 
+
     double Q2=0,nu=0,w2=0,y=0,xb=0;
+    double MCQ2=0,MCnu=0,MCw2=0,MCy=0,MCxb=0;
+
     double m_D, m_Sn, m_Cu; //GeV/c^2
     double vz=0;  //vertex of the event (?) (should be the same every time)
+    double MCvz=0;
     double vx;
     double vy;
     double px_el, py_el, pz_el;

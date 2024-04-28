@@ -35,9 +35,12 @@ public:
     double Gety() const ;
     double GetW2() const ;
     double Getxb() const ;
-    double Getz()    const;
-    double Getpt2()  const;
-    double Getphih() const;
+        double Getz()    const;
+    double GetzMC()    const;
+        double Getpt2()  const;
+    double Getpt2MC()  const;
+        double Getphih() const;
+    double GetphihMC() const;
     double GetTheta() const;
     double GetPhi() const;
     double GetVx() const; 
@@ -55,6 +58,7 @@ public:
 
 
     int CalcHadronKin(TLorentzVector,TLorentzVector);
+    int CalcMCHadronKin(TLorentzVector,TLorentzVector);
 
 private:
     TLorentzVector momentum;
@@ -62,6 +66,8 @@ private:
     int eventIndex;
     int pid; 
     double z=0, pt2=0, phih=0;
+    double MCz=0, MCpt2=0, MCphih=0;
+
     double Q2=0, nu=0, w2=0 ,y=0 ,xb=0;
     
     double vx, vy ;

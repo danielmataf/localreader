@@ -47,6 +47,25 @@
         
     }
 
+    void EventReader::ProcessMCParticle(const TLorentzVector& MCmomentum, int MCpid, double MCvertx,double MCverty,double MCvertz, int MCrow ) {
+        if (MCpid == Constants::ELECTRON_PID) {
+            currentEvent.AddMCElectron(MCmomentum, MCrow, MCvertz);
+            //currentEvent.SetVertexZ(MCvertz);
+            //currentEvent.SetVertexX(MCvertx);
+            //currentEvent.SetVertexY(MCverty);
+                //maybe we need ro create SetMCvertex functions
+            //currentEvent.SetParticleRow(row);
+            
+        } else if (IsHadron(MCpid)) {       //no need to change this
+            currentEvent.AddMCHadron(MCmomentum, MCpid,MCrow, MCvertz);
+            for (const Particle& MChadron : currentEvent.GetMCHadrons()) {
+                //nothing here apparently
+            }
+        }
+        
+    }
+
+
     void EventReader::ProcessParticleMomentum(int pid, double pxValue, double pyValue, double pzValue) {
         if (pid == Constants::ELECTRON_PID) {
             //currentEvent.SetPx(pxValue);
@@ -135,7 +154,8 @@
         event.getStructure(RECcher);
         event.getStructure(HELbank);
         event.getStructure(MCpart);
-        if (MCpart.getRows()==0){isSimulated = true;  }
+
+        if (MCpart.getRows()!=0){isSimulated = true;  }
         //RECgen.show();
         bool flag_el = false;
         int counter_el= 0.0;
@@ -265,14 +285,8 @@
             hel_raw = HELbank.getInt("helicityRaw", 0);
             AddHelInfo(hel_evt, hel_raw);
             if (isSimulated == true){
-                for (int j = 0; j <MCpart.getRows(); ++i) {
-                    int pid = MCpart.getInt("pid", j);
-                    if (pid == Constants::POSITRON_PID) {
-                        return std::nullopt;    
-                    }
-                    if ( pid == 0){    //mass == Constants::default_mass ||
-                        continue;
-                    }
+                //std::cout << "MCpart rows: " << MCpart.getRows() << std::endl;
+                for (int j = 0; j <MCpart.getRows(); ++j) {
                     double MCmass = GetMassID(pid);
                     double MCtargetvz = MCpart.getFloat("vz", j);
                     double MCtargetvx = MCpart.getFloat("vx", j);
@@ -288,12 +302,12 @@
     	                double  electron_status = MCpart.getInt("status", j);
                         if ( electron_status < 0) {     //momentum.E() > max_energy_electron &&
                             max_energy_electron = MCmomentum.E();
-                            ProcessParticle(MCmomentum , Constants::ELECTRON_PID,MCtargetvx,MCtargetvy,MCtargetvz, j );
+                            ProcessMCParticle(MCmomentum , Constants::ELECTRON_PID,MCtargetvx,MCtargetvy,MCtargetvz, j );
 
                         }
                         el_detect = true;
                     } else if (IsHadron(pid) && el_detect ==true) {
-                            ProcessParticle(momentum, pid,MCtargetvx,MCtargetvy,MCtargetvz,j ); 
+                            ProcessMCParticle(momentum, pid,MCtargetvx,MCtargetvy,MCtargetvz,j ); 
 
                     }
                 }

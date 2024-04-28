@@ -35,6 +35,17 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_vertexZ_pi(new TH1F(("targetVz_pi_" + targetName).c_str(), "vertex4target", 100, -20, 10)),
     h_DeltaVz(new TH1F(("DeltaVz_" + targetName).c_str(), "DeltaVz", 100, -5, 5)),
     
+    h_Q2MC(new TH1F(("Q2_MC" + targetName).c_str(), "Q2MC", nubin, QminX, QmaxX)),
+    h_xbMC(new TH1F(("xb_MC" + targetName).c_str(), "xbMC", nubin, xminX, xmaxX)),
+    h_yMC(new TH1F(("y_MC" + targetName).c_str(), "yMC", nubin, yminX, ymaxX)),
+    h_nuMC(new TH1F(("nu_MC" + targetName).c_str(), "nuMC", nubin, numinX, numaxX)),
+    h_W2MC(new TH1F(("W2_MC" + targetName).c_str(), "W2MC", nubin, WminX, WmaxX)),
+    h_zMC(new TH1F(("z_MC" + targetName).c_str(), "zMC", nubin, zminX, zmaxX)),
+    h_pt2MC(new TH1F(("pt2_MC" + targetName).c_str(), "pt2MC", nubin, pt2minX, pt2maxX)),
+    h_phihMC(new TH1F(("phih_MC" + targetName).c_str(), "phihMC", nubin, phihminX, phihmaxX)),
+    h_vertexZMC(new TH1F(("targetVz_MC" + targetName).c_str(), "vertex4targetMC", 100, -20, 10)),
+
+
     h_pid(new TH1F(("pid_" + targetName).c_str(), "pid", 100, -250, 250)),
     h_xQ2(new TH2F(("xQ2_" + targetName).c_str(), "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
     h_xQ2pos(new TH2F(("xQ2pos_" + targetName).c_str(), "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
@@ -229,6 +240,31 @@ void Monitoring::FillHistograms(const Event& event) {
         }
     }
  //add histos 
+
+}
+
+
+void Monitoring::FillHistogramsNoCutsMC(const Event& event) {
+    h_Q2MC->Fill(event.GetQ2MC());
+    h_xbMC->Fill(event.GetxbMC());
+    h_yMC->Fill(event.GetyMC());
+    h_nuMC->Fill(event.GetnuMC());
+    h_W2MC->Fill(event.GetW2MC());
+    h_vertexZMC->Fill(event.GetVzMC());
+    for (const Particle& MChadron : event.GetMCHadrons()) {
+        if (MChadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
+        h_zMC->Fill(MChadron.GetzMC());
+        h_pt2MC->Fill(MChadron.Getpt2MC());
+        h_phihMC->Fill(MChadron.GetphihMC());
+        
+        
+        //
+        //std::cout << " kinhad " << hadron.Getz()<<" , " << hadron.Getpt2()<<" , " << hadron.Getphih()<<std::endl;  
+        //
+        }
+    }
+
+
 
 }
 
@@ -480,9 +516,13 @@ void Monitoring::DrawHistTrueandSIM(Monitoring& monTrue  , const std::string fil
 
      MonC.cd(1);
     h_Q2->SetLineColor(kRed); // Set different color for monRec histogram
-    h_Q2->Draw("hist ");
+    h_Q2MC->Draw("hist ");
 
     monTrue.h_Q2->Draw("hist same");
+
+    h_Q2->Draw("hist same");
+    h_Q2MC->SetLineColor(kGreen);
+    
     monTrue.h_Q2->SetTitle("Q2 Distribution");
     monTrue.h_Q2->GetXaxis()->SetTitle("Q^{2} (GeV^{2})");
     monTrue.h_Q2->GetXaxis()->SetRangeUser(1, 5);
@@ -496,12 +536,14 @@ void Monitoring::DrawHistTrueandSIM(Monitoring& monTrue  , const std::string fil
     TLine *line_Q2_rec = new TLine(Constants::RcutminQ, h_Q2->GetMinimum(), Constants::RcutminQ, h_Q2->GetMaximum());
     line_Q2_rec->SetLineStyle(2); // Dashed line style
     line_Q2_rec->SetLineColor(kRed); // Set same color as histogram for consistency
+    
     line_Q2_rec->Draw();
 
     // Create legend
     TLegend *legend = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
     legend->AddEntry(monTrue.h_Q2, "True Data", "l");
     legend->AddEntry(h_Q2, "Sim Rec", "l");
+    legend->AddEntry (h_Q2MC, "Sim MC", "l");
     legend->SetBorderSize(0); // Remove legend border
     legend->Draw();
 
@@ -509,8 +551,10 @@ void Monitoring::DrawHistTrueandSIM(Monitoring& monTrue  , const std::string fil
     //we should add the same for the other histograms
 
     MonC.cd(2);
+    h_xbMC->Draw("hist ");
     h_xb->SetLineColor(kRed); // Set different color for monRec histogram
-    h_xb->Draw("hist");
+    h_xbMC->SetLineColor(kGreen);
+    h_xb->Draw("hist same");
     monTrue.h_xb->Draw("hist same");
     monTrue.h_xb->SetTitle("xb Distribution");
     monTrue.h_xb->GetXaxis()->SetTitle("x_{B}");
@@ -519,10 +563,13 @@ void Monitoring::DrawHistTrueandSIM(Monitoring& monTrue  , const std::string fil
     TLegend *legendx = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
     legendx->AddEntry(monTrue.h_xb, "True Data", "l");
     legendx->AddEntry(h_xb, "Sim Rec", "l");
+    legendx->AddEntry (h_xbMC, "Sim MC", "l");
 
     MonC.cd(3);
+    h_yMC->Draw("hist ");
+    h_yMC->SetLineColor(kGreen);
     h_y->SetLineColor(kRed); // Set different color for monRec histogram
-    h_y->Draw("hist ");
+    h_y->Draw("hist same ");
     monTrue.h_y->Draw("hist same");
     monTrue.h_y->SetTitle("y Distribution");
     monTrue.h_y->GetXaxis()->SetTitle("y");
@@ -536,10 +583,13 @@ void Monitoring::DrawHistTrueandSIM(Monitoring& monTrue  , const std::string fil
     TLegend *legendy = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
     legendy->AddEntry(monTrue.h_y, "True Data", "l");
     legendy->AddEntry(h_y, "Sim Rec", "l");
+    legendy->AddEntry (h_yMC, "Sim MC", "l");
 
     MonC.cd(4);
+    h_nuMC->Draw("hist ");
+    h_nuMC->SetLineColor(kGreen);
     h_nu->SetLineColor(kRed); // Set different color for monRec histogram
-    h_nu->Draw("hist ");
+    h_nu->Draw("hist same ");
     monTrue.h_nu->Draw("hist same");
     monTrue.h_nu->SetTitle("nu Distribution");
     monTrue.h_nu->GetXaxis()->SetTitle("nu (GeV)"); 
@@ -554,10 +604,13 @@ void Monitoring::DrawHistTrueandSIM(Monitoring& monTrue  , const std::string fil
     TLegend *legendnu = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
     legendnu->AddEntry(monTrue.h_nu, "True Data", "l");
     legendnu->AddEntry(h_nu, "Sim Rec", "l");
+    legendnu->AddEntry (h_nuMC, "Sim MC", "l");
 
     MonC.cd(5);
+    h_W2MC->Draw("hist ");
+    h_W2MC->SetLineColor(kGreen);
     h_W2->SetLineColor(kRed); // Set different color for monRec histogram
-    h_W2->Draw("hist ");
+    h_W2->Draw("hist same");
     monTrue.h_W2->Draw("hist same");
     monTrue.h_W2->SetTitle("W^{2} Distribution");
     monTrue.h_W2->GetXaxis()->SetTitle("W^{2} (GeV^{2})");
@@ -570,10 +623,13 @@ void Monitoring::DrawHistTrueandSIM(Monitoring& monTrue  , const std::string fil
     TLegend *legendW2 = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
     legendW2->AddEntry(monTrue.h_W2, "True Data", "l");
     legendW2->AddEntry(h_W2, "Sim Rec", "l");
+    legendW2->AddEntry (h_W2MC, "Sim MC", "l");
 
     MonC.cd(6);
+    h_zMC->Draw("hist ");
+    h_zMC->SetLineColor(kGreen);
     h_z->SetLineColor(kRed); // Set different color for monRec histogram
-    h_z->Draw("hist ");
+    h_z->Draw("hist same ");
     monTrue.h_z->Draw("hist same");
     monTrue.h_z->SetTitle("z Distribution");
     monTrue.h_z->GetXaxis()->SetTitle("z");
@@ -594,10 +650,14 @@ void Monitoring::DrawHistTrueandSIM(Monitoring& monTrue  , const std::string fil
     TLegend *legendz = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
     legendz->AddEntry(monTrue.h_z, "True Data", "l");
     legendz->AddEntry(h_z, "Sim Rec", "l");
+    legendz->AddEntry (h_zMC, "Sim MC", "l");
+
 
     MonC.cd(7);
+    h_pt2MC->Draw("hist ");
+    h_pt2MC->SetLineColor(kGreen);
     h_pt2->SetLineColor(kRed); // Set different color for monRec histogram
-    h_pt2->Draw("hist ");
+    h_pt2->Draw("hist same");
     monTrue.h_pt2->Draw("hist same");
     monTrue.h_pt2->SetTitle("pt2 Distribution");
     monTrue.h_pt2->GetXaxis()->SetTitle("p_{t}^{2} (GeV^{2})");
@@ -618,16 +678,32 @@ void Monitoring::DrawHistTrueandSIM(Monitoring& monTrue  , const std::string fil
     TLegend *legendpt2 = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
     legendpt2->AddEntry(monTrue.h_pt2, "True Data", "l");
     legendpt2->AddEntry(h_pt2, "Sim Rec", "l");
+    legendpt2->AddEntry (h_pt2MC, "Sim MC", "l");
 
     MonC.cd(8);
+    h_phihMC->Draw("hist ");
+    h_phihMC->SetLineColor(kGreen);
     h_phih->SetLineColor(kRed); // Set different color for monRec histogram
-    h_phih->Draw("hist ");
+    h_phih->Draw("hist same ");
     monTrue.h_phih->Draw("hist same ");
     monTrue.h_phih->SetTitle("phih Distribution");
     monTrue.h_phih->GetXaxis()->SetTitle("phi_{h} (degrees)");
     TLegend *legendphi = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
     legendphi->AddEntry(monTrue.h_phih, "True Data", "l");
     legendphi->AddEntry(h_phih, "Sim Rec", "l");
+    legendphi->AddEntry (h_phihMC, "Sim MC", "l");
+
+MonC.cd(9);
+    h_vertexZMC->Draw("hist ");
+    h_vertexZMC->SetLineColor(kGreen);
+    h_vertexZ->SetLineColor(kRed); // Set different color for monRec histogram
+    h_vertexZ->Draw("hist same");
+    monTrue.h_vertexZ->Draw("hist same");
+    h_vertexZ->SetTitle("Vertex Z Distribution");
+    TLegend *legendvertexZ = new TLegend(0.7, 0.7, 0.9, 0.9); // Position of the legend
+    legendvertexZ->AddEntry(monTrue.h_vertexZ, "True Data", "l");
+    legendvertexZ->AddEntry(h_vertexZ, "Sim Rec", "l");
+    legendvertexZ->AddEntry (h_vertexZMC, "Sim MC", "l");
 
 
     MonC.Print((filename + ".pdf").c_str());
