@@ -44,6 +44,11 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_pt2MC(new TH1F(("pt2_MC" + targetName).c_str(), "pt2MC", nubin, pt2minX, pt2maxX)),
     h_phihMC(new TH1F(("phih_MC" + targetName).c_str(), "phihMC", nubin, phihminX, phihmaxX)),
     h_vertexZMC(new TH1F(("targetVz_MC" + targetName).c_str(), "vertex4targetMC", 100, -20, 10)),
+    h_thetaelectron (new TH1F(( "thetaelectron_" + targetName).c_str(), "thetaelectron", 500, 0, 1)),
+    h_rapport (new TH1F(( " rapport_beam_el" + targetName).c_str(), "rapport_beam_el", 500, 0, 1)),
+    h_thetaelectronMC (new TH1F(( "thetaelectron_MC" + targetName).c_str(), "thetaelectronMC", 500, 0, 1)),
+    h_rapportMC (new TH1F(( " rapport_beam_elMC" + targetName).c_str(), "rapport_beam_elMC", 500, 0, 1)),
+
 
 
     h_pid(new TH1F(("pid_" + targetName).c_str(), "pid", 100, -250, 250)),
@@ -251,6 +256,8 @@ void Monitoring::FillHistogramsNoCutsMC(const Event& event) {
     h_nuMC->Fill(event.GetnuMC());
     h_W2MC->Fill(event.GetW2MC());
     h_vertexZMC->Fill(event.GetVzMC());
+    h_thetaelectronMC->Fill(event.GetThetaElectronMC());
+    h_rapportMC->Fill(event.GetAcosyadaMC());
     for (const Particle& MChadron : event.GetMCHadrons()) {
         if (MChadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
         h_zMC->Fill(MChadron.GetzMC());
@@ -282,6 +289,8 @@ void Monitoring::FillHistogramsNoCuts(const Event& event) {
     h_lv->Fill(event.Getlv());
     h_lw->Fill(event.Getlw());
     h_epcal->Fill(event.GetEpcal());
+    h_thetaelectron->Fill(event.GetThetaElectron());
+    h_rapport->Fill(event.GetAcosyada());
     //h_eecalin->Fill(event.GetEcalin());
     //h_epcalout->Fill(event.GetEcalout());
     //h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
@@ -506,6 +515,33 @@ void Monitoring::DrawHistograms(const std::string filename) {
     MonC.Print((filename + ".pdf").c_str());
 }
 
+
+void Monitoring::DrawQmonitoring(Monitoring& monTrue, const std::string filename){
+    TCanvas MonQ("Monitoring Q canvas", "Monitoring Q Histograms");
+    MonQ.Divide(2, 2);
+    MonQ.cd(1);
+    //h_rapportMC->Draw("hist");
+    h_rapportMC->SetLineColor(kGreen); 
+    h_rapport->Draw("hist ");
+    h_rapport->SetLineColor(kRed);
+    monTrue.h_rapport->Draw("hist same");
+    h_rapport->SetTitle("rapport beam and el Distribution");
+
+    MonQ.cd(2);
+    //h_thetaelectronMC->Draw("hist");
+    h_thetaelectronMC->SetLineColor(kGreen);
+    h_thetaelectron->Draw("hist ");
+    h_thetaelectron->SetLineColor(kRed);
+    monTrue.h_thetaelectron->Draw("hist same");
+    h_thetaelectron->SetTitle("acos (rapport)");
+
+    MonQ.cd(3);
+    h_Q2->Draw("hist");
+    h_Q2->SetLineColor(kRed); // Set different color for monRec histogram
+    h_Q2->SetTitle("Q2 Distribution");
+    monTrue.h_Q2->Draw("hist same");
+    MonQ.Print((filename + ".pdf").c_str());
+}
 
 
 

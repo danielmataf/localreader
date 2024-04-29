@@ -31,6 +31,7 @@ public:
     //void DrawHistTrueRECandMC(const std::string);
     void DrawR_Histograms(const std::string filename);
     void DrawHistogramsPos(const std::string ,const std::string );
+    void DrawQmonitoring(Monitoring& , const std::string);
 
     void DrawMomentumHistograms(const std::string);
     void DrawMomentumElectronHistograms(const std::string );
@@ -105,6 +106,11 @@ private:
     TH2F *h_xQ2;    //= new TH2F("xQ2", "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
     TH2F *h_xQ2pos; //= new TH2F("xQ2pos", "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
     
+
+    TH1F *h_thetaelectron;
+    TH1F *h_rapport;
+    TH1F *h_thetaelectronMC;
+    TH1F *h_rapportMC;
 
     //Adding simulation MC histos for comparison (unfolding )
     TH1F *h_Q2MC; // = new TH1F(("Q2_" + targetName).c_str(), "Q2", nubin, QminX , QmaxX);

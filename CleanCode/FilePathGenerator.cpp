@@ -71,7 +71,7 @@ void FilePathGenerator::ParDir2Vector(const std::string& parentDirectory, std::v
 
  void FilePathGenerator::SnDir2Vector(const std::string& parentDirectory, std::vector<std::string>& filepaths) {
         // this should go through all folders inside  '/volatile/clas12/dmat/gen/Sn/'
-        std::cout << "pathfinding starts : " << parentDirectory << std::endl;
+        //std::cout << "pathfinding starts : " << parentDirectory << std::endl;
         for (const auto& entry : fs::directory_iterator(parentDirectory)) {
             if (entry.is_directory()) {
                 std::string subdirectory = entry.path().string();

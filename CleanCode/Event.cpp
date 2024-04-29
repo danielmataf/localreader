@@ -164,7 +164,14 @@ void Event::CalcPol(Particle& particle) {
 
 int Event::CalcKinematics(){
     double theta_e = acos(Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag()));
-    Q2 = 4 * Constants::elBeam.E() * electron.GetMomentum().E() * pow(sin(theta_e / 2), 2);
+    //std::cout << "beam.electron: " << Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) << std::endl;
+    //std::cout << "||beam*electron|| : " << (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag())<< std::endl;
+    //std::cout << "rapport = " << Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag()) << std::endl;
+    //std::cout << "theta_e = acos(rapport) " << theta_e << std::endl;
+    //std::cout<<  "sin2 theta" <<   pow(sin(theta_e / 2), 2) << std::endl;
+    thetaelectron = theta_e;
+    acosyada=Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag());
+    Q2 = 4 * Constants::elBeam.E() * pow(sin(theta_e / 2), 2);
     nu  = Constants::elBeam.E() - electron.GetMomentum().E();
     y = nu / Constants::elBeam.E(); 
     w2 =  m_D* m_D + 2 * m_D * nu - Q2;
@@ -176,6 +183,8 @@ int Event::CalcKinematics(){
 }
 int Event::CalcMCKinematics(){
     double theta_eMC = (Constants::elBeam.Vect().Dot(MCelectron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * MCelectron.GetMomentum().Vect().Mag()));
+    thetaelectronMC = theta_eMC;
+    acosyadaMC=Constants::elBeam.Vect().Dot(MCelectron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * MCelectron.GetMomentum().Vect().Mag());
     MCQ2 = 4 * Constants::elBeam.E() * MCelectron.GetMomentum().E() * pow(sin(theta_eMC / 2), 2);
     MCnu  = Constants::elBeam.E() - MCelectron.GetMomentum().E();
     MCy = MCnu / Constants::elBeam.E(); 
@@ -236,6 +245,20 @@ double Event::GetW2MC() const{
 }
 double Event::GetxbMC() const{
     return MCxb;
+}
+double Event::GetThetaElectron() const{
+    return thetaelectron;
+}
+
+double Event::GetAcosyada() const{
+    return acosyada;
+}
+double Event::GetThetaElectronMC() const{
+    return thetaelectronMC;
+}
+
+double Event::GetAcosyadaMC() const{
+    return acosyadaMC;
 }
 
 //double Event::Getz()     const {

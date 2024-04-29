@@ -42,6 +42,7 @@ public:
     void SetHel(int);
     void SetHelRaw(int);
 
+
      void CalcPol(Particle&);
 
     double GetVz()const ;
@@ -90,6 +91,10 @@ public:
     int GetHel( ) const;
     int GetHelRaw( ) const;
 
+    double GetThetaElectron() const;
+    double GetAcosyada() const;
+    double GetThetaElectronMC() const;
+    double GetAcosyadaMC() const;
 
 
 
@@ -121,6 +126,10 @@ private:
     double m_D, m_Sn, m_Cu; //GeV/c^2
     double vz=0;  //vertex of the event (?) (should be the same every time)
     double MCvz=0;
+    double thetaelectron=0;
+    double acosyada=0;
+    double thetaelectronMC=0;
+    double acosyadaMC=0;
     double vx;
     double vy;
     double px_el, py_el, pz_el;
