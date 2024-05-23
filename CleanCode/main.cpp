@@ -8,6 +8,7 @@
 #include "EventReader.h"
 #include "CutSet.h"
 #include "Monitoring.h"
+#include "Monunfold.h"
 #include "Ratio.h"
 #include "Dpt.h"
 #include "cratio.h"
@@ -103,7 +104,7 @@ int main() {
     ////files.ParDir2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/", simufilesLD2);   //do not uncomment this line
     
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/Deut", simufilesLD2);  //uncomment for sim
-    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/Deut", simufilesCxC);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/C", simufilesCxC);  //uncomment for sim
     
     //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesSn);  //uncomment for sim
 
@@ -152,6 +153,8 @@ int main() {
     CutSet Cucuts;   //Cu
     CutSet LDcuts;   //LD2
     CutSet CCcuts;   //CxC
+    CutSet C1cuts;   //C1
+    CutSet C2cuts;   //C2
     //CutSet simSncuts;   //Sn
     //CutSet simCucuts;   //Cu    
     CutSet simLDcuts;   //LD2
@@ -166,7 +169,11 @@ int main() {
     LDcuts.SetCutGen4Rat();
     LDcuts.SetCutVz(-7.5,-2.5);     //vz cut for precision in LD2 target
     CCcuts.SetCutGen4Rat();
-    CCcuts.SetCutVz(-8.5,-6.5);     //vz cut for CxC target
+    CCcuts.SetCutVz(-10.0,0.0);     //general cut, in order to include both Carbon positions in Vz (initial)
+    C1cuts.SetCutGen4Rat();
+    C1cuts.SetCutVz(-3.5,-1.5);     //vz cut for C1 target
+    C2cuts.SetCutGen4Rat();
+    C2cuts.SetCutVz(-8.5,-6.5);     //vz cut for C2 target
     //simSncuts.SetCutGen4Rat();
     //simSncuts.SetCutVz(-2.0,2.0);     //vz cut for Sn filter in the double target
     //simCucuts.SetCutGen4Rat();
@@ -188,17 +195,22 @@ int main() {
     Monitoring monSn(Sncuts, "Sn");
     Monitoring monLD(LDcuts, "LD2");    // Modify the class so it doesnt have to take target name. (get targetevent) TBD!
     Monitoring monCu(Cucuts, "Cu");
-    Monitoring monC1(CCcuts, "C1");
-    Monitoring monC2(CCcuts, "C2");
+    Monitoring monC1(C1cuts, "C1");
+    Monitoring monC2(C2cuts, "C2");
+    Monunfold munfLD(LDcuts, "LD2b");
+    Monunfold munfC1(C1cuts, "C1");
+    Monunfold munfC2(C2cuts, "C2");
+
     Monitoring monSimLD(simLDcuts, "LD2_sim");
+    Monunfold munfSimCC(CCcuts, "CxC_sim");
     //Monitoring monSimSn(simSncuts, "Sn_sim");
     //Monitoring monSimCu(simCucuts, "Cu");
-    Monitoring monSimC1(simC1cuts, "C1");
-    Monitoring monSimC2(simC2cuts, "C2");
+    Monitoring monSimC1(simC1cuts, "C1_sim");     //This needs to be figured out ASAP
+    //Monitoring monSimC2(simC2cuts, "C2");     //This needs to be figured out ASAP
     Ratio rat(LDcuts, Sncuts, "Sn"); //calling the class with the corresponding cuts
     Ratio rat2(LDcuts, Cucuts, "Cu"); // RE calling the class with the corresponding cuts for study with Cu
-    Ratio rat3(LDcuts, CCcuts, "C1"); // RE calling the class with the corresponding cuts for study with C1
-    Ratio rat4(LDcuts, CCcuts, "C2"); // RE calling the class with the corresponding cuts for study with C2
+    Ratio rat3(LDcuts, C1cuts, "C1"); // RE calling the class with the corresponding cuts for study with C1
+    Ratio rat4(LDcuts, C2cuts, "C2"); // RE calling the class with the corresponding cuts for study with C2
     Ratio simrat3( simLDcuts, simC1cuts, "C1_sim"); //calling the class with the corresponding cuts
     Ratio simrat4(simLDcuts, simC2cuts, "C2_sim"); // RE calling the class with the corresponding cuts for study with Cu
 
@@ -255,91 +267,92 @@ int main() {
     int counter_elSn= 0.0;
     int counter_elCxC= 0.0;
     int counter_elsimLD2= 0.0;
-    for (int i=0; i<9000; i++){
+    for (int i=0; i<10000; i++){
             //std::optional<Event> 
             testLD2 = MC_LD2.ProcessEventsInFile();
             testCuSn = MC_CuSn.ProcessEventsInFile();
             testCxC = MC_CxC.ProcessEventsInFile();
             simLD2 = Sim_LD2.ProcessEventsInFile();
             //simCuSn = Sim_CuSn.ProcessEventsInFile();
-            //simCxC = Sim_CxC.ProcessEventsInFile();
+            simCxC = Sim_CxC.ProcessEventsInFile();
 
             //test = MC.ProcessEventsInFile();
             if (testLD2.has_value()) {
-                counter_elLD2++;
+                //counter_elLD2++;
                 Event eventtestLD2 = testLD2.value();
-                
                 eventtestLD2.SetTargetType(0);
-                //eventsimLD2.SetTargetType(0);
-                
                 eventtestLD2.calcAll();
-                //eventsimLD2.calcAll();
-
-                //LDcuts.SetCutGentest(eventtestLD2);
-                //monLD.FillHistograms(eventtestLD2);       //Re comment   this again ? 
-                monLD.FillHistogramsNoCuts(eventtestLD2);
-                //monLD.FillHistogramswCuts(eventtestLD2);
-                rat.FillHistograms(eventtestLD2);  
-                rat2.FillHistograms(eventtestLD2);
+                munfLD.FillOnlyVz(eventtestLD2);
+                ////LDcuts.SetCutGentest(eventtestLD2);
+                ////monLD.FillHistograms(eventtestLD2);       //Re comment   this again ? 
+                //monLD.FillHistogramsNoCuts(eventtestLD2);
+                monLD.FillHistogramswCuts(eventtestLD2);
+                //rat.FillHistograms(eventtestLD2);  
+                //rat2.FillHistograms(eventtestLD2);
                 rat3.FillHistograms(eventtestLD2);
-                //simrat.FillHistograms(eventtestLD2);
-                //simrat2.FillHistograms(eventtestLD2);
-                dpt.FillHistograms(eventtestLD2);
+                rat4.FillHistograms(eventtestLD2);
+                ////simrat.FillHistograms(eventtestLD2);
+                ////simrat2.FillHistograms(eventtestLD2);
+                //dpt.FillHistograms(eventtestLD2);
             }
             if (testCuSn.has_value()) {
-                counter_elSn++;
-                Event eventtestCuSn = testCuSn.value();
-                eventtestCuSn.SetTargetType(1);
-                eventtestCuSn.calcAll();
-                monSn.FillHistogramsNoCuts(eventtestCuSn);    //recomment this 
-                //monCu.FillHistograms(eventtestCuSn);    //recomment this 
-                monCu.FillHistogramsNoCuts(eventtestCuSn);
-                //monSn.FillHistogramswCuts(eventtestCuSn);
-                rat.FillHistograms(eventtestCuSn);
-                rat2.FillHistograms(eventtestCuSn);
+                //counter_elSn++;
+                //Event eventtestCuSn = testCuSn.value();
+                //eventtestCuSn.SetTargetType(1);
+                //eventtestCuSn.calcAll();
+                //monSn.FillHistogramsNoCuts(eventtestCuSn);    //recomment this 
+                ////monCu.FillHistograms(eventtestCuSn);    //recomment this 
+                //monCu.FillHistogramsNoCuts(eventtestCuSn);
+                ////monSn.FillHistogramswCuts(eventtestCuSn);
+                //rat.FillHistograms(eventtestCuSn);
+                //rat2.FillHistograms(eventtestCuSn);
             }
             if (testCxC.has_value()) {
                 counter_elCxC++;
                 Event eventtestCxC = testCxC.value();
-                //Event eventsimCxC = simCxC.value();
                 eventtestCxC.SetTargetType(1);              //is it targettype 1 or targettype 2? needs to be checked and modified accordingly
-
                 eventtestCxC.calcAll();
+                munfC1.FillOnlyVz(eventtestCxC);
+                munfC2.FillOnlyVz(eventtestCxC);
+                monC1.FillHistograms(eventtestCxC); //filling both parts of target testing for ratio on same   
+                monC2.FillHistograms(eventtestCxC); //filling both parts of target testing for ratio on same
                 //eventsimCxC.calcAll();
-                monC1.FillHistogramsNoCuts(eventtestCxC);     //recomment this
+                //monC1.FillHistogramsNoCuts(eventtestCxC);     //recomment this
+                
                 rat3.FillHistograms(eventtestCxC);
                 rat4.FillHistograms(eventtestCxC);
                 
             }
             //Simulated data handler
             if (simLD2.has_value()) {
-                counter_elsimLD2 ++;
-                //std::cout << "entering Simulated data " << std::endl;
-                Event eventsimLD2 = simLD2.value();
-                eventsimLD2.SetTargetType(0);
-                eventsimLD2.calcAll();
-                eventsimLD2.calcMCAll();
-                //monSimLD.FillHistograms(eventsimLD2);
-                monSimLD.FillHistogramsNoCuts(eventsimLD2);
-                monSimLD.FillHistogramsNoCutsMC(eventsimLD2);
+                //counter_elsimLD2 ++;
+                ////std::cout << "entering Simulated data " << std::endl;
+                //Event eventsimLD2 = simLD2.value();
+                //eventsimLD2.SetTargetType(0);
+                //eventsimLD2.calcAll();
+                //eventsimLD2.calcMCAll();
+                ////monSimLD.FillHistograms(eventsimLD2);
+                //monSimLD.FillHistogramsNoCuts(eventsimLD2);
+                //monSimLD.FillHistogramsNoCutsMC(eventsimLD2);
 
                 //monSimLD.FillHistogramswCuts(eventsimLD2);
                 //simrat.FillHistograms(eventsimLD2);  
                 //simrat2.FillHistograms(eventsimLD2);
             }
             if ( simCxC.has_value()) {
-                //std::cout << "entering Simulated data " << std::endl;
-                Event eventsimCxC = simCxC.value();
-                eventsimCxC.SetTargetType(1);
-                eventsimCxC.calcAll();
+                ////std::cout << "entering Simulated data " << std::endl;
+                //Event eventsimCxC = simCxC.value();
+                //eventsimCxC.SetTargetType(1);
+                //eventsimCxC.calcAll();
                 //eventsimCxC.calcMCAll();
-                monSimC1.FillHistogramsNoCuts(eventsimCxC);
-                simrat3.FillHistograms(eventsimCxC);
-                simrat4.FillHistograms(eventsimCxC);
-
-                //monSimCC.FillHistogramswCuts(eventsimCxC);
-                //simrat3.FillHistograms(eventsimCxC);
-                //simrat4.FillHistograms(eventsimCxC);
+                ////monSimC1.FillHistogramsNoCuts(eventsimCxC);
+                //munfSimCC.Fill(eventsimCxC);
+                //monSimC1.FillHistogramsNoCutsMC(eventsimCxC);
+//
+//
+                ////monSimCC.FillHistogramswCuts(eventsimCxC);
+                ////simrat3.FillHistograms(eventsimCxC);
+                ////simrat4.FillHistograms(eventsimCxC);
             }
             
 
@@ -365,10 +378,16 @@ int main() {
 
     //monLD.WriteHistogramsToFile("output_LD2.root");
     //monSn.WriteHistogramsToFile("output_CuSn.root");
-    //monLD.DrawHistograms("noCutsVarLD2");
-    monSimLD.DrawHistTrueandSIM(monLD,"testsimLD2");
-    
-    
+    monLD.DrawHistograms("withCutsVarLD2");
+    monC1.DrawHistograms("withCutsVarC1");
+    monC2.DrawHistograms("withCutsVarC2");
+    //monSimLD.DrawHistTrueandSIM(monLD,"testsimLD2");
+    munfSimCC.DrawHistograms("testsimCxC");
+    munfSimCC.DrawCompRECMC("compsimCxC");
+    monSimC1.DrawCompRECMC("compsimC1_plot2D");
+    munfC1.DrawOnlyVz(munfC2, "VzC1C2");
+    munfC2.DrawOnlyVz(munfC1, "VzC2C1");
+    munfLD.DrawOnlyVz(munfC1, "VzLD2C1");
     //monC1.DrawHistograms("dddd");   //use this to check Vz for CxC 
     //monLD.DrawCaloHistograms("REwCutscaloLD2");
     //monLD.DrawHelicityHistograms("REwCutshelicityLD2");
@@ -384,16 +403,17 @@ int main() {
     //monSimSn.DrawVertexHistograms("noCutsVertexSimSn");
     //monLD.DrawMomentumHadronHistograms("noCutsmomentumHadronLD2");
     //monLD.DrawEnergyHistograms("noCutsEnergyLD2");
-    rat.calcR();
-    //rat.writeMatrixToFile("matrix_test.txt");
-    rat2.calcR();
-    //rat2.writeMatrixToFile("matrix2_test.txt");
-    rat3.calcR();
-    //rat3.calcRcarbon(rat4 );
+    //rat.calcR();
+    ////rat.writeMatrixToFile("matrix_test.txt");
+    //rat2.calcR();
+    ////rat2.writeMatrixToFile("matrix2_test.txt");
+    //rat3.calcR();
+    rat3.calcRcarbon(rat4 );
     rat3.multiplotRbis();
-    monLD.DrawQmonitoring( monSimLD,"QmonitoringLD2");
-    simrat3.calcRcarbon(simrat4);
-    rat.multiplotR(rat2, rat3, simrat3, simrat4);
+    rat3.DrawHistos(rat4);
+    //monLD.DrawQmonitoring( monSimLD,"QmonitoringLD2");
+    //simrat3.calcRcarbon(simrat4);
+    //rat.multiplotR(rat2, rat3, simrat3, simrat4);
     //simrat2.calcR();
     //simrat.calcR(); 
 

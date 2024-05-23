@@ -42,6 +42,7 @@ public:
     void DrawHistogramsNoCuts(const std::string);
     void DrawVertexHistograms(const std::string);
     void DrawHelicityHistograms(const std::string);
+    void DrawCompRECMC(const std::string);
 
     //void FillQ2pre(const Event&  );
     //void Fillypre(const Event&  );
@@ -122,6 +123,8 @@ private:
     TH1F *h_pt2MC;    //= new TH1F("pt2", "pt2", nubin, pt2minX, pt2maxX) ;
     TH1F *h_phihMC;   //= new TH1F("phih", "phih", nubin, phihminX, phihmaxX) ;
     TH1F *h_vertexZMC;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
+
+    TH2F *h_Q2comp;    //= new TH2F("xQ2", "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
 
     //momentum histograms
     TH1F *h_px_el;  //= new TH1F("px_ele", "px_ele", 100, 0, 10) ;

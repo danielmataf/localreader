@@ -31,8 +31,8 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_z(new TH1F(("z_" + targetName).c_str(), "z", nubin, zminX, zmaxX)),
     h_pt2(new TH1F(("pt2_" + targetName).c_str(), "pt2", nubin, pt2minX, pt2maxX)),
     h_phih(new TH1F(("phih_" + targetName).c_str(), "phih", nubin, phihminX, phihmaxX)),
-    h_vertexZ(new TH1F(("targetVz_" + targetName).c_str(), "vertex4target", 100, -20, 10)),
-    h_vertexZ_pi(new TH1F(("targetVz_pi_" + targetName).c_str(), "vertex4target", 100, -20, 10)),
+    h_vertexZ(new TH1F(("targetVz_" + targetName).c_str(), "vertex4target", 100, -10, 0.0)),
+    h_vertexZ_pi(new TH1F(("targetVz_pi_" + targetName).c_str(), "vertex4target", 100, -10, 0.0)),
     h_DeltaVz(new TH1F(("DeltaVz_" + targetName).c_str(), "DeltaVz", 100, -5, 5)),
     
     h_Q2MC(new TH1F(("Q2_MC" + targetName).c_str(), "Q2MC", nubin, QminX, QmaxX)),
@@ -43,7 +43,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_zMC(new TH1F(("z_MC" + targetName).c_str(), "zMC", nubin, zminX, zmaxX)),
     h_pt2MC(new TH1F(("pt2_MC" + targetName).c_str(), "pt2MC", nubin, pt2minX, pt2maxX)),
     h_phihMC(new TH1F(("phih_MC" + targetName).c_str(), "phihMC", nubin, phihminX, phihmaxX)),
-    h_vertexZMC(new TH1F(("targetVz_MC" + targetName).c_str(), "vertex4targetMC", 100, -20, 10)),
+    h_vertexZMC(new TH1F(("targetVz_MC" + targetName).c_str(), "vertex4targetMC", 100, -10, 0.0)),
     h_thetaelectron (new TH1F(( "thetaelectron_" + targetName).c_str(), "thetaelectron", 500, 0, 1)),
     h_rapport (new TH1F(( " rapport_beam_el" + targetName).c_str(), "rapport_beam_el", 500, 0, 1)),
     h_thetaelectronMC (new TH1F(( "thetaelectron_MC" + targetName).c_str(), "thetaelectronMC", 500, 0, 1)),
@@ -90,6 +90,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_phih_plus(new TH1F(("phih_plus_" + targetName).c_str(), "phih_plus", 10, 0, 360)),
     h_phih_minus(new TH1F(("phih_minus_" + targetName).c_str(), "phih_minus", 10, 0, 360)),
     h_BSA(new TH1F(("BSA_" + targetName).c_str(), "BSA", 10, 0, 360)),
+    h_Q2comp(new TH2F(("Q2comp_" + targetName).c_str(), "Q2comp", nubin, QminX, QmaxX,nubin, QminX, QmaxX)),
       counterel_R(0) {
     // Add more histograms as needed
 }
@@ -137,6 +138,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {
             h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detected !!!!
                                                 //add Vz for the hadron too
             h_Q2->Fill(event.GetQ2());
+            
             h_xb->Fill(event.Getxb());
             h_y->Fill(event.Gety());    
             h_nu->Fill(event.Getnu());
@@ -251,6 +253,8 @@ void Monitoring::FillHistograms(const Event& event) {
 
 void Monitoring::FillHistogramsNoCutsMC(const Event& event) {
     h_Q2MC->Fill(event.GetQ2MC());
+    h_Q2comp->Fill(event.GetQ2(), event.GetQ2MC());
+    h_Q2->Fill(event.GetQ2());
     h_xbMC->Fill(event.GetxbMC());
     h_yMC->Fill(event.GetyMC());
     h_nuMC->Fill(event.GetnuMC());
@@ -540,6 +544,7 @@ void Monitoring::DrawQmonitoring(Monitoring& monTrue, const std::string filename
     h_Q2->SetLineColor(kRed); // Set different color for monRec histogram
     h_Q2->SetTitle("Q2 Distribution");
     monTrue.h_Q2->Draw("hist same");
+    monTrue.h_Q2->SetLineColor(kBlue);
     MonQ.Print((filename + ".pdf").c_str());
 }
 
@@ -1100,6 +1105,22 @@ void Monitoring::DrawHelicityHistograms(const std::string filename){
     h_BSA->Draw();
 
     MonHel.Print((filename + ".pdf").c_str());
+
+
+}
+
+
+void Monitoring::DrawCompRECMC(const std::string filename){
+    TCanvas MonComp("MonComp", "MonComp");
+    MonComp.Divide(2, 2);
+    MonComp.cd(1);
+    h_Q2comp->Draw("COLZ");
+    MonComp.cd(3);
+    h_Q2->Draw("hist");
+    MonComp.cd(4);
+    h_Q2MC->Draw("hist");
+    
+    MonComp.Print((filename + ".pdf").c_str());
 
 
 }

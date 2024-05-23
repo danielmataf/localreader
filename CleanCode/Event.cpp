@@ -167,11 +167,12 @@ int Event::CalcKinematics(){
     //std::cout << "beam.electron: " << Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) << std::endl;
     //std::cout << "||beam*electron|| : " << (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag())<< std::endl;
     //std::cout << "rapport = " << Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag()) << std::endl;
-    //std::cout << "theta_e = acos(rapport) " << theta_e << std::endl;
+    //std::cout << "theta_e =  " << theta_e << std::endl;
     //std::cout<<  "sin2 theta" <<   pow(sin(theta_e / 2), 2) << std::endl;
     thetaelectron = theta_e;
     acosyada=Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag());
     Q2 = 4 * Constants::elBeam.E() * pow(sin(theta_e / 2), 2);
+    //std::cout << "Q2 = " << Q2 << std::endl;
     nu  = Constants::elBeam.E() - electron.GetMomentum().E();
     y = nu / Constants::elBeam.E(); 
     w2 =  m_D* m_D + 2 * m_D * nu - Q2;
@@ -185,7 +186,7 @@ int Event::CalcMCKinematics(){
     double theta_eMC = (Constants::elBeam.Vect().Dot(MCelectron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * MCelectron.GetMomentum().Vect().Mag()));
     thetaelectronMC = theta_eMC;
     acosyadaMC=Constants::elBeam.Vect().Dot(MCelectron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * MCelectron.GetMomentum().Vect().Mag());
-    MCQ2 = 4 * Constants::elBeam.E() * MCelectron.GetMomentum().E() * pow(sin(theta_eMC / 2), 2);
+    MCQ2 =  4 * Constants::elBeam.E() * MCelectron.GetMomentum().E() * pow(sin(theta_eMC / 2), 2);
     MCnu  = Constants::elBeam.E() - MCelectron.GetMomentum().E();
     MCy = MCnu / Constants::elBeam.E(); 
     MCw2 =  m_D* m_D + 2 * m_D * MCnu - Q2;

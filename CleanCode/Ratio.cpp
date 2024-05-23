@@ -108,7 +108,35 @@ void Ratio::FillHistograms(const Event& event) {
 
 }
 
+void Ratio::DrawHistos(Ratio& ratioOther ){
+    TCanvas *chR = new TCanvas("c", "c");
+    chR->Divide(2, 2);
+    TH1F* h_nuA2 = ratioOther.getHNuA();
+    TH3F* h_nu_z_pt2A2 = ratioOther.getHNuzptA();
+    
+    chR->cd(1);
+    h_nuA->Draw();
+    h_nuA->SetTitle("nu_A(C1)");
+    chR->cd(2);
+    h_nuA2->Draw();
+    h_nuA2->SetTitle("nu_A(C2)");
+    chR->cd(3);
+    h_nu_z_pt2A->Draw();
+    h_nu_z_pt2A->SetTitle("nu_z_pt2_A(C1)");
+    chR->cd(4);
+    h_nu_z_pt2A2->Draw();
+    h_nu_z_pt2A2->SetTitle("nu_z_pt2_A(C2)");
 
+
+    chR->SaveAs("nu_histos.pdf");
+    delete chR;
+    //TCanvas *c = new TCanvas("c", "c", 800, 600);
+    //h_nu_z_pt2A->Draw();
+    //h_nu_z_pt2D->Draw("same");
+    //c->SaveAs("nu_z_pt2_histos.pdf");
+    //delete c;
+
+}
 
 
 
@@ -185,6 +213,7 @@ void Ratio::calcRcarbon( Ratio& ratioOther){
                 double raterr = ratvalue * sqrt(1/valC1 + 1/valC2 + 1/val_nuelC1 + 1/val_nuelC2);
                 ratMatrixbis[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
                 errorMatrixbis[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
+                std::cout << "ratvalue = " << ratvalue << std::endl;
 
                //!!!!
                 //This doesnt seem to be working as planned. Try a function that plot all the 4 histos used here to see if we are properly recovering them from the other class

@@ -26,6 +26,7 @@ public:
     //void DrawHistograms(const std::string);
     void FillHistograms(const Event& );
     void WriteHistos(const std::string );
+    void DrawHistos(Ratio& );
     void calcR();
     //void calcRcarbon() ;        //new
     void calcRcarbon(Ratio&) ;        //new

@@ -256,6 +256,15 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     return false;
 }
 
+bool CutSet::PassCutVzselection(const Event& event){
+    double Vz = event.GetVz();
+    if (Vz >= cutVzMin && Vz <= cutVzMax ){
+        return true;
+    }
+    return false;
+}
+
+
 bool CutSet::PassCutsHadrons( const Particle& hadron)  {
     double z = hadron.Getz();
     double pt2 = hadron.Getpt2();
