@@ -106,6 +106,9 @@ int main() {
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/Deut", simufilesLD2);  //uncomment for sim
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/C", simufilesCxC);  //uncomment for sim
     
+    //test on ifarm 4 self on LD2 true
+    //files.Files2Vector("/volatile/clas12/rg-d/production/prod/v4_ob_LD2/dst/recon/018869/", simufilesCxC);
+    
     //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder", simufilesSn);  //uncomment for sim
 
 
@@ -269,10 +272,10 @@ int main() {
     int counter_elsimLD2= 0.0;
     for (int i=0; i<10000; i++){
             //std::optional<Event> 
-            testLD2 = MC_LD2.ProcessEventsInFile();
-            testCuSn = MC_CuSn.ProcessEventsInFile();
-            testCxC = MC_CxC.ProcessEventsInFile();
-            simLD2 = Sim_LD2.ProcessEventsInFile();
+            //testLD2 = MC_LD2.ProcessEventsInFile();
+            //testCuSn = MC_CuSn.ProcessEventsInFile();
+            //testCxC = MC_CxC.ProcessEventsInFile();
+            //simLD2 = Sim_LD2.ProcessEventsInFile();
             //simCuSn = Sim_CuSn.ProcessEventsInFile();
             simCxC = Sim_CxC.ProcessEventsInFile();
 

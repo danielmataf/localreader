@@ -29,6 +29,8 @@ public:
     void DrawHistos(Ratio& );
     void calcR();
     //void calcRcarbon() ;        //new
+    void DrawSelfHistos(Ratio& ); //new
+
     void calcRcarbon(Ratio&) ;        //new
     void PlotRatio(const std::string );
     void writeMatrixToFile(const std::string& );
@@ -154,6 +156,11 @@ private:
     TH1F *h_nuC2; 
     TH3F *h_nu_z_pt2C1; 
     TH3F *h_nu_z_pt2C2; 
+
+    //histos to monitor self ration in CxC target
+    TH1F *h_nu_A_had;
+    TH1F *h_z_A_had;
+    TH1F *h_pt2_A_had;
 
 
     //Graphs

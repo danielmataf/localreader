@@ -33,7 +33,10 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     h_nu_z_pt2D_onlye(new TH3F(("nu,z,pt2,D onlye_"+targetName).c_str(), ("histo_e nu,z,pt2 for A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu ,Constants::Rcutmaxnu ,Rbin_z,Constants::RcutminZ, Constants::RcutmaxZ,Rbin_pt2, Constants::RcutminPt2, Constants::RcutmaxPt2  )),
     h_nuA(new TH1F(("nu_A"+targetName).c_str(), ("nu_A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
     h_nuD(new TH1F(("nu_D"+targetName).c_str(), ("nu_D"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
-    h_nuC1(new TH1F(("nu_C1"+targetName).c_str(), ("nu_C1"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
+    h_nu_A_had(new TH1F(("nu_A_had"+targetName).c_str(), ("nu_A_had"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
+    h_z_A_had(new TH1F(("z_A_had"+targetName).c_str(), ("z_A_had"+targetName).c_str(), Constants::Rbin_z , Constants::RcutminZ , Constants::RcutmaxZ)),
+    h_pt2_A_had(new TH1F(("pt2_A_had"+targetName).c_str(), ("pt2_A_had"+targetName).c_str(), Constants::Rbin_pt2 , Constants::RcutminPt2 , Constants::RcutmaxPt2)),
+    h_nuC1(new TH1F(("nu_C1"+targetName).c_str(), ("nu_C1"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)), 
     h_nuC2(new TH1F(("nu_C2"+targetName).c_str(), ("nu_C2"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu))
 
     
@@ -79,7 +82,7 @@ void Ratio::FillHistograms(const Event& event) {
     else if (targetType == 1 && cuta.PassCutsElectrons(event)==true && cuta.PassCutsDetectors(event)==true) {
         counter_elSn++; //counter for only electrons for z and pt
         //here change the else if to just else in order to have a generic target 
-        h_nuA->Fill(event.Getnu());
+        h_nuA->Fill(event.Getnu()); //can be plotted just like this 
         //if (targetName == "C1"){
         //    h_nuC1->Fill(event.Getnu());
         //}
@@ -91,6 +94,9 @@ void Ratio::FillHistograms(const Event& event) {
 
             if (cuta.PassCutsHadrons(hadron)==true){
                 h_nu_z_pt2A->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
+                h_nu_A_had->Fill(event.Getnu() );   //these 3 histos were added to monitor CxC self Ratio
+                h_z_A_had->Fill(hadron.Getz()); //these 3 histos were added to monitor CxC self Ratio
+                h_pt2_A_had->Fill(hadron.Getpt2()); //these 3 histos were added to monitor CxC self Ratio
                 //if (targetName == "C1" ) {
                 //    h_nu_z_pt2C1->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 //}
@@ -138,7 +144,25 @@ void Ratio::DrawHistos(Ratio& ratioOther ){
 
 }
 
+void Ratio::DrawSelfHistos(Ratio& ratioOther ){
+    TCanvas *cSelf = new TCanvas("mon4self", "mon4self");
+    cSelf->Divide(2,2);
+    cSelf->cd(1);
+    h_nuA->Draw();
+    h_nuA->SetTitle("nu_C");
+    cSelf->cd(2);
+    h_nu_A_had->Draw();
+    h_nu_A_had->SetTitle("nu_C_had");
+    cSelf->cd(3);
+    h_z_A_had->Draw();
+    h_z_A_had->SetTitle("z_C_had");
+    cSelf->cd(4);
+    h_pt2_A_had->Draw();
+    h_pt2_A_had->SetTitle("pt2_C_had");
+    cSelf->SaveAs("self_histos.pdf");
 
+
+}
 
 
 void Ratio::calcR(){
@@ -213,10 +237,14 @@ void Ratio::calcRcarbon( Ratio& ratioOther){
                 double raterr = ratvalue * sqrt(1/valC1 + 1/valC2 + 1/val_nuelC1 + 1/val_nuelC2);
                 ratMatrixbis[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
                 errorMatrixbis[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
-                std::cout << "ratvalue = " << ratvalue << std::endl;
+                //std::cout << "ratvalue = " << ratvalue << std::endl;
+                std::cout << "ratvalue = " << interm1nu <<" / " <<interm2nu <<" = " << ratvalue << "+-"<< raterr<< std::endl;
+
 
                //!!!!
                 //This doesnt seem to be working as planned. Try a function that plot all the 4 histos used here to see if we are properly recovering them from the other class
+                //tested on self deuterium seems to work ok. but Zeros at low pt2 values.
+                //suggesting to plot monitoring (1D) histos for nu, z, pt2 for each target (detailed)
 
             }
         }
