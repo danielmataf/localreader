@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <vector>
 #include <string>
+#include <chrono>
+#include <thread>
 #include "FilePathGenerator.h"
 
 // Default constructor definition
@@ -88,3 +90,41 @@ void FilePathGenerator::ParDir2Vector(const std::string& parentDirectory, std::v
         }
     }
 
+// Function to display progress with a percentage and a loading bar
+void FilePathGenerator::displayProgress(int current, int total) {
+    int barWidth = 50;
+    int progress = (current * barWidth) / total;
+    int percentage = (current * 100) / total;
+
+    std::cout << "\r[";
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < progress) {
+            std::cout << "=";
+        } else if (i == progress) {
+            std::cout << ">";
+        } else {
+            std::cout << " ";
+        }
+    }
+    std::cout << "] " << percentage << "%";
+    std::cout.flush();
+}
+
+// New method to process events and show the progress
+void FilePathGenerator::progressEvents(int totalEvents) {
+    int counter = 0;
+
+    // Example event processing loop
+    for (int i = 0; i < totalEvents; ++i) {
+        // Replace this with your actual event processing logic
+        // std::optional<Event> event = ProcessNextEvent();
+        
+        // Simulate processing time
+        std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Remove or adjust as necessary
+
+        // Update progress
+        displayProgress(i + 1, totalEvents);
+    }
+
+    std::cout << "\nProcessing completed.\n";
+}

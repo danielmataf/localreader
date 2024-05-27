@@ -6,6 +6,9 @@
 #include <filesystem>
 #include <vector>
 #include <string>
+#include <thread> 
+#include <chrono> 
+
 
 namespace fs = std::filesystem;
 
@@ -21,6 +24,9 @@ public:
     //takes the path of parentDirectory, it will look the directories inside of it, enter in thel and append hipofiles to the vector filepaths
     void SnDir2Vector(const std::string& parentDirectory, std::vector<std::string>& filepaths);
     //this takes the specific path to recover simus, since we have called as numbers ans the hipo files are called the same way. see detail in .cpp
+
+    void progressEvents(int totalEvents);
+    void displayProgress(int current, int total);
 
 
 };

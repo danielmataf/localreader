@@ -270,7 +270,8 @@ int main() {
     int counter_elSn= 0.0;
     int counter_elCxC= 0.0;
     int counter_elsimLD2= 0.0;
-    for (int i=0; i<10000; i++){
+    int totalevts = 10000;
+    for (int i=0; i<totalevts; i++){
             //std::optional<Event> 
             //testLD2 = MC_LD2.ProcessEventsInFile();
             //testCuSn = MC_CuSn.ProcessEventsInFile();
@@ -292,6 +293,7 @@ int main() {
                 simrat3.FillHistograms(eventsimCxC);
                 simrat4.FillHistograms(eventsimCxC);
             }
+            files.displayProgress(i + 1, totalevts);
             
 
            
@@ -304,10 +306,12 @@ int main() {
            //     monSn.FillHistograms(eventtest);
            //     //rat.FillHistograms( )
            //     //loop in hadron "list"
+         
     
     
     
     }
+    std::cout << "\nProcessing completed \n";
 
     std::cout << "Events processed for LD2: " << counter_elLD2 << std::endl;
     std::cout << "Events processed for Sn: " << counter_elSn << std::endl;
