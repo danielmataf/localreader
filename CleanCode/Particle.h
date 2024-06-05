@@ -13,6 +13,7 @@ class Particle {
 public:
     Particle(const TLorentzVector& , int, int , double);   
     const TLorentzVector& GetMomentum() const; 
+    const TLorentzVector& GetMCMomentum() const;
     int GetEventIndex() const ;
     int GetPID() const ;  
     void SetMomentum( TLorentzVector);
@@ -62,6 +63,7 @@ public:
 
 private:
     TLorentzVector momentum;
+    TLorentzVector MCmomentum;
 
     int eventIndex;
     int pid; 

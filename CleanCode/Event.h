@@ -24,6 +24,7 @@ public:
     void AddMCHadron(const TLorentzVector& , int, int,double );
     int GetEventIndex() const ;
     void SetVertexZ(double );
+    void SetVertexZMC(double );
     void SetVertexX(double );
     void SetVertexY(double );
     //Setters of CALO data (only available for electrons)
@@ -58,6 +59,7 @@ public:
     int CalcMCKinematics( );
 
     void Print();
+    void PrintMC();
     void calcAll();
     void calcMCAll();
     double GetQ2() const ;

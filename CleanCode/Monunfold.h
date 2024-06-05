@@ -34,6 +34,8 @@ public:
     void FillMomentumHistograms(const Event& );
 
     void DrawHistograms(const std::string);
+    void DrawHistoRec(const std::string);   //this 2 in order to separate MC from REC and monitor separetely   
+    void DrawHistoMC(const std::string);    //this 2 in order to separate MC from REC and monitor separetely       
     void DrawCompRECMC(const std::string);
     void DrawHistTrueandSIM(Monunfold& , const std::string ) ;  //this for plot comparisons in true"s REC and sim's REC 
 

@@ -21,12 +21,17 @@ public:
     double GetMassID(int); 
     void PrintEventInfo(int eventIndex);
     std::optional<Event> ProcessEventsInFile();
+    std::optional<Event> ProcessEventsInFileMC();
     int getevtnbr();
-
+    int getSimulatedCount() const ;
+    bool isSimulatedData(hipo::event) ;
 private:
     std::optional<Event> ProcessEvent( hipo::event event, int eventNumber, bool isSimulated);
+    std::optional<Event> ProcessEventMC(hipo::event event) ;
     std::optional<Event> ProcessEventsWithPositivePions(hipo::event event, int eventNumber) ;
 
+
+    int simulatedEventCount=0;
 
     //Banks
     hipo::bank RECgen;

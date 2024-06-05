@@ -48,6 +48,8 @@ public:
     std::vector<std::vector<std::vector<double>>> getErrorMatrix() const{
         return errorMatrix;
     }
+
+    //following elements are used for self ratio in CxC target
     std::vector<std::vector<std::vector<double>>> getRatMatrixbis() const{
         return ratMatrixbis;
     }

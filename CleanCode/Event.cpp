@@ -28,8 +28,8 @@ void Event::AddMCElectron(const TLorentzVector& electronMomentum, int row, doubl
 }
 
 
-void Event::AddHadron(const TLorentzVector& MChadronMomentum, int MCpid, int MCrow, double MCvertexZ) {
-    hadrons.push_back(Particle(MChadronMomentum,  MCpid, MCrow, MCvertexZ));
+void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid, int row, double vertexZ) {
+    hadrons.push_back(Particle(hadronMomentum,  pid, row, vertexZ));
 }
 
 void Event::AddMCHadron(const TLorentzVector& MChadronMomentum, int MCpid, int MCrow, double MCvertexZ) {
@@ -53,6 +53,10 @@ const Particle& Event::GetElectron() const {
 void Event::SetVertexZ(double vertexz){
     vz = vertexz;
 }
+void Event::SetVertexZMC(double vertexzMC){
+    MCvz = vertexzMC;
+}
+
 void Event::SetVertexX(double vertexx){
     vx = vertexx;
 }
@@ -118,7 +122,7 @@ void Event::SetHelRaw(int input_helraw){
 }
 
 void Event::Print() {   //add int v=0 as argument 4 different types of verbose TBD
-
+    std::cout << "   " << std::endl;
     std::cout << "Electrons:" << std::endl;
     //for (const Particle& electron : event.GetElectrons()) {
         std::cout << "  Particle ID: " << electron.GetPID() << std::endl;
@@ -135,20 +139,53 @@ void Event::Print() {   //add int v=0 as argument 4 different types of verbose T
 
     
     //}
-    std::cout << "Hadrons:" << std::endl;
-    for (const Particle& hadron : GetHadrons()) {
-        //if (hadron.GetPID()== 211){
-            std::cout << "  ____________ " <<  std::endl;
-            std::cout << "  Particle ID: " << hadron.GetPID() << std::endl;
-            std::cout << " Total Momentum: " << hadron.GetMomentum().P() << std::endl;
-            std::cout << " Polar Angles: (" << hadron.GetMomentum().Theta() << ", "
-                      << hadron.GetMomentum().Phi() << ")" << std::endl;
-            std::cout << " z value : " << hadron.Getz()<< std::endl;
-            std::cout << " pt2 value : " << hadron.Getpt2()<< std::endl;
-            std::cout << " phih value : " << hadron.Getphih()<< std::endl;
+    //std::cout << "Hadrons:" << std::endl;
+    //for (const Particle& hadron : GetHadrons()) {
+    //    //if (hadron.GetPID()== 211){
+    //        std::cout << "  ____________ " <<  std::endl;
+    //        std::cout << "  Particle ID: " << hadron.GetPID() << std::endl;
+    //        std::cout << " Total Momentum: " << hadron.GetMomentum().P() << std::endl;
+    //        std::cout << " Polar Angles: (" << hadron.GetMomentum().Theta() << ", "
+    //                  << hadron.GetMomentum().Phi() << ")" << std::endl;
+    //        std::cout << " z value : " << hadron.Getz()<< std::endl;
+    //        std::cout << " pt2 value : " << hadron.Getpt2()<< std::endl;
+    //        std::cout << " phih value : " << hadron.Getphih()<< std::endl;
+//
+    //    //}
+    //}
+}
+void Event::PrintMC() {   //add int v=0 as argument 4 different types of verbose TBD
 
-        //}
-    }
+    std::cout << "MC Electrons: -------------------" << std::endl;
+    //for (const Particle& electron : event.GetElectrons()) {
+        std::cout << "MC  Particle ID: " << MCelectron.GetPID() << std::endl;
+        std::cout << "MC  Momentum: (" << MCelectron.GetMomentum().Px() << ", "
+                  << MCelectron.GetMomentum().Py() << ", " << MCelectron.GetMomentum().Pz() << ")" << std::endl;
+        std::cout << "MC  Polar Angles: (" << MCelectron.GetMomentum().Theta() << ", "
+                  << MCelectron.GetMomentum().Phi() << ")" << std::endl;
+        std::cout << "MC Total Momentum: " << MCelectron.GetMomentum().P() << std::endl;
+        std::cout << "MC Q2 value : " << MCQ2<< std::endl;
+        std::cout << "MC nu value : " << MCnu<< std::endl;
+        std::cout << "MC y  value : " << MCy<< std::endl;
+        std::cout << "MC W2 value : " << MCw2<< std::endl;
+        std::cout << "MC xb value : " << MCxb<< std::endl;
+
+    
+    //}
+    //std::cout << "MC Hadrons:" << std::endl;
+    //for (const Particle& MChadron : GetHadrons()) {
+    //    //if (hadron.GetPID()== 211){
+    //        std::cout << "  ____________ " <<  std::endl;
+    //        std::cout << " MC  Particle ID: " <<  MChadron.GetPID() << std::endl;
+    //        std::cout << " MC Total Momentum: " <<MChadron.GetMomentum().P() << std::endl;
+    //        std::cout << " MC Polar Angles: (" << MChadron.GetMomentum().Theta() << ", "
+    //                  << MChadron.GetMomentum().Phi() << ")" << std::endl;
+    //        std::cout << " MCz value : " <<   MChadron.GetzMC()<< std::endl;
+    //        std::cout << " MCpt2 value : " << MChadron.Getpt2MC()<< std::endl;
+    //        std::cout << " MCphih value : " <<MChadron.GetphihMC()<< std::endl;
+//
+    //    //}
+    //}
 }
 
 void Event::CalcPol(Particle& particle) {
@@ -164,39 +201,53 @@ void Event::CalcPol(Particle& particle) {
 
 int Event::CalcKinematics(){
     double theta_e = acos(Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag()));
-    //std::cout << "beam.electron: " << Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) << std::endl;
-    //std::cout << "||beam*electron|| : " << (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag())<< std::endl;
-    //std::cout << "rapport = " << Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag()) << std::endl;
-    //std::cout << "theta_e =  " << theta_e << std::endl;
-    //std::cout<<  "sin2 theta" <<   pow(sin(theta_e / 2), 2) << std::endl;
     thetaelectron = theta_e;
     acosyada=Constants::elBeam.Vect().Dot(electron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * electron.GetMomentum().Vect().Mag());
-    Q2 = 4 * Constants::elBeam.E() * pow(sin(theta_e / 2), 2);
-    //std::cout << "Q2 = " << Q2 << std::endl;
+    Q2 = 4 * Constants::elBeam.E() * electron.GetMomentum().E() * pow(sin(theta_e / 2), 2);
     nu  = Constants::elBeam.E() - electron.GetMomentum().E();
     y = nu / Constants::elBeam.E(); 
     w2 =  m_D* m_D + 2 * m_D * nu - Q2;
-    //W = sqrt(Mn*Mn + 2*Mn*gamnu - Q2);
     xb = Q2 / (2 * m_D * nu);
     electron.SetKinVariables(Q2, nu, y, w2, xb);    //useless 
     return 0;
 
 }
 int Event::CalcMCKinematics(){
-    double theta_eMC = (Constants::elBeam.Vect().Dot(MCelectron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * MCelectron.GetMomentum().Vect().Mag()));
+            //std::cout << "Beam Energy: " << Constants::elBeam.E() << std::endl;
+        //std::cout << "Electron Energy: " << MCelectron.GetMomentum().E() << std::endl;
+        //std::cout << "beam momentum: " << Constants::elBeam.Vect().Mag() << std::endl;
+        //std::cout << "electron momentum: " << MCelectron.GetMomentum().Vect().Mag() << std::endl;
+        //std::cout <<"electron Px: " << MCelectron.GetMomentum().Px() << std::endl;
+        //std::cout <<"electron Py: " << MCelectron.GetMomentum().Py() << std::endl;
+        //std::cout <<"electron Pz: " << MCelectron.GetMomentum().Pz() << std::endl;
+    double theta_eMC = acos(Constants::elBeam.Vect().Dot(MCelectron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * MCelectron.GetMomentum().Vect().Mag()));
     thetaelectronMC = theta_eMC;
-    acosyadaMC=Constants::elBeam.Vect().Dot(MCelectron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * MCelectron.GetMomentum().Vect().Mag());
+    acosyadaMC = Constants::elBeam.Vect().Dot(MCelectron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * MCelectron.GetMomentum().Vect().Mag());
     MCQ2 =  4 * Constants::elBeam.E() * MCelectron.GetMomentum().E() * pow(sin(theta_eMC / 2), 2);
+    if (MCQ2 < 0.8){
+        std::cout << " " << std::endl;
+        std::cout << "MCQ2 below threshold!" << std::endl;
+        std::cout << "Beam Energy: " << Constants::elBeam.E() << std::endl;
+        std::cout << "Electron Energy: " << MCelectron.GetMomentum().E() << std::endl;
+        std::cout << "beam momentum: " << Constants::elBeam.Vect().Mag() << std::endl;
+        std::cout << "electron momentum: " << MCelectron.GetMomentum().Vect().Mag() << std::endl;
+        std::cout <<"electron Px: " << MCelectron.GetMomentum().Px() << std::endl;
+        std::cout <<"electron Py: " << MCelectron.GetMomentum().Py() << std::endl;
+        std::cout <<"electron Pz: " << MCelectron.GetMomentum().Pz() << std::endl;
+        std::cout << "theta_eMC: " << theta_eMC << std::endl;
+        std::cout << "acosyadaMC: " << acosyadaMC << std::endl;
+        std::cout << "MCQ2: " << MCQ2 << std::endl;
+        
+    }
     MCnu  = Constants::elBeam.E() - MCelectron.GetMomentum().E();
     MCy = MCnu / Constants::elBeam.E(); 
-    MCw2 =  m_D* m_D + 2 * m_D * MCnu - Q2;
-    //W = sqrt(Mn*Mn + 2*Mn*gamnu - Q2);
-    MCxb = Q2 / (2 * m_D * MCnu);
+    MCw2 =  m_D* m_D + 2 * m_D * MCnu - MCQ2;
+    MCxb = MCQ2 / (2 * m_D * MCnu);
+    MCelectron.SetKinVariables(MCQ2, MCnu, MCy, MCw2, MCxb);    //useless
     return 0;
 
 }
 
-//void SetKinVariables(double , double  , double , double, double);
 
 
 void Event::calcAll(){

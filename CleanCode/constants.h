@@ -28,7 +28,7 @@ namespace Constants {
     //to call these values use in declaration e.g.:     Constants::MASS_ELECTRON;
 
     // Vectors     
-    const TLorentzVector elBeam(0.0, 0.0, 11.0, 11.0); // incident lepton
+    const TLorentzVector elBeam(0.0, 0.0, 10.5, 10.5); // incident lepton
 
 
     //Cut values for Ratio 

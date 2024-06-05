@@ -18,6 +18,7 @@
     EventReader::EventReader(const std::vector<std::string>& Files){
         filelist = Files; 
         filenb = 0;
+        simulatedEventCount =0;
 
     }
 
@@ -50,7 +51,7 @@
     void EventReader::ProcessMCParticle(const TLorentzVector& MCmomentum, int MCpid, double MCvertx,double MCverty,double MCvertz, int MCrow ) {
         if (MCpid == Constants::ELECTRON_PID) {
             currentEvent.AddMCElectron(MCmomentum, MCrow, MCvertz);
-            //currentEvent.SetVertexZ(MCvertz);
+            currentEvent.SetVertexZMC(MCvertz);       //!!!!!!
             //currentEvent.SetVertexX(MCvertx);
             //currentEvent.SetVertexY(MCverty);
                 //maybe we need ro create SetMCvertex functions
@@ -144,9 +145,56 @@
 }
 
 
+bool EventReader::isSimulatedData(hipo::event event) {
+    bool isitsilulated = false;
+    event.getStructure(MCpart);
+    if (MCpart.getRows() != 0) {
+        isitsilulated = true;
+    }
+    return isitsilulated;
+}
+
+
+    std::optional<Event> EventReader::ProcessEventMC( hipo::event event ) {
+        currentEvent = Event();
+        double max_energy_electronMC = 0.0;
+        event.getStructure(MCpart);
+        int counterel_MC=0;
+        bool el_detect = false;
+        // no need to worry about returning nullopt in this fct since everyevent in MC bank is supposed to be as it should
+        for (int j = 0; j <MCpart.getRows(); ++j) {
+            int MCpid = MCpart.getInt("pid", j);
+            double MCmass = GetMassID(MCpid);
+            double MCtargetvz = MCpart.getFloat("vz", j);
+            //std::cout << "MCtargetvz: " << MCtargetvz << std::endl; 
+            double MCtargetvx = MCpart.getFloat("vx", j);
+            double MCtargetvy = MCpart.getFloat("vy", j);
+            TLorentzVector MCmomentum;
+            MCmomentum.SetPx(MCpart.getFloat("px", j));
+            MCmomentum.SetPy(MCpart.getFloat("py", j));
+            MCmomentum.SetPz(MCpart.getFloat("pz", j));
+            TVector3 MCmomentum3D = MCmomentum.Vect();
+            MCmomentum.SetVectM(MCmomentum3D, MCmass);
+            if (MCpid == Constants::ELECTRON_PID && MCmomentum.E() > max_energy_electronMC){
+    	        //double  electron_status = MCpart.getInt("status", j);
+                //if ( electron_status < 0) {     //momentum.E() > max_energy_electron &&
+                    counterel_MC++;
+                    max_energy_electronMC = MCmomentum.E();
+                    ProcessMCParticle(MCmomentum , Constants::ELECTRON_PID,MCtargetvx,MCtargetvy,MCtargetvz, j );
+               //}
+                el_detect = true;
+            } else if (IsHadron(MCpid) && el_detect ==true) {
+                    ProcessMCParticle(MCmomentum, MCpid,MCtargetvx,MCtargetvy,MCtargetvz,j ); 
+            }
+        }
+        return currentEvent;
+    }
+
+
+
     std::optional<Event> EventReader::ProcessEvent( hipo::event event, int eventNumber, bool isSimulated ) {
         currentEvent = Event();
-        
+        //std::cout << "Processing event: " << eventNumber << std::endl;
         bool el_detect = false;
         double max_energy_electron = 0.0; 
         event.getStructure(RECgen);
@@ -154,20 +202,20 @@
         event.getStructure(RECcher);
         event.getStructure(HELbank);
         event.getStructure(MCpart);
-
-        if (MCpart.getRows()!=0){isSimulated = true;  }
+        int counter_el_REC=0;   //deletethis
+        int counter_el_MC=0;    //deletethis
+        
         //RECgen.show();
         bool flag_el = false;
         int counter_el= 0.0;
         
         for (int i = 0; i < RECgen.getRows(); ++i) {
-            
             if ( RECgen.getInt("pid", i) == 11 ){
                 flag_el = true;
             }
         }
         if (flag_el == false )return std::nullopt;
-
+        //std::cout << "RECgen rows : " << RECgen.getRows() << std::endl;
         for (int i = 0; i <RECgen.getRows(); ++i) {
             int pid = RECgen.getInt("pid", i);
             if (pid == Constants::POSITRON_PID) {
@@ -182,7 +230,6 @@
             double targetvz = RECgen.getFloat("vz", i);
             double targetvx = RECgen.getFloat("vx", i);
             double targetvy = RECgen.getFloat("vy", i);
-
             TLorentzVector momentum;
             momentum.SetPx(RECgen.getFloat("px", i));
             momentum.SetPy(RECgen.getFloat("py", i));
@@ -194,6 +241,9 @@
             if (pid == Constants::ELECTRON_PID) {
     	        double  electron_status = RECgen.getInt("status", i);
                 if ( electron_status < 0) {     //momentum.E() > max_energy_electron &&
+            counter_el_REC++;           //erase this line
+
+
                     max_energy_electron = momentum.E();
                     //coinsider trigger electron , not most energetic one 
                     ProcessParticle(momentum , Constants::ELECTRON_PID,targetvx,targetvy,targetvz, i );
@@ -284,40 +334,14 @@
             hel_evt = HELbank.getInt("helicity", 0);
             hel_raw = HELbank.getInt("helicityRaw", 0);
             AddHelInfo(hel_evt, hel_raw);
-            if (isSimulated == true){
-                //std::cout << "MCpart rows: " << MCpart.getRows() << std::endl;
-                for (int j = 0; j <MCpart.getRows(); ++j) {
-                    double MCmass = GetMassID(pid);
-                    double MCtargetvz = MCpart.getFloat("vz", j);
-                    double MCtargetvx = MCpart.getFloat("vx", j);
-                    double MCtargetvy = MCpart.getFloat("vy", j);
-
-                    TLorentzVector MCmomentum;
-                    MCmomentum.SetPx(MCpart.getFloat("px", j));
-                    MCmomentum.SetPy(MCpart.getFloat("py", j));
-                    MCmomentum.SetPz(MCpart.getFloat("pz", j));
-                    TVector3 MCmomentum3D = MCmomentum.Vect();
-                    MCmomentum.SetVectM(MCmomentum3D, mass);
-                    if (pid == Constants::ELECTRON_PID) {
-    	                double  electron_status = MCpart.getInt("status", j);
-                        if ( electron_status < 0) {     //momentum.E() > max_energy_electron &&
-                            max_energy_electron = MCmomentum.E();
-                            ProcessMCParticle(MCmomentum , Constants::ELECTRON_PID,MCtargetvx,MCtargetvy,MCtargetvz, j );
-
-                        }
-                        el_detect = true;
-                    } else if (IsHadron(pid) && el_detect ==true) {
-                            ProcessMCParticle(momentum, pid,MCtargetvx,MCtargetvy,MCtargetvz,j ); 
-
-                    }
-                }
-            }
+        }
+        
                 
             //}
             
-
-        }
         
+        //std::cout << "REC electrons: " << counter_el_REC << std::endl;
+        //std::cout << "MC electrons: " << counter_el_MC << std::endl;
         return currentEvent;
 
     }
@@ -328,6 +352,10 @@
         int evtnbr = reader.getEntries();
         return evtnbr;
 
+    }
+
+    int EventReader::getSimulatedCount() const {
+    return simulatedEventCount;
     }
 
 ////////////////////////CLAScollNOV//////////////////////////
@@ -394,38 +422,62 @@ std::optional<Event> EventReader::ProcessEventsWithPositivePions(hipo::event eve
 /////////////////////////////////////////////////////////
 
 
-    std::optional<Event> EventReader::ProcessEventsInFile() { 
-            std::string filename;
+std::optional<Event> EventReader::ProcessEventsInFile() { 
+        std::string filename;
+        if (!reader.hasNext()) {
+            filenb++;
+            filename = filelist.at(filenb);
+            reader.open(filename.c_str());  
+            reader.readDictionary(factory);
+            RUNconfig = factory.getSchema("RUN::config");
+            RECgen = factory.getSchema("REC::Particle");
+            RECcalo = factory.getSchema("REC::Calorimeter");
+            RECcher = factory.getSchema("REC::Cherenkov");
+            RECevt  = factory.getSchema("REC::Event");  //using bank to recover helicity and helicity raw
+            HELbank = factory.getSchema("HEL::online"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
+            //HELbank = factory.getSchema("REC::Event"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
+            //HELbank = factory.getSchema("HEL::flip"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
+            MCpart = factory.getSchema("MC::Particle");
+            std::cout << "Processing file: " << filename << std::endl;
+        } 
+        hipo::event hipoEvent;
+        if (reader.next()) {
+            reader.read(hipoEvent);
+            //std::cout<<"starting event"<<std::endl;
+            Event event ;
+            if (isSimulatedData(hipoEvent)==true) {
+                ProcessEventMC(hipoEvent);
+                //std::cout << "Simulated data" << std::endl;
+            }
+            return ProcessEvent(hipoEvent, 0, false);    
+            //prevoius line was commented and replace by the next one for CLAScollNOV
+            //return ProcessEventsWithPositivePions(hipoEvent, 0);
+        } 
+        Event empty;
+        return empty;
+}
 
-            if (!reader.hasNext()) {
-                filenb++;
-                filename = filelist.at(filenb);
-                reader.open(filename.c_str());  
-                reader.readDictionary(factory);
-                RUNconfig = factory.getSchema("RUN::config");
-                RECgen = factory.getSchema("REC::Particle");
-                RECcalo = factory.getSchema("REC::Calorimeter");
-                RECcher = factory.getSchema("REC::Cherenkov");
-                RECevt  = factory.getSchema("REC::Event");  //using bank to recover helicity and helicity raw
-                HELbank = factory.getSchema("HEL::online"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
-                //HELbank = factory.getSchema("REC::Event"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
-                //HELbank = factory.getSchema("HEL::flip"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
-                MCpart = factory.getSchema("MC::Particle");
 
-                std::cout << "Processing file: " << filename << std::endl;
-            } 
-
-            hipo::event hipoEvent;
-            if (reader.next()) {
-                reader.read(hipoEvent);
-
-                //std::cout<<"starting event"<<std::endl;
-                
-                
-                return ProcessEvent(hipoEvent, 0, false);    
-                //prevoius line was commented and replace by the next one for CLAScollNOV
-                //return ProcessEventsWithPositivePions(hipoEvent, 0);
-            } 
-            Event empty;
-            return empty;
-    }
+std::optional<Event> EventReader::ProcessEventsInFileMC() { 
+        std::string filename;
+        if (!reader.hasNext()) {
+            filenb++;
+            filename = filelist.at(filenb);
+            reader.open(filename.c_str());  
+            reader.readDictionary(factory);
+            RUNconfig = factory.getSchema("RUN::config");
+            MCpart = factory.getSchema("MC::Particle");
+            std::cout << "Processing file MC: " << filename << std::endl;   //I guess we can delete this!
+        } 
+        hipo::event hipoEvent;
+        if (reader.next()) {
+            reader.read(hipoEvent);
+            Event event ;
+            if (isSimulatedData(hipoEvent)==true) {
+                ProcessEventMC(hipoEvent);
+                return ProcessEventMC(hipoEvent);    
+            }
+        } 
+        Event empty;
+        return empty;
+}

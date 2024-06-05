@@ -107,6 +107,7 @@ void FilePathGenerator::displayProgress(int current, int total) {
         }
     }
     std::cout << "] " << percentage << "%";
+
     std::cout.flush();
 }
 
