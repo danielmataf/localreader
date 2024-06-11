@@ -115,6 +115,7 @@ void Ratio::FillHistograms(const Event& event) {
 }
 
 void Ratio::DrawHistos(Ratio& ratioOther ){
+    //this is only to monitor the nu histograms for self ratio 
     TCanvas *chR = new TCanvas("c", "c");
     chR->Divide(2, 2);
     TH1F* h_nuA2 = ratioOther.getHNuA();
@@ -145,6 +146,7 @@ void Ratio::DrawHistos(Ratio& ratioOther ){
 }
 
 void Ratio::DrawSelfHistos(Ratio& ratioOther ){
+    //this is to draw the histograms used for self ratio
     TCanvas *cSelf = new TCanvas("mon4self", "mon4self");
     cSelf->Divide(2,2);
     cSelf->cd(1);
@@ -238,7 +240,7 @@ void Ratio::calcRcarbon( Ratio& ratioOther){
                 ratMatrixbis[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
                 errorMatrixbis[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
                 //std::cout << "ratvalue = " << ratvalue << std::endl;
-                std::cout << "ratvalue = " << interm1nu <<" / " <<interm2nu <<" = " << ratvalue << "+-"<< raterr<< std::endl;
+                //std::cout << "ratvalue = " << interm1nu <<" / " <<interm2nu <<" = " << ratvalue << "+-"<< raterr<< std::endl;
 
 
                //!!!!

@@ -91,7 +91,6 @@ void Monunfold::DrawOnlyVz(Monunfold& munfoldC2 , const std::string filename) {
 void Monunfold::FillHistogramsNoCuts(const Event& event) {
     // Fill histograms with no cuts
     h_Q2->Fill(event.GetQ2());
-    //std::cout << "Q2: " << event.GetQ2() << std::endl;
     h_xb->Fill(event.Getxb());
     h_y->Fill(event.Gety());
     h_nu->Fill(event.Getnu());
@@ -269,30 +268,45 @@ void Monunfold::Fill(const Event& event) {
 
 }  
 
+
+
 void Monunfold::DrawHistoRec(const std::string filename) {
-    // Draw histograms and save them to a PDF file
+    // Draw histograms and save them to a PDF file and in a root file 
+    TFile* rootFile = new TFile((filename + ".root").c_str(), "RECREATE");
     TCanvas cREC("cREC", "cREC");
     cREC.Divide(3, 3);
     cREC.cd(1);
     h_Q2->Draw();
+    h_Q2->Write();
     cREC.cd(2);
     h_xb->Draw();
+    h_xb->Write();
     cREC.cd(3);
     h_y->Draw();
+    h_y->Write();
     cREC.cd(4);
     h_nu->Draw();
+    h_nu->Write();
     cREC.cd(5);
     h_W2->Draw();
+    h_W2->Write();
     cREC.cd(6);
     h_z->Draw();
+    h_z->Write();
     cREC.cd(7);
     h_pt2->Draw();
+    h_pt2->Write();
     cREC.cd(8);
     h_phih->Draw();
+    h_phih->Write();
     cREC.cd(9);
     h_vertexZ->Draw();
+    h_vertexZ->Write();
     cREC.Print((filename + ".pdf").c_str());
+    rootFile->Close();
+    delete rootFile; 
 }
+
 
 void Monunfold::DrawHistoMC(const std::string filename) {
     // Draw histograms and save them to a PDF file

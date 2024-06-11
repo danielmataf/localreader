@@ -21,7 +21,9 @@ deltaptsq::deltaptsq(CutSet cutsD, CutSet cutsA, const std::string& targetName):
     targetName(targetName),
     DptMatrix(Dptbin, std::vector<std::vector<double>>(Dptbin, std::vector<double>(Dptbin, 0.0))),
     errorDptMatrix(Dptbin,  std::vector<std::vector<double>>(Dptbin, std::vector<double>(Dptbin, 0.0))), 
-    hDpt_Q_nu_zD(new TH3F (("Dpt:nu,z,pt2,D_"+targetName).c_str(),("h_Dpt:nu,z,pt2,D_"+targetName).c_str(), Constants::Dptbin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Dptbin_nu,Constants::numinDpt,Constants::numaxDpt, Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
+    DptMatrixbis(Dptbin, std::vector<std::vector<double>>(Dptbin, std::vector<double>(Dptbin, 0.0))),
+    errorDptMatrixbis(Dptbin,  std::vector<std::vector<double>>(Dptbin, std::vector<double>(Dptbin, 0.0))), 
+hDpt_Q_nu_zD(new TH3F (("Dpt:nu,z,pt2,D_"+targetName).c_str(),("h_Dpt:nu,z,pt2,D_"+targetName).c_str(), Constants::Dptbin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Dptbin_nu,Constants::numinDpt,Constants::numaxDpt, Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
     hDpt_Q_nu_zA(new TH3F (("Dpt:nu,z,pt2,A_"+targetName).c_str(),("h_Dpt:nu,z,pt2,A_"+targetName).c_str(), Constants::Dptbin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Dptbin_nu,Constants::numinDpt,Constants::numaxDpt, Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
  
     hDpt_nu_z_pt2A_onlye(new TH3F (("Dpt:Q2, nu,z,A onlye_"+targetName).c_str(),("h_Dpt:Q2, nu,z,A onlye_"+targetName).c_str(), Constants::Dptbin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Dptbin_nu,numinDpt,numaxDpt,Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
@@ -87,7 +89,7 @@ void deltaptsq::FillHistograms(const Event& event) {
 }
 
 void deltaptsq::calcDpt(){
-    //using here X=nud, Y=z, Z=Q2
+    //using here X=nu, Y=z, Z=Q2
     int numBinsX = h_wD_pt->GetNbinsX();    //same bins 4 Deut and A 
     int numBinsY = h_wD_pt->GetNbinsY(); 
     int numBinsZ = h_wD_pt->GetNbinsZ(); 
@@ -141,6 +143,8 @@ void deltaptsq::writeMatrixToFile(const std::string& filename){
     outputFile.close();
 }
 
+
+
 void deltaptsq::multiplotDpt(){
     //x= xb, y=Q2, z=z
 
@@ -184,6 +188,49 @@ void deltaptsq::multiplotDpt(){
         
     }
     
+}
+TH3F* deltaptsq::getHwA() {
+    return h_wA_pt;
+}
+TH3F* deltaptsq::getHwA_sqpt2() {
+    return h_wA_sqpt2;
+}
+TH3F* deltaptsq::getHA3D() {
+    return h_A_pt3D;
+}
+
+void deltaptsq::calcDptCarbon( deltaptsq& deltaptsqOther){
+    int graph_pointnb=0;
+    //x= xb, y=Q2, z=z
+    TH3F* h_wA2_pt    = deltaptsqOther.getHwA();
+    TH3F* h_A2_pt3D   = deltaptsqOther.getHA3D();
+    TH3F* h_wA2_sqpt2 = deltaptsqOther.getHwA_sqpt2();
+    int counter_3D = 0;
+    int numBinsX = h_wA_pt->GetNbinsX();    //same bins 4 Deut and A 
+    int numBinsY = h_wA_pt->GetNbinsY(); 
+    int numBinsZ = h_wA_pt->GetNbinsZ(); 
+    for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {  
+        for (int Ybin = 1; Ybin <= numBinsY; Ybin++ ){
+            for (int Zbin =1; Zbin<=numBinsZ; Zbin++  ){
+                double valC2 = h_wA2_pt->GetBinContent(Xbin,Ybin,Zbin);
+                double valC1 = h_wA_pt->GetBinContent(Xbin,Ybin,Zbin);
+                double countC1 = h_A_pt3D->GetBinContent(Xbin,Ybin,Zbin);
+                double countC2 = h_A2_pt3D->GetBinContent(Xbin,Ybin,Zbin);
+                double sqvalC1 = h_wA_sqpt2->GetBinContent(Xbin,Ybin,Zbin);
+                double sqvalC2 = h_wA2_sqpt2->GetBinContent(Xbin,Ybin,Zbin);
+                double wavg_ptC1 = (countC1 != 0) ? valC1/countC1 : 0.0;
+                double wavg_ptC2 = (countC2 != 0) ? valC2/countC2 : 0.0;
+                double dpt_point = wavg_ptC2 - wavg_ptC1;
+                double varianceC1 = (countC1 != 0) ? sqvalC1/countC1 - wavg_ptC1*wavg_ptC1 : 0.0;
+                double varianceC2 = (countC2 != 0) ? sqvalC2/countC2 - wavg_ptC2*wavg_ptC2 : 0.0;
+                double Err_valC1 = (countC1 != 0) ? sqrt(varianceC1/countC1) : 0.0;
+                double Err_valC2 = (countC2 != 0) ? sqrt(varianceC2/countC2) : 0.0;
+                double Err_dpt_point = sqrt(Err_valC1*Err_valC1 + Err_valC2*Err_valC2);
+                DptMatrixbis[Xbin-1][Ybin-1][Zbin-1] = dpt_point;
+                errorDptMatrixbis[Xbin-1][Ybin-1][Zbin-1] = Err_dpt_point;
+            }
+        }
+    }
 }
 
 void deltaptsq::multiplotDpt(deltaptsq& dptother, deltaptsq& dptthird){
@@ -271,3 +318,35 @@ void deltaptsq::multiplotDpt(deltaptsq& dptother, deltaptsq& dptthird){
         
     }
 }
+
+void deltaptsq::multiplotDptbis(){
+   for (int x = 0; x< Dptbin; ++x){
+       double xbValue = h_wA_pt->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "sameTargetR_x" + std::to_string(xbValue) + ".pdf";
+        TCanvas canvasDpt("c", "Multiplot Dpt", 1200, 800);
+        canvasDpt.Divide(3, 2);
+        for (int y=0; y < Dptbin; ++y){
+            double Q2value = h_wA_pt->GetYaxis()->GetBinCenter(y + 1);
+            canvasDpt.cd(y + 1);
+            TGraphErrors *graphDpt = new TGraphErrors();
+            for (int z=0; z < Dptbin; ++z) {
+                double zValue = h_wA_pt->GetZaxis()->GetBinCenter(z + 1);
+                double value = DptMatrixbis[x][y][z];
+                double error = errorDptMatrixbis[x][y][z];
+                graphDpt->SetPoint(z, zValue, value);
+                graphDpt->SetPointError(z, 0.0, error);
+            }
+            graphDpt->SetTitle(("#Delta <p_{t}^{2}> vs z, Q^{2}=" + std::to_string(Q2value)).c_str());
+            graphDpt->GetXaxis()->SetTitle("z");
+            graphDpt->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+            graphDpt->SetMarkerStyle(20);
+            graphDpt->GetYaxis()->SetRangeUser(-1.0, 1.0); // Set Y axis range from -0.1 to 0.1
+            graphDpt->Draw("AP");
+
+            TLine *line = new TLine(graphDpt->GetXaxis()->GetXmin(), 0.0, graphDpt->GetXaxis()->GetXmax(), 0.0);
+            line->SetLineStyle(2); // Dotted line
+            line->Draw("same");
+        }
+        canvasDpt.SaveAs(pdfFileName.c_str()); 
+   }
+}  

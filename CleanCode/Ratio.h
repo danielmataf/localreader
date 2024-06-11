@@ -168,7 +168,7 @@ private:
     //Graphs
     TGraphErrors* graph_rat= new TGraphErrors();
 
-    //Storage of points (and errors)
+    //storage of points (and errors)
     std::vector<std::vector<std::vector<double>>> ratMatrix;    //three vectors for 3D matrix
     std::vector<std::vector<std::vector<double>>> errorMatrix;
     
@@ -176,12 +176,9 @@ private:
     std::vector<std::vector<std::vector<double>>> errorMatrixbis;
 
 
-    //TFile* outputFile;
     CutSet cutsD;
     CutSet cutsSn;
 
-    //TFile outputFile;
-    //creating a root file 
 };
 
 #endif 

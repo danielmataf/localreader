@@ -67,14 +67,16 @@ int main() {
 
     CutSet simC1cuts;   //C1
     CutSet simC2cuts;   //C2
+    CutSet truec1cuts;  //C1
 
-    simC1cuts.SetCutVz(-10,-0);     //vz cut for C1 target
+    simC1cuts.SetCutVz(-3,-2);     //vz cut for C1 target
     simC2cuts.SetCutVz(-8,-7);     //vz cut for C2 target
     //Fix target borders in constants. remember is not the definite vz cut, but a cut for target separation 
 
 
 
     int sumevts = 0;
+    Monunfold munfTrueC1(truec1cuts, "C1_true");
     Monunfold munfSimC1(simC1cuts, "C1_simf");
     Monunfold munfSimC2(simC2cuts, "C2_simf");
     Monitoring monSimC1(simC1cuts, "C1_sim");     //This needs to be figured out ASAP
@@ -92,28 +94,43 @@ int main() {
     for (int i=0; i<totalevts; i++){
             simCxC  = Sim_CxC.ProcessEventsInFile();
             simCxC_MC  = Sim_CxC.ProcessEventsInFileMC();
+            testCxC = MC_CxC.ProcessEventsInFile();
             counter_trueCxC++;
-            if ( simCxC.has_value()) {
-                counter_elCxC++;
-                Event eventsimCxC = simCxC.value();
-                
-                eventsimCxC.SetTargetType(1);
-                eventsimCxC.calcAll();
-//                eventsimCxC.calcMCAll();
-                //eventsimCxC.Print();
-                //eventsimCxC.PrintMC();
-                //monSimC1.FillHistogramsNoCuts(eventsimCxC);
-                //monSimC2.FillHistogramsNoCuts(eventsimCxC);
+            if (testCxC.has_value()){   //true data
+                Event eventCxC = testCxC.value();
+                eventCxC.SetTargetType(1);
+                eventCxC.calcAll();
+                munfTrueC1.FillHistogramsNoCuts(eventCxC);
 
-                //munfSimC1.Fill(eventsimCxC);    //this supposed to fil both rec and MC histos
-                //munfSimC1.FillHistogramsNoCutsMC(eventsimCxC);
-                munfSimC1.FillHistogramsNoCuts(eventsimCxC);
             }
-            if (simCxC_MC.has_value()) {
+            if (simCxC_MC.has_value()) {//simulated data 
                 Event eventsimCxC_MC = simCxC_MC.value();
                 eventsimCxC_MC.SetTargetType(1);
                 eventsimCxC_MC.calcMCAll();
                 munfSimC1.FillHistogramsNoCutsMC(eventsimCxC_MC);
+                    // We can Potentially create a function in the same class that takes as  arguments both
+                    // eventsimCxC and eventsimCxC_MC (filling histos with both banks)
+                    // probably eventsimCxC can exist outside the condition ? 
+                    // if not the condition simCxC.has_value can be contained in simCxC_MC.has_value 
+                    // after all simCxC_MC.has_value is supposed to work always, and from there we can read REC bank
+                    // ---- is working. But need to generalize for it to be used in true data too. And we need to check if is simulated by checking on MC rows
+                    // ssuggestion! see notebook 
+                    if ( simCxC.has_value()) {
+                        counter_elCxC++;
+                        Event eventsimCxC = simCxC.value();
+
+                        eventsimCxC.SetTargetType(1);
+                        eventsimCxC.calcAll();
+                        //eventsimCxC.calcMCAll();
+                        //eventsimCxC.Print();
+                        //eventsimCxC.PrintMC();
+                        //monSimC1.FillHistogramsNoCuts(eventsimCxC);
+                        //monSimC2.FillHistogramsNoCuts(eventsimCxC);
+                        //munfSimC1.Fill(eventsimCxC);    //this supposed to fil both rec and MC histos
+                        //munfSim   C1.FillHistogramsNoCutsMC(eventsimCxC);
+                        munfSimC1.FillHistogramsNoCuts(eventsimCxC);
+                    }
+
             }
             else{ counter_restCxC++;}
             files.displayProgress(i + 1, totalevts);
@@ -133,6 +150,7 @@ int main() {
     //munfSimC1.DrawHistograms("newC1monSIM_noCuts");
     munfSimC1.DrawHistoMC("newC1monSIM_noCutsMC");  
     munfSimC1.DrawHistoRec("newC1monSIM_noCutsREC");
+    munfTrueC1.DrawHistoRec("newC1monTRUE_noCutsREC");
 
     return 0;
 }

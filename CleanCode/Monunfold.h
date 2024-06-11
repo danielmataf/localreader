@@ -29,7 +29,8 @@ public:
     void FillHistogramsNoCuts( const Event&);
     void FillHistogramswCuts(const Event& );
     void FillHistogramsNoCutsMC(const Event& ); 
-
+    void Fill2DHistogramsRECMC(const Event& ); 
+    void CompareHistograms(Monunfold& , Monunfold& , const std::string& ) ;
 
     void FillMomentumHistograms(const Event& );
 

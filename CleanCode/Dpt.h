@@ -21,6 +21,9 @@ public:
     void FillHistograms(const Event& );
     void WriteHistos(const std::string );
     void calcDpt();
+    void calcDptCarbon(deltaptsq& ) ;      
+    void multiplotDptbis();
+
     //void PlotDpt(const std::string );
     void writeMatrixToFile(const std::string& );
     void calculateDpt(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
@@ -33,6 +36,10 @@ public:
         return errorDptMatrix;
     }
 
+    TH3F* getHwA();
+    TH3F* getHwA_sqpt2() ;
+    TH3F* getHA3D() ;
+    
 
 
 
@@ -120,19 +127,24 @@ private:
     TH1F *h_A_onlypt2; // = new TH1F("count:A_pt2", "count:A_pt2", 5  , pt2minDpt, pt2maxDpt  );    
 
     //histograms (3D, x,Q,z) for weighted  in squared pt2 (pt4) useful for VARIANCE
-    TH3 *h_wD_sqpt2; // = new TH3F("wD_sqpt2", "wD_sqpt2",Dptbin_x  , xminDpt, xmaxDpt,Dptbin_Q,QminDpt,QmaxDpt,Dptbin_z,zminDpt, zmaxDpt  );//definition w/ 3 args
-    TH3 *h_wA_sqpt2; // = new TH3F("wA_sqpt2", "wA_sqpt2",Dptbin_x  , xminDpt, xmaxDpt,Dptbin_Q,QminDpt,QmaxDpt,Dptbin_z,zminDpt, zmaxDpt  );
+    TH3F *h_wD_sqpt2; // = new TH3F("wD_sqpt2", "wD_sqpt2",Dptbin_x  , xminDpt, xmaxDpt,Dptbin_Q,QminDpt,QmaxDpt,Dptbin_z,zminDpt, zmaxDpt  );//definition w/ 3 args
+    TH3F *h_wA_sqpt2; // = new TH3F("wA_sqpt2", "wA_sqpt2",Dptbin_x  , xminDpt, xmaxDpt,Dptbin_Q,QminDpt,QmaxDpt,Dptbin_z,zminDpt, zmaxDpt  );
+
+    TH1F *h_xb_A_had;
+    TH1F *h_Q_A_had;
+    TH1F *h_z_A_had;
+
 
 
 
     //Graphs
     TGraphErrors* graph_rat= new TGraphErrors();
 
-    //Storage of points (and errors)
     std::vector<std::vector<std::vector<double>>> DptMatrix;    //three vectors for 3D matrix
     std::vector<std::vector<std::vector<double>>> errorDptMatrix;
+    std::vector<std::vector<std::vector<double>>> DptMatrixbis;    //three vectors for 3D matrix
+    std::vector<std::vector<std::vector<double>>> errorDptMatrixbis;
 
-    //TFile* outputFile;
     CutSet cutsD;
     CutSet cutsSn;
 
