@@ -32,7 +32,7 @@ int main() {
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCxC);
     ////files.ParDir2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/", simufilesLD2);   //do not uncomment this line
     
-    //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/Deut", simufilesLD2);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/Deut", simufilesLD2);  //uncomment for sim
     
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/C", simufilesCxC);  //uncomment for sim
 
@@ -61,6 +61,7 @@ int main() {
     std::optional<Event> testCuSn;
     std::optional<Event> testCxC;
     std::optional<Event> simLD2;
+    std::optional<Event> simLD2_MC;
     //std::optional<Event> simCuSn;
     std::optional<Event> simCxC;
     std::optional<Event> simCxC_MC; //testing this if we can loop twice top read MC events//
@@ -68,9 +69,15 @@ int main() {
     CutSet simC1cuts;   //C1
     CutSet simC2cuts;   //C2
     CutSet truec1cuts;  //C1
+    CutSet simLD2cuts;  //LD2
+
+    Ratio simrat3( simLD2cuts, simC1cuts, "C1_sim"); //calling the class with the corresponding cuts
+    Ratio simrat4( simLD2cuts, simC2cuts, "C2_sim"); // RE calling the class with the corresponding cuts for study with Cu
+
 
     simC1cuts.SetCutVz(-3,-2);     //vz cut for C1 target
     simC2cuts.SetCutVz(-8,-7);     //vz cut for C2 target
+    simLD2cuts.SetCutVz(-8,-2);    //vz cut for LD2 target
     //Fix target borders in constants. remember is not the definite vz cut, but a cut for target separation 
 
 
@@ -79,8 +86,12 @@ int main() {
     Monunfold munfTrueC1(truec1cuts, "C1_true");
     Monunfold munfSimC1(simC1cuts, "C1_simf");
     Monunfold munfSimC2(simC2cuts, "C2_simf");
+    Monunfold munfsimLD2(simLD2cuts, "LD2_simf");
     Monitoring monSimC1(simC1cuts, "C1_sim");     //This needs to be figured out ASAP
     Monitoring monSimC2(simC2cuts, "C2_sim");     //This needs to be figured out ASAP
+
+    //Ratio simratC1(simC1cuts, "C1_sim");
+
 
     int counter_el= 0.0;
     int counter_elLD2 = 0;
@@ -90,19 +101,14 @@ int main() {
 
     int counter_trueCxC= 0.0;
     int counter_elsimLD2= 0.0;
-    int totalevts = 3000;
+    int totalevts = 100;
     for (int i=0; i<totalevts; i++){
             simCxC  = Sim_CxC.ProcessEventsInFile();
             simCxC_MC  = Sim_CxC.ProcessEventsInFileMC();
             testCxC = MC_CxC.ProcessEventsInFile();
+            simLD2 = Sim_LD2.ProcessEventsInFile();
+            simLD2_MC = MC_LD2.ProcessEventsInFile();
             counter_trueCxC++;
-            if (testCxC.has_value()){   //true data
-                Event eventCxC = testCxC.value();
-                eventCxC.SetTargetType(1);
-                eventCxC.calcAll();
-                munfTrueC1.FillHistogramsNoCuts(eventCxC);
-
-            }
             if (simCxC_MC.has_value()) {//simulated data 
                 Event eventsimCxC_MC = simCxC_MC.value();
                 eventsimCxC_MC.SetTargetType(1);
@@ -129,7 +135,30 @@ int main() {
                         //munfSimC1.Fill(eventsimCxC);    //this supposed to fil both rec and MC histos
                         //munfSim   C1.FillHistogramsNoCutsMC(eventsimCxC);
                         munfSimC1.FillHistogramsNoCuts(eventsimCxC);
+                        monSimC1.FillHistogramswCuts(eventsimCxC);
+                        munfSimC1.FillHistComp(eventsimCxC, eventsimCxC_MC);
+                        simrat3.FillHistograms(eventsimCxC);
+                        simrat4.FillHistograms(eventsimCxC);
                     }
+
+            }
+
+            if ( simLD2_MC.has_value()) {
+                counter_elsimLD2++;
+                Event eventsimLD2_MC = simLD2.value();
+                eventsimLD2_MC.SetTargetType(1);
+                eventsimLD2_MC.calcMCAll();
+                munfsimLD2.FillHistogramsNoCutsMC(eventsimLD2_MC);
+                if ( simLD2.has_value()) {
+                    counter_elLD2++;
+                    Event eventLD2 = testLD2.value();
+                    eventLD2.SetTargetType(0);
+                    eventLD2.calcAll();
+                    munfsimLD2.FillHistogramsNoCuts(eventLD2);
+                    munfsimLD2.FillHistComp(eventLD2, eventsimLD2_MC);
+                    //simrat3.Fill(eventLD2);
+                    //simrat4.Fill(eventLD2);
+                }
 
             }
             else{ counter_restCxC++;}
@@ -151,6 +180,11 @@ int main() {
     munfSimC1.DrawHistoMC("newC1monSIM_noCutsMC");  
     munfSimC1.DrawHistoRec("newC1monSIM_noCutsREC");
     munfTrueC1.DrawHistoRec("newC1monTRUE_noCutsREC");
+    munfSimC1.DrawCompRECMC("test2D");
+    munfsimLD2.DrawHistoMC("test2D_LD2");
+    simrat3.calcRcarbon(simrat4);
+    simrat3.multiplotRbis();
+
 
     return 0;
 }

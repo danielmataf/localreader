@@ -189,6 +189,30 @@ void Monunfold::FillHistogramsNoCutsMC(const Event& event) {            //EVERYT
 }
 
 
+void Monunfold::FillHistComp(const Event& eventsim, const Event& eventmc){
+    h_Q2comp->Fill(eventsim.GetQ2(), eventmc.GetQ2MC());
+    h_xbcomp->Fill(eventsim.Getxb(), eventmc.GetxbMC());
+    h_ycomp->Fill(eventsim.Gety(), eventmc.GetyMC());
+    h_nucomp->Fill(eventsim.Getnu(), eventmc.GetnuMC());
+    h_W2comp->Fill(eventsim.GetW2(), eventmc.GetW2MC());
+    h_vertexZcomp->Fill(eventsim.GetVz(), eventmc.GetVzMC());
+    for (const Particle& MChadron: eventmc.GetMCHadrons()){
+            
+    for (const Particle& hadron : eventsim.GetHadrons()) {
+        if (MChadron.GetPID() == Constants::PION_PLUS_PID  ){   
+        h_zcomp->Fill(hadron.Getz(), MChadron.GetzMC());
+        h_pt2comp->Fill(hadron.Getpt2(), MChadron.Getpt2MC());
+        h_phihcomp->Fill(hadron.Getphih(), MChadron.GetphihMC());
+        }
+    }
+    }
+    //h_zcomp->Fill(eventsim.Getz(), eventmc.GetzMC());
+    //h_pt2comp->Fill(eventsim.Getpt2(), eventmc.Getpt2MC());
+    //h_phihcomp->Fill(eventsim.Getphih(), eventmc.GetphihMC());
+    //h_vertexZcomp->Fill(eventsim.GetVz(), eventmc.GetVzMC());
+}
+
+
 
 void Monunfold::Fill(const Event& event) {
     // Fill histograms with event data
@@ -268,7 +292,7 @@ void Monunfold::Fill(const Event& event) {
 
 }  
 
-
+    
 
 void Monunfold::DrawHistoRec(const std::string filename) {
     // Draw histograms and save them to a PDF file and in a root file 
