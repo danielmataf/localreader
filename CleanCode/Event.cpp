@@ -224,7 +224,8 @@ int Event::CalcMCKinematics(){
     thetaelectronMC = theta_eMC;
     acosyadaMC = Constants::elBeam.Vect().Dot(MCelectron.GetMomentum().Vect()) / (Constants::elBeam.Vect().Mag() * MCelectron.GetMomentum().Vect().Mag());
     MCQ2 =  4 * Constants::elBeam.E() * MCelectron.GetMomentum().E() * pow(sin(theta_eMC / 2), 2);
-    if (MCQ2 < 0.8){
+/* 
+   if (MCQ2 < 0.8){
         std::cout << " " << std::endl;
         std::cout << "MCQ2 below threshold!" << std::endl;
         std::cout << "Beam Energy: " << Constants::elBeam.E() << std::endl;
@@ -239,6 +240,7 @@ int Event::CalcMCKinematics(){
         std::cout << "MCQ2: " << MCQ2 << std::endl;
         
     }
+*/
     MCnu  = Constants::elBeam.E() - MCelectron.GetMomentum().E();
     MCy = MCnu / Constants::elBeam.E(); 
     MCw2 =  m_D* m_D + 2 * m_D * MCnu - MCQ2;
