@@ -28,6 +28,7 @@ public:
     void FillHistograms(const Event& );
     void FillHistogramsNoCuts( const Event&);
     void FillHistogramswCuts(const Event& );
+    void FillHistogramswCutsMC(const Event& );
     void FillHistogramsNoCutsMC(const Event& ); 
     void Fill2DHistogramsRECMC(const Event& ); 
     void CompareHistograms(Monunfold& , Monunfold& , const std::string& ) ;
@@ -47,6 +48,9 @@ public:
     void DrawMomentumHadronHistograms(const std::string );
     void DrawHistogramsNoCuts(const std::string);
     void DrawVertexHistograms(const std::string);
+    void SaveHistRoot(const std::string& ) ;
+    void SaveHistMCRoot(const std::string& ) ;
+    
 
 
 

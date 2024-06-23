@@ -3,6 +3,7 @@
 #include <TH1F.h>
 #include <vector>
 #include <TCanvas.h>
+#include <TLatex.h>
 #include <TGraph.h>
 #include <TLine.h>
 #include <TGraphErrors.h>
@@ -294,7 +295,7 @@ void deltaptsq::multiplotDpt(deltaptsq& dptother, deltaptsq& dptthird){
             TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
             legend->AddEntry(graphDpt, "Sn", "lp");
             legend->AddEntry(graphOther, "Cu", "lp");
-            legend->AddEntry(graphThird, "CxC", "lp");
+            legend->AddEntry(graphThird, "C", "lp");
 
             TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 0.0, graphDpt->GetXaxis()->GetXmax(), 0.0);
             line->SetLineStyle(2); // Dotted line
@@ -309,6 +310,15 @@ void deltaptsq::multiplotDpt(deltaptsq& dptother, deltaptsq& dptthird){
             mg->Draw("APE1");
             legend->Draw("same");
             line->Draw("same");
+
+                        TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+
         
 
 
@@ -346,6 +356,15 @@ void deltaptsq::multiplotDptbis(){
             TLine *line = new TLine(graphDpt->GetXaxis()->GetXmin(), 0.0, graphDpt->GetXaxis()->GetXmax(), 0.0);
             line->SetLineStyle(2); // Dotted line
             line->Draw("same");
+
+                        TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+
         }
         canvasDpt.SaveAs(pdfFileName.c_str()); 
    }

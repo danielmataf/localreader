@@ -27,22 +27,22 @@ int main() {
     std::vector<std::string> filenamesCxC;
     std::vector<std::string> simufilesCxC;
 
-    //files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesLD2);
-    //files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
-    //files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCxC);
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/018428/", filenamesLD2);
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/018348/", filenamesCuSn);
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/C_v0/018451/", filenamesCxC);
     ////files.ParDir2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/", simufilesLD2);   //do not uncomment this line
     
-    //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/Deut", simufilesLD2);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/Deut", simufilesLD2);  //uncomment for sim
     
-    //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/C", simufilesCxC);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/C", simufilesCxC);  //uncomment for sim
 
     //Uncomment 4 test on ifarm, comment all above
-    files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideLD2/dst/recon/018528/", filenamesLD2);
-    files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCuSn/dst/recon/018624/", filenamesCuSn);
-    files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCxC/dst/recon/018451/", filenamesCxC);
-    //uncommment also below for sim  on ifarm
-    files.SnDir2Vector("/volatile/clas12/dmat/gen/C/", simufilesLD2);  //uncomment for sim
-    files.SnDir2Vector("/volatile/clas12/dmat/gen/C/", simufilesCxC);  //uncomment for sim 
+    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideLD2/dst/recon/018528/", filenamesLD2);
+    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCuSn/dst/recon/018624/", filenamesCuSn);
+    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCxC/dst/recon/018451/", filenamesCxC);
+    ////uncommment also below for sim  on ifarm
+    //files.SnDir2Vector("/volatile/clas12/dmat/gen/C/", simufilesLD2);  //uncomment for sim
+    //files.SnDir2Vector("/volatile/clas12/dmat/gen/C/", simufilesCxC);  //uncomment for sim 
 
 
     std::cout<< "Hello world \n";
@@ -96,11 +96,28 @@ int main() {
     Ratio simrat3( simLD2cuts, simC1cuts, "C1_sim"); //calling the class with the corresponding cuts
     Ratio simrat4( simLD2cuts, simC2cuts, "C2_sim"); // RE calling the class with the corresponding cuts for study with Cu
 
+    cratio simcratC1(simLD2cuts, simC1cuts, "C1_sim");
+    cratio simcratC2(simLD2cuts, simC2cuts, "C2_sim");
+    cratio truecratC1(trueLD2cuts, truec1cuts, "C1_true");
+    cratio truecratC2(trueLD2cuts, truec2cuts, "C2_true");
+    cratio truecratCu(trueLD2cuts, trueCucuts, "Cu_true");
+    cratio truecratSn(trueLD2cuts, trueSncuts, "Sn_true");     
+
+    deltaptsq broadsimC1(simLD2cuts, simC1cuts, "C1_sim");
+    deltaptsq broadsimC2(simLD2cuts, simC2cuts, "C2_sim");
+    deltaptsq broadtrueC1(trueLD2cuts, truec1cuts, "C1_true");
+    deltaptsq broadtrueC2(trueLD2cuts, truec2cuts, "C2_true");
+    deltaptsq broadtrueCu(trueLD2cuts, trueCucuts, "Cu_true");
+    deltaptsq broadtrueSn(trueLD2cuts, trueSncuts, "Sn_true");     
 
     
 
     int sumevts = 0;
     Monunfold munfTrueC1(truec1cuts, "C1_true");
+    Monunfold munfTrueC2(truec2cuts, "C2_true");
+    Monunfold munfTrueLD2(trueLD2cuts, "LD2_true");
+    Monunfold munfTrueCu(trueCucuts, "Cu_true");
+    Monunfold munfTrueSn(trueSncuts, "Sn_true");
     Monunfold munfSimC1(simC1cuts, "C1_simf");
     Monunfold munfSimC2(simC2cuts, "C2_simf");
     Monunfold munfsimLD2(simLD2cuts, "LD2_simf");
@@ -109,11 +126,11 @@ int main() {
 
     //Ratio simratC1(simC1cuts, "C1_sim");
 
-    int totalevts = 2000000;
+    int totalevts = 10000;
 
     for (int i=0; i<totalevts; i++){
-            simCxC  = Sim_CxC.ProcessEventsInFile();
-            simCxC_MC  = Sim_CxC.ProcessEventsInFileMC();
+        simCxC  = Sim_CxC.ProcessEventsInFile();
+        simCxC_MC  = Sim_CxC.ProcessEventsInFileMC();
 	    simLD2 = Sim_LD2.ProcessEventsInFile();
 	    simLD2_MC = Sim_LD2.ProcessEventsInFileMC();
 	    testLD2 = MC_LD2.ProcessEventsInFile();
@@ -123,48 +140,76 @@ int main() {
 	        Event eventtestLD2 = testLD2.value();
 	        eventtestLD2.SetTargetType(0);
 	        eventtestLD2.calcAll();
-		rat.FillHistograms(eventtestLD2);
-		rat2.FillHistograms(eventtestLD2);
-		rat3.FillHistograms(eventtestLD2);
+            munfTrueLD2.FillHistogramswCuts(eventtestLD2);
+		    rat.FillHistograms(eventtestLD2);
+		    rat2.FillHistograms(eventtestLD2);
+		    rat3.FillHistograms(eventtestLD2);
+            truecratSn.FillHistograms(eventtestLD2);
+		    truecratCu.FillHistograms(eventtestLD2);
+		    truecratC1.FillHistograms(eventtestLD2);
+		    truecratC1.FillHistograms(eventtestLD2);
+            broadtrueC1.FillHistograms(eventtestLD2);
+            broadtrueC2.FillHistograms(eventtestLD2);
+            broadtrueCu.FillHistograms(eventtestLD2);
+            broadtrueSn.FillHistograms(eventtestLD2);
+
+
 	    }
 	    if (testCuSn.has_value()) {
-		Event eventtestCuSn = testCuSn.value();
-                eventtestCuSn.SetTargetType(1);
-                eventtestCuSn.calcAll();
-                rat.FillHistograms(eventtestCuSn);
-                rat2.FillHistograms(eventtestCuSn);
-	    } 
-            if (testCxC.has_value()) {
-                Event eventtestCxC = testCxC.value();
-                eventtestCxC.SetTargetType(1);              //is it targettype 1 or targettype 2? needs to be checked and modified accordingly
-                eventtestCxC.calcAll();
-                rat3.FillHistograms(eventtestCxC);
+		    Event eventtestCuSn = testCuSn.value();
+            eventtestCuSn.SetTargetType(1);
+            eventtestCuSn.calcAll();
+            munfTrueCu.FillHistogramswCuts(eventtestCuSn);
+            munfTrueSn.FillHistogramswCuts(eventtestCuSn);
+            rat.FillHistograms(eventtestCuSn);
+            rat2.FillHistograms(eventtestCuSn);
+	        truecratSn.FillHistograms(eventtestCuSn);
+            truecratCu.FillHistograms(eventtestCuSn);
+            broadtrueCu.FillHistograms(eventtestCuSn);
+            broadtrueSn.FillHistograms(eventtestCuSn);
+
+        } 
+        if (testCxC.has_value()) {
+            Event eventtestCxC = testCxC.value();
+            eventtestCxC.SetTargetType(1);              //is it targettype 1 or targettype 2? needs to be checked and modified accordingly
+            eventtestCxC.calcAll();
+            munfTrueC1.FillHistogramswCuts(eventtestCxC);
+            munfTrueC2.FillHistogramswCuts(eventtestCxC);
+            rat3.FillHistograms(eventtestCxC);
+            rat4.FillHistograms(eventtestCxC);
+            truecratC1.FillHistograms(eventtestCxC);
+            truecratC2.FillHistograms(eventtestCxC);
+            broadtrueC1.FillHistograms(eventtestCxC);
+            broadtrueC2.FillHistograms(eventtestCxC);
+
+
 	    }
-            if (simCxC_MC.has_value()) {//simulated data
-                Event eventsimCxC_MC = simCxC_MC.value();
-                eventsimCxC_MC.SetTargetType(1);
-                eventsimCxC_MC.calcMCAll();
-                munfSimC1.FillHistogramsNoCutsMC(eventsimCxC_MC);
-                    // We can Potentially create a function in the same class that takes as  arguments both
-                    // eventsimCxC and eventsimCxC_MC (filling histos with both banks)
-                    // probably eventsimCxC can exist outside the condition ? 
-                    // if not the condition simCxC.has_value can be contained in simCxC_MC.has_value 
-                    // after all simCxC_MC.has_value is supposed to work always, and from there we can read REC bank
-                    // ---- is working. But need to generalize for it to be used in true data too. And we need to check if is simulated by checking on MC rows
-                    // ssuggestion! see notebook 
-                    if ( simCxC.has_value()) {
-                        Event eventsimCxC = simCxC.value();
+        if (simCxC_MC.has_value()) {//simulated data
+            Event eventsimCxC_MC = simCxC_MC.value();
+            eventsimCxC_MC.SetTargetType(1);
+            eventsimCxC_MC.calcMCAll();
+            //munfSimC1.FillHistogramswCutsMC(eventsimCxC_MC);
+                // We can Potentially create a function in the same class that takes as  arguments both
+                // eventsimCxC and eventsimCxC_MC (filling histos with both banks)
+                // probably eventsimCxC can exist outside the condition ? 
+                // if not the condition simCxC.has_value can be contained in simCxC_MC.has_value 
+                // after all simCxC_MC.has_value is supposed to work always, and from there we can read REC bank
+                // ---- is working. But need to generalize for it to be used in true data too. And we need to check if is simulated by checking on MC rows
+                // ssuggestion! see notebook 
+                if ( simCxC.has_value()) {
+                    Event eventsimCxC = simCxC.value();
+                    eventsimCxC.SetTargetType(1);
+                    eventsimCxC.calcAll();
+                    munfSimC1.FillHistogramswCuts(eventsimCxC);
+                    simrat3.FillHistograms(eventsimCxC);
+                    simrat4.FillHistograms(eventsimCxC);
+                    simcratC1.FillHistograms(eventsimCxC);
+                    simcratC2.FillHistograms(eventsimCxC);
+                    broadsimC1.FillHistograms(eventsimCxC);
+                    broadsimC2.FillHistograms(eventsimCxC);
 
-                        eventsimCxC.SetTargetType(1);
-                        eventsimCxC.calcAll();
-                        munfSimC1.FillHistogramsNoCuts(eventsimCxC);
-                        monSimC1.FillHistogramswCuts(eventsimCxC);
-                        munfSimC1.FillHistComp(eventsimCxC, eventsimCxC_MC);
-                        simrat3.FillHistograms(eventsimCxC);
-                        simrat4.FillHistograms(eventsimCxC);
-                    }
-
-            }
+                }
+        }
 
             //else{ counter_restCxC++;}
             files.displayProgress(i + 1, totalevts);
@@ -181,18 +226,41 @@ int main() {
    // std::cout << "is it compatible?  " << counter_restCxC +  counter_elCxC <<" =? " << counter_trueCxC<< std::endl;
 
 
-    munfSimC1.DrawHistograms("newC1monSIM_noCuts");
-    munfSimC1.DrawHistoMC("newC1monSIM_noCutsMC");  
-    munfSimC1.DrawHistoRec("newC1monSIM_noCutsREC");
-    munfTrueC1.DrawHistoRec("newC1monTRUE_noCutsREC");
-    munfSimC1.DrawCompRECMC("test2D");
-    munfsimLD2.DrawHistoMC("test2D_LD2");
+    //munfSimC1.DrawHistograms("newC1monSIM_noCuts");
+    //munfSimC1.DrawHistoMC("newC1monSIM_noCutsMC");  
+    //munfSimC1.DrawHistoRec("newC1monSIM_noCutsREC");
+    //munfTrueC1.DrawHistoRec("newC1monTRUE_noCutsREC");
+    //munfSimC1.DrawCompRECMC("test2D");
+    //munfsimLD2.DrawHistoMC("test2D_LD2");
+    munfTrueLD2.SaveHistRoot("LD2true");
+    munfTrueCu.SaveHistRoot("Ctrue");
+    munfTrueSn.SaveHistRoot("Sntrue");
+    munfTrueC1.SaveHistRoot("C1true");
+    munfTrueC2.SaveHistRoot("C2true");
+    munfSimC1.SaveHistRoot("C1sim");
+    munfSimC2.SaveHistRoot("C2sim");
     simrat3.calcRcarbon(simrat4);
-    simrat3.multiplotRbis();
+    rat3.calcRcarbon(rat4);
+    //simrat3.multiplotRbis();
+    rat3.multiplotRbis();
     rat.calcR();
     rat2.calcR();
-    rat2.writeMatrixToFile("matrix2_test.txt");
+    //rat2.writeMatrixToFile("matrix2_test.txt");
     rat3.calcR();
     rat.multiplotR(rat2, rat3);
+    truecratC1.calcCratio();
+    truecratC2.calcCratio();
+    truecratCu.calcCratio();
+    truecratSn.calcCratio();
+    simcratC1.calcCratio();
+    simcratC2.calcCratio();
+    truecratSn.multiplotCratio(truecratCu, truecratC1);
+    broadsimC1.calcDpt();
+    broadsimC2.calcDpt();
+    broadtrueC1.calcDpt();
+    broadtrueC2.calcDpt();
+    broadtrueCu.calcDpt();
+    broadtrueSn.calcDpt();
+    broadtrueSn.multiplotDpt(broadtrueCu, broadtrueC1);
     return 0;
 }

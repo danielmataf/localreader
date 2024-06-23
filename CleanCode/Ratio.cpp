@@ -1,6 +1,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH1F.h>
+#include <TLatex.h>  
 #include <vector>
 #include <TCanvas.h>
 #include <TGraph.h>
@@ -71,11 +72,12 @@ void Ratio::FillHistograms(const Event& event) {
         //std::cout << "nu = " << event.Getnu() << std::endl;
         for (const Particle& hadron : event.GetHadrons()) {
             if (cutd.PassCutsHadrons(hadron)==true){
+                //if (hadron.GetPID() == Constants::PION_PLUS_PID  ){
                 ////not using the if (==false) return statement 
 
                 h_nu_z_pt2D->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
             //std::cout << "nimporte quoi" << event.Getnu()<< ";" << hadron.Getz()<<","<< hadron.Getpt2() <<std::endl;
-
+                //}
             }
         }
     }
@@ -93,6 +95,7 @@ void Ratio::FillHistograms(const Event& event) {
 
 
             if (cuta.PassCutsHadrons(hadron)==true){
+                //if (hadron.GetPID() == Constants::PION_PLUS_PID  ){
                 h_nu_z_pt2A->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 h_nu_A_had->Fill(event.Getnu() );   //these 3 histos were added to monitor CxC self Ratio
                 h_z_A_had->Fill(hadron.Getz()); //these 3 histos were added to monitor CxC self Ratio
@@ -104,7 +107,7 @@ void Ratio::FillHistograms(const Event& event) {
                 //    h_nu_z_pt2C2->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 //}
             //std::cout << "nimporte quoi N" << event.Getnu()<< ";" << hadron.Getz()<<","<< hadron.Getpt2() <<std::endl;
-
+                //}
             }
         }
         //Add Here Cu && change cut for Sn here. 1st cut is passelectrons 
@@ -283,15 +286,16 @@ void Ratio::writeMatrixToFile(const std::string& filename) {
 
 void Ratio::multiplotR() {
     for (int x = 0; x < Rbin; ++x) {
-
         double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
         std::string pdfFileName = "multiplotR_nu" + std::to_string(nuValue) + ".pdf";
         TCanvas canvas("c", "Multiplot R", 1200, 800);
         canvas.Divide(3, 2); 
+        
         for (int z = 0; z < Rbin; ++z) {
             double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
             canvas.cd(z + 1);
             TGraphErrors *graph = new TGraphErrors();
+            
             for (int y = 0; y < Rbin; ++y) {
                 double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
                 double value = ratMatrix[x][y][z];
@@ -299,17 +303,21 @@ void Ratio::multiplotR() {
                 graph->SetPoint(y, zValue, value);
                 graph->SetPointError(y, 0.0, error); 
             }
+            
             graph->SetTitle(("R vs z, pt2=" + std::to_string(pt2Value)).c_str());
             graph->GetXaxis()->SetTitle("z");
             graph->GetYaxis()->SetTitle("R");
             graph->SetMarkerStyle(20);
-            graph->SetMarkerStyle(20);
-            graph->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
+            graph->GetYaxis()->SetRangeUser(0.0, 2.0);
             graph->Draw("AP");
+
             
+
             TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
-            line->SetLineStyle(2); // Dotted line
+            line->SetLineStyle(2);
             line->Draw("same");
+
+            delete line;  // Clean up
         }
 
         canvas.SaveAs(pdfFileName.c_str());
@@ -371,10 +379,11 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
             graphThird->SetMarkerColor(kGreen);
             //graphOther->Draw("P");
             
+
             TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
             legend->AddEntry(graph, "Sn", "lp");
             legend->AddEntry(graphOther, "Cu", "lp");
-            legend->AddEntry(graphThird, "CxC", "lp");
+            legend->AddEntry(graphThird, "C", "lp");
 
             TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
             line->SetLineStyle(2); // Dotted line
@@ -389,6 +398,14 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
             mg->Draw("APE1");
             legend->Draw("same");
             line->Draw("same");
+            
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
         
         }
 
@@ -468,7 +485,7 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird, Ratio& ratiosimone
             TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
             legend->AddEntry(graph, "Sn", "lp");
             legend->AddEntry(graphOther, "Cu", "lp");
-            legend->AddEntry(graphThird, "CxC", "lp");
+            legend->AddEntry(graphThird, "C", "lp");
             legend->AddEntry(graphSimone, "Sn (sim)", "lp");
             legend->AddEntry(graphSimtwo, "Cu (sim)", "lp");
 
@@ -487,6 +504,13 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird, Ratio& ratiosimone
             mg->Draw("APE1");
             legend->Draw("same");
             line->Draw("same");
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
         
         }
 
@@ -523,6 +547,13 @@ void Ratio::multiplotRbis() {
             TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
             line->SetLineStyle(2); // Dotted line
             line->Draw("same");
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
         }
 
         canvas.SaveAs(pdfFileName.c_str());

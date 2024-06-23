@@ -6,6 +6,8 @@
 #include <TGraph.h>
 #include <TGraphErrors.h>
 #include <TLine.h>
+#include <TLatex.h>  
+
 #include <TPad.h>
 #include <fstream>
 #include <math.h>
@@ -231,7 +233,7 @@ void cratio::multiplotCratio( cratio& cratioOther, cratio& cratioThird){
             TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
             legend->AddEntry(graphCratio, "Sn", "lp");
             legend->AddEntry(graphCratioOther, "Cu", "lp");
-            legend->AddEntry(graphCratioThird, "CxC", "lp");
+            legend->AddEntry(graphCratioThird, "C", "lp");
 
             TLine *line = new TLine(graphCratio->GetXaxis()->GetXmin(), 1.0, graphCratio->GetXaxis()->GetXmax(), 1.0);
             line->SetLineStyle(2); // Dotted line
@@ -245,6 +247,13 @@ void cratio::multiplotCratio( cratio& cratioOther, cratio& cratioThird){
             mg->Draw("APE1");
             legend->Draw("same");
             line->Draw("same");
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
 
 
 

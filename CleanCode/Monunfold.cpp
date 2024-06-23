@@ -170,6 +170,109 @@ void Monunfold::FillHistogramsNoCuts(const Event& event) {
 }
 
 
+
+void Monunfold::FillHistogramswCuts(const Event& event) {
+    if (cut1.PassCutsDetectors(event)) {
+        // Fill histograms after passing detector cuts
+        h_vertexZ->Fill(event.GetVz()); // Fill vertex Z histogram
+
+        // Fill other histograms related to electron variables
+        h_Q2->Fill(event.GetQ2());
+        h_xb->Fill(event.Getxb());
+        h_y->Fill(event.Gety());
+        h_nu->Fill(event.Getnu());
+        h_W2->Fill(event.GetW2());
+
+        // Fill electron momentum histograms
+        Particle electron = event.GetElectron();
+        //h_px_el->Fill(electron.GetMomentum().X());
+        //h_py_el->Fill(electron.GetMomentum().Y());
+        //h_pz_el->Fill(electron.GetMomentum().Z());
+        //h_ptot_el->Fill(sqrt(electron.GetMomentum().Mag2()));
+        //h_theta_el->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI);
+        //h_phi_el->Fill(electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+        //h_polcoord_el->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI, electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+        //h_E_el->Fill(electron.GetMomentum().E());
+        //h_E_el_theta->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI, electron.GetMomentum().E());
+        //h_E_el_phi->Fill(electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0, electron.GetMomentum().E());
+
+        // Loop over hadrons and fill histograms for those passing hadron cuts
+        for (const Particle& hadron : event.GetHadrons()) {
+            if (cut1.PassCutsHadrons(hadron)) {
+                if (hadron.GetPID() == Constants::PION_PLUS_PID) {
+                    h_z->Fill(hadron.Getz());
+                    h_pt2->Fill(hadron.Getpt2());
+                    h_phih->Fill(hadron.Getphih());
+                    //h_px_pi->Fill(hadron.GetMomentum().X());
+                    //h_py_pi->Fill(hadron.GetMomentum().Y());
+                    //h_pz_pi->Fill(hadron.GetMomentum().Z());
+                    //h_ptot_pi->Fill(hadron.GetMomentum().P());
+                    //h_theta_pi->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI);
+                    //h_phi_pi->Fill(hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+                    //h_polcoord_pi->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI, hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+                    //h_E_pi->Fill(hadron.GetMomentum().E());
+                    //h_E_pi_theta->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI, hadron.GetMomentum().E());
+                    //h_E_pi_phi->Fill(hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0, hadron.GetMomentum().E());
+                    //h_vertexZ_pi->Fill(hadron.GetParticleVertexZ());
+                    //h_DeltaVz->Fill(event.GetVz() - hadron.GetParticleVertexZ());
+                }
+            }
+        }
+    }
+}
+
+
+void Monunfold::FillHistogramswCutsMC(const Event& event) {
+    if (cut1.PassCutsDetectors(event)) {
+        // Fill histograms after passing detector cuts for MC data
+        h_vertexZMC->Fill(event.GetVz()); // Fill MC vertex Z histogram
+
+        // Fill other histograms related to MC electron variables
+        h_Q2MC->Fill(event.GetQ2());
+        h_xbMC->Fill(event.Getxb());
+        h_yMC->Fill(event.Gety());
+        h_nuMC->Fill(event.Getnu());
+        h_W2MC->Fill(event.GetW2());
+
+        // Fill MC electron momentum histograms
+        Particle electron = event.GetElectron();
+        //h_px_el->Fill(electron.GetMomentum().X()); // Assuming the same histogram as in real data
+        //h_py_el->Fill(electron.GetMomentum().Y());
+        //h_pz_el->Fill(electron.GetMomentum().Z());
+        //h_ptot_el->Fill(sqrt(electron.GetMomentum().Mag2()));
+        //h_theta_el->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI);
+        //h_phi_el->Fill(electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+        //h_polcoord_el->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI, electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+        //h_E_el->Fill(electron.GetMomentum().E());
+        //h_E_el_theta->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI, electron.GetMomentum().E());
+        //h_E_el_phi->Fill(electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0, electron.GetMomentum().E());
+
+        // Loop over MC hadrons and fill histograms for those passing hadron cuts
+        for (const Particle& hadron : event.GetHadrons()) {
+            if (cut1.PassCutsHadrons(hadron)) {
+                if (hadron.GetPID() == Constants::PION_PLUS_PID) {
+                    h_zMC->Fill(hadron.Getz());
+                    h_pt2MC->Fill(hadron.Getpt2());
+                    h_phihMC->Fill(hadron.Getphih());
+                    //h_px_pi->Fill(hadron.GetMomentum().X()); // Assuming the same histogram as in real data
+                    //h_py_pi->Fill(hadron.GetMomentum().Y());
+                    //h_pz_pi->Fill(hadron.GetMomentum().Z());
+                    //h_ptot_pi->Fill(hadron.GetMomentum().P());
+                    //h_theta_pi->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI);
+                    //h_phi_pi->Fill(hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+                    //h_polcoord_pi->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI, hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+                    //h_E_pi->Fill(hadron.GetMomentum().E());
+                    //h_E_pi_theta->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI, hadron.GetMomentum().E());
+                    //h_E_pi_phi->Fill(hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0, hadron.GetMomentum().E());
+                    //h_vertexZMC->Fill(hadron.GetParticleVertexZ()); // Fill MC hadron vertex Z histogram
+                    //h_DeltaVz->Fill(event.GetVz() - hadron.GetParticleVertexZ());
+                }
+            }
+        }
+    }
+}
+
+
 void Monunfold::FillHistogramsNoCutsMC(const Event& event) {            //EVERYTHING WORKS DONT DELETE
     // Fill histograms with no cuts
     h_Q2MC->Fill(event.GetQ2MC());
@@ -332,6 +435,50 @@ void Monunfold::DrawHistoRec(const std::string filename) {
 }
 
 
+void Monunfold::SaveHistRoot(const std::string& filenameREC) {
+    TFile* rootFile = new TFile((filenameREC + ".root").c_str(), "RECREATE");
+    //outputFile.Open(filenameREC.c_str(), "RECREATE");
+
+    // Write histograms related to real data
+    h_vertexZ->Write();
+    h_Q2->Write();
+    h_xb->Write();
+    h_y->Write();
+    h_nu->Write();
+    h_W2->Write();
+    //h_px_el->Write();
+    //h_py_el->Write();
+    //h_pz_el->Write();
+    //h_ptot_el->Write();
+    //h_theta_el->Write();
+    //h_phi_el->Write();
+    //h_polcoord_el->Write();
+    //h_E_el->Write();
+    //h_E_el_theta->Write();
+    //h_E_el_phi->Write();
+    h_z->Write();
+    h_pt2->Write();
+    h_phih->Write();
+    //h_px_pi->Write();
+    //h_py_pi->Write();
+    //h_pz_pi->Write();
+    //h_ptot_pi->Write();
+    //h_theta_pi->Write();
+    //h_phi_pi->Write();
+    //h_polcoord_pi->Write();
+    //h_E_pi->Write();
+    //h_E_pi_theta->Write();
+    //h_E_pi_phi->Write();
+    //h_vertexZ_pi->Write();
+    //h_DeltaVz->Write();
+
+    //    outputFile.Close();
+    rootFile->Close();
+    delete rootFile; 
+
+}
+
+
 void Monunfold::DrawHistoMC(const std::string filename) {
     // Draw histograms and save them to a PDF file
     TCanvas cMC("cMC", "cMC");
@@ -364,6 +511,51 @@ void Monunfold::DrawHistoMC(const std::string filename) {
     h_vertexZMC->SetLineColor(kRed);
     h_vertexZMC->Draw();
     cMC.Print((filename + ".pdf").c_str());
+
+}
+
+
+void Monunfold::SaveHistMCRoot(const std::string& filenameMC) {
+    TFile* rootFile = new TFile((filenameMC + ".root").c_str(), "RECREATE");
+
+    //outputFile.Open(filenameMC.c_str(), "UPDATE"); // "UPDATE" mode to append to an existing file or create a new one
+
+    // Write histograms related to MC simulated data
+    h_vertexZMC->Write();
+    h_Q2MC->Write();
+    h_xbMC->Write();
+    h_yMC->Write();
+    h_nuMC->Write();
+    h_W2MC->Write();
+    //h_px_el->Write(); // Assuming these are the same as real data for simplicity
+    //h_py_el->Write();
+    //h_pz_el->Write();
+    //h_ptot_el->Write();
+    //h_theta_el->Write();
+    //h_phi_el->Write();
+    //h_polcoord_el->Write();
+    //h_E_el->Write();
+    //h_E_el_theta->Write();
+    //h_E_el_phi->Write();
+    h_zMC->Write();
+    h_pt2MC->Write();
+    h_phihMC->Write();
+    //h_px_pi->Write(); // Assuming these are the same as real data for simplicity
+    //h_py_pi->Write();
+    //h_pz_pi->Write();
+    //h_ptot_pi->Write();
+    //h_theta_pi->Write();
+    //h_phi_pi->Write();
+    //h_polcoord_pi->Write();
+    //h_E_pi->Write();
+    //h_E_pi_theta->Write();
+    //h_E_pi_phi->Write();
+    //h_vertexZMC->Write(); // Assuming this is the MC hadron vertex Z histogram
+    //h_DeltaVz->Write();
+
+    //outputFile.Close();
+        rootFile->Close();
+    delete rootFile; 
 
 }
 
