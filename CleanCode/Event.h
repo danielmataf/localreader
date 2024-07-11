@@ -26,7 +26,9 @@ public:
     void SetVertexZ(double );
     void SetVertexZMC(double );
     void SetVertexX(double );
+    void SetVertexXMC(double );
     void SetVertexY(double );
+    void SetVertexYMC(double );
     //Setters of CALO data (only available for electrons)
     void SetCalSector(int );
     void Setlu(double );
@@ -49,7 +51,9 @@ public:
     double GetVz()const ;
     double GetVzMC()const ;
     double GetVx()const ;
+    double GetVxMC()const ;
     double GetVy()const ;
+    double GetVyMC()const ;
 
     const std::vector<Particle>& GetHadrons() const;
     const std::vector<Particle>& GetMCHadrons() const;

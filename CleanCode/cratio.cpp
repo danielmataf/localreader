@@ -233,7 +233,7 @@ void cratio::multiplotCratio( cratio& cratioOther, cratio& cratioThird){
             TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
             legend->AddEntry(graphCratio, "Sn", "lp");
             legend->AddEntry(graphCratioOther, "Cu", "lp");
-            legend->AddEntry(graphCratioThird, "C", "lp");
+            legend->AddEntry(graphCratioThird, "CxC", "lp");
 
             TLine *line = new TLine(graphCratio->GetXaxis()->GetXmin(), 1.0, graphCratio->GetXaxis()->GetXmax(), 1.0);
             line->SetLineStyle(2); // Dotted line

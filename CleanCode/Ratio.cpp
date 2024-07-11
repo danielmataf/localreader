@@ -303,8 +303,13 @@ void Ratio::multiplotR() {
                 graph->SetPoint(y, zValue, value);
                 graph->SetPointError(y, 0.0, error); 
             }
-            
-            graph->SetTitle(("R vs z, pt2=" + std::to_string(pt2Value)).c_str());
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << pt2Value;
+            std::string formattedPt2Value = ss.str();
+            //std::cout << "formattedPt2Value = " << formattedPt2Value << std::endl;
+            std::string title = "R vs z, p_{t}^{2}=" + formattedPt2Value + " GeV^{2}";
+
+            graph->SetTitle((title).c_str() );
             graph->GetXaxis()->SetTitle("z");
             graph->GetYaxis()->SetTitle("R");
             graph->SetMarkerStyle(20);
@@ -364,8 +369,9 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
             ss << std::fixed << std::setprecision(2) << pt2Value;
             std::string formattedPt2Value = ss.str();
             //std::cout << "formattedPt2Value = " << formattedPt2Value << std::endl;
+            std::string title = "R vs z, p_{t}^{2}=" + formattedPt2Value + " GeV^{2}";
 
-            graph->SetTitle(("R vs z, pt2=" + std::to_string(pt2Value)).c_str());
+            graph->SetTitle(title.c_str());
             graph->GetXaxis()->SetTitle("z");
             graph->GetYaxis()->SetTitle("R");
             graph->SetMarkerStyle(20);
@@ -391,7 +397,7 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
             mg->Add(graph);
             mg->Add(graphOther);
             mg->Add(graphThird);
-            mg->SetTitle(("R vs z, pt2=" + formattedPt2Value).c_str());
+            mg->SetTitle((title).c_str() );
             mg->GetXaxis()->SetTitle("z");
             mg->GetYaxis()->SetTitle("R");
 

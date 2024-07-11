@@ -173,6 +173,8 @@ void Monunfold::FillHistogramsNoCuts(const Event& event) {
 
 void Monunfold::FillHistogramswCuts(const Event& event) {
     if (cut1.PassCutsDetectors(event)) {
+        if (cut1.PassCutsElectrons(event)==true) {
+
         // Fill histograms after passing detector cuts
         h_vertexZ->Fill(event.GetVz()); // Fill vertex Z histogram
 
@@ -217,6 +219,7 @@ void Monunfold::FillHistogramswCuts(const Event& event) {
                     //h_DeltaVz->Fill(event.GetVz() - hadron.GetParticleVertexZ());
                 }
             }
+        }
         }
     }
 }

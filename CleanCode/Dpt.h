@@ -14,15 +14,20 @@
 class deltaptsq {
 
 public: 
-    deltaptsq(CutSet cutsD, CutSet cutsA, const std::string& targetName);  //cutsA is for the Nucleus considered 
+    deltaptsq(CutSet , CutSet , const std::string& targetName);  //cutsA is for the Nucleus considered 
     
                                             //correction (TBD)in ratio needs to be propagated here too
+    //~deltaptsq();          
 
     void FillHistograms(const Event& );
     void WriteHistos(const std::string );
     void calcDpt();
     void calcDptCarbon(deltaptsq& ) ;      
     void multiplotDptbis();
+
+    void FillOnlyptandz(const Event& );
+    void DrawOnlyptandz(const std::string& );
+
 
     //void PlotDpt(const std::string );
     void writeMatrixToFile(const std::string& );
@@ -44,8 +49,8 @@ public:
 
 
 private:
-    CutSet cutd;
-    CutSet cuta;
+    CutSet cut1;
+    CutSet cut2;
     std::string targetName;
     //BINNING 4 MULTIBINNING
     int nubin = 100;
@@ -133,6 +138,9 @@ private:
     TH1F *h_xb_A_had;
     TH1F *h_Q_A_had;
     TH1F *h_z_A_had;
+    TH1F *h_z_D_had;
+    TH1F *h_pt2_A_had;
+    TH1F *h_pt2_D_had;
 
 
 
@@ -145,8 +153,8 @@ private:
     std::vector<std::vector<std::vector<double>>> DptMatrixbis;    //three vectors for 3D matrix
     std::vector<std::vector<std::vector<double>>> errorDptMatrixbis;
 
-    CutSet cutsD;
-    CutSet cutsSn;
+    //CutSet cutsD;
+    //CutSet cutsSn;
 
 
 

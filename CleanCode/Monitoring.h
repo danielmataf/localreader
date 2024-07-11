@@ -101,6 +101,8 @@ private:
     TH1F *h_pt2;    //= new TH1F("pt2", "pt2", nubin, pt2minX, pt2maxX) ;
     TH1F *h_phih;   //= new TH1F("phih", "phih", nubin, phihminX, phihmaxX) ;
     TH1F *h_vertexZ;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
+    TH1F *h_vertexX;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
+    TH1F *h_vertexY;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
     TH1F *h_vertexZ_pi;    //= new TH1F("targetVx", "vertex4target", 100, -40, 40) ;
     TH1F *h_DeltaVz;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
     TH1F *h_pid;    //= new TH1F("pid", "pid", 100, -250, 250) ;
@@ -123,6 +125,8 @@ private:
     TH1F *h_pt2MC;    //= new TH1F("pt2", "pt2", nubin, pt2minX, pt2maxX) ;
     TH1F *h_phihMC;   //= new TH1F("phih", "phih", nubin, phihminX, phihmaxX) ;
     TH1F *h_vertexZMC;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
+    TH1F *h_vertexXMC;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
+    TH1F *h_vertexYMC;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
 
     TH2F *h_Q2comp;    //= new TH2F("xQ2", "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
 

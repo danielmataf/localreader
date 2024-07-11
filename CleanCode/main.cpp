@@ -81,6 +81,7 @@ int main() {
     simLD2cuts.SetCutVz(-8,-2);    //vz cut for LD2 target
     //Fix target borders in constants. remember is not the definite vz cut, but a cut for target separation 
     trueLD2cuts.SetCutVz(-8,-2);
+    trueLD2cuts.SetCutGen4Rat();
     trueSncuts.SetCutGen4Rat();
     trueSncuts.SetCutVz(-3.5,-1.5);
     trueCucuts.SetCutGen4Rat();
@@ -123,6 +124,8 @@ int main() {
     Monunfold munfsimLD2(simLD2cuts, "LD2_simf");
     Monitoring monSimC1(simC1cuts, "C1_sim");     //This needs to be figured out ASAP
     Monitoring monSimC2(simC2cuts, "C2_sim");     //This needs to be figured out ASAP
+    Monitoring monTrueC1(truec1cuts, "C1_true");
+    Monitoring monTrueC2(truec2cuts, "C2_true");
 
     //Ratio simratC1(simC1cuts, "C1_sim");
 
@@ -152,6 +155,7 @@ int main() {
             broadtrueC2.FillHistograms(eventtestLD2);
             broadtrueCu.FillHistograms(eventtestLD2);
             broadtrueSn.FillHistograms(eventtestLD2);
+            broadtrueSn.FillOnlyptandz(eventtestLD2);
 
 
 	    }
@@ -167,6 +171,7 @@ int main() {
             truecratCu.FillHistograms(eventtestCuSn);
             broadtrueCu.FillHistograms(eventtestCuSn);
             broadtrueSn.FillHistograms(eventtestCuSn);
+            broadtrueSn.FillOnlyptandz(eventtestCuSn);
 
         } 
         if (testCxC.has_value()) {
@@ -175,6 +180,8 @@ int main() {
             eventtestCxC.calcAll();
             munfTrueC1.FillHistogramswCuts(eventtestCxC);
             munfTrueC2.FillHistogramswCuts(eventtestCxC);
+            monTrueC1.FillHistogramswCuts(eventtestCxC);
+            monTrueC2.FillHistogramswCuts(eventtestCxC);
             rat3.FillHistograms(eventtestCxC);
             rat4.FillHistograms(eventtestCxC);
             truecratC1.FillHistograms(eventtestCxC);
@@ -188,25 +195,19 @@ int main() {
             Event eventsimCxC_MC = simCxC_MC.value();
             eventsimCxC_MC.SetTargetType(1);
             eventsimCxC_MC.calcMCAll();
-            //munfSimC1.FillHistogramswCutsMC(eventsimCxC_MC);
-                // We can Potentially create a function in the same class that takes as  arguments both
-                // eventsimCxC and eventsimCxC_MC (filling histos with both banks)
-                // probably eventsimCxC can exist outside the condition ? 
-                // if not the condition simCxC.has_value can be contained in simCxC_MC.has_value 
-                // after all simCxC_MC.has_value is supposed to work always, and from there we can read REC bank
-                // ---- is working. But need to generalize for it to be used in true data too. And we need to check if is simulated by checking on MC rows
-                // ssuggestion! see notebook 
                 if ( simCxC.has_value()) {
                     Event eventsimCxC = simCxC.value();
                     eventsimCxC.SetTargetType(1);
                     eventsimCxC.calcAll();
                     munfSimC1.FillHistogramswCuts(eventsimCxC);
+                    monSimC1.FillHistogramswCuts(eventsimCxC);
                     simrat3.FillHistograms(eventsimCxC);
                     simrat4.FillHistograms(eventsimCxC);
                     simcratC1.FillHistograms(eventsimCxC);
                     simcratC2.FillHistograms(eventsimCxC);
                     broadsimC1.FillHistograms(eventsimCxC);
                     broadsimC2.FillHistograms(eventsimCxC);
+
 
                 }
         }
@@ -232,35 +233,41 @@ int main() {
     //munfTrueC1.DrawHistoRec("newC1monTRUE_noCutsREC");
     //munfSimC1.DrawCompRECMC("test2D");
     //munfsimLD2.DrawHistoMC("test2D_LD2");
-    munfTrueLD2.SaveHistRoot("LD2true");
-    munfTrueCu.SaveHistRoot("Ctrue");
-    munfTrueSn.SaveHistRoot("Sntrue");
-    munfTrueC1.SaveHistRoot("C1true");
-    munfTrueC2.SaveHistRoot("C2true");
-    munfSimC1.SaveHistRoot("C1sim");
-    munfSimC2.SaveHistRoot("C2sim");
+    //munfSimC1.DrawHistoRec("newC1monSIM_noCutsREC");
+    //munfTrueC1.DrawHistoRec("newC1monTRUE_noCutsREC");
+    //monTrueC1.DrawHistograms("MONwcutsC1TRUE");
+    //monSimC1.DrawHistograms("MONwcutsC1SIM");
+    //munfTrueLD2.SaveHistRoot("LD2true");
+    //munfTrueCu.SaveHistRoot("Ctrue");
+    //munfTrueSn.SaveHistRoot("Sntrue");
+    //munfTrueC1.SaveHistRoot("C1true");
+    //munfTrueC2.SaveHistRoot("C2true");
+    //munfSimC1.SaveHistRoot("C1sim");
+    //munfSimC2.SaveHistRoot("C2sim");
     simrat3.calcRcarbon(simrat4);
     rat3.calcRcarbon(rat4);
     //simrat3.multiplotRbis();
-    rat3.multiplotRbis();
+    //rat3.multiplotRbis();
     rat.calcR();
     rat2.calcR();
     //rat2.writeMatrixToFile("matrix2_test.txt");
     rat3.calcR();
-    rat.multiplotR(rat2, rat3);
+    //rat.multiplotR(rat2, rat3);
     truecratC1.calcCratio();
     truecratC2.calcCratio();
     truecratCu.calcCratio();
     truecratSn.calcCratio();
     simcratC1.calcCratio();
     simcratC2.calcCratio();
-    truecratSn.multiplotCratio(truecratCu, truecratC1);
+    //truecratSn.multiplotCratio(truecratCu, truecratC1);
     broadsimC1.calcDpt();
     broadsimC2.calcDpt();
     broadtrueC1.calcDpt();
     broadtrueC2.calcDpt();
     broadtrueCu.calcDpt();
     broadtrueSn.calcDpt();
+    broadtrueSn.writeMatrixToFile("matrixSn.txt");
     broadtrueSn.multiplotDpt(broadtrueCu, broadtrueC1);
+    broadtrueSn.DrawOnlyptandz("Snptz");
     return 0;
 }

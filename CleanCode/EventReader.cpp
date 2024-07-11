@@ -52,8 +52,8 @@
         if (MCpid == Constants::ELECTRON_PID) {
             currentEvent.AddMCElectron(MCmomentum, MCrow, MCvertz);
             currentEvent.SetVertexZMC(MCvertz);       //!!!!!!
-            //currentEvent.SetVertexX(MCvertx);
-            //currentEvent.SetVertexY(MCverty);
+            //currentEvent.SetVertexXMC(MCvertx);
+            //currentEvent.SetVertexYMC(MCverty);
                 //maybe we need ro create SetMCvertex functions
             //currentEvent.SetParticleRow(row);
             
@@ -202,8 +202,6 @@ bool EventReader::isSimulatedData(hipo::event event) {
         event.getStructure(RECcher);
         event.getStructure(HELbank);
         event.getStructure(MCpart);
-        int counter_el_REC=0;   //deletethis
-        int counter_el_MC=0;    //deletethis
         
         //RECgen.show();
         bool flag_el = false;
@@ -241,13 +239,11 @@ bool EventReader::isSimulatedData(hipo::event event) {
             if (pid == Constants::ELECTRON_PID) {
     	        double  electron_status = RECgen.getInt("status", i);
                 if ( electron_status < 0) {     //momentum.E() > max_energy_electron &&
-            counter_el_REC++;           //erase this line
-
-
                     max_energy_electron = momentum.E();
-                    //coinsider trigger electron , not most energetic one 
+                    //considering trigger electron , not most energetic one
+                    //trigger el should be the most energetic one 
+                    //TO DO!!! 
                     ProcessParticle(momentum , Constants::ELECTRON_PID,targetvx,targetvy,targetvz, i );
-                    
                 }
                 el_detect = true;
             } else if (IsHadron(pid) && el_detect ==true) {
@@ -340,8 +336,6 @@ bool EventReader::isSimulatedData(hipo::event event) {
             //}
             
         
-        //std::cout << "REC electrons: " << counter_el_REC << std::endl;
-        //std::cout << "MC electrons: " << counter_el_MC << std::endl;
         return currentEvent;
 
     }
@@ -358,68 +352,7 @@ bool EventReader::isSimulatedData(hipo::event event) {
     return simulatedEventCount;
     }
 
-////////////////////////CLAScollNOV//////////////////////////
 
-
-std::optional<Event> EventReader::ProcessEventsWithPositivePions(hipo::event event, int eventNumber) {
-    currentEvent = Event();
-    bool el_detect = false;
-    bool flag_RECgen = false;
-    double max_energy_electron = 0.0; 
-    event.getStructure(RECgen);
-    //RECgen.show();
-    bool flag_el = false;
-    int counter_el = 0.0;
-
-    for (int i = 0; i < RECgen.getRows(); ++i) {
-        if (RECgen.getInt("pid", i) == 11) {
-            flag_el = true;
-        }
-    }
-    if (flag_el == false) return std::nullopt;
-
-    for (int i = 0; i < RECgen.getRows(); ++i) {
-        int pid = RECgen.getInt("pid", i);
-        if (pid == Constants::POSITRON_PID) {
-            return std::nullopt;    
-        }
-        if (pid == 0) {
-            continue;
-        }
-
-        // Check for positive pions (pi+)
-        if (pid != Constants::PION_PLUS_PID) {
-            continue; // Skip this hadron
-        }
-
-        double mass = GetMassID(pid);
-        double targetvz = RECgen.getFloat("vz", i);
-        double targetvx = RECgen.getFloat("vx", i);
-        double targetvy = RECgen.getFloat("vy", i);
-
-        TLorentzVector momentum;
-        momentum.SetPx(RECgen.getFloat("px", i));
-        momentum.SetPy(RECgen.getFloat("py", i));
-        momentum.SetPz(RECgen.getFloat("pz", i));
-        TVector3 momentum3D = momentum.Vect();
-        momentum.SetVectM(momentum3D, mass);
-
-        if (pid == Constants::ELECTRON_PID) {
-            double electron_status = RECgen.getInt("status", i);
-            if (electron_status < 0) {
-                max_energy_electron = momentum.E();
-                ProcessParticle(momentum, Constants::ELECTRON_PID, targetvx, targetvy, targetvz, i);
-            }
-            el_detect = true;
-        } else if (IsHadron(pid) && el_detect == true) {
-            ProcessParticle(momentum, pid, targetvx, targetvy, targetvz, i); 
-        }
-    }
-    return currentEvent; 
-}
-
-
-/////////////////////////////////////////////////////////
 
 
 std::optional<Event> EventReader::ProcessEventsInFile() { 

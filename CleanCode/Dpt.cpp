@@ -18,13 +18,13 @@
 #include <TLegend.h>
 
 
-deltaptsq::deltaptsq(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: cutsD(cutsD), cutsSn(cutsSn) {
-    targetName(targetName),
+deltaptsq::deltaptsq(CutSet cutsD, CutSet cutsA, const std::string& targetName) //: cutsD(cutsD), cutsSn(cutsSn) {
+    :  cut2(cutsA),cut1(cutsD),targetName(targetName),
     DptMatrix(Dptbin, std::vector<std::vector<double>>(Dptbin, std::vector<double>(Dptbin, 0.0))),
     errorDptMatrix(Dptbin,  std::vector<std::vector<double>>(Dptbin, std::vector<double>(Dptbin, 0.0))), 
     DptMatrixbis(Dptbin, std::vector<std::vector<double>>(Dptbin, std::vector<double>(Dptbin, 0.0))),
     errorDptMatrixbis(Dptbin,  std::vector<std::vector<double>>(Dptbin, std::vector<double>(Dptbin, 0.0))), 
-hDpt_Q_nu_zD(new TH3F (("Dpt:nu,z,pt2,D_"+targetName).c_str(),("h_Dpt:nu,z,pt2,D_"+targetName).c_str(), Constants::Dptbin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Dptbin_nu,Constants::numinDpt,Constants::numaxDpt, Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
+    hDpt_Q_nu_zD(new TH3F (("Dpt:nu,z,pt2,D_"+targetName).c_str(),("h_Dpt:nu,z,pt2,D_"+targetName).c_str(), Constants::Dptbin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Dptbin_nu,Constants::numinDpt,Constants::numaxDpt, Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
     hDpt_Q_nu_zA(new TH3F (("Dpt:nu,z,pt2,A_"+targetName).c_str(),("h_Dpt:nu,z,pt2,A_"+targetName).c_str(), Constants::Dptbin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Dptbin_nu,Constants::numinDpt,Constants::numaxDpt, Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
  
     hDpt_nu_z_pt2A_onlye(new TH3F (("Dpt:Q2, nu,z,A onlye_"+targetName).c_str(),("h_Dpt:Q2, nu,z,A onlye_"+targetName).c_str(), Constants::Dptbin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Dptbin_nu,numinDpt,numaxDpt,Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
@@ -45,45 +45,102 @@ hDpt_Q_nu_zD(new TH3F (("Dpt:nu,z,pt2,D_"+targetName).c_str(),("h_Dpt:nu,z,pt2,D
     h_A_onlypt2(new TH1F (("count:A_pt2_"+targetName).c_str(), ("h_count:A_pt2_"+targetName).c_str(),5  , Constants::RcutminPt2, Constants::RcutmaxPt2    )),
     
     h_wD_sqpt2(new TH3F (("wD_sqpt2_"+targetName).c_str(), ("h_wD_sqpt2_"+targetName).c_str(),Constants::Dptbin_x,Constants::xminDpt, Constants::xmaxDpt,Constants::Dptbin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
-    h_wA_sqpt2(new TH3F (("wA_sqpt2_"+targetName).c_str(), ("h_wA_sqpt2_"+targetName).c_str(),Constants::Dptbin_x,Constants::xminDpt, Constants::xmaxDpt,Constants::Dptbin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)) {
+    h_wA_sqpt2(new TH3F (("wA_sqpt2_"+targetName).c_str(), ("h_wA_sqpt2_"+targetName).c_str(),Constants::Dptbin_x,Constants::xminDpt, Constants::xmaxDpt,Constants::Dptbin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
 
+    h_z_A_had(new TH1F (("zMonDpt_A_"+targetName).c_str(), ("h_zMonDpt_A_"+targetName).c_str() , 50, 0 , 1)),
+    h_z_D_had(new TH1F (("zMonDpt_D_"+targetName).c_str(), ("h_zMonDpt_D_"+targetName).c_str() , 50, 0 , 1)),
+    h_pt2_A_had(new TH1F (("ptMonDpt_A_"+targetName).c_str(), ("h_ptMonDpt_A_"+targetName).c_str() , 50, 0 , 3)),
+    h_pt2_D_had(new TH1F (("ptMonDpt_D_"+targetName).c_str(), ("h_ptMonDpt_D_"+targetName).c_str() , 50, 0 , 3)) {
 
     
-    cutd = cutsD;
-    cuta = cutsA;
+    //cutd(cutsD),
+    //cuta(cutsA);
     }
 
 // ONLY NEED 3 VARIABLES Q,  Z and nu
 // Dont use pt nor pt2 as a variable 
 
+void deltaptsq::FillOnlyptandz(const Event& event) {
+    int targetType = event.GetTargetType();
+    if (targetType == 1 && cut2.PassCutsElectrons(event)==true) {
+        for (const Particle& hadron : event.GetHadrons()) {
+            if (cut2.PassCutsHadrons(hadron)==true){
+                //if (hadron.Getz()>=0.3 && hadron.Getz()<=0.7) {
+                h_z_D_had->Fill(hadron.Getz());
+                h_pt2_D_had->Fill(hadron.Getpt2());
+                //} 
+            }
+        }
+    }
+    else if (targetType == 0 && cut1.PassCutsElectrons(event)==true) {
+        for (const Particle& hadron : event.GetHadrons()) {
+            if (cut1.PassCutsHadrons(hadron)==true){
+                //if (hadron.Getz()>=0.3 && hadron.Getz()<=0.7) {
+                h_z_A_had->Fill(hadron.Getz());
+                h_pt2_A_had->Fill(hadron.Getpt2());
+                //}
+            }
+        }
+    }
+
+}
+
+void deltaptsq::DrawOnlyptandz(const std::string& filename) {
+    TCanvas canvas("c", "DptMon", 1200, 800);
+    canvas.Divide(2, 2);
+    canvas.cd(1);
+    h_z_A_had->Draw();
+
+    canvas.cd(2);
+    h_z_D_had->Draw();
+    canvas.cd(3);
+    h_pt2_A_had->Draw();
+    canvas.cd(4);
+    h_pt2_D_had->Draw();
+    canvas.SaveAs(filename.c_str());
+}
+
+
+
+
 void deltaptsq::FillHistograms(const Event& event) {
     int targetType = event.GetTargetType();
-    if (targetType == 0 && cutd.PassCutsElectrons(event)==true) {
+    if (targetType == 0 && cut1.PassCutsElectrons(event)==true) {
         counter_elLD2 ++;
         hDpt_nuD->Fill(event.Getnu());
         //still using nu for reference following Mratio 
         //Q can be used ? (needs to be checked)
         for (const Particle& hadron : event.GetHadrons()) {
-            if (cutd.PassCutsHadrons(hadron)==true){
+
+            if (cut1.PassCutsHadrons(hadron)==true){
+                if (hadron.Getz()>=0.3 && hadron.Getz()<=0.7) {
+                //std::cout<<" zvalue LD2 "<<hadron.Getz()<<std::endl;
                 h_D_onlypt2->Fill(hadron.Getpt2());
                 h_wD_pt->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), hadron.Getpt2());    //3 arguments and the WEIGHT
                 h_wD_sqpt2->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), hadron.Getpt2()*hadron.Getpt2());    //3 arguments and the WEIGHT (pt2 squared)
                 h_D_pt3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz());    //3 arguments only counts not weight
                 hDpt_Q_nu_zD->Fill(event.GetQ2(), event.Getnu(), hadron.Getz()); // uselesss ? 
-
+                //h_z_A_had->Fill(hadron.Getz());
+                //h_pt2_A_had->Fill(hadron.Getpt2());
+                }
             }
         }
     }
-    else if (targetType == 1 && cuta.PassCutsElectrons(event)==true) {
+    else if (targetType == 1 && cut2.PassCutsElectrons(event)==true) {
         counter_elSn++; //counter for only electrons for z
         hDpt_nuA->Fill(event.Getnu());
         for (const Particle& hadron : event.GetHadrons()) {
-            if (cuta.PassCutsHadrons(hadron)==true){
+            if (cut2.PassCutsHadrons(hadron)==true){
+                if (hadron.Getz()>=0.3 && hadron.Getz()<=0.7) {
+                //std::cout<<" zvalue Sn "<<hadron.Getz()<<std::endl;
                 h_A_onlypt2->Fill(hadron.Getpt2());
                 h_wA_pt->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), hadron.Getpt2());    //3 arguments and the WEIGHT
                 h_wA_sqpt2->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), hadron.Getpt2()*hadron.Getpt2());    //3 arguments and the WEIGHT (pt2 squared)
                 h_A_pt3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz());    //3 arguments only counts not weight
-                hDpt_Q_nu_zA->Fill(event.GetQ2(), event.Getnu(), hadron.Getz());    //useless I guess 
+                hDpt_Q_nu_zA->Fill(event.GetQ2(), event.Getnu(), hadron.Getz());    //useless I guess
+                //h_z_D_had->Fill(hadron.Getz());
+                //h_pt2_D_had->Fill(hadron.Getpt2()); 
+                }
             }
         }
     }
@@ -172,21 +229,23 @@ void deltaptsq::multiplotDpt(){
                 //graph_rat->SetPoint(graph_pointnb, value, error);
                 //graph_pointnb++;
             }
-            graphDpt->SetTitle(("#Delta <p_{t}^{2}> vs z, Q^{2}=" + std::to_string(Q2Value)).c_str());
+                        std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << Q2Value;
+            std::string formattedQ2Value = ss.str();
+            std::string title = "#Delta <p_{t}^{2}> vs z, Q^{2}=" + formattedQ2Value + " GeV^{2}";
+
+
+            graphDpt->SetTitle((title).c_str());
             graphDpt->GetXaxis()->SetTitle("z");
-            graphDpt->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+            graphDpt->GetYaxis()->SetTitle("#Delta <p_{t}^{2}> (GeV^{2})");
             graphDpt->SetMarkerStyle(20);
             graphDpt->GetYaxis()->SetRangeUser(-1.0, 1.0); // Set Y axis range from -0.1 to 0.1
             graphDpt->Draw("AP");
             TLine *line = new TLine(graphDpt->GetXaxis()->GetXmin(), 0.0, graphDpt->GetXaxis()->GetXmax(), 0.0);
             line->SetLineStyle(2); // Dotted line
             line->Draw("same");
-
-
-
         }
         canvasDpt.SaveAs(pdfFileName.c_str());
-        
     }
     
 }
@@ -274,8 +333,10 @@ void deltaptsq::multiplotDpt(deltaptsq& dptother, deltaptsq& dptthird){
             std::stringstream ss;
             ss << std::fixed << std::setprecision(2) << Q2Value;
             std::string formattedQ2Value = ss.str();
+            std::string title = "#Delta <p_{t}^{2}> vs z, Q^{2}=" + formattedQ2Value + " GeV^{2}";
 
-            graphDpt->SetTitle(("#Delta <p_{t}^{2}> vs z, Q^{2}=" + std::to_string(Q2Value)).c_str());
+
+            graphDpt->SetTitle((title).c_str());
             graphDpt->GetXaxis()->SetTitle("z");
             graphDpt->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
             graphDpt->SetMarkerStyle(20);
@@ -303,7 +364,7 @@ void deltaptsq::multiplotDpt(deltaptsq& dptother, deltaptsq& dptthird){
             mg->Add(graphDpt);
             mg->Add(graphOther);
             mg->Add(graphThird);
-            mg->SetTitle(("#Delta <p_{t}^{2}> vs z, Q^{2}=" + formattedQ2Value).c_str());
+            mg->SetTitle((title).c_str());
             mg->GetXaxis()->SetTitle("z");
             mg->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
 
