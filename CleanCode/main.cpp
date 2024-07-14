@@ -23,6 +23,7 @@ int main() {
     std::vector<std::string> filenamesLD2;
     std::vector<std::string> simufilesLD2;
     std::vector<std::string> simufilesSn;
+    std::vector<std::string> simufilesCu;
     std::vector<std::string> filenamesCuSn;
     std::vector<std::string> filenamesCxC;
     std::vector<std::string> simufilesCxC;
@@ -35,6 +36,8 @@ int main() {
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/Deut", simufilesLD2);  //uncomment for sim
     
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/C", simufilesCxC);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/Cu", simufilesCu);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/Sn", simufilesSn);  //uncomment for sim
 
     //Uncomment 4 test on ifarm, comment all above
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideLD2/dst/recon/018528/", filenamesLD2);
@@ -51,7 +54,8 @@ int main() {
     EventReader MC_CuSn(filenamesCuSn);
     EventReader MC_CxC(filenamesCxC);
     EventReader Sim_LD2(simufilesLD2);
-    //EventReader Sim_CuSn(simufilesSn);
+    EventReader Sim_Cu(simufilesSn);
+    EventReader Sim_Sn(simufilesCu);
     EventReader Sim_CxC(simufilesCxC);
    
 
@@ -62,7 +66,10 @@ int main() {
     std::optional<Event> testCxC;
     std::optional<Event> simLD2;
     std::optional<Event> simLD2_MC;
-    //std::optional<Event> simCuSn;
+    std::optional<Event> simCu;
+    std::optional<Event> simCu_MC;
+    std::optional<Event> simSn;
+    std::optional<Event> simSn_MC;
     std::optional<Event> simCxC;
     std::optional<Event> simCxC_MC; //testing this if we can loop twice top read MC events//
 
@@ -74,11 +81,20 @@ int main() {
     CutSet trueLD2cuts;
     CutSet trueCucuts;
     CutSet trueSncuts;
+    CutSet simCucuts;   //Cu
+    CutSet simSncuts;   //Sn
 
 
     simC1cuts.SetCutVz(-3,-2);     //vz cut for C1 target
     simC2cuts.SetCutVz(-8,-7);     //vz cut for C2 target
     simLD2cuts.SetCutVz(-8,-2);    //vz cut for LD2 target
+    simCucuts.SetCutVz(-3.5,-1.5); //vz cut for Sn target
+    simSncuts.SetCutVz(-3.5,-1.5); //vz cut for Sn target
+    simC1cuts.SetCutGen4Rat();
+    simC2cuts.SetCutGen4Rat();
+    simLD2cuts.SetCutGen4Rat();
+    simCucuts.SetCutGen4Rat();
+    simSncuts.SetCutGen4Rat();
     //Fix target borders in constants. remember is not the definite vz cut, but a cut for target separation 
     trueLD2cuts.SetCutVz(-8,-2);
     trueLD2cuts.SetCutGen4Rat();
@@ -129,7 +145,7 @@ int main() {
 
     //Ratio simratC1(simC1cuts, "C1_sim");
 
-    int totalevts = 10000;
+    int totalevts = 5000;
 
     for (int i=0; i<totalevts; i++){
         simCxC  = Sim_CxC.ProcessEventsInFile();
