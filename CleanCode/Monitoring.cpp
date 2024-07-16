@@ -33,7 +33,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_phih(new TH1F(("phih_" + targetName).c_str(), "phih", nubin, phihminX, phihmaxX)),
     h_vertexZ(new TH1F(("targetVz_" + targetName).c_str(), "vertexz4target", 100, -10, 0.0)),
     h_vertexY(new TH1F(("targetVy_" + targetName).c_str(), "vertexy4target", 100, -10, 0.0)),
-    h_vertexX(new TH1F(("targetVz_" + targetName).c_str(), "vertexx4target", 100, -10, 0.0)),
+    h_vertexX(new TH1F(("targetVx_" + targetName).c_str(), "vertexx4target", 100, -10, 0.0)),
     h_vertexZ_pi(new TH1F(("targetVz_pi_" + targetName).c_str(), "vertex4target", 100, -10, 0.0)),
     h_DeltaVz(new TH1F(("DeltaVz_" + targetName).c_str(), "DeltaVz", 100, -5, 5)),
     
