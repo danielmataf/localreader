@@ -39,6 +39,13 @@ public:
     void multiplotR( Ratio& , Ratio&);
     void multiplotR( Ratio& , Ratio& , Ratio& ,   Ratio& );
     void multiplotRbis();
+
+    void multiRsimus( Ratio&, Ratio& , Ratio& );
+    void multiRtrue( Ratio&, Ratio& , Ratio& );
+    void multiRall( Ratio& , Ratio&, Ratio& , Ratio&,Ratio& , Ratio&, Ratio& );
+        //this fct plots every target in true and sil. C1 and C2 included
+    void multiRall2 ( Ratio& , Ratio&, Ratio& , Ratio&,Ratio& ); 
+        //this same as b4 to plot only with the carbon on CxC
     TH1F* getHNuA() ;
     TH3F* getHNuzptA() ;
     

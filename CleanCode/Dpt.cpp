@@ -430,3 +430,398 @@ void deltaptsq::multiplotDptbis(){
         canvasDpt.SaveAs(pdfFileName.c_str()); 
    }
 }  
+
+void deltaptsq::multiDptsimus ( deltaptsq& DptCusim, deltaptsq& DptC1sim,   deltaptsq& DptC2sim){
+    for (int x = 0; x < Dptbin; ++x ){
+        double xValue = h_wD_pt->GetXaxis()->GetBinCenter(x + 1);
+        double xbValue = h_wA_pt->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "multiDptsimus_x" + std::to_string(xbValue) + ".pdf";
+        TCanvas canvasDpt("c", "Multiplotsim Dpt", 1200, 800);
+        canvasDpt.Divide(3, 2);
+        for (int y=0; y < Dptbin; ++y) {
+            TMultiGraph *mg = new TMultiGraph();
+
+            double Q2Value = h_wD_pt->GetYaxis()->GetBinCenter(y + 1);
+            TGraphErrors *graphDpt = new TGraphErrors();
+            canvasDpt.cd(y + 1);
+            TGraphErrors *graphSn = new TGraphErrors();
+            TGraphErrors *graphCu = new TGraphErrors();
+            TGraphErrors *graphC1 = new TGraphErrors();
+            TGraphErrors *graphC2 = new TGraphErrors();
+
+            for (int z=0; z < Dptbin; ++z) {
+                double zValue = h_wD_pt->GetZaxis()->GetBinCenter(z + 1);
+                double valueSn = DptMatrix[x][y][z];
+                double errorSn = errorDptMatrix[x][y][z];
+                double valueCu = DptCusim.getDptMatrix()[x][y][z];
+                double errorCu = DptCusim.getErrorMatrix()[x][y][z];
+                double valueC1 = DptC1sim.getDptMatrix()[x][y][z];
+                double errorC1 = DptC1sim.getErrorMatrix()[x][y][z];
+                double valueC2 = DptC2sim.getDptMatrix()[x][y][z];
+                double errorC2 = DptC2sim.getErrorMatrix()[x][y][z];
+
+                graphSn->SetPoint(z, zValue, valueSn);
+                graphSn->SetPointError(z, 0.0, errorSn); 
+                graphCu->SetPoint(z, zValue+0.01, valueCu);
+                graphCu->SetPointError(z+0.01, 0.0, errorCu);
+                graphC1->SetPoint(z, zValue+0.02, valueC1);
+                graphC1->SetPointError(z+0.02, 0.0, errorC1);
+                graphC2->SetPoint(z, zValue+0.03, valueC2);
+                graphC2->SetPointError(z+0.03, 0.0, errorC2);
+        
+            }
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << Q2Value;
+            std::string formattedQ2Value = ss.str();
+            std::string title = "#Delta <p_{t}^{2}> vs z, Q^{2}=" + formattedQ2Value + " GeV^{2}";
+
+            graphSn->SetTitle((title).c_str());
+            graphSn->GetXaxis()->SetTitle("z");
+            graphSn->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+            graphSn->SetMarkerStyle(20);
+            graphCu->SetMarkerStyle(20);
+            graphC1->SetMarkerStyle(20);
+            graphC2->SetMarkerStyle(20);
+
+            graphSn->SetMarkerColor(kGreen);
+            graphCu->SetMarkerColor(kRed);
+            graphC1->SetMarkerColor(kBlue);
+            graphC2->SetMarkerColor(kBlack);
+
+
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphSn, "Sn sim", "lp");
+            legend->AddEntry(graphCu, "Cu sim", "lp");
+            legend->AddEntry(graphC1, "C1 sim", "lp");
+            legend->AddEntry(graphC2, "C2 sim", "lp");
+
+            TLine *line = new TLine(graphSn->GetXaxis()->GetXmin(), 0.0, graphSn->GetXaxis()->GetXmax(), 0.0);
+            line->SetLineStyle(2); // dotted line
+            mg->Add(graphSn);
+            mg->Add(graphCu);
+            mg->Add(graphC1);
+            mg->Add(graphC2);
+            mg->SetTitle((title).c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            TLatex  *prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+
+        }
+        canvasDpt.SaveAs(pdfFileName.c_str());
+    }
+}
+
+
+void deltaptsq::multiDpttrue ( deltaptsq& DptCu, deltaptsq& DptC1,   deltaptsq& DptC2){
+    for (int x = 0; x < Dptbin; ++x ){
+        double xbValue = h_wA_pt->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "multiDpttrue_x" + std::to_string(xbValue) + ".pdf";
+        TCanvas canvasDpt("c", "Multiplottrue Dpt", 1200, 800);
+        canvasDpt.Divide(3, 2);
+        for (int y=0; y < Dptbin; ++y) {
+            TMultiGraph *mg = new TMultiGraph();
+
+            double Q2Value = h_wD_pt->GetYaxis()->GetBinCenter(y + 1);
+            TGraphErrors *graphDpt = new TGraphErrors();
+            canvasDpt.cd(y + 1);
+            TGraphErrors *graphSn = new TGraphErrors();
+            TGraphErrors *graphCu = new TGraphErrors();
+            TGraphErrors *graphC1 = new TGraphErrors();
+            TGraphErrors *graphC2 = new TGraphErrors();
+
+            for (int z=0; z < Dptbin; ++z) {
+                double zValue = h_wD_pt->GetZaxis()->GetBinCenter(z + 1);
+                double valueSn = DptMatrix[x][y][z];
+                double errorSn = errorDptMatrix[x][y][z];
+                double valueCu = DptCu.getDptMatrix()[x][y][z];
+                double errorCu = DptCu.getErrorMatrix()[x][y][z];
+                double valueC1 = DptC1.getDptMatrix()[x][y][z];
+                double errorC1 = DptC1.getErrorMatrix()[x][y][z];
+                double valueC2 = DptC2.getDptMatrix()[x][y][z];
+                double errorC2 = DptC2.getErrorMatrix()[x][y][z];
+
+                graphSn->SetPoint(z, zValue, valueSn);
+                graphSn->SetPointError(z, 0.0, errorSn); 
+                graphCu->SetPoint(z, zValue+0.01, valueCu);
+                graphCu->SetPointError(z+0.01, 0.0, errorCu);
+                graphC1->SetPoint(z, zValue+0.02, valueC1);
+                graphC1->SetPointError(z+0.02, 0.0, errorC1);
+                graphC2->SetPoint(z, zValue+0.03, valueC2);
+                graphC2->SetPointError(z+0.03, 0.0, errorC2);
+        
+            }
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << Q2Value;
+            std::string formattedQ2Value = ss.str();
+            std::string title = "#Delta <p_{t}^{2}> vs z, Q^{2}=" + formattedQ2Value + " GeV^{2}";
+
+            graphSn->SetTitle((title).c_str());
+            graphSn->GetXaxis()->SetTitle("z");
+            graphSn->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+            graphSn->SetMarkerStyle(20);
+            graphCu->SetMarkerStyle(20);
+            graphC1->SetMarkerStyle(20);
+            graphC2->SetMarkerStyle(20);
+
+            graphSn->SetMarkerColor(kGreen);
+            graphCu->SetMarkerColor(kRed);
+            graphC1->SetMarkerColor(kBlue);
+            graphC2->SetMarkerColor(kBlack);
+
+
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphSn, "Sn", "lp");
+            legend->AddEntry(graphCu, "Cu", "lp");
+            legend->AddEntry(graphC1, "C1", "lp");
+            legend->AddEntry(graphC2, "C2", "lp");
+
+            TLine *line = new TLine(graphSn->GetXaxis()->GetXmin(), 0.0, graphSn->GetXaxis()->GetXmax(), 0.0);
+            line->SetLineStyle(2); // dotted line
+            mg->Add(graphSn);
+            mg->Add(graphCu);
+            mg->Add(graphC1);
+            mg->Add(graphC2);
+            mg->SetTitle((title).c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            TLatex  *prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+
+        }
+        canvasDpt.SaveAs(pdfFileName.c_str());
+    }
+}
+
+void deltaptsq::multiDptall(  deltaptsq& DptCu, deltaptsq& DptC1,   deltaptsq& DptC2, deltaptsq& DptSnsim , deltaptsq& DptCusim, deltaptsq& DptC1sim, deltaptsq& DptC2sim){
+    for (int x = 0; x < Dptbin; ++x ){
+        double xbValue = h_wA_pt->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "multiDptAll_x" + std::to_string(xbValue) + ".pdf";
+        TCanvas canvasDpt("c", "MultiplotAll Dpt", 1200, 800);
+        canvasDpt.Divide(3, 2);
+        for (int y=0; y < Dptbin; ++y) {
+            TMultiGraph *mg = new TMultiGraph();
+            double Q2Value = h_wD_pt->GetYaxis()->GetBinCenter(y + 1);
+            canvasDpt.cd(y + 1);
+            TGraphErrors *graphSn = new TGraphErrors();
+            TGraphErrors *graphCu = new TGraphErrors();
+            TGraphErrors *graphC1 = new TGraphErrors();
+            TGraphErrors *graphC2 = new TGraphErrors();
+            TGraphErrors *graphSnsim = new TGraphErrors();
+            TGraphErrors *graphCusim = new TGraphErrors();
+            TGraphErrors *graphC1sim = new TGraphErrors();
+            TGraphErrors *graphC2sim = new TGraphErrors();
+
+            for (int z=0; z < Dptbin; ++z) {
+                double zValue = h_wD_pt->GetZaxis()->GetBinCenter(z + 1);
+                double valueSn = DptMatrix[x][y][z];
+                double errorSn = errorDptMatrix[x][y][z];
+                double valueCu = DptCu.getDptMatrix()[x][y][z];
+                double errorCu = DptCu.getErrorMatrix()[x][y][z];
+                double valueC1 = DptC1.getDptMatrix()[x][y][z];
+                double errorC1 = DptC1.getErrorMatrix()[x][y][z];
+                double valueC2 = DptC2.getDptMatrix()[x][y][z];
+                double errorC2 = DptC2.getErrorMatrix()[x][y][z];
+                double valueSnsim = DptSnsim.getDptMatrix()[x][y][z];
+                double errorSnsim = DptSnsim.getErrorMatrix()[x][y][z];
+                double valueCusim = DptCusim.getDptMatrix()[x][y][z];
+                double errorCusim = DptCusim.getErrorMatrix()[x][y][z];
+                double valueC1sim = DptC1sim.getDptMatrix()[x][y][z];
+                double errorC1sim = DptC1sim.getErrorMatrix()[x][y][z];
+                double valueC2sim = DptC2sim.getDptMatrix()[x][y][z];
+                double errorC2sim = DptC2sim.getErrorMatrix()[x][y][z];
+
+                graphSn->SetPoint(z, zValue, valueSn);
+                graphSn->SetPointError(z, 0.0, errorSn); 
+                graphCu->SetPoint(z, zValue+0.01, valueCu);
+                graphCu->SetPointError(z+0.01, 0.0, errorCu);
+                graphC1->SetPoint(z, zValue+0.02, valueC1);
+                graphC1->SetPointError(z+0.02, 0.0, errorC1);
+                graphC2->SetPoint(z, zValue+0.03, valueC2);
+                graphC2->SetPointError(z+0.03, 0.0, errorC2);
+                graphSnsim->SetPoint(z, zValue+0.005, valueSnsim);
+                graphSnsim->SetPointError(z, 0.0+0.005, errorSnsim); 
+                graphCusim->SetPoint(z, zValue+0.015, valueCusim);
+                graphCusim->SetPointError(z+0.015, 0.0, errorCusim);
+                graphC1sim->SetPoint(z, zValue+0.025, valueC1sim);
+                graphC1sim->SetPointError(z+0.02, 0.0, errorC1sim);
+                graphC2sim->SetPoint(z, zValue+0.035, valueC2sim);
+                graphC2sim->SetPointError(z+0.035, 0.0, errorC2sim);
+
+            }
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << Q2Value;
+            std::string formattedQ2Value = ss.str();
+            std::string title = "#Delta <p_{t}^{2}> vs z, Q^{2}=" + formattedQ2Value + " GeV^{2}";
+            graphSn->SetTitle((title).c_str());
+            graphSn->GetXaxis()->SetTitle("z");
+            graphSn->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+            graphSn->SetMarkerStyle(20);
+            graphCu->SetMarkerStyle(20);
+            graphC1->SetMarkerStyle(20);
+            graphC2->SetMarkerStyle(20);
+            graphSnsim->SetMarkerStyle(20);
+            graphCusim->SetMarkerStyle(20);
+            graphC1sim->SetMarkerStyle(20);
+            graphC2sim->SetMarkerStyle(20);
+            graphSn->SetMarkerColor(kGreen);
+            graphSnsim->SetMarkerColor(kSpring-7);
+            graphCu->SetMarkerColor(kRed);
+            graphCusim->SetMarkerColor(kOrange+8);
+            graphC1->SetMarkerColor(kBlue);
+            graphC1sim->SetMarkerColor(kCyan+3);
+            graphC2->SetMarkerColor(kBlack);
+            graphC2sim->SetMarkerColor(kGray);
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphSn, "Sn", "lp");
+            legend->AddEntry(graphCu, "Cu", "lp");
+            legend->AddEntry(graphC1, "C1", "lp");
+            legend->AddEntry(graphC2, "C2", "lp");
+            legend->AddEntry(graphSnsim, "Sn sim", "lp");
+            legend->AddEntry(graphCusim, "Cu sim", "lp");
+            legend->AddEntry(graphC1sim, "C1 sim", "lp");
+            legend->AddEntry(graphC2sim, "C2 sim", "lp");
+            TLine *line = new TLine(graphSn->GetXaxis()->GetXmin(), 0.0, graphSn->GetXaxis()->GetXmax(), 0.0);
+            line->SetLineStyle(2); // dotted line
+            mg->Add(graphSn);
+            mg->Add(graphCu);
+            mg->Add(graphC1);
+            mg->Add(graphC2);
+            mg->Add(graphSnsim);
+            mg->Add(graphCusim);
+            mg->Add(graphC1sim);
+            mg->Add(graphC2sim);
+            mg->SetTitle((title).c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            TLatex  *prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+        canvasDpt.SaveAs(pdfFileName.c_str());
+    }
+
+}
+
+
+void deltaptsq::multiDptall2(  deltaptsq& DptCu, deltaptsq& DptC, deltaptsq& DptSnsim , deltaptsq& DptCusim, deltaptsq& DptCsim){
+    for (int x = 0; x < Dptbin; ++x ){
+        double xbValue = h_wA_pt->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "multiDptAll_x" + std::to_string(xbValue) + ".pdf";
+        TCanvas canvasDpt("c", "MultiplotAll Dpt", 1200, 800);
+        canvasDpt.Divide(3, 2);
+        for (int y=0; y < Dptbin; ++y) {
+            TMultiGraph *mg = new TMultiGraph();
+            double Q2Value = h_wD_pt->GetYaxis()->GetBinCenter(y + 1);
+            canvasDpt.cd(y + 1);
+            TGraphErrors *graphSn = new TGraphErrors();
+            TGraphErrors *graphCu = new TGraphErrors();
+            TGraphErrors *graphC = new TGraphErrors();
+            TGraphErrors *graphSnsim = new TGraphErrors();
+            TGraphErrors *graphCusim = new TGraphErrors();
+            TGraphErrors *graphCsim = new TGraphErrors();
+
+            for (int z=0; z < Dptbin; ++z) {
+                double zValue = h_wD_pt->GetZaxis()->GetBinCenter(z + 1);
+                double valueSn = DptMatrix[x][y][z];
+                double errorSn = errorDptMatrix[x][y][z];
+                double valueCu = DptCu.getDptMatrix()[x][y][z];
+                double errorCu = DptCu.getErrorMatrix()[x][y][z];
+                double valueC = DptC.getDptMatrix()[x][y][z];
+                double errorC = DptC.getErrorMatrix()[x][y][z];
+                double valueSnsim = DptSnsim.getDptMatrix()[x][y][z];
+                double errorSnsim = DptSnsim.getErrorMatrix()[x][y][z];
+                double valueCusim = DptCusim.getDptMatrix()[x][y][z];
+                double errorCusim = DptCusim.getErrorMatrix()[x][y][z];
+                double valueCsim = DptCsim.getDptMatrix()[x][y][z];
+                double errorCsim = DptCsim.getErrorMatrix()[x][y][z];
+
+                graphSn->SetPoint(z, zValue, valueSn);
+                graphSn->SetPointError(z, 0.0, errorSn); 
+                graphCu->SetPoint(z, zValue+0.01, valueCu);
+                graphCu->SetPointError(z+0.01, 0.0, errorCu);
+                graphC->SetPoint(z, zValue+0.02, valueC);
+                graphC->SetPointError(z+0.02, 0.0, errorC);
+                graphSnsim->SetPoint(z, zValue+0.005, valueSnsim);
+                graphSnsim->SetPointError(z, 0.0+0.005, errorSnsim); 
+                graphCusim->SetPoint(z, zValue+0.015, valueCusim);
+                graphCusim->SetPointError(z+0.015, 0.0, errorCusim);
+                graphCsim->SetPoint(z, zValue+0.025, valueCsim);
+                graphCsim->SetPointError(z+0.02, 0.0, errorCsim);
+
+            }
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << Q2Value;
+            std::string formattedQ2Value = ss.str();
+            std::string title = "#Delta <p_{t}^{2}> vs z, Q^{2}=" + formattedQ2Value + " GeV^{2}";
+            graphSn->SetTitle((title).c_str());
+            graphSn->GetXaxis()->SetTitle("z");
+            graphSn->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+            graphSn->SetMarkerStyle(20);
+            graphCu->SetMarkerStyle(20);
+            graphC->SetMarkerStyle(20);
+            graphSnsim->SetMarkerStyle(20);
+            graphCusim->SetMarkerStyle(20);
+            graphCsim->SetMarkerStyle(20);
+            graphSn->SetMarkerColor(kGreen);
+            graphSnsim->SetMarkerColor(kSpring-7);
+            graphCu->SetMarkerColor(kRed);
+            graphCusim->SetMarkerColor(kOrange+8);
+            graphC->SetMarkerColor(kBlue);
+            graphCsim->SetMarkerColor(kCyan+3);
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphSn, "Sn", "lp");
+            legend->AddEntry(graphCu, "Cu", "lp");
+            legend->AddEntry(graphC, "C", "lp");
+            legend->AddEntry(graphSnsim, "Sn sim", "lp");
+            legend->AddEntry(graphCusim, "Cu sim", "lp");
+            legend->AddEntry(graphCsim, "C sim", "lp");
+            TLine *line = new TLine(graphSn->GetXaxis()->GetXmin(), 0.0, graphSn->GetXaxis()->GetXmax(), 0.0);
+            line->SetLineStyle(2); // dotted line
+            mg->Add(graphSn);
+            mg->Add(graphCu);
+            mg->Add(graphC);
+            mg->Add(graphSnsim);
+            mg->Add(graphCusim);
+            mg->Add(graphCsim);
+            mg->SetTitle((title).c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            TLatex  *prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+        canvasDpt.SaveAs(pdfFileName.c_str());
+    }
+
+}

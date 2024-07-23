@@ -264,3 +264,307 @@ void cratio::multiplotCratio( cratio& cratioOther, cratio& cratioThird){
     }
 
 }
+
+void cratio::multiCratsimus( cratio& cratioCu,  cratio& cratioC1 , cratio& cratioC2 ){
+    for (int x = 0; x < Cratiobin; ++x){
+        double xValue = h_wD_Cratio->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "multiCratsimus_x" + std::to_string(xValue) + ".pdf";
+        TCanvas canvasCratio("c", "Multiplot Cratio", 1200, 800);
+        canvasCratio.Divide(3, 2); 
+        for (int y=0; y < Cratiobin; ++y) {
+            TMultiGraph *mg = new TMultiGraph();
+
+            double Q2Value = h_wD_Cratio->GetYaxis()->GetBinCenter(y + 1);
+            canvasCratio.cd(y + 1);
+            TGraphErrors *graphCratioSn = new TGraphErrors();
+            TGraphErrors *graphCratioCu = new TGraphErrors();
+            TGraphErrors *graphCratioC1 = new TGraphErrors();
+            TGraphErrors *graphCratioC2 = new TGraphErrors();
+            for (int z=0; z < Cratiobin; ++z) {
+                double zValue = h_wD_Cratio->GetZaxis()->GetBinCenter(z + 1);
+                double valueSn = CratioMatrix[x][y][z];
+                double errorSn = errorCratioMatrix[x][y][z];
+                double valueCu = cratioCu.CratioMatrix[x][y][z];
+                double errorCu = cratioCu.errorCratioMatrix[x][y][z];
+                double valueC1 = cratioC1.CratioMatrix[x][y][z];
+                double errorC1 = cratioC1.errorCratioMatrix[x][y][z];
+                double valueC2 = cratioC2.CratioMatrix[x][y][z];
+                double errorC2 = cratioC2.errorCratioMatrix[x][y][z];
+                graphCratioSn->SetPoint(z, zValue, valueSn);
+                graphCratioSn->SetPointError(z, 0.0, errorSn);
+                graphCratioCu->SetPoint(z, zValue+0.01, valueCu);
+                graphCratioCu->SetPointError(z+0.01, 0.0, errorCu); 
+                graphCratioC1->SetPoint(z, zValue+0.02, valueC1);
+                graphCratioC1->SetPointError(z+0.02, 0.0, errorC1);
+                graphCratioC2->SetPoint(z, zValue+0.03, valueC2);
+                graphCratioC2->SetPointError(z+0.03, 0.0, errorC2);
+            }
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << Q2Value;
+            std::string formattedQ2Value = ss.str();
+            std::string title = "<cos #phi_{h}>_A / <cos #phi_{h}>_D vs z, Q^{2}= " + formattedQ2Value + " GeV^{2}";
+
+            graphCratioSn->SetTitle(title.c_str());
+            graphCratioSn->GetXaxis()->SetTitle("z");
+            graphCratioSn->GetYaxis()->SetRangeUser(-10.0, 10.0); // Set Y axis range from 0.0 to 2.0
+            graphCratioSn->SetMarkerStyle(20);
+            graphCratioCu->SetMarkerStyle(20);
+            graphCratioC1->SetMarkerStyle(20);
+            graphCratioC2->SetMarkerStyle(20);
+
+            graphCratioSn->SetMarkerColor(kGreen);
+            graphCratioCu->SetMarkerColor(kRed);
+            graphCratioC1->SetMarkerColor(kBlue);
+            graphCratioC2->SetMarkerColor(kBlack);
+
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphCratioSn, "Sn sim", "lp");
+            legend->AddEntry(graphCratioCu, "Cu sim", "lp");
+            legend->AddEntry(graphCratioC1, "C1 sim", "lp");
+            legend->AddEntry(graphCratioC2, "C2 sim", "lp");
+
+            TLine *line = new TLine(graphCratioSn->GetXaxis()->GetXmin(), 1.0, graphCratioSn->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+
+            mg->Add(graphCratioSn);
+            mg->Add(graphCratioCu);
+            mg->Add(graphCratioC1);
+            mg->Add(graphCratioC2);
+
+            mg->SetTitle(("<cos #phi_{h}>_A / <cos #phi_{h}>_D vs z, Q^{2}=" + formattedQ2Value).c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("<cos #phi_{h}>_A / <cos #phi_{h}>_D");
+            mg->SetTitle((title).c_str());
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+        canvasCratio.SaveAs(pdfFileName.c_str());
+    }
+
+
+
+
+
+}
+
+
+void cratio::multiCrattrue( cratio& cratioCu,  cratio& cratioC1 , cratio& cratioC2 ){
+    for (int x = 0; x < Cratiobin; ++x){
+        double xValue = h_wD_Cratio->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "multiCratsimus_x" + std::to_string(xValue) + ".pdf";
+        TCanvas canvasCratio("c", "Multiplot Cratio", 1200, 800);
+        canvasCratio.Divide(3, 2); 
+        for (int y=0; y < Cratiobin; ++y) {
+            TMultiGraph *mg = new TMultiGraph();
+
+            double Q2Value = h_wD_Cratio->GetYaxis()->GetBinCenter(y + 1);
+            canvasCratio.cd(y + 1);
+            TGraphErrors *graphCratioSn = new TGraphErrors();
+            TGraphErrors *graphCratioCu = new TGraphErrors();
+            TGraphErrors *graphCratioC1 = new TGraphErrors();
+            TGraphErrors *graphCratioC2 = new TGraphErrors();
+            for (int z=0; z < Cratiobin; ++z) {
+                double zValue = h_wD_Cratio->GetZaxis()->GetBinCenter(z + 1);
+                double valueSn = CratioMatrix[x][y][z];
+                double errorSn = errorCratioMatrix[x][y][z];
+                double valueCu = cratioCu.CratioMatrix[x][y][z];
+                double errorCu = cratioCu.errorCratioMatrix[x][y][z];
+                double valueC1 = cratioC1.CratioMatrix[x][y][z];
+                double errorC1 = cratioC1.errorCratioMatrix[x][y][z];
+                double valueC2 = cratioC2.CratioMatrix[x][y][z];
+                double errorC2 = cratioC2.errorCratioMatrix[x][y][z];
+                graphCratioSn->SetPoint(z, zValue, valueSn);
+                graphCratioSn->SetPointError(z, 0.0, errorSn);
+                graphCratioCu->SetPoint(z, zValue+0.01, valueCu);
+                graphCratioCu->SetPointError(z+0.01, 0.0, errorCu); 
+                graphCratioC1->SetPoint(z, zValue+0.02, valueC1);
+                graphCratioC1->SetPointError(z+0.02, 0.0, errorC1);
+                graphCratioC2->SetPoint(z, zValue+0.03, valueC2);
+                graphCratioC2->SetPointError(z+0.03, 0.0, errorC2);
+            }
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << Q2Value;
+            std::string formattedQ2Value = ss.str();
+            std::string title = "<cos #phi_{h}>_A / <cos #phi_{h}>_D vs z, Q^{2}= " + formattedQ2Value + " GeV^{2}";
+
+            graphCratioSn->SetTitle(title.c_str());
+            graphCratioSn->GetXaxis()->SetTitle("z");
+            graphCratioSn->GetYaxis()->SetRangeUser(-10.0, 10.0); // Set Y axis range from 0.0 to 2.0
+            graphCratioSn->SetMarkerStyle(20);
+            graphCratioCu->SetMarkerStyle(20);
+            graphCratioC1->SetMarkerStyle(20);
+            graphCratioC2->SetMarkerStyle(20);
+
+            graphCratioSn->SetMarkerColor(kGreen);
+            graphCratioCu->SetMarkerColor(kRed);
+            graphCratioC1->SetMarkerColor(kBlue);
+            graphCratioC2->SetMarkerColor(kBlack);
+
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphCratioSn, "Sn", "lp");
+            legend->AddEntry(graphCratioCu, "Cu", "lp");
+            legend->AddEntry(graphCratioC1, "C1", "lp");
+            legend->AddEntry(graphCratioC2, "C2", "lp");
+
+            TLine *line = new TLine(graphCratioSn->GetXaxis()->GetXmin(), 1.0, graphCratioSn->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+
+            mg->Add(graphCratioSn);
+            mg->Add(graphCratioCu);
+            mg->Add(graphCratioC1);
+            mg->Add(graphCratioC2);
+
+            mg->SetTitle(("<cos #phi_{h}>_A / <cos #phi_{h}>_D vs z, Q^{2}=" + formattedQ2Value).c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("<cos #phi_{h}>_A / <cos #phi_{h}>_D");
+            mg->SetTitle((title).c_str());
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+        canvasCratio.SaveAs(pdfFileName.c_str());
+    }
+}
+
+void cratio::multiCratall( cratio& cratioCu,  cratio& cratioC1 , cratio& cratioC2 , cratio& cratioSnsim , cratio& cratioCusim,  cratio& cratioC1sim , cratio& cratioC2sim  ){
+    for (int x = 0; x < Cratiobin; ++x){
+        double xValue = h_wD_Cratio->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "multiCratall_x" + std::to_string(xValue) + ".pdf";
+        TCanvas canvasCratio("c", "Multiplotall Cratio", 1200, 800);
+        canvasCratio.Divide(3, 2); 
+        for (int y=0; y < Cratiobin; ++y) {
+            TMultiGraph *mg = new TMultiGraph();
+
+            double Q2Value = h_wD_Cratio->GetYaxis()->GetBinCenter(y + 1);
+            canvasCratio.cd(y + 1);
+            TGraphErrors *graphCratioSn = new TGraphErrors();
+            TGraphErrors *graphCratioCu = new TGraphErrors();
+            TGraphErrors *graphCratioC1 = new TGraphErrors();
+            TGraphErrors *graphCratioC2 = new TGraphErrors();
+            TGraphErrors *graphCratioSnsim = new TGraphErrors();
+            TGraphErrors *graphCratioCusim = new TGraphErrors();
+            TGraphErrors *graphCratioC1sim = new TGraphErrors();
+            TGraphErrors *graphCratioC2sim = new TGraphErrors();
+            for (int z=0; z < Cratiobin; ++z) {
+                double zValue = h_wD_Cratio->GetZaxis()->GetBinCenter(z + 1);
+                double valueSn = CratioMatrix[x][y][z];
+                double errorSn = errorCratioMatrix[x][y][z];
+                double valueCu = cratioCu.CratioMatrix[x][y][z];
+                double errorCu = cratioCu.errorCratioMatrix[x][y][z];
+                double valueC1 = cratioC1.CratioMatrix[x][y][z];
+                double errorC1 = cratioC1.errorCratioMatrix[x][y][z];
+                double valueC2 = cratioC2.CratioMatrix[x][y][z];
+                double errorC2 = cratioC2.errorCratioMatrix[x][y][z];
+                double valueSnsim = cratioSnsim.CratioMatrix[x][y][z];
+                double errorSnsim = cratioSnsim.errorCratioMatrix[x][y][z];
+                double valueCusim = cratioCusim.CratioMatrix[x][y][z];
+                double errorCusim = cratioCusim.errorCratioMatrix[x][y][z];
+                double valueC1sim = cratioC1sim.CratioMatrix[x][y][z];
+                double errorC1sim = cratioC1sim.errorCratioMatrix[x][y][z];
+                double valueC2sim = cratioC2sim.CratioMatrix[x][y][z];
+                double errorC2sim = cratioC2sim.errorCratioMatrix[x][y][z];
+
+                graphCratioSn->SetPoint(z, zValue, valueSn);
+                graphCratioSn->SetPointError(z, 0.0, errorSn);
+                graphCratioCu->SetPoint(z, zValue+0.01, valueCu);
+                graphCratioCu->SetPointError(z+0.01, 0.0, errorCu); 
+                graphCratioC1->SetPoint(z, zValue+0.02, valueC1);
+                graphCratioC1->SetPointError(z+0.02, 0.0, errorC1);
+                graphCratioC2->SetPoint(z, zValue+0.03, valueC2);
+                graphCratioC2->SetPointError(z+0.03, 0.0, errorC2);
+                graphCratioSnsim->SetPoint(z, zValue+0.005, valueSnsim);
+                graphCratioSnsim->SetPointError(z+0.005, 0.0, errorSnsim);
+                graphCratioCusim->SetPoint(z, zValue+0.015, valueCusim);
+                graphCratioCusim->SetPointError(z+0.015, 0.0, errorCusim);
+                graphCratioC1sim->SetPoint(z, zValue+0.025, valueC1sim);
+                graphCratioC1sim->SetPointError(z+0.025, 0.0, errorC1sim);
+                graphCratioC2sim->SetPoint(z, zValue+0.035, valueC2sim);
+                graphCratioC2sim->SetPointError(z+0.035, 0.0, errorC2sim);
+
+            }
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << Q2Value;
+            std::string formattedQ2Value = ss.str();
+            std::string title = "<cos #phi_{h}>_A / <cos #phi_{h}>_D vs z, Q^{2}= " + formattedQ2Value + " GeV^{2}";
+
+            graphCratioSn->SetTitle(title.c_str());
+            graphCratioSn->GetXaxis()->SetTitle("z");
+            graphCratioSn->GetYaxis()->SetRangeUser(-10.0, 10.0); // Set Y axis range from 0.0 to 2.0
+            graphCratioSn->SetMarkerStyle(20);
+            graphCratioCu->SetMarkerStyle(20);
+            graphCratioC1->SetMarkerStyle(20);
+            graphCratioC2->SetMarkerStyle(20);
+            graphCratioSnsim->SetMarkerStyle(20);
+            graphCratioCusim->SetMarkerStyle(20);
+            graphCratioC1sim->SetMarkerStyle(20);
+            graphCratioC2sim->SetMarkerStyle(20);
+
+
+            graphCratioSn->SetMarkerColor(kGreen);
+            graphCratioCu->SetMarkerColor(kRed);
+            graphCratioC1->SetMarkerColor(kBlue);
+            graphCratioC2->SetMarkerColor(kBlack);
+            graphCratioSnsim->SetMarkerColor(kSpring-7);
+            graphCratioCusim->SetMarkerColor(kOrange+8);
+            graphCratioC1sim->SetMarkerColor(kCyan+3);
+            graphCratioC2sim->SetMarkerColor(kGray);
+
+
+
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphCratioSn, "Sn", "lp");
+            legend->AddEntry(graphCratioCu, "Cu", "lp");
+            legend->AddEntry(graphCratioC1, "C1", "lp");
+            legend->AddEntry(graphCratioC2, "C2", "lp");
+            legend->AddEntry(graphCratioSnsim, "Sn sim", "lp");
+            legend->AddEntry(graphCratioCusim, "Cu sim", "lp");
+            legend->AddEntry(graphCratioC1sim, "C1 sim", "lp");
+            legend->AddEntry(graphCratioC2sim, "C2 sim", "lp");
+
+
+            TLine *line = new TLine(graphCratioSn->GetXaxis()->GetXmin(), 1.0, graphCratioSn->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+
+            mg->Add(graphCratioSn);
+            mg->Add(graphCratioCu);
+            mg->Add(graphCratioC1);
+            mg->Add(graphCratioC2);
+            mg->Add(graphCratioSnsim);
+            mg->Add(graphCratioCusim);
+            mg->Add(graphCratioC1sim);
+            mg->Add(graphCratioC2sim);
+
+
+            mg->SetTitle(("<cos #phi_{h}>_A / <cos #phi_{h}>_D vs z, Q^{2}=" + formattedQ2Value).c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("<cos #phi_{h}>_A / <cos #phi_{h}>_D");
+            mg->SetTitle((title).c_str());
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+        canvasCratio.SaveAs(pdfFileName.c_str());
+    }
+}

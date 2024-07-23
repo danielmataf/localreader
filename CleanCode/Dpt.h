@@ -41,6 +41,14 @@ public:
         return errorDptMatrix;
     }
 
+    void multiDptsimus( deltaptsq&,  deltaptsq& , deltaptsq& );
+    void multiDpttrue(  deltaptsq&,  deltaptsq& , deltaptsq& );
+    void multiDptall(   deltaptsq&,  deltaptsq& , deltaptsq& , deltaptsq&, deltaptsq& , deltaptsq&, deltaptsq& );
+        //this fct plots every target in true and sil. C1 and C2 included
+    void multiDptall2 ( deltaptsq& , deltaptsq&, deltaptsq& , deltaptsq&,deltaptsq& ); 
+        //this same as b4 to plot only with the carbon on CxC
+
+
     TH3F* getHwA();
     TH3F* getHwA_sqpt2() ;
     TH3F* getHA3D() ;

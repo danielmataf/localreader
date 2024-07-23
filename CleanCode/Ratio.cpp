@@ -369,7 +369,7 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
             ss << std::fixed << std::setprecision(2) << pt2Value;
             std::string formattedPt2Value = ss.str();
             //std::cout << "formattedPt2Value = " << formattedPt2Value << std::endl;
-            std::string title = "R vs z, p_{t}^{2}=" + formattedPt2Value + " GeV^{2}";
+            std::string title = "R vs z, p_{t}^{2}=" + formattedPt2Value + " GeV^{2}";          /// how to display proper title!!!! here///
 
             graph->SetTitle(title.c_str());
             graph->GetXaxis()->SetTitle("z");
@@ -524,7 +524,7 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird, Ratio& ratiosimone
     }
 }
 
-void Ratio::multiplotRbis() {
+void Ratio::multiplotRbis() {       //this is for two carbons
     for (int x = 0; x < Rbin; ++x) {
 
         double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
@@ -580,4 +580,402 @@ void Ratio::PlotRatio(const std::string filename) {
 
 
 
-    //outputFile = new TFile("ratio_output.root", "RECREATE");
+void Ratio::multiRsimus(  Ratio& ratioCusim, Ratio& ratioC1sim,   Ratio& ratioC2sim){
+    //fct for simus only arguments only three ratios Cu, C1, C2. Third is included in the fct-class
+    for (int x = 0; x < Rbin; ++x) {
+//
+        double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "AllRsimu_nu" + std::to_string(nuValue) + ".pdf";
+        TCanvas canvas("c", "Multiplot sim and four R", 1200, 800);
+        canvas.Divide(3, 2); 
+        for (int z = 0; z < Rbin; ++z) {
+            TMultiGraph *mg = new TMultiGraph();
+//
+            double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
+            canvas.cd(z + 1);
+            TGraphErrors *graphSn = new TGraphErrors();
+            TGraphErrors *graphCu = new TGraphErrors();
+            TGraphErrors *graphC1 = new TGraphErrors();
+            TGraphErrors *graphC2 = new TGraphErrors();
+//            
+            for (int y = 0; y < Rbin; ++y) {
+                double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
+                double valueSn = ratMatrix[x][y][z];
+                double errorSn = errorMatrix[x][y][z];
+                double valueCu = ratioCusim.getRatMatrix()[x][y][z];
+                double errorCu = ratioCusim.getErrorMatrix()[x][y][z];
+                double valueC1 = ratioC1sim.getRatMatrix()[x][y][z];
+                double errorC1 = ratioC1sim.getErrorMatrix()[x][y][z];
+                double valueC2 = ratioC2sim.getRatMatrix()[x][y][z];
+                double errorC2 = ratioC2sim.getErrorMatrix()[x][y][z];
+                //double valueSimtwo = ratiosimtwo.getRatMatrix()[x][y][z];
+                //double errorSimtwo = ratiosimtwo.getErrorMatrix()[x][y][z];
+//
+                //std::cout << "Sn= " << value << "; Cu= " << valueOther << std::endl;
+                graphSn->SetPoint(y, zValue,   valueSn);
+                graphSn->SetPointError(y, 0.0, errorSn); 
+                graphCu->SetPoint(y, zValue+0.01,   valueCu);
+                graphCu->SetPointError(y+0.01, 0.0, errorCu);
+                graphC1->SetPoint(y, zValue+0.02,   valueC1);
+                graphC1->SetPointError(y+0.02, 0.0, errorC1);
+                graphC2->SetPoint(y, zValue+0.03,   valueC2); //+0.005 to avoid overlap and putting it next its correcponding REC data 
+                graphC2->SetPointError(y+0.03, 0.0, errorC2);
+                //graphSimtwo->SetPoint(y, zValue+0.015, valueSimtwo);
+                //graphSimtwo->SetPointError(y+0.015, 0.0, errorSimtwo);
+//                
+//
+            }
+//
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << pt2Value;
+            std::string formattedPt2Value = ss.str();
+            //std::cout << "formattedPt2Value = " << formattedPt2Value << std::endl;
+//
+            graphSn->SetTitle(("R vs z, pt2=" + std::to_string(pt2Value)).c_str());
+            graphSn->GetXaxis()->SetTitle("z");
+            graphSn->GetYaxis()->SetTitle("R");
+            graphSn->SetMarkerStyle(20);
+            graphCu->SetMarkerStyle(20);
+            graphC1->SetMarkerStyle(20);
+            graphC2->SetMarkerStyle(20);
+            graphSn->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
+            //graph->Draw("AP");
+            graphCu->SetMarkerColor(kRed);
+//
+            graphSn->SetMarkerColor(kGreen);
+            graphC1->SetMarkerColor(kBlue+1);
+            graphC2->SetMarkerColor(kBlack);
+            //graphOther->Draw("P");
+//
+//            
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphSn, "Sn sim", "lp");
+            legend->AddEntry(graphCu, "Cu sim", "lp");
+            legend->AddEntry(graphC1, "C1 sim", "lp");
+            legend->AddEntry(graphC2, "C2 sim", "lp");
+//
+            TLine *line = new TLine(graphSn->GetXaxis()->GetXmin(), 1.0, graphSn->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+//
+            mg->Add(graphSn);
+            mg->Add(graphCu);
+            mg->Add(graphC1);
+            mg->Add(graphC2);
+            mg->SetTitle(("R vs z, pt^{2}=" + formattedPt2Value).c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("R");
+//
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+        canvas.SaveAs(pdfFileName.c_str());
+    }
+}
+
+void Ratio::multiRtrue(  Ratio& ratioCu, Ratio& ratioC1,   Ratio& ratioC2){
+    //fct only for true. arguments only three ratios Cu, C1, C2. Third is included in the fct-class
+    for (int x = 0; x < Rbin; ++x) {
+        double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "AllRtrue_nu" + std::to_string(nuValue) + ".pdf";
+        TCanvas canvas("c", "Multiplot true and four R", 1200, 800);
+        canvas.Divide(3, 2); 
+        for (int z = 0; z < Rbin; ++z) {
+            TMultiGraph *mg = new TMultiGraph();
+            double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
+            canvas.cd(z + 1);
+            TGraphErrors *graphSn = new TGraphErrors();
+            TGraphErrors *graphCu = new TGraphErrors();
+            TGraphErrors *graphC1 = new TGraphErrors();
+            TGraphErrors *graphC2 = new TGraphErrors();
+            for (int y = 0; y < Rbin; ++y) {
+                double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
+                double valueSn = ratMatrix[x][y][z];
+                double errorSn = errorMatrix[x][y][z];
+                double valueCu = ratioCu.getRatMatrix()[x][y][z];
+                double errorCu = ratioCu.getErrorMatrix()[x][y][z];
+                double valueC1 = ratioC1.getRatMatrix()[x][y][z];
+                double errorC1 = ratioC1.getErrorMatrix()[x][y][z];
+                double valueC2 = ratioC2.getRatMatrix()[x][y][z];
+                double errorC2 = ratioC2.getErrorMatrix()[x][y][z];
+                graphSn->SetPoint(y, zValue,   valueSn);
+                graphSn->SetPointError(y, 0.0, errorSn); 
+                graphCu->SetPoint(y, zValue+0.01,   valueCu);
+                graphCu->SetPointError(y+0.01, 0.0, errorCu);
+                graphC1->SetPoint(y, zValue+0.02,   valueC1);
+                graphC1->SetPointError(y+0.02, 0.0, errorC1);
+                graphC2->SetPoint(y, zValue+0.03,   valueC2); //+0.005 to avoid overlap and putting it next its correcponding REC data 
+                graphC2->SetPointError(y+0.03, 0.0, errorC2);
+            }
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << pt2Value;
+            std::string formattedPt2Value = ss.str();
+            graphSn->SetTitle(("R vs z, pt^{2}=" + std::to_string(pt2Value)).c_str());
+            graphSn->GetXaxis()->SetTitle("z");
+            graphSn->GetYaxis()->SetTitle("R");
+            graphSn->SetMarkerStyle(20);
+            graphCu->SetMarkerStyle(20);
+            graphC1->SetMarkerStyle(20);
+            graphC2->SetMarkerStyle(20);
+            graphSn->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
+            graphCu->SetMarkerColor(kRed);
+            graphSn->SetMarkerColor(kGreen);
+            graphC1->SetMarkerColor(kBlue+1);
+            graphC2->SetMarkerColor(kBlack);
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphSn, "Sn", "lp");
+            legend->AddEntry(graphCu, "Cu", "lp");
+            legend->AddEntry(graphC1, "C1", "lp");
+            legend->AddEntry(graphC2, "C2", "lp");
+            TLine *line = new TLine(graphSn->GetXaxis()->GetXmin(), 1.0, graphSn->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+            mg->Add(graphSn);
+            mg->Add(graphCu);
+            mg->Add(graphC1);
+            mg->Add(graphC2);
+            mg->SetTitle(("R vs z, pt2=" + formattedPt2Value).c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("R");
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // ray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+        canvas.SaveAs(pdfFileName.c_str());
+    }
+}
+
+
+
+void Ratio::multiRall(  Ratio& ratioCu, Ratio& ratioC1,   Ratio& ratioC2, Ratio& ratioSnsim , Ratio& ratioCusim, Ratio& ratioC1sim, Ratio& ratioC2sim){
+    //fct only for true. arguments only three ratios Cu, C1, C2. Third is included in the fct-class
+    for (int x = 0; x < Rbin; ++x) {
+        double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "AllRtrue_nu" + std::to_string(nuValue) + ".pdf";
+        TCanvas canvas("c", "Multiplot true and four R", 1200, 800);
+        canvas.Divide(3, 2); 
+        for (int z = 0; z < Rbin; ++z) {
+            TMultiGraph *mg = new TMultiGraph();
+            double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
+            canvas.cd(z + 1);
+            TGraphErrors *graphSn = new TGraphErrors();
+            TGraphErrors *graphCu = new TGraphErrors();
+            TGraphErrors *graphC1 = new TGraphErrors();
+            TGraphErrors *graphC2 = new TGraphErrors();
+            TGraphErrors *graphSnsim = new TGraphErrors();
+            TGraphErrors *graphCusim = new TGraphErrors();
+            TGraphErrors *graphC1sim = new TGraphErrors();
+            TGraphErrors *graphC2sim = new TGraphErrors();
+            for (int y = 0; y < Rbin; ++y) {
+                double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
+                double valueSn = ratMatrix[x][y][z];
+                double errorSn = errorMatrix[x][y][z];
+                double valueCu = ratioCu.getRatMatrix()[x][y][z];
+                double errorCu = ratioCu.getErrorMatrix()[x][y][z];
+                double valueC1 = ratioC1.getRatMatrix()[x][y][z];
+                double errorC1 = ratioC1.getErrorMatrix()[x][y][z];
+                double valueC2 = ratioC2.getRatMatrix()[x][y][z];
+                double errorC2 = ratioC2.getErrorMatrix()[x][y][z];
+                double valueSnsim = ratioSnsim.getRatMatrix()[x][y][z];
+                double errorSnsim = ratioSnsim.getErrorMatrix()[x][y][z];
+                double valueCusim = ratioCusim.getRatMatrix()[x][y][z];
+                double errorCusim = ratioCusim.getErrorMatrix()[x][y][z];
+                double valueC1sim = ratioC1sim.getRatMatrix()[x][y][z];
+                double errorC1sim = ratioC1sim.getErrorMatrix()[x][y][z];
+                double valueC2sim = ratioC2sim.getRatMatrix()[x][y][z];
+                double errorC2sim = ratioC2sim.getErrorMatrix()[x][y][z];
+
+                graphSn->SetPoint(y, zValue,   valueSn);
+                graphSn->SetPointError(y, 0.0, errorSn); 
+                graphCu->SetPoint(y, zValue+0.01,   valueCu);
+                graphCu->SetPointError(y+0.01, 0.0, errorCu);
+                graphC1->SetPoint(y, zValue+0.02,   valueC1);
+                graphC1->SetPointError(y+0.02, 0.0, errorC1);
+                graphC2->SetPoint(y, zValue+0.03,   valueC2); //+0.005 to avoid overlap and putting it next its correcponding REC data 
+                graphC2->SetPointError(y+0.03, 0.0, errorC2);
+                graphSnsim->SetPoint(y, zValue+0.005,   valueSnsim);
+                graphSnsim->SetPointError(y+0.005, 0.0, errorSnsim); 
+                graphCusim->SetPoint(y, zValue+0.015,   valueCusim);
+                graphCusim->SetPointError(y+0.015, 0.0, errorCusim);
+                graphC1sim->SetPoint(y, zValue+0.025,   valueC1sim);
+                graphC1sim->SetPointError(y+0.025, 0.0, errorC1sim);
+                graphC2sim->SetPoint(y, zValue+0.035,   valueC2sim); //+0.005 to avoid overlap and putting it next its correcponding REC data 
+                graphC2sim->SetPointError(y+0.035, 0.0, errorC2sim);
+
+            }
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << pt2Value;
+            std::string formattedPt2Value = ss.str();
+            std::string title = "R vs z, p_{t}^{2}=" + formattedPt2Value + " GeV^{2}";          /// how to display proper title!!!! here///
+            graphSn->SetTitle(title.c_str());
+            graphSn->GetXaxis()->SetTitle("z");
+            graphSn->GetYaxis()->SetTitle("R");
+            graphSn->SetMarkerStyle(20);
+            graphSnsim->SetMarkerStyle(20);
+            graphCu->SetMarkerStyle(20);
+            graphCusim->SetMarkerStyle(20);
+            graphC1->SetMarkerStyle(20);
+            graphC1sim->SetMarkerStyle(20);
+            graphC2->SetMarkerStyle(20);
+            graphC2sim->SetMarkerStyle(20);
+            graphSn->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
+            graphCu->SetMarkerColor(kRed);
+            graphCusim->SetMarkerColor(kOrange+8);            
+            graphSn->SetMarkerColor(kGreen);
+            graphSnsim->SetMarkerColor(kSpring-7);            
+            graphC1->SetMarkerColor(kBlue+1);
+            graphC1sim->SetMarkerColor(kCyan-3);            
+            graphC2->SetMarkerColor(kBlack);
+            graphC2sim->SetMarkerColor(kGray);            
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphSn, "Sn", "lp");
+            legend->AddEntry(graphCu, "Cu", "lp");
+            legend->AddEntry(graphC1, "C1", "lp");
+            legend->AddEntry(graphC2, "C2", "lp");
+            legend->AddEntry(graphSnsim , "Sn(sim)", "lp");
+            legend->AddEntry(graphCusim , "Cu(sim)", "lp");
+            legend->AddEntry(graphC1sim , "C1(sim)", "lp");
+            legend->AddEntry(graphC2sim , "C2(sim)", "lp");
+            
+            TLine *line = new TLine(graphSn->GetXaxis()->GetXmin(), 1.0, graphSn->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+            mg->Add(graphSn);
+            mg->Add(graphCu);
+            mg->Add(graphC1);
+            mg->Add(graphC2);
+            mg->Add(graphSnsim);
+            mg->Add(graphCusim);
+            mg->Add(graphC1sim);
+            mg->Add(graphC2sim);
+
+            mg->SetTitle(title.c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("R");
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // ray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+        canvas.SaveAs(pdfFileName.c_str());
+    }
+}
+
+void Ratio::multiRall2(  Ratio& ratioCu,    Ratio& ratioC, Ratio& ratioSnsim , Ratio& ratioCusim,  Ratio& ratioCsim){
+    //fct only for true. arguments only three ratios Cu, CxC. with sims 
+    for (int x = 0; x < Rbin; ++x) {
+        double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "AllRtrueCC_nu" + std::to_string(nuValue) + ".pdf";
+        TCanvas canvas("c", "Multiplot trueCC and four R", 1200, 800);
+        canvas.Divide(3, 2); 
+        for (int z = 0; z < Rbin; ++z) {
+            TMultiGraph *mg = new TMultiGraph();
+            double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
+            canvas.cd(z + 1);
+            TGraphErrors *graphSn = new TGraphErrors();
+            TGraphErrors *graphCu = new TGraphErrors();
+            TGraphErrors *graphC = new TGraphErrors();
+            TGraphErrors *graphSnsim = new TGraphErrors();
+            TGraphErrors *graphCusim = new TGraphErrors();
+            TGraphErrors *graphCsim = new TGraphErrors();
+            for (int y = 0; y < Rbin; ++y) {
+                double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
+                double valueSn = ratMatrix[x][y][z];
+                double errorSn = errorMatrix[x][y][z];
+                double valueCu = ratioCu.getRatMatrix()[x][y][z];
+                double errorCu = ratioCu.getErrorMatrix()[x][y][z];
+                double valueC = ratioC.getRatMatrix()[x][y][z];
+                double errorC = ratioC.getErrorMatrix()[x][y][z];
+                double valueSnsim = ratioSnsim.getRatMatrix()[x][y][z];
+                double errorSnsim = ratioSnsim.getErrorMatrix()[x][y][z];
+                double valueCusim = ratioCusim.getRatMatrix()[x][y][z];
+                double errorCusim = ratioCusim.getErrorMatrix()[x][y][z];
+                double valueCsim = ratioCsim.getRatMatrix()[x][y][z];
+                double errorCsim = ratioCsim.getErrorMatrix()[x][y][z];
+
+                graphSn->SetPoint(y, zValue,   valueSn);
+                graphSn->SetPointError(y, 0.0, errorSn); 
+                graphCu->SetPoint(y, zValue+0.01,   valueCu);
+                graphCu->SetPointError(y+0.01, 0.0, errorCu);
+                graphC->SetPoint(y, zValue+0.03,   valueC); //+0.005 to avoid overlap and putting it next its correcponding REC data 
+                graphC->SetPointError(y+0.03, 0.0, errorC);
+                graphSnsim->SetPoint(y, zValue+0.005,   valueSnsim);
+                graphSnsim->SetPointError(y+0.005, 0.0, errorSnsim); 
+                graphCusim->SetPoint(y, zValue+0.015,   valueCusim);
+                graphCusim->SetPointError(y+0.015, 0.0, errorCusim);
+                graphCsim->SetPoint(y, zValue+0.035,   valueCsim); //+0.005 to avoid overlap and putting it next its correcponding REC data 
+                graphCsim->SetPointError(y+0.035, 0.0, errorCsim);
+
+            }
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << pt2Value;
+            std::string formattedPt2Value = ss.str();
+            std::string title = "R vs z, p_{t}^{2}=" + formattedPt2Value + " GeV^{2}";          /// how to display proper title!!!! here///
+            graphSn->SetTitle(title.c_str());
+            graphSn->GetXaxis()->SetTitle("z");
+            graphSn->GetYaxis()->SetTitle("R");
+            graphSn->SetMarkerStyle(20);
+            graphSnsim->SetMarkerStyle(20);
+            graphCu->SetMarkerStyle(20);
+            graphCusim->SetMarkerStyle(20);
+            graphC->SetMarkerStyle(20);
+            graphCsim->SetMarkerStyle(20);
+            graphSn->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
+            graphCu->SetMarkerColor(kRed);
+            graphCusim->SetMarkerColor(kOrange+8);            
+            graphSn->SetMarkerColor(kGreen);
+            graphSnsim->SetMarkerColor(kSpring-7);            
+            graphC->SetMarkerColor(kBlack);
+            graphCsim->SetMarkerColor(kGray);            
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphSn, "Sn", "lp");
+            legend->AddEntry(graphCu, "Cu", "lp");
+            legend->AddEntry(graphC, "CxC", "lp");
+            legend->AddEntry(graphSnsim , "Sn (sim)", "lp");
+            legend->AddEntry(graphCusim , "Cu (sim)", "lp");
+            legend->AddEntry(graphCsim , "CxC(sim)", "lp");
+            
+            TLine *line = new TLine(graphSn->GetXaxis()->GetXmin(), 1.0, graphSn->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+            mg->Add(graphSn);
+            mg->Add(graphCu);
+            mg->Add(graphC);
+            mg->Add(graphSnsim);
+            mg->Add(graphCusim);
+            mg->Add(graphCsim);
+
+            mg->SetTitle(title.c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("R");
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // ray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+        canvas.SaveAs(pdfFileName.c_str());
+    }
+}

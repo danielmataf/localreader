@@ -25,6 +25,12 @@ public:
     //void calculateCratio(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
     void multiplotCratio();
     void multiplotCratio( cratio& , cratio&);
+    
+    void multiCratsimus( cratio&,  cratio& , cratio& );
+    void multiCrattrue(  cratio&,  cratio& , cratio& );
+    void multiCratall(   cratio&,  cratio& , cratio& , cratio&, cratio& , cratio&, cratio& );
+    void multiCratall2 ( cratio& , cratio&, cratio& , cratio&,cratio& ); 
+
 
 
 
