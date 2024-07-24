@@ -1152,12 +1152,6 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     h_calSector->Write();
     h_helicity->Write();
     h_helicity_raw->Write();
-    h_vertexZ->Write();
-    h_Q2->Write();
-    h_xb->Write();
-    h_y->Write();
-    h_nu->Write();
-    h_W2->Write();
     h_px_el->Write();
     h_py_el->Write();
     h_pz_el->Write();
@@ -1168,9 +1162,6 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     h_E_el->Write();
     h_E_el_theta->Write();
     h_E_el_phi->Write();
-    h_z->Write();
-    h_pt2->Write();
-    h_phih->Write();
     h_px_pi->Write();
     h_py_pi->Write();
     h_pz_pi->Write();

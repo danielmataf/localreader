@@ -44,10 +44,10 @@ int main() {
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCuSn/dst/recon/018624/", filenamesCuSn);
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCxC/dst/recon/018451/", filenamesCxC);
     ////uncommment also below for sim  on ifarm
-    //files.SnDir2Vector("/volatile/clas12/dmat/genfiles/LD2/", simufilesLD2);  //uncomment for sim
-    //files.SnDir2Vector("/volatile/clas12/dmat/genfiles/CC/", simufilesCxC);  //uncomment for sim 
-    //files.SnDir2Vector("/volatile/clas12/dmat/genfiles/Cu/", simufilesCu);  //uncomment for sim 
-    //files.SnDir2Vector("/volatile/clas12/dmat/genfiles/Sn/", simufilesSn);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/gen/LD2/", simufilesLD2);  //uncomment for sim
+    //files.SnDir2Vector("/volatile/clas12/dmat/gen/CC/", simufilesCxC);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Cu/", simufilesCu);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesSn);  //uncomment for sim 
 
 
     std::cout<< "Hello world \n";
@@ -271,7 +271,7 @@ int main() {
                 eventsimCu.SetTargetType(1);
                 eventsimCu.calcAll();
                 //munfSimCu.FillHistogramswCuts(eventsimCu);
-                monSimCu.FillHistogramsNoCuts(eventsimCu);
+                monSimCu.FillHistogramswCuts(eventsimCu);
                 simratCu.FillHistograms(eventsimCu);
                 simcratCu.FillHistograms(eventsimCu);
                 broadsimCu.FillHistograms(eventsimCu);
@@ -289,7 +289,7 @@ int main() {
                 //eventsimSn.Print();
                 //munfSimSn.FillHistogramswCuts(eventsimSn);
                 munfSimSn.FillHistogramsNoCuts(eventsimSn_MC);
-                monSimSn.FillHistogramsNoCuts(eventsimSn);
+                monSimSn.FillHistogramswCuts(eventsimSn);
                 simratSn.FillHistograms(eventsimSn);
                 simcratSn.FillHistograms(eventsimSn);
                 broadsimSn.FillHistograms(eventsimSn);
@@ -304,8 +304,8 @@ int main() {
                     eventsimCxC.SetTargetType(1);
                     eventsimCxC.calcAll();
                     munfSimC1.FillHistogramswCuts(eventsimCxC);
-                    monSimC1.FillHistogramsNoCuts(eventsimCxC);
-                    monSimC2.FillHistogramsNoCuts(eventsimCxC);
+                    monSimC1.FillHistogramswCuts(eventsimCxC);
+                    monSimC2.FillHistogramswCuts(eventsimCxC);
                     simratC1.FillHistograms(eventsimCxC);
                     simratC2.FillHistograms(eventsimCxC);
                     simcratC1.FillHistograms(eventsimCxC);
