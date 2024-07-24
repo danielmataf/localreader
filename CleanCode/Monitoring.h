@@ -44,6 +44,8 @@ public:
     void DrawHelicityHistograms(const std::string);
     void DrawCompRECMC(const std::string);
 
+    void SaveHistRoot(const std::string& ) ;
+
     //void FillQ2pre(const Event&  );
     //void Fillypre(const Event&  );
     //void Fillnupre(const Event&  );

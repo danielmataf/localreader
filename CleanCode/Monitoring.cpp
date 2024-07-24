@@ -1129,6 +1129,66 @@ void Monitoring::DrawCompRECMC(const std::string filename){
 
 }
 
+
+void Monitoring::SaveHistRoot(const std::string& filenameREC) {
+    TFile* rootFile = new TFile((filenameREC + ".root").c_str(), "RECREATE");
+    h_vertexZ->Write();
+    h_Q2->Write();
+    h_xb->Write();
+    h_y->Write();
+    h_nu->Write();
+    h_W2->Write();
+    h_z->Write();
+    h_pt2->Write();
+    h_phih->Write();
+
+    h_calXY->Write();
+    h_lu->Write();
+    h_lv->Write();
+    h_lw->Write();
+    h_epcal->Write();
+    h_Nphe15->Write();
+    h_Nphe16->Write();
+    h_calSector->Write();
+    h_helicity->Write();
+    h_helicity_raw->Write();
+    h_vertexZ->Write();
+    h_Q2->Write();
+    h_xb->Write();
+    h_y->Write();
+    h_nu->Write();
+    h_W2->Write();
+    h_px_el->Write();
+    h_py_el->Write();
+    h_pz_el->Write();
+    h_ptot_el->Write();
+    h_theta_el->Write();
+    h_phi_el->Write();
+    h_polcoord_el->Write();
+    h_E_el->Write();
+    h_E_el_theta->Write();
+    h_E_el_phi->Write();
+    h_z->Write();
+    h_pt2->Write();
+    h_phih->Write();
+    h_px_pi->Write();
+    h_py_pi->Write();
+    h_pz_pi->Write();
+    h_ptot_pi->Write();
+    h_theta_pi->Write();
+    h_phi_pi->Write();
+    h_polcoord_pi->Write();
+    h_E_pi->Write();
+    h_E_pi_theta->Write();
+    h_E_pi_phi->Write();
+    h_vertexZ_pi->Write();
+    h_DeltaVz->Write();
+
+
+    rootFile->Close();
+    delete rootFile; 
+
+}
 //void Monitoring::FillHistogramsNoCuts( const Event& event){
 //    int targetType = event.GetTargetType();//using a flag for targets 
 /*

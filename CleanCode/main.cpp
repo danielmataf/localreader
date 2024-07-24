@@ -45,7 +45,7 @@ int main() {
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCxC/dst/recon/018451/", filenamesCxC);
     ////uncommment also below for sim  on ifarm
     //files.SnDir2Vector("/volatile/clas12/dmat/genfiles/LD2/", simufilesLD2);  //uncomment for sim
-    //files.SnDir2Vector("/volatile/clas12/dmat/genfiles/C/", simufilesCxC);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/genfiles/CC/", simufilesCxC);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/genfiles/Cu/", simufilesCu);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/genfiles/Sn/", simufilesSn);  //uncomment for sim 
 
@@ -125,6 +125,9 @@ int main() {
     Monitoring monSimLD2(simLD2cuts, "LD2_sim");
     Monitoring monSimCu(simCucuts, "Cu_sim");
     Monitoring monSimSn(simSncuts, "Sn_sim");
+    Monitoring monTrueLD2(trueLD2cuts, "LD2_true");
+    Monitoring monTrueCu(trueCucuts, "Cu_true");
+    Monitoring monTrueSn(trueSncuts, "Sn_true");
     Monitoring monTrueC1(truec1cuts, "C1_true");
     Monitoring monTrueC2(truec2cuts, "C2_true");
 
@@ -180,6 +183,7 @@ int main() {
 	        eventtestLD2.SetTargetType(0);
 	        eventtestLD2.calcAll();
             munfTrueLD2.FillHistogramswCuts(eventtestLD2);
+            monTrueLD2.FillHistogramswCuts(eventtestLD2);       //filling mon w cuts
 		    ratSn.FillHistograms(eventtestLD2);
 		    ratCu.FillHistograms(eventtestLD2);
 		    ratC1.FillHistograms(eventtestLD2);
@@ -202,6 +206,8 @@ int main() {
             eventtestCuSn.calcAll();
             munfTrueSn.FillHistogramswCuts(eventtestCuSn);
             munfTrueCu.FillHistogramswCuts(eventtestCuSn);
+            monTrueSn.FillHistogramswCuts(eventtestCuSn);
+            monTrueCu.FillHistogramswCuts(eventtestCuSn);
             ratSn.FillHistograms(eventtestCuSn);
             ratCu.FillHistograms(eventtestCuSn);
             broadtrueSn.FillHistograms(eventtestCuSn);
@@ -237,6 +243,7 @@ int main() {
                 Event eventsimLD2 = simLD2.value();
                 eventsimLD2.SetTargetType(0);
                 eventsimLD2.calcAll();
+                monSimLD2.FillHistogramswCuts(eventsimLD2);
                 munfsimLD2.FillHistogramswCuts(eventsimLD2);
                 //munfsimLD2.FillHistogramsNoCuts(eventsimLD2_MC);
                 monSimLD2.FillHistogramsNoCuts(eventsimLD2);
@@ -335,6 +342,13 @@ int main() {
     ratCu.calcR();
     ratC1.calcR();
     ratC2.calcR();
+    simratSn.calcR();
+    simratCu.calcR();
+    simratC1.calcR();
+    simratC2.calcR();
+    simratCu.writeMatrixToFile("matrixCu.txt");
+    ratCu.writeMatrixToFile("matrixCureal.txt");
+
     //rat.multiplotR(rat2, rat3);
     truecratSn.calcCratio();
     truecratCu.calcCratio();
@@ -359,11 +373,41 @@ int main() {
     broadtrueC2.calcDpt();
 
     //broadtrueSn.writeMatrixToFile("matrixSn.txt");
-    broadtrueSn.multiplotDpt(broadtrueCu, broadtrueC1);
+    //broadtrueSn.multiplotDpt(broadtrueCu, broadtrueC1);
+    broadsimSn.multiplotDpt(broadsimCu, broadsimC1);
+
     //broadtrueSn.DrawOnlyptandz("Snptz");
-    ratSn.multiRall( ratCu, ratC1, ratC2, simratSn, simratCu, simratC1, simratC2);
-    broadtrueSn.multiDptall(broadtrueCu, broadtrueC1, broadtrueC2, broadsimSn, broadsimCu, broadsimC1, broadsimC2);
-    truecratSn.multiCratall(truecratCu, truecratC1, truecratC2, simcratSn, simcratCu, simcratC1, simcratC2);
+    //ratSn.multiRall( ratCu, ratC1, ratC2, simratSn, simratCu, simratC1, simratC2);
+    //broadtrueSn.multiDptall(broadtrueCu, broadtrueC1, broadtrueC2, broadsimSn, broadsimCu, broadsimC1, broadsimC2);
+    //truecratSn.multiCratall(truecratCu, truecratC1, truecratC2, simcratSn, simcratCu, simcratC1, simcratC2);
+//
+
+    monTrueLD2.SaveHistRoot("LD2_true");
+    monTrueCu.SaveHistRoot("Cu_true");
+    monTrueSn.SaveHistRoot("Sn_true");
+    monTrueC1.SaveHistRoot("C1_true");
+    monTrueC2.SaveHistRoot("C2_true");
+    monSimC1.SaveHistRoot("C1_sim");
+    monSimC2.SaveHistRoot("C2_sim");
+    monSimLD2.SaveHistRoot("LD2_sim");
+    monSimCu.SaveHistRoot("Cu_sim");
+    monSimSn.SaveHistRoot("Sn_sim");
+
+    //monSimLD2.DrawCaloHistograms("MONLD2SIMCALO");
+    //monSimLD2.DrawVertexHistograms("MONLD2SIMVZ");
+    //monSimLD2.DrawMomentumHistograms("MONLD2SIMMOM");
+    //monSimLD2.DrawCherenkovHistograms("MONLD2SIMCHER");
+    //monSimLD2.DrawEnergyHistograms("MONLD2SIMENERGY");
+    //monSimSn.DrawCaloHistograms("MONSnSIMCALO");
+    //monSimSn.DrawVertexHistograms("MONSnSIMVZ");
+    //monSimSn.DrawMomentumHistograms("MONSnSIMMOM");
+    //monSimSn.DrawCherenkovHistograms("MONSnSIMCHER");
+    //monSimSn.DrawEnergyHistograms("MONSnSIMENERGY");
+    //monTrueC1.DrawCaloHistograms("MONC1TRUECALO");
+    //monTrueC1.DrawVertexHistograms("MONC1TRUEVZ");
+    //monTrueC1.DrawMomentumHistograms("MONC1TRUEMOM");
+    //monTrueC1.DrawCherenkovHistograms("MONC1TRUECHER");
+    //monTrueC1.DrawEnergyHistograms("MONC1TRUEENERGY");
 
 
     return 0;
