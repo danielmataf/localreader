@@ -15,6 +15,7 @@
 #include "sratio.h"
 #include "c2ratio.h"
 #include "FilePathGenerator.h"
+#include "constants.h"  
 
 
 
@@ -86,27 +87,26 @@ int main() {
     CutSet simCucuts;   //Cu
     CutSet simSncuts;   //Sn
 
-
-    simC1cuts.SetCutVz(-3,-2);     //vz cut for C1 target
-    simC2cuts.SetCutVz(-8,-7);     //vz cut for C2 target
-    simLD2cuts.SetCutVz(-8,-2);    //vz cut for LD2 target
-    simCucuts.SetCutVz(-8.5,-6.5); //vz cut for Cu target
-    simSncuts.SetCutVz(-3.5,-1.5); //vz cut for Sn target
+    simC1cuts.SetCutVz(Constants::RcutminVzC1,Constants::RcutminVzC2);     //vz cut for C1 target
+    simC2cuts.SetCutVz(Constants::RcutminVzC2, Constants::RcutmaxVzC2);     //vz cut for C2 target
+    simLD2cuts.SetCutVz(Constants::RcutminVzLD2, Constants::RcutmaxVzLD2);    //vz cut for LD2 target
+    simCucuts.SetCutVz(Constants::RcutminVzCu, Constants::RcutmaxVzCu); //vz cut for Cu target
+    simSncuts.SetCutVz(Constants::RcutminVzSn, Constants::RcutmaxVzSn); //vz cut for Sn target
     simC1cuts.SetCutGen4Rat();
     simC2cuts.SetCutGen4Rat();
     simLD2cuts.SetCutGen4Rat();
     simCucuts.SetCutGen4Rat();
     simSncuts.SetCutGen4Rat();
     //Fix target borders in constants. remember is not the definite vz cut, but a cut for target separation 
-    trueLD2cuts.SetCutVz(-8,-2);
+    trueLD2cuts.SetCutVz(Constants::RcutminVzLD2, Constants::RcutmaxVzLD2);
     trueLD2cuts.SetCutGen4Rat();
     trueSncuts.SetCutGen4Rat();
-    trueSncuts.SetCutVz(-3.5,-1.5);
+    trueSncuts.SetCutVz(Constants::RcutminVzSn, Constants::RcutmaxVzSn);
     trueCucuts.SetCutGen4Rat();
-    trueCucuts.SetCutVz(-8.5,-6.5);
-    truec1cuts.SetCutVz(-3.5,-1.5);
+    trueCucuts.SetCutVz(Constants::RcutminVzCu, Constants::RcutmaxVzCu);
+    truec1cuts.SetCutVz(Constants::RcutminVzC1, Constants::RcutmaxVzC1);
     truec1cuts.SetCutGen4Rat();
-    truec2cuts.SetCutVz(-8.5,-6.5);
+    truec2cuts.SetCutVz(Constants::RcutminVzC2, Constants::RcutmaxVzC2);
     truec2cuts.SetCutGen4Rat();
 
     int sumevts = 0;
@@ -382,16 +382,16 @@ int main() {
     //truecratSn.multiCratall(truecratCu, truecratC1, truecratC2, simcratSn, simcratCu, simcratC1, simcratC2);
 //
 
-    monTrueLD2.SaveHistRoot("LD2_true");
-    monTrueCu.SaveHistRoot("Cu_true");
-    monTrueSn.SaveHistRoot("Sn_true");
-    monTrueC1.SaveHistRoot("C1_true");
-    monTrueC2.SaveHistRoot("C2_true");
-    monSimC1.SaveHistRoot("C1_sim");
-    monSimC2.SaveHistRoot("C2_sim");
-    monSimLD2.SaveHistRoot("LD2_sim");
-    monSimCu.SaveHistRoot("Cu_sim");
-    monSimSn.SaveHistRoot("Sn_sim");
+    monTrueLD2.SaveHistRoot("posLD2_true");
+    monTrueCu.SaveHistRoot("posCu_true");
+    monTrueSn.SaveHistRoot("posSn_true");
+    monTrueC1.SaveHistRoot("posC1_true");
+    monTrueC2.SaveHistRoot("posC2_true");
+    monSimC1.SaveHistRoot("posC1_sim");
+    monSimC2.SaveHistRoot("posC2_sim");
+    monSimLD2.SaveHistRoot("posLD2_sim");
+    monSimCu.SaveHistRoot("posCu_sim");
+    monSimSn.SaveHistRoot("posSn_sim");
 
     //monSimLD2.DrawCaloHistograms("MONLD2SIMCALO");
     //monSimLD2.DrawVertexHistograms("MONLD2SIMVZ");

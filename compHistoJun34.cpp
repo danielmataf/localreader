@@ -13,8 +13,8 @@
 //./comphist
 
 void CompareHistograms(const char* target) {
-    std::string file1 = std::string("/home/matamoros/") + target + "_true.root";
-    std::string file2 = std::string("/home/matamoros/") + target + "_sim.root";
+    std::string file1 = std::string("/home/matamoros/pos") + target + "_true.root";
+    std::string file2 = std::string("/home/matamoros/pos") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {
@@ -36,7 +36,34 @@ void CompareHistograms(const char* target) {
         {"y_" + std::string(target) + "_true", "y_" + std::string(target) + "_sim"},
         {"z_" + std::string(target) + "_true", "z_" + std::string(target) + "_sim"},
         {"targetVz_" + std::string(target) + "_true", "targetVz_" + std::string(target) + "_sim"},
-        {"pt2_" + std::string(target) + "_true", "pt2_" + std::string(target) + "_sim"}
+        {"pt2_" + std::string(target) + "_true", "pt2_" + std::string(target) + "_sim"},
+        //{"DeltaVz_" + std::string(target) + "_true", "DeltaVz_" + std::string(target) + "_sim"},
+        //{"E_el"+ std::string(target) + "_true", "E_el"+ std::string(target) + "_sim"     },
+        //{"E_pi"+ std::string(target) + "_true", "E_pi"+ std::string(target) + "_sim"     },
+        //{"N_phe15_"+ std::string(target) + "_true", "N_phe15_"+ std::string(target) + "_sim"     },
+        //{"N_phe16_"+ std::string(target) + "_true", "N_phe16_"+ std::string(target) + "_sim"     },
+        //{"calSector_"+ std::string(target) + "_true", "calSector_"+ std::string(target) + "_sim"     },
+        //{"epcal_"+ std::string(target) + "_true", "epcal_"+ std::string(target) + "_sim"     },
+        //{"helicity_"+ std::string(target) + "_true", "helicity_"+ std::string(target) + "_sim"     },
+        //{"helicity_raw_"+ std::string(target) + "_true", "helicity_raw_"+ std::string(target) + "_sim"     },
+        //{"lu_"+ std::string(target) + "_true", "lu_"+ std::string(target) + "_sim"     },
+        //{"lv_"+ std::string(target) + "_true", "lv_"+ std::string(target) + "_sim"     },
+        //{"lw_"+ std::string(target) + "_true", "lw_"+ std::string(target) + "_sim"     },
+        //{"phi_el"+ std::string(target) + "_true", "phi_el"+ std::string(target) + "_sim"     },
+        //{"phi_pi"+ std::string(target) + "_true", "phi_pi"+ std::string(target) + "_sim"     },
+        //{"ptot_el_"+ std::string(target) + "_true", "ptot_el_"+ std::string(target) + "_sim"     },
+        //{"ptot_pro_"+ std::string(target) + "_true", "ptot_pro_"+ std::string(target) + "_sim"     },
+        //{"px_el_"+ std::string(target) + "_true", "px_el_"+ std::string(target) + "_sim"     },
+        //{"py_el_"+ std::string(target) + "_true", "py_el_"+ std::string(target) + "_sim"     },                        
+        //{"pz_el_"+ std::string(target) + "_true", "pz_el_"+ std::string(target) + "_sim"     },
+        //{"px_pro_"+ std::string(target) + "_true", "px_pro_"+ std::string(target) + "_sim"     },
+        //{"py_pro_"+ std::string(target) + "_true", "py_pro_"+ std::string(target) + "_sim"     },                        
+        //{"pz_pro_"+ std::string(target) + "_true", "pz_pro_"+ std::string(target) + "_sim"     },
+        //{"theta_el"+ std::string(target) + "_true", "theta_el"+ std::string(target) + "_sim"     },
+        //{"theta_pi"+ std::string(target) + "_true", "theta_pi"+ std::string(target) + "_sim"     },
+
+        
+
     };
     std::map<std::string, int> targetMap = {
         {"LD2", 1},
@@ -70,40 +97,49 @@ void CompareHistograms(const char* target) {
 
 
     const std::map<std::string, std::vector<double>> xStartValues = {
-        {"Q2_" + std::string(target) + "_true", {1.5, 100.0}},
-        {"W2_" + std::string(target) + "_true", {0.0, 100.0}},
-        {"nu_" + std::string(target) + "_true", {100.0, 100.0}}, // No lines for "nu"
-        {"phih_" + std::string(target) + "_true", {100.0, 100.0}}, // No lines for "phih"
-        {"xb_" + std::string(target) + "_true", {100.0, 100.0}}, // No lines for "xb"
-        {"y_" + std::string(target) + "_true", {100.0, 100.0}}, // No lines for "y2"
-        {"z_" + std::string(target) + "_true", {0.3, 0.7}},
-        {"targetVz_" + std::string(target) + "_true", {lowvz, highvz}},
-        {"pt2_" + std::string(target) + "_true", {-10.0, 1.5}}
+        {"Q2_" + std::string(target) + "_data", {1.5, 100.0}},
+        {"W2_" + std::string(target) + "_data", {0.0, 100.0}},
+        {"nu_" + std::string(target) + "_data", {100.0, 100.0}}, // No lines for "nu"
+        {"phih_" + std::string(target) + "_data", {100.0, 100.0}}, // No lines for "phih"
+        {"xb_" + std::string(target) + "_data", {100.0, 100.0}}, // No lines for "xb"
+        {"y_" + std::string(target) + "_data", {100.0, 100.0}}, // No lines for "y2"
+        {"z_" + std::string(target) + "_data", {0.3, 0.7}},
+        {"targetVz_" + std::string(target) + "_data", {lowvz, highvz}},
+        {"pt2_" + std::string(target) + "_data", {-10.0, 1.5}}
     };
 
     for (const auto& pair : histogramPairs) {
         TCanvas* canvas = new TCanvas(Form("ComparisonCanvas_%s_%s", pair.first.c_str(), pair.second.c_str()), Form("Histogram Comparison %s vs %s", pair.first.c_str(), pair.second.c_str()), 800, 600);
         
-        TH1F* h1 = dynamic_cast<TH1F*>(rootFile1->Get(pair.first.c_str()));
-        TH1F* h2 = dynamic_cast<TH1F*>(rootFile2->Get(pair.second.c_str()));
+        TH1F* h1 = dynamic_cast<TH1F*>(rootFile1->Get(pair.first.c_str()));     //data
+        TH1F* h2 = dynamic_cast<TH1F*>(rootFile2->Get(pair.second.c_str()));    //sim
 
         if (!h1 || !h2) {
             std::cerr << "Error: Cannot retrieve histograms from files!" << std::endl;
             return;
         }
-        //if (pair.first == "U_pt2_" + std::string(target) + "_true" || pair.first == "U_z_" + std::string(target) + "_true") {
+        if (pair.first == "pt2_" + std::string(target) + "_data" ){ // || pair.first == "U_z_" + std::string(target) + "_data") {
             canvas->SetLogy();
-        //}
-        h1->SetLineColor(kBlue);
-        h2->SetLineColor(kRed);
+        }
+        h1->SetLineColor(kBlue);    //data
+        h2->SetLineColor(kRed);     //sim
         h1->SetTitle(Form("Histogram from File 1 (%s)", pair.first.c_str()));
         h2->SetTitle(Form("Histogram from File 2 (%s)", pair.second.c_str()));
 
         float max1 = h1->GetMaximum();
         float max2 = h2->GetMaximum();
         float max = (max1 > max2) ? max1 : max2;
-        h1->Scale(max / max1);
-        h2->Scale(max / max2);
+        double integral1 = h1->Integral();
+        double integral2 = h2->Integral();
+        //if (integral1 > 0) h1->Scale(1.0 / integral1);  // Normalize histograms
+        //if (integral2 > 0) h2->Scale(1.0 / integral2);
+        if (integral1 != 0 && integral2 != 0) {
+            h1->Scale(1.0 / integral1);
+            h2->Scale(1.0 / integral2);
+        }
+
+//        h1->Scale(max / max1);
+//        h2->Scale(max / max2);
 
         h1->Draw("hist");
         h2->Draw("hist same");
@@ -171,7 +207,7 @@ void Create2DHistogram(const char* inputFile, const char* outputFile) {
 }
 
 int main() {
-    const char* target = "C1";  //  "Cu", "LD2", "C1", or "C2" 
+    const char* target = "C2";  //  "Cu", "LD2", "C1", or "C2" 
     CompareHistograms(target);
     //Create2DHistogram(file1, "Qpre_vs_xbpre_File1.pdf");
     //Create2DHistogram(file2, "test2D.pdf");

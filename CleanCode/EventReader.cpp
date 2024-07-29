@@ -32,7 +32,7 @@
             currentEvent.SetVertexZ(vertz);
             currentEvent.SetVertexX(vertx);
             currentEvent.SetVertexY(verty);
-            
+                //Setting VErtex on the EVENT!!!! not in the particle 
             //currentEvent.SetParticleRow(row);
             
         } else if (IsHadron(pid)) {
@@ -42,7 +42,7 @@
             for (const Particle& hadron : currentEvent.GetHadrons()) {
                 //proceed from here to set vertex info !!!
                 //std::cout << "Hadron momentum: " << hadron.GetMomentum().Px() << std::endl;
-                //hadron.SetVz(vertz);
+                //hadron.SetVz(vertz);      // why is this commented ? ???
             }
         }
         

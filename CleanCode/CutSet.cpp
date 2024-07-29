@@ -226,6 +226,8 @@ bool CutSet::PassCutCuTarget(const Event& event){
 }
 
 bool CutSet::PassCutOnlyVz(const Event& event){     //assimilate to cutset class with event.GetTarget to generalize TBD!!
+    //This is only for LD2 ????
+    //need to generalalize ASAP. Check if this is being used/propagated
     double Vz = event.GetVz();
     if (Vz >= Constants::RcutminVzLD2 && Vz <= Constants::RcutmaxVzLD2 ){    
         return true;
@@ -235,6 +237,7 @@ bool CutSet::PassCutOnlyVz(const Event& event){     //assimilate to cutset class
 
 bool CutSet::PassCutsElectrons(const Event& event)  {
     // recover kinematic variables from the event
+    // Pass cut electrons also filters Vz initially!! (cool)
     double Q2 = event.GetQ2();
     double y  = event.Gety();
     double v  = event.Getnu();
@@ -270,6 +273,7 @@ bool CutSet::PassCutsHadrons( const Particle& hadron)  {
     double pt2 = hadron.Getpt2();
     double phih = hadron.Getphih();
     double h_pid= hadron.GetPID();
+    //PID is not being included !!!
     if (z >= cutZMin && z <= cutZMax) {
         if (pt2 >= Constants::RcutminPt2 && pt2 <= Constants::RcutmaxPt2) {
             return true;
@@ -279,7 +283,8 @@ bool CutSet::PassCutsHadrons( const Particle& hadron)  {
     return false;
 }
 
-bool CutSet::PassCutsVariables(const Event& event){
+bool CutSet::PassCutsVariables(const Event& event){    
+    //All cuts in variables, vz included 
     if (PassCutsElectrons(event) ){
         for (const Particle& hadron : event.GetHadrons()) {
             if (PassCutsHadrons(hadron)){
