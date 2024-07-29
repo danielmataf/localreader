@@ -116,7 +116,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
 //    h_W2pre->Fill(event.GetW2());
 //}
 
-void Monitoring::FillHistogramswCuts(const Event& event) {
+void Monitoring::FillHistogramswCuts(const Event& event) {              /// good CUTS in hadron !!!!!!!
     if (cut1.PassCutsDetectors(event)==true){
         // Fill Detector histograms after cuts
         h_calXY->Fill(event.GetCalX(), event.GetCalY());

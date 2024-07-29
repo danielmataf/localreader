@@ -117,9 +117,10 @@ int main() {
     Monunfold munfTrueSn(trueSncuts, "Sn_truef");
     Monunfold munfSimC1(simC1cuts, "C1_simf");
     Monunfold munfSimC2(simC2cuts, "C2_simf");
-    Monunfold munfsimLD2(simLD2cuts, "LD2_simf");
-    //Monunfold munfSimCu(simCucuts, "Cu_simf");
+    Monunfold munfSimLD2(simLD2cuts, "LD2_simf");
+    Monunfold munfSimCu(simCucuts, "Cu_simf");
     Monunfold munfSimSn(simSncuts, "Sn_simf");
+
     Monitoring monSimC1(simC1cuts, "C1_sim");     //This needs to be figured out ASAP
     Monitoring monSimC2(simC2cuts, "C2_sim");     //This needs to be figured out ASAP
     Monitoring monSimLD2(simLD2cuts, "LD2_sim");
@@ -243,8 +244,9 @@ int main() {
                 Event eventsimLD2 = simLD2.value();
                 eventsimLD2.SetTargetType(0);
                 eventsimLD2.calcAll();
+                munfSimLD2.FillHistComp(eventsimLD2, eventsimLD2_MC);
                 monSimLD2.FillHistogramswCuts(eventsimLD2);
-                munfsimLD2.FillHistogramswCuts(eventsimLD2);
+                munfSimLD2.FillHistogramswCuts(eventsimLD2);
                 //munfsimLD2.FillHistogramsNoCuts(eventsimLD2_MC);
                 monSimLD2.FillHistogramsNoCuts(eventsimLD2);
                 simratSn.FillHistograms(eventsimLD2);
@@ -271,6 +273,7 @@ int main() {
                 eventsimCu.SetTargetType(1);
                 eventsimCu.calcAll();
                 //munfSimCu.FillHistogramswCuts(eventsimCu);
+                munfSimCu.FillHistComp(eventsimCu, eventsimCu_MC);
                 monSimCu.FillHistogramswCuts(eventsimCu);
                 simratCu.FillHistograms(eventsimCu);
                 simcratCu.FillHistograms(eventsimCu);
@@ -288,7 +291,7 @@ int main() {
                 eventsimSn.calcAll();
                 //eventsimSn.Print();
                 //munfSimSn.FillHistogramswCuts(eventsimSn);
-                munfSimSn.FillHistogramsNoCuts(eventsimSn_MC);
+                munfSimSn.FillHistComp(eventsimSn, eventsimSn_MC);                
                 monSimSn.FillHistogramswCuts(eventsimSn);
                 simratSn.FillHistograms(eventsimSn);
                 simcratSn.FillHistograms(eventsimSn);
@@ -304,6 +307,8 @@ int main() {
                     eventsimCxC.SetTargetType(1);
                     eventsimCxC.calcAll();
                     munfSimC1.FillHistogramswCuts(eventsimCxC);
+                    munfSimC1.FillHistComp(eventsimCxC, eventsimCxC_MC);
+                    munfSimC2.FillHistComp(eventsimCxC, eventsimCxC_MC);
                     monSimC1.FillHistogramswCuts(eventsimCxC);
                     monSimC2.FillHistogramswCuts(eventsimCxC);
                     simratC1.FillHistograms(eventsimCxC);
@@ -382,16 +387,23 @@ int main() {
     //truecratSn.multiCratall(truecratCu, truecratC1, truecratC2, simcratSn, simcratCu, simcratC1, simcratC2);
 //
 
-    monTrueLD2.SaveHistRoot("posLD2_true");
-    monTrueCu.SaveHistRoot("posCu_true");
-    monTrueSn.SaveHistRoot("posSn_true");
-    monTrueC1.SaveHistRoot("posC1_true");
-    monTrueC2.SaveHistRoot("posC2_true");
+    monTrueLD2.SaveHistRoot("posLD2_data");
+    monTrueCu.SaveHistRoot("posCu_data");
+    monTrueSn.SaveHistRoot("posSn_data");
+    monTrueC1.SaveHistRoot("posC1_data");
+    monTrueC2.SaveHistRoot("posC2_data");
     monSimC1.SaveHistRoot("posC1_sim");
     monSimC2.SaveHistRoot("posC2_sim");
     monSimLD2.SaveHistRoot("posLD2_sim");
     monSimCu.SaveHistRoot("posCu_sim");
     monSimSn.SaveHistRoot("posSn_sim");
+
+    munfSimLD2.DrawCompRECMC("compLD2_sim");
+    munfSimC1.DrawCompRECMC("compC1_sim");
+    munfSimC2.DrawCompRECMC("compC2_sim");
+    munfSimCu.DrawCompRECMC("compCu_sim");
+    munfSimSn.DrawCompRECMC("compSn_sim");
+
 
     //monSimLD2.DrawCaloHistograms("MONLD2SIMCALO");
     //monSimLD2.DrawVertexHistograms("MONLD2SIMVZ");
