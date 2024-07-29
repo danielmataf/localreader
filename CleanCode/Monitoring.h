@@ -70,7 +70,7 @@ private:
     int numinX = 0;
     int numaxX = 10;
     int WminX = 0;
-    int WmaxX = 10;
+    int WmaxX = 20;
     int zminX = 0;
     int zmaxX = 1;
     int pt2minX = 0;

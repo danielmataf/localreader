@@ -36,11 +36,11 @@ public:
 
     void FillMomentumHistograms(const Event& );
 
-    void DrawHistograms(const std::string);
+    void DrawHistograms(const std::string filename);
     void DrawHistoRec(const std::string);   //this 2 in order to separate MC from REC and monitor separetely   
     void DrawHistoMC(const std::string);    //this 2 in order to separate MC from REC and monitor separetely       
-    void DrawCompRECMC(const std::string);
-
+    //void DrawCompRECMC(const std::string);
+    void DrawCompRECMC(const std::string& filename); 
     void DrawHistTrueandSIM(Monunfold& , const std::string ) ;  //this for plot comparisons in true"s REC and sim's REC 
 
     void DrawMomentumHistograms(const std::string);
@@ -71,7 +71,7 @@ private:
     int numinX = 0;
     int numaxX = 10;
     int WminX = 0;
-    int WmaxX = 10;
+    int WmaxX = 20;
     int zminX = 0;
     int zmaxX = 1;
     int pt2minX = 0;

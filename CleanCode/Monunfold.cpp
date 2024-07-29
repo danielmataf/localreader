@@ -33,7 +33,7 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_xbMC(new TH1F(("U_xb_MC" + targetName).c_str(), "xbMC", nubin, xminX, xmaxX)),
     h_yMC(new TH1F(("U_y_MC" + targetName).c_str(), "yMC", nubin, yminX, ymaxX)),
     h_nuMC(new TH1F(("U_nu_MC" + targetName).c_str(), "nuMC", nubin, numinX, numaxX)),
-    h_W2MC(new TH1F(("U_W2_MC" + targetName).c_str(), "W2MC", nubin, WminX, WmaxX)),
+    h_W2MC(new TH1F(("U_W2_MC" + targetName).c_str(), "W2MC", nubin, WminX, 20)),
     h_zMC(new TH1F(("U_z_MC" + targetName).c_str(), "zMC", nubin, zminX, zmaxX)),
     h_pt2MC(new TH1F(("U_pt2_MC" + targetName).c_str(), "pt2MC", nubin, pt2minX, pt2maxX)),
     h_phihMC(new TH1F(("U_phih_MC" + targetName).c_str(), "phihMC", nubin, phihminX, phihmaxX)),
@@ -43,7 +43,7 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_xbcomp(new TH2F(("U_xbcomp_" + targetName).c_str(), "xbcomp", nubin, xminX, xmaxX, nubin, xminX, xmaxX)),
     h_ycomp(new TH2F(("U_ycomp_" + targetName).c_str(), "ycomp", nubin, yminX, ymaxX, nubin, yminX, ymaxX)),
     h_nucomp(new TH2F(("U_nucomp_" + targetName).c_str(), "nucomp", nubin, numinX, numaxX, nubin, numinX, numaxX)),
-    h_W2comp(new TH2F(("U_W2comp_" + targetName).c_str(), "W2comp", nubin, WminX, 15, nubin, WminX, 15)),
+    h_W2comp(new TH2F(("U_W2comp_" + targetName).c_str(), "W2comp", nubin, WminX, 20, nubin, WminX, 20)),
     h_zcomp(new TH2F(("U_zcomp_" + targetName).c_str(), "zcomp", nubin, zminX, zmaxX, nubin, zminX, zmaxX)),
     h_pt2comp(new TH2F(("U_pt2comp_" + targetName).c_str(), "pt2comp", nubin, pt2minX, pt2maxX, nubin, pt2minX, pt2maxX)),
     h_phihcomp(new TH2F(("U_phihcomp_" + targetName).c_str(), "phihcomp", nubin, phihminX, phihmaxX, nubin, phihminX, phihmaxX)),
@@ -607,30 +607,53 @@ void Monunfold::DrawHistograms(const std::string filename) {
     c1.Print((filename + ".pdf").c_str());
 
 }
-
-void Monunfold::DrawCompRECMC(const std::string filename){
+void Monunfold::DrawCompRECMC(const std::string& filename) {
     TCanvas c2("c2", "c2", 800, 600);
     c2.Divide(3, 3);
-    c2.cd(1);
-    h_Q2comp->Draw("colz");
-    c2.cd(2);
-    h_xbcomp->Draw("colz");
-    c2.cd(3);
-    h_ycomp->Draw("colz");
-    c2.cd(4);
-    h_nucomp->Draw("colz");
-    c2.cd(5);
-    h_W2comp->Draw("colz");
-    c2.cd(6);
-    h_zcomp->Draw("colz");
-    c2.cd(7);
-    h_pt2comp->Draw("colz");
-    c2.cd(8);
-    h_phihcomp->Draw("colz");
-    c2.cd(9);
-    h_vertexZcomp->Draw("colz");
+    
+    // Define X and Y axis labels for each histogram with units
+    std::vector<std::pair<std::string, std::string>> axisLabels = {
+        {"Q^{2} REC (GeV^{2})", "Q^{2} MC "},        // Q2
+        {"x_{B} REC", "x_{B} MC"},          // xb
+        {"y REC", "y MC"},                 // y
+        {"\nu REC (GeV)", "\nu MC"},     // nu
+        {"W^{2} REC (GeV^{2})", "W^{2} MC"}, // W2
+        {"z REC", "z MC"},                 // z
+        {"p_{T}^{2} REC (GeV^{2})", "p_{T}^{2} MC "}, // pt2
+        {"\\phi_{h} REC (deg)", "\\phi_{h} MC"},   // phih
+        {"Vertex Z REC (cm)", "Vertex Z MC "} // vertexZ
+    };
+
+    std::vector<TH2*> histograms = {
+        h_Q2comp,
+        h_xbcomp,
+        h_ycomp,
+        h_nucomp,
+        h_W2comp,
+        h_zcomp,
+        h_pt2comp,
+        h_phihcomp,
+        h_vertexZcomp
+    };
+    
+    for (int i = 0; i < 9; ++i) {
+        c2.cd(i + 1);
+        histograms[i]->SetXTitle(axisLabels[i].first.c_str());
+        histograms[i]->SetYTitle(axisLabels[i].second.c_str());
+        histograms[i]->Draw("colz");
+    }
+
     c2.Print((filename + ".pdf").c_str());
+    
+    TFile rootFile((filename + ".root").c_str(), "RECREATE");
+    for (auto hist : histograms) {
+        hist->Write();
+    }
+    rootFile.Close();
 }
+
+
+
 
 
 
