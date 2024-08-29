@@ -28,6 +28,8 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_pt2(new TH1F(("U_pt2_" + targetName).c_str(), "Upt2", nubin, pt2minX, pt2maxX)),
     h_phih(new TH1F(("U_phih_" + targetName).c_str(), "Uphih", nubin, phihminX, phihmaxX)),
     h_vertexZ(new TH1F(("U_targetVz_" + targetName).c_str(), "Uvertex4target", 100, -10, 0)),
+    h_vertexY(new TH1F(("U_targetVy_" + targetName).c_str(), "Uvertex4target", 100, -10, 10)),
+    h_vertexX(new TH1F(("U_targetVx_" + targetName).c_str(), "Uvertex4target", 100, -10, 10)),
     
     h_Q2MC(new TH1F(("U_Q2_MC" + targetName).c_str(), "Q2MC", nubin, QminX, QmaxX)),
     h_xbMC(new TH1F(("U_xb_MC" + targetName).c_str(), "xbMC", nubin, xminX, xmaxX)),
@@ -38,6 +40,9 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_pt2MC(new TH1F(("U_pt2_MC" + targetName).c_str(), "pt2MC", nubin, pt2minX, pt2maxX)),
     h_phihMC(new TH1F(("U_phih_MC" + targetName).c_str(), "phihMC", nubin, phihminX, phihmaxX)),
     h_vertexZMC(new TH1F(("U_targetVz_MC" + targetName).c_str(), "vertex4targetMC", 100, -20, 10)),
+    h_vertexYMC(new TH1F(("U_targetVy_MC" + targetName).c_str(), "vertex4targetMC", 100, -10, 10)),
+    h_vertexXMC(new TH1F(("U_targetVx_MC" + targetName).c_str(), "vertex4targetMC", 100, -10, 10)),
+
 
     h_Q2comp(new TH2F(("U_Q2comp_" + targetName).c_str(), "Q2comp", nubin, QminX, QmaxX, nubin, QminX, QmaxX)),
     h_xbcomp(new TH2F(("U_xbcomp_" + targetName).c_str(), "xbcomp", nubin, xminX, xmaxX, nubin, xminX, xmaxX)),
@@ -48,6 +53,58 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_pt2comp(new TH2F(("U_pt2comp_" + targetName).c_str(), "pt2comp", nubin, pt2minX, pt2maxX, nubin, pt2minX, pt2maxX)),
     h_phihcomp(new TH2F(("U_phihcomp_" + targetName).c_str(), "phihcomp", nubin, phihminX, phihmaxX, nubin, phihminX, phihmaxX)),
     h_vertexZcomp(new TH2F(("U_targetVzcomp_" + targetName).c_str(), "vertex4targetcomp", 100, -10, 10.0, 100, -10, 10.0)),
+
+    h_px_el(new TH1F(("px_ele_" + targetName).c_str(), "px_ele", nubin, 0, 3)),
+    h_py_el(new TH1F(("py_ele_" + targetName).c_str(), "py_ele", nubin, 0, 3)),
+    h_pz_el(new TH1F(("pz_ele_" + targetName).c_str(), "pz_ele", nubin, 0, 10)),
+    h_ptot_el(new TH1F(("ptot_ele_" + targetName).c_str(), "ptot_ele", nubin, 0, 10)),
+    h_px_pi(new TH1F(("px_had_" + targetName).c_str(), "px_had", nubin, 0, 3)),
+    h_py_pi(new TH1F(("py_had_" + targetName).c_str(), "py_had", nubin, 0, 3)),
+    h_pz_pi(new TH1F(("pz_had_" + targetName).c_str(), "pz_had", nubin, 0, 10)),
+    h_ptot_pi(new TH1F(("ptot_had_" + targetName).c_str(), "ptot_had", nubin, 0, 10)),
+    h_theta_el(new TH1F(("theta_el" + targetName).c_str(), "theta", nubin, 0, 30)),
+    h_phi_el(new TH1F(("phi_el" + targetName).c_str(), "phi", nubin, 0, 360)),
+    h_theta_pi(new TH1F(("theta_pi" + targetName).c_str(), "theta", nubin, 0, 150)),
+    h_phi_pi(new TH1F(("phi_pi" + targetName).c_str(), "phi", nubin, 0, 360)),
+    h_px_elMC(new TH1F(("px_ele_MC" + targetName).c_str(), "px_eleMC", nubin, 0, 2)),
+    h_py_elMC(new TH1F(("py_ele_MC" + targetName).c_str(), "py_eleMC", nubin, 0, 2)),
+    h_pz_elMC(new TH1F(("pz_ele_MC" + targetName).c_str(), "pz_eleMC", nubin, 0, 10)),
+    h_ptot_elMC(new TH1F(("ptot_ele_MC" + targetName).c_str(), "ptot_eleMC", nubin, 0, 10)),
+    h_px_piMC(new TH1F(("px_had_MC" + targetName).c_str(), "px_hadMC", nubin, 0, 2)),
+    h_py_piMC(new TH1F(("py_had_MC" + targetName).c_str(), "py_hadMC", nubin, 0, 2)),
+    h_pz_piMC(new TH1F(("pz_had_MC" + targetName).c_str(), "pz_hadMC", nubin, 0, 10)),
+    h_ptot_piMC(new TH1F(("ptot_had_MC" + targetName).c_str(), "ptot_hadMC", nubin, 0, 10)),
+    h_theta_elMC(new TH1F(("theta_elMC" + targetName).c_str(), "thetaMC", nubin, 0, 30)),
+    h_phi_elMC(new TH1F(("phi_elMC" + targetName).c_str(), "phiMC", nubin, 0, 360)),
+    h_theta_piMC(new TH1F(("theta_piMC" + targetName).c_str(), "thetaMC", nubin, 0, 150)),
+    h_phi_piMC(new TH1F(("phi_piMC" + targetName).c_str(), "phiMC", nubin, 0, 360)),
+    h_E_el(new TH1F(("E_el" + targetName).c_str(), "E", nubin, 0, 10)),
+    h_E_pi(new TH1F(("E_pi" + targetName).c_str(), "E", nubin, 0, 10)),
+    h_E_elMC(new TH1F(("E_elMC" + targetName).c_str(), "EelMC", nubin, 0, 10)),
+    h_E_piMC(new TH1F(("E_piMC" + targetName).c_str(), "EpiMC", nubin, 0, 10)),
+    h_deltaphipi(new TH1F(("U_deltaphipi_" + targetName).c_str(), "deltaphipi", 100, -5, 5)),
+    h_deltathetapi(new TH1F(("U_deltathetapi_" + targetName).c_str(), "deltathetapi", 100, -5, 5)),
+
+    h_px_elcomp(new TH2F(("U_px_elcomp_" + targetName).c_str(), "px_elcomp", nubin, 0, 2, nubin, 0, 2)),
+    h_py_elcomp(new TH2F(("U_py_elcomp_" + targetName).c_str(), "py_elcomp", nubin, 0, 2, nubin, 0, 2)),
+    h_pz_elcomp(new TH2F(("U_pz_elcomp_" + targetName).c_str(), "pz_elcomp", nubin, 0, 10, nubin, 0, 10)),
+    h_ptot_elcomp(new TH2F(("U_ptot_elcomp_" + targetName).c_str(), "ptot_elcomp", nubin, 0, 10, nubin, 0, 10)),
+    h_px_picomp(new TH2F(("U_px_picomp_" + targetName).c_str(), "px_picomp", nubin, 0, 2, nubin, 0, 2)),
+    h_py_picomp(new TH2F(("U_py_picomp_" + targetName).c_str(), "py_picomp", nubin, 0, 2, nubin, 0, 2)),
+    h_pz_picomp(new TH2F(("U_pz_picomp_" + targetName).c_str(), "pz_picomp", nubin, 0, 10, nubin, 0, 10)),
+    h_ptot_picomp(new TH2F(("U_ptot_picomp_" + targetName).c_str(), "ptot_picomp", nubin, 0, 10, nubin, 0, 10)),
+    h_theta_elcomp(new TH2F(("U_theta_elcomp_" + targetName).c_str(), "theta_elcomp", nubin, 0, 30, nubin, 0, 30)),
+    h_phi_elcomp(new TH2F(("U_phi_elcomp_" + targetName).c_str(), "phi_elcomp", nubin, 0, 360, nubin, 0, 360)),
+    h_theta_picomp(new TH2F(("U_theta_picomp_" + targetName).c_str(), "theta_picomp", nubin, 0, 150, nubin, 0, 150)),
+    h_phi_picomp(new TH2F(("U_phi_picomp_" + targetName).c_str(), "phi_picomp", nubin, 0, 360, nubin, 0, 360)),
+    h_E_elcomp(new TH2F(("U_E_elcomp_" + targetName).c_str(), "E_elcomp", nubin, 0, 10, nubin, 0, 10)),
+    h_E_picomp(new TH2F(("U_E_picomp_" + targetName).c_str(), "E_picomp", nubin, 0, 10, nubin, 0, 10)),
+    h_vxcomp(new TH2F(("U_vxcomp_" + targetName).c_str(), "vxcomp", nubin, -10, 10, nubin, -10, 10)),
+    h_vycomp(new TH2F(("U_vycomp_" + targetName).c_str(), "vycomp", nubin, -10, 10, nubin, -10, 10)), 
+
+
+
+    h_evtnbrdiff(new TH1F(("U_evtnbrdiff_" + targetName).c_str(), "evtnbrdiff", 100, -10, 10.0)),
 
 
 
@@ -187,12 +244,12 @@ void Monunfold::FillHistogramswCuts(const Event& event) {
 
         // Fill electron momentum histograms
         Particle electron = event.GetElectron();
-        //h_px_el->Fill(electron.GetMomentum().X());
-        //h_py_el->Fill(electron.GetMomentum().Y());
-        //h_pz_el->Fill(electron.GetMomentum().Z());
-        //h_ptot_el->Fill(sqrt(electron.GetMomentum().Mag2()));
-        //h_theta_el->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI);
-        //h_phi_el->Fill(electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+        h_px_el->Fill(electron.GetMomentum().X());
+        h_py_el->Fill(electron.GetMomentum().Y());
+        h_pz_el->Fill(electron.GetMomentum().Z());
+        h_ptot_el->Fill(sqrt(electron.GetMomentum().Mag2()));
+        h_theta_el->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI);
+        h_phi_el->Fill(electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
         //h_polcoord_el->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI, electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
         //h_E_el->Fill(electron.GetMomentum().E());
         //h_E_el_theta->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI, electron.GetMomentum().E());
@@ -205,12 +262,12 @@ void Monunfold::FillHistogramswCuts(const Event& event) {
                     h_z->Fill(hadron.Getz());
                     h_pt2->Fill(hadron.Getpt2());
                     h_phih->Fill(hadron.Getphih());
-                    //h_px_pi->Fill(hadron.GetMomentum().X());
-                    //h_py_pi->Fill(hadron.GetMomentum().Y());
-                    //h_pz_pi->Fill(hadron.GetMomentum().Z());
-                    //h_ptot_pi->Fill(hadron.GetMomentum().P());
-                    //h_theta_pi->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI);
-                    //h_phi_pi->Fill(hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+                    h_px_pi->Fill(hadron.GetMomentum().X());
+                    h_py_pi->Fill(hadron.GetMomentum().Y());
+                    h_pz_pi->Fill(hadron.GetMomentum().Z());
+                    h_ptot_pi->Fill(hadron.GetMomentum().P());
+                    h_theta_pi->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI);
+                    h_phi_pi->Fill(hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
                     //h_polcoord_pi->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI, hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
                     //h_E_pi->Fill(hadron.GetMomentum().E());
                     //h_E_pi_theta->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI, hadron.GetMomentum().E());
@@ -296,28 +353,144 @@ void Monunfold::FillHistogramsNoCutsMC(const Event& event) {            //EVERYT
 
 
 void Monunfold::FillHistComp(const Event& eventsim, const Event& eventmc){
-    h_Q2comp->Fill(eventsim.GetQ2(), eventmc.GetQ2MC());
-    h_xbcomp->Fill(eventsim.Getxb(), eventmc.GetxbMC());
-    h_ycomp->Fill(eventsim.Gety(), eventmc.GetyMC());
-    h_nucomp->Fill(eventsim.Getnu(), eventmc.GetnuMC());
-    h_W2comp->Fill(eventsim.GetW2(), eventmc.GetW2MC());
-    h_vertexZcomp->Fill(eventsim.GetVz(), eventmc.GetVzMC());
-    for (const Particle& MChadron: eventmc.GetMCHadrons()){
-            
-    for (const Particle& hadron : eventsim.GetHadrons()) {
-        if (MChadron.GetPID() == Constants::PION_PLUS_PID  ){   
-        h_zcomp->Fill(hadron.Getz(), MChadron.GetzMC());
-        h_pt2comp->Fill(hadron.Getpt2(), MChadron.Getpt2MC());
-        h_phihcomp->Fill(hadron.Getphih(), MChadron.GetphihMC());
+    //h_vxcomp->Fill(eventsim.GetVx(), eventmc.GetVxMC());
+    //h_vycomp->Fill(eventsim.GetVy(), eventmc.GetVyMC());
+
+    if (eventsim.GetElectron().GetMomentum().P()> 2 ){
+
+        h_px_el->Fill(eventsim.GetElectron().GetMomentum().X());
+        h_py_el->Fill(eventsim.GetElectron().GetMomentum().Y());
+        h_pz_el->Fill(eventsim.GetElectron().GetMomentum().Z());
+        h_ptot_el->Fill(eventsim.GetElectron().GetMomentum().P());
+        h_theta_el->Fill(eventsim.GetElectron().GetMomentum().Theta() * 180.0 / Constants::PI);
+        h_phi_el->Fill(eventsim.GetElectron().GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+        h_E_el->Fill(eventsim.GetElectron().GetMomentum().E());
+    }
+    if (eventmc.GetElectronMC().GetMomentum().P()> 2 ){
+
+        h_px_elMC->Fill(eventmc.GetElectronMC().GetMomentum().X());
+        h_py_elMC->Fill(eventmc.GetElectronMC().GetMomentum().Y());
+        h_pz_elMC->Fill(eventmc.GetElectronMC().GetMomentum().Z());
+        h_ptot_elMC->Fill(eventmc.GetElectronMC().GetMomentum().P());
+        h_theta_elMC->Fill(eventmc.GetElectronMC().GetMomentum().Theta() * 180.0 / Constants::PI);
+        h_phi_elMC->Fill(eventmc.GetElectronMC().GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+        h_E_elMC->Fill(eventmc.GetElectronMC().GetMomentum().E());
+    }
+    if (eventsim.GetElectron().GetMomentum().P()> 2 && eventmc.GetElectronMC().GetMomentum().P()> 2 ){
+        double deltaphi_el = abs(eventsim.GetElectron().GetMomentum().Phi()  - eventmc.GetElectronMC().GetMomentum().Phi() )*180;
+        double deltatheta_el = abs(eventsim.GetElectron().GetMomentum().Theta()  - eventmc.GetElectronMC().GetMomentum().Theta() )*180; 
+        if ( deltaphi_el+ deltatheta_el < 10){
+            h_Q2comp->Fill(eventsim.GetQ2(), eventmc.GetQ2MC());
+            h_xbcomp->Fill(eventsim.Getxb(), eventmc.GetxbMC());
+            h_ycomp->Fill(eventsim.Gety(), eventmc.GetyMC());
+            h_nucomp->Fill(eventsim.Getnu(), eventmc.GetnuMC());
+            h_W2comp->Fill(eventsim.GetW2(), eventmc.GetW2MC());
+            h_vertexZcomp->Fill(eventsim.GetVz(), eventmc.GetVzMC());
+
+            h_px_elcomp->Fill(eventsim.GetElectron().GetMomentum().X(), eventmc.GetElectronMC().GetMomentum().X());
+            h_py_elcomp->Fill(eventsim.GetElectron().GetMomentum().Y(), eventmc.GetElectronMC().GetMomentum().Y());
+            h_pz_elcomp->Fill(eventsim.GetElectron().GetMomentum().Z(), eventmc.GetElectronMC().GetMomentum().Z());
+            h_ptot_elcomp->Fill(eventsim.GetElectron().GetMomentum().P(), eventmc.GetElectronMC().GetMomentum().P());
+            h_theta_elcomp->Fill(eventsim.GetElectron().GetMomentum().Theta() * 180.0 / Constants::PI, eventmc.GetElectronMC().GetMomentum().Theta() * 180.0 / Constants::PI);
+            h_phi_elcomp->Fill(eventsim.GetElectron().GetMomentum().Phi() * 180.0 / Constants::PI + 180.0, eventmc.GetElectronMC().GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+            h_E_elcomp->Fill(eventsim.GetElectron().GetMomentum().E(), eventmc.GetElectronMC().GetMomentum().E());
         }
     }
+
+
+    for (const Particle& MChadron: eventmc.GetMCHadrons()){
+        if (MChadron.GetPID() == Constants::PION_PLUS_PID  ){   
+            h_px_piMC->Fill(MChadron.GetMomentum().X());
+            h_py_piMC->Fill(MChadron.GetMomentum().Y());
+            h_pz_piMC->Fill(MChadron.GetMomentum().Z());
+            h_ptot_piMC->Fill(MChadron.GetMomentum().P());
+            h_theta_piMC->Fill(MChadron.GetMomentum().Theta() * 180.0 / Constants::PI);
+            h_phi_piMC->Fill(MChadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+            h_E_piMC->Fill(MChadron.GetMomentum().E());
+            h_phihMC->Fill(MChadron.GetphihMC());
+        }
     }
+    for (const Particle& hadron : eventsim.GetHadrons()) {
+        if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   
+        
+
+        h_px_pi->Fill(hadron.GetMomentum().X());
+        h_py_pi->Fill(hadron.GetMomentum().Y());
+        h_pz_pi->Fill(hadron.GetMomentum().Z());
+        h_ptot_pi->Fill(hadron.GetMomentum().P());
+        h_theta_pi->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI);
+        h_E_pi->Fill(hadron.GetMomentum().E());
+        h_phi_pi->Fill(hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+        h_phih->Fill(hadron.Getphih());
+
+        }
+    }
+    for (const Particle& hadron : eventsim.GetHadrons()) {
+        for (const Particle& MChadron: eventmc.GetMCHadrons()){
+            if (MChadron.GetPID() == Constants::PION_PLUS_PID && hadron.GetPID() == Constants::PION_PLUS_PID ){   
+                // Cut on hadrons can be added
+                //cut on Delta phi and Delta thetacan be added
+                //double deltaphi_pi = 
+                //double deltatheta_pi
+                h_phihcomp->Fill(hadron.Getphih(), MChadron.GetphihMC());
+                h_deltaphipi->Fill(abs(hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0) - abs (MChadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0));
+                h_deltathetapi->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI - MChadron.GetMomentum().Theta() * 180.0 / Constants::PI);
+                h_px_picomp->Fill(hadron.GetMomentum().X(), MChadron.GetMomentum().X());
+                h_py_picomp->Fill(hadron.GetMomentum().Y(), MChadron.GetMomentum().Y());
+                h_pz_picomp->Fill(hadron.GetMomentum().Z(), MChadron.GetMomentum().Z());
+                h_ptot_picomp->Fill(hadron.GetMomentum().P(), MChadron.GetMomentum().P());
+                h_theta_picomp->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI, MChadron.GetMomentum().Theta() * 180.0 / Constants::PI);
+                h_phi_picomp->Fill(hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0, MChadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+                h_E_picomp->Fill(hadron.GetMomentum().E(), MChadron.GetMomentum().E());
+                h_zcomp->Fill(hadron.Getz(), MChadron.GetzMC());
+                h_pt2comp->Fill(hadron.Getpt2(), MChadron.Getpt2MC());
+
+
+            }
+
+
+        }
+    }
+
+
     //h_zcomp->Fill(eventsim.Getz(), eventmc.GetzMC());
     //h_pt2comp->Fill(eventsim.Getpt2(), eventmc.Getpt2MC());
     //h_phihcomp->Fill(eventsim.Getphih(), eventmc.GetphihMC());
     //h_vertexZcomp->Fill(eventsim.GetVz(), eventmc.GetVzMC());
 }
 
+
+void Monunfold::FillHistCompwCuts(const Event& eventsim, const Event& eventmc) {
+    double tempQ2sim = 0;
+    double tempQ2mc = 0;
+    //if (cut1.PassCutsDetectors(eventsim)){
+    //if (cut1.PassCutsElectrons(eventsim)==true) {
+    if (eventsim.GetQ2()>1.5 ){
+        if (eventsim.Gety() > 0.25 && eventsim.Gety() < 0.85 ){
+            if (eventsim.GetW2()>2.5 ){
+                h_Q2comp->Fill(eventsim.GetQ2(), eventmc.GetQ2MC());
+                h_xbcomp->Fill(eventsim.Getxb(), eventmc.GetxbMC());
+                h_ycomp->Fill(eventsim.Gety(), eventmc.GetyMC());
+                h_nucomp->Fill(eventsim.Getnu(), eventmc.GetnuMC());
+                h_W2comp->Fill(eventsim.GetW2(), eventmc.GetW2MC());
+                h_vertexZcomp->Fill(eventsim.GetVz(), eventmc.GetVzMC());
+                h_evtnbrdiff->Fill(eventsim.GetEvtnbr()-eventmc.GetEvtnbr());
+                for (const Particle& MChadron: eventmc.GetMCHadrons()){
+                    for (const Particle& hadron : eventsim.GetHadrons()) {
+                        if (MChadron.GetPID() == Constants::PION_PLUS_PID  ){   
+                            if (cut1.PassCutsHadrons(hadron) == true){ 
+                                h_zcomp->Fill(hadron.Getz(), MChadron.GetzMC());
+                                h_pt2comp->Fill(hadron.Getpt2(), MChadron.Getpt2MC());
+                                h_phihcomp->Fill(hadron.Getphih(), MChadron.GetphihMC());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+//    }
+}
 
 
 void Monunfold::Fill(const Event& event) {
@@ -607,51 +780,208 @@ void Monunfold::DrawHistograms(const std::string filename) {
     c1.Print((filename + ".pdf").c_str());
 
 }
+//void Monunfold::DrawCompRECMC(const std::string& filename) {
+//    TCanvas c2("c2", "c2", 800, 600);
+//    c2.Divide(3, 3);
+//    
+//    // Define X and Y axis labels for each histogram with units
+//    std::vector<std::pair<std::string, std::string>> axisLabels = {
+//        {"Q^{2} REC (GeV^{2})", "Q^{2} MC "},        // Q2
+//        {"x_{B} REC", "x_{B} MC"},          // xb
+//        {"y REC", "y MC"},                 // y
+//        {"\\nu REC (GeV)", "\\nu MC"},     // nu
+//        {"W^{2} REC (GeV^{2})", "W^{2} MC"}, // W2
+//        {"z REC", "z MC"},                 // z
+//        {"p_{T}^{2} REC (GeV^{2})", "p_{T}^{2} MC "}, // pt2
+//        {"\\phi_{h} REC (deg)", "\\phi_{h} MC"},   // phih
+//        {"Vertex Z REC (cm)", "Vertex Z MC "} // vertexZ
+//    };
+//
+//    std::vector<TH2*> histograms = {
+//        h_Q2comp,
+//        h_xbcomp,
+//        h_ycomp,
+//        h_nucomp,
+//        h_W2comp,
+//        h_zcomp,
+//        h_pt2comp,
+//        h_phihcomp,
+//        h_vertexZcomp
+//    };
+//    
+//    for (int i = 0; i < 4; ++i) {
+//        c2.cd(i + 1);
+//        histograms[i]->SetXTitle(axisLabels[i].first.c_str());
+//        histograms[i]->SetYTitle(axisLabels[i].second.c_str());
+//        histograms[i]->Draw("colz");
+//    }
+//
+//    c2.Print((filename + ".pdf").c_str());
+//    
+//    TFile rootFile((filename + ".root").c_str(), "RECREATE");
+//    for (auto hist : histograms) {
+//        hist->Write();
+//    }
+//    rootFile.Close();
+//}
+//
+
+
 void Monunfold::DrawCompRECMC(const std::string& filename) {
-    TCanvas c2("c2", "c2", 800, 600);
+// Draw histograms and save them to a PDF file
+    TCanvas c1("c3", "c3", 800, 600);
+    c1.Divide(3, 3);
+    c1.cd(1);
+    //h_Q2->Draw();
+    h_Q2comp->Draw("colz");
+    c1.cd(2);
+    //h_xb->Draw();
+    h_xbcomp->Draw("colz");
+    c1.cd(3);
+    //h_y->Draw();
+    h_ycomp->Draw("colz");
+    c1.cd(4);
+    //h_evtnbrdiff->Draw();
+    //h_nu->Draw();
+    h_nucomp->Draw("colz");
+    c1.cd(5);
+    //h_W2->Draw();
+    h_W2comp->Draw("colz");
+    c1.cd(6);
+    //h_z->Draw();  
+    h_zcomp->Draw("colz");
+    c1.cd(7);
+    //h_pt2->Draw();
+    h_pt2comp->Draw("colz");
+    c1.cd(8);
+    //h_phih->Draw();
+    h_phihcomp->Draw("colz");
+    c1.cd(9);
+    //h_vertexZ->Draw();
+    h_vertexZcomp->Draw("colz");
+
+    //c1.Print((filename + ".pdf").c_str());
+    c1.Print((filename + ".pdf(").c_str());
+TCanvas c2("c2", "c2", 800, 600);
     c2.Divide(3, 3);
-    
-    // Define X and Y axis labels for each histogram with units
-    std::vector<std::pair<std::string, std::string>> axisLabels = {
-        {"Q^{2} REC (GeV^{2})", "Q^{2} MC "},        // Q2
-        {"x_{B} REC", "x_{B} MC"},          // xb
-        {"y REC", "y MC"},                 // y
-        {"\nu REC (GeV)", "\nu MC"},     // nu
-        {"W^{2} REC (GeV^{2})", "W^{2} MC"}, // W2
-        {"z REC", "z MC"},                 // z
-        {"p_{T}^{2} REC (GeV^{2})", "p_{T}^{2} MC "}, // pt2
-        {"\\phi_{h} REC (deg)", "\\phi_{h} MC"},   // phih
-        {"Vertex Z REC (cm)", "Vertex Z MC "} // vertexZ
-    };
-
-    std::vector<TH2*> histograms = {
-        h_Q2comp,
-        h_xbcomp,
-        h_ycomp,
-        h_nucomp,
-        h_W2comp,
-        h_zcomp,
-        h_pt2comp,
-        h_phihcomp,
-        h_vertexZcomp
-    };
-    
-    for (int i = 0; i < 9; ++i) {
-        c2.cd(i + 1);
-        histograms[i]->SetXTitle(axisLabels[i].first.c_str());
-        histograms[i]->SetYTitle(axisLabels[i].second.c_str());
-        histograms[i]->Draw("colz");
-    }
-
+    c2.cd(1);
+    h_px_elcomp->Draw("colz");
+    c2.cd(2);
+    h_py_elcomp->Draw("colz");
+    c2.cd(3);
+    h_pz_elcomp->Draw("colz");
+    c2.cd(4);
+    h_ptot_elcomp->Draw("colz");
+    c2.cd(5);
+    h_theta_elcomp->Draw("colz");
+    c2.cd(6);
+    h_phi_elcomp->Draw("colz");
+    c2.cd(7);
+    h_px_picomp->Draw("colz");
+    c2.cd(8);
+    h_py_picomp->Draw("colz");
+    c2.cd(9);
+    h_pz_picomp->Draw("colz");
     c2.Print((filename + ".pdf").c_str());
-    
-    TFile rootFile((filename + ".root").c_str(), "RECREATE");
-    for (auto hist : histograms) {
-        hist->Write();
-    }
-    rootFile.Close();
+TCanvas c3("c3", "c3", 800, 600);
+    c3.Divide(3, 3);
+    c3.cd(1);
+    h_ptot_picomp->Draw("colz");
+    c3.cd(2);
+    h_theta_picomp->Draw("colz");
+    c3.cd(3);
+    h_phi_picomp->Draw("colz");
+    c3.cd(4);
+    h_E_elcomp->Draw("colz");
+    c3.cd(5);
+    h_E_picomp->Draw("colz");
+    c3.cd(6);
+    h_phihcomp->Draw("colz");
+    c3.cd(7);
+    c3.Print((filename + ".pdf)").c_str());
+
+
+    //c2.Print((filename + ".pdf)").c_str());
+
+
+
 }
 
+void Monunfold::DrawMomentainSim(const std::string& filename){
+    TCanvas c1("c4", "c4", 800, 600);
+    c1.Divide(4, 4);
+    c1.cd(1);
+    h_px_elMC->SetLineColor(kRed);
+    h_px_elMC->Draw();
+    h_px_el->Draw("same");
+
+    c1.cd(2);
+    h_py_elMC->SetLineColor(kRed);
+    h_py_elMC->Draw();
+    h_py_el->Draw("same");
+    c1.cd(3);
+    h_pz_elMC->SetLineColor(kRed);
+    h_pz_elMC->Draw();
+    h_pz_el->Draw("same");
+    c1.cd(4);
+    h_ptot_elMC->SetLineColor(kRed);
+    h_ptot_elMC->Draw();
+    h_ptot_el->Draw("same");
+    c1.cd(5);
+    h_theta_elMC->SetLineColor(kRed);
+    h_theta_elMC->Draw();
+    h_theta_el->Draw("same");
+    c1.cd(6);
+    h_phi_elMC->SetLineColor(kRed);
+    h_phi_elMC->Draw();
+    h_phi_el->Draw("same");
+    c1.cd(7);
+    h_px_piMC->SetLineColor(kRed);
+    h_px_piMC->Draw();
+    h_px_pi->Draw("same");
+    c1.cd(8);
+    h_py_piMC->SetLineColor(kRed);
+    h_py_piMC->Draw();
+    h_py_pi->Draw("same");
+    c1.cd(9);
+    h_pz_piMC->SetLineColor(kRed);
+    h_pz_piMC->Draw();
+    h_pz_pi->Draw("same");
+    c1.cd(10);
+    h_ptot_piMC->SetLineColor(kRed);
+    h_ptot_piMC->Draw();
+    h_ptot_pi->Draw("same");
+    c1.cd(11);
+    h_theta_piMC->SetLineColor(kRed);
+    h_theta_piMC->Draw();
+    h_theta_pi->Draw("same");
+    c1.cd(12);
+//    h_phi_pi->Draw();
+//    h_phi_piMC->SetLineColor(kRed);
+//    h_phi_piMC->Draw("same");
+
+    h_phihMC->SetLineColor(kRed);
+    h_phihMC->Draw();
+    h_phih->Draw("same");
+    c1.cd(13);
+    h_E_elMC->SetLineColor(kRed);
+    h_E_elMC->Draw();
+    h_E_el->Draw("same");
+    c1.cd(14);
+    h_E_piMC->SetLineColor(kRed);
+    h_E_piMC->Draw();
+    h_E_pi->Draw("same");
+    c1.cd(15);
+    h_deltathetapi->Draw();
+    c1.cd(16);
+    h_deltaphipi->Draw();
+
+
+
+
+
+    c1.Print((filename + ".pdf").c_str());
+}
 
 
 
@@ -664,10 +994,10 @@ Monunfold::~Monunfold() {
     delete h_y;
     delete h_nu;
     delete h_W2;
-    delete h_z;
-    delete h_pt2;
-    delete h_phih;
-    delete h_vertexZ;
-    delete h_pid;
+    //delete h_z;
+    //delete h_pt2;
+    //delete h_phih;
+    //delete h_vertexZ;
+    //delete h_pid;
     
 }

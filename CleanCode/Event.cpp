@@ -50,6 +50,10 @@ const Particle& Event::GetElectron() const {
     return electron;
 }
 
+const Particle& Event::GetElectronMC() const {
+    return MCelectron;
+}
+
 void Event::SetVertexZ(double vertexz){
     vz = vertexz;
 }
@@ -120,6 +124,11 @@ void Event::SetHel(int input_hel){
 void Event::SetHelRaw(int input_helraw){
     helraw = input_helraw;
 }
+
+void Event::Setevtnbr(int input_evtnbr){
+    evtnbr = input_evtnbr;
+}
+
 
 void Event::Print() {   //add int v=0 as argument 4 different types of verbose TBD
     std::cout << "   " << std::endl;
@@ -256,6 +265,7 @@ void Event::calcAll(){
     CalcKinematics( );
     CalcPol(electron);
     for (Particle& hadron : hadrons) {
+        // Add Cut PID
         hadron.CalcHadronKin(electron.GetMomentum(), hadron.GetMomentum());
         CalcPol(hadron);
         
@@ -375,4 +385,8 @@ int Event::GetHel() const {
 }
 int Event::GetHelRaw() const {
     return helraw; 
+}
+
+int Event::GetEvtnbr() const {
+    return evtnbr; 
 }

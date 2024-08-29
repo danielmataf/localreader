@@ -33,6 +33,7 @@ public:
     void Fill2DHistogramsRECMC(const Event& ); 
     void CompareHistograms(Monunfold& , Monunfold& , const std::string& ) ;
     void FillHistComp(const Event&, const Event&);
+    void FillHistCompwCuts(const Event&, const Event&);
 
     void FillMomentumHistograms(const Event& );
 
@@ -50,6 +51,8 @@ public:
     void DrawVertexHistograms(const std::string);
     void SaveHistRoot(const std::string& ) ;
     void SaveHistMCRoot(const std::string& ) ;
+    void DrawMomentainSim(const std::string& ) ;
+
     
 
 
@@ -105,6 +108,8 @@ private:
     TH1F *h_phih;   //= new TH1F("phih", "phih", nubin, phihminX, phihmaxX) ;
     TH1F *h_vertexZ;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
     TH1F *h_vertexZ_pi;    //= new TH1F("targetVx", "vertex4target", 100, -40, 40) ;
+    TH1F *h_vertexX;    //= new TH1F("targetVy", "vertex4target", 100, -40, 40) ;
+    TH1F *h_vertexY;    //= new TH1F("targetVy", "vertex4target", 100, -40, 40) ;
     
 
     TH1F *h_thetaelectron;
@@ -122,6 +127,8 @@ private:
     TH1F *h_pt2MC;    //= new TH1F("pt2", "pt2", nubin, pt2minX, pt2maxX) ;
     TH1F *h_phihMC;   //= new TH1F("phih", "phih", nubin, phihminX, phihmaxX) ;
     TH1F *h_vertexZMC;    //= new TH1F("targetVz", "vertex4target", 100, -40, 40) ;
+    TH1F *h_vertexXMC;    //= new TH1F("targetVx", "vertex4target", 100, -40, 40) ;
+    TH1F *h_vertexYMC;    //= new TH1F("targetVy", "vertex4target", 100, -40, 40) ;
 
     
     TH2F *h_Q2comp;    //= new TH2F("xQ2", "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
@@ -139,8 +146,64 @@ private:
     TH2F *h_xQ2;    //= new TH2F("xQ2", "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
     TH2F *h_xQ2pos; //= new TH2F("xQ2pos", "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
 
+    TH1F *h_px_el;
+    TH1F *h_py_el;
+    TH1F *h_pz_el;
+    TH1F *h_ptot_el;
+    TH1F *h_px_pi;
+    TH1F *h_py_pi;
+    TH1F *h_pz_pi;
+    TH1F *h_ptot_pi;
+    TH1F *h_theta_el;
+    TH1F *h_phi_el;
+    TH1F *h_theta_pi;
+    TH1F *h_phi_pi;
 
 
+    TH1F *h_px_elMC;
+    TH1F *h_py_elMC;
+    TH1F *h_pz_elMC;
+    TH1F *h_ptot_elMC;
+    TH1F *h_px_piMC;
+    TH1F *h_py_piMC;
+    TH1F *h_pz_piMC;
+    TH1F *h_ptot_piMC;
+    TH1F *h_theta_elMC;
+    TH1F *h_phi_elMC;
+    TH1F *h_theta_piMC;
+    TH1F *h_phi_piMC;
+
+
+    TH1F *h_E_el;
+    TH1F *h_E_pi;
+    TH1F *h_E_elMC;
+    TH1F *h_E_piMC;
+
+    TH1F *h_deltaphipi;
+    TH1F *h_deltathetapi;
+
+
+
+    TH2F *h_px_elcomp;
+    TH2F *h_py_elcomp;
+    TH2F *h_pz_elcomp;
+    TH2F *h_ptot_elcomp;
+    TH2F *h_px_picomp;
+    TH2F *h_py_picomp;
+    TH2F *h_pz_picomp;
+    TH2F *h_ptot_picomp;
+    TH2F *h_theta_elcomp;
+    TH2F *h_phi_elcomp;
+    TH2F *h_theta_picomp;
+    TH2F *h_phi_picomp;
+    TH2F *h_E_elcomp;
+    TH2F *h_E_picomp;
+    TH2F *h_vxcomp;
+    TH2F *h_vycomp;
+
+
+
+    TH1F *h_evtnbrdiff;   //evtnbr_sim - evtnbr_mc should be 0 iw we are reading the same event.    
 
 
     TFile outputFile;

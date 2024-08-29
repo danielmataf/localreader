@@ -172,6 +172,12 @@
         //}
         //double acos_angle_norm_deg = acos(angle_norm) * 180.0 / Constants::PI;
         phih = (sign < 0) ? acos(angle_norm) * 180.0 / Constants::PI + 180 : acos(angle_norm) * -180.0 / Constants::PI + 180;
+        //std::cout << " phih: " << phih ;
+        //std::cout << " sign: " << sign   ;
+
+        //std::cout << " anglenorm: " << angle_norm << std::endl;
+        //std::cout << " acos anglenorm: " <<  acos(angle_norm) << std::endl;
+        //std::cout <<  n1.Mag() <<"  "   <<n2.Mag() <<"  "<<  vec2.Mag() << std::endl;
         //consider BSA 4 phih TBD
         return 0;
     }

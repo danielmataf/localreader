@@ -181,6 +181,7 @@ bool EventReader::isSimulatedData(hipo::event event) {
                     counterel_MC++;
                     max_energy_electronMC = MCmomentum.E();
                     ProcessMCParticle(MCmomentum , Constants::ELECTRON_PID,MCtargetvx,MCtargetvy,MCtargetvz, j );
+                    ReadRunconfig(event);
                //}
                 el_detect = true;
             } else if (IsHadron(MCpid) && el_detect ==true) {
@@ -192,16 +193,38 @@ bool EventReader::isSimulatedData(hipo::event event) {
 
 
 
+    //std::optional<Event> EventReader::ReadRunconfig(hipo::event event){
+    //    currentEvent = Event();
+    //    event.getStructure(RUNconfig);
+    //    int evtnbr = RUNconfig.getInt("event", 0);
+    //    currentEvent.Setevtnbr(evtnbr);
+    //    return currentEvent;
+//
+//
+    //}
+    void EventReader::ReadRunconfig(hipo::event event){
+    event.getStructure(RUNconfig);
+    int evtnbr = RUNconfig.getInt("event", 0);
+    currentEvent.Setevtnbr(evtnbr);
+}
+
+
+    //std::optional<Event> EventReader::ReadRunconfigMC(hipo::event event);
+
+
+
     std::optional<Event> EventReader::ProcessEvent( hipo::event event, int eventNumber, bool isSimulated ) {
         currentEvent = Event();
         //std::cout << "Processing event: " << eventNumber << std::endl;
         bool el_detect = false;
+        int electron_count = 0;
         double max_energy_electron = 0.0; 
         event.getStructure(RECgen);
         event.getStructure(RECcalo);
         event.getStructure(RECcher);
         event.getStructure(HELbank);
         event.getStructure(MCpart);
+
         
         //RECgen.show();
         bool flag_el = false;
@@ -210,8 +233,10 @@ bool EventReader::isSimulatedData(hipo::event event) {
         for (int i = 0; i < RECgen.getRows(); ++i) {
             if ( RECgen.getInt("pid", i) == 11 ){
                 flag_el = true;
+                electron_count++;
             }
         }
+        if (electron_count > 1) { return std::nullopt;} //DISCARDS EVENTS WITH MORE THAN ONE ELECTRON
         if (flag_el == false )return std::nullopt;
         //std::cout << "RECgen rows : " << RECgen.getRows() << std::endl;
         for (int i = 0; i <RECgen.getRows(); ++i) {
@@ -241,9 +266,9 @@ bool EventReader::isSimulatedData(hipo::event event) {
                 if ( electron_status < 0) {     //momentum.E() > max_energy_electron &&
                     max_energy_electron = momentum.E();
                     //considering trigger electron , not most energetic one
-                    //trigger el should be the most energetic one 
-                    //TO DO!!! 
+                    //but trigger el should be the most energetic one 
                     ProcessParticle(momentum , Constants::ELECTRON_PID,targetvx,targetvy,targetvz, i );
+                    ReadRunconfig(event);
                 }
                 el_detect = true;
             } else if (IsHadron(pid) && el_detect ==true) {
@@ -371,6 +396,7 @@ std::optional<Event> EventReader::ProcessEventsInFile() {
             //HELbank = factory.getSchema("REC::Event"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
             //HELbank = factory.getSchema("HEL::flip"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
             MCpart = factory.getSchema("MC::Particle");
+            //RUNconfig = factory.getSchema("RUN::config");
             std::cout << "Processing file: " << filename << std::endl;
         } 
         hipo::event hipoEvent;
@@ -393,6 +419,7 @@ std::optional<Event> EventReader::ProcessEventsInFile() {
 
 std::optional<Event> EventReader::ProcessEventsInFileMC() { 
         std::string filename;
+        //change reader has next to 
         if (!reader.hasNext()) {
             filenb++;
             filename = filelist.at(filenb);
@@ -403,14 +430,14 @@ std::optional<Event> EventReader::ProcessEventsInFileMC() {
             std::cout << "Processing file MC: " << filename << std::endl;   //I guess we can delete this!
         } 
         hipo::event hipoEvent;
-        if (reader.next()) {
+        //if (reader.next()) {
             reader.read(hipoEvent);
             Event event ;
             if (isSimulatedData(hipoEvent)==true) {
                 ProcessEventMC(hipoEvent);
                 return ProcessEventMC(hipoEvent);    
             }
-        } 
+        //} 
         Event empty;
         return empty;
 }

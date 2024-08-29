@@ -171,7 +171,10 @@ namespace Constants {
     static const double cutEpcal_min = 0.06; //see 8.1.1 in RGA, in DST unit in GeV  (here is 60 MeV -> 0.06 GeV)
     
     static const double cutcalEp_max = 2.00; //see 8.1.1 in RGA, in DST unit in GeV  (here is 60 MeV)
-    
+
+    //Chi2 cuts
+    static const double cutelchi2_min = 0.0;    // TBD !!
+    static const double cutelchi2_max = 100.0;  // TBD !!        
 }
 
 #endif 

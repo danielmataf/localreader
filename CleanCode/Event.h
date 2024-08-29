@@ -44,6 +44,8 @@ public:
     void Setnphe16(double );
     void SetHel(int);
     void SetHelRaw(int);
+    
+    void Setevtnbr(int);
 
 
      void CalcPol(Particle&);
@@ -59,6 +61,8 @@ public:
     const std::vector<Particle>& GetMCHadrons() const;
 
     const Particle& GetElectron() const;
+    const Particle& GetElectronMC() const ;
+
     int CalcKinematics( );
     int CalcMCKinematics( );
 
@@ -104,7 +108,8 @@ public:
 
 
 
-
+    int GetEvtnbr() const;
+    int GetEvtnbrMC() const;
 
     int GetTargetType() const; 
     void SetTargetType(int );
@@ -149,6 +154,7 @@ private:
     double calox=0, caloy=0, caloz=0;
     double nphe15=0, nphe16=10;
     int hel =0, helraw=0;
+    int evtnbr=0;
 
 
 

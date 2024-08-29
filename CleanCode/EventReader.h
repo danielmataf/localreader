@@ -25,10 +25,15 @@ public:
     int getevtnbr();
     int getSimulatedCount() const ;
     bool isSimulatedData(hipo::event) ;
+    void ReadRunconfig(hipo::event event);
+
+
 private:
     std::optional<Event> ProcessEvent( hipo::event event, int eventNumber, bool isSimulated);
     std::optional<Event> ProcessEventMC(hipo::event event) ;
     std::optional<Event> ProcessEventsWithPositivePions(hipo::event event, int eventNumber) ;
+    //std::optional<Event> ReadRunconfigMC(hipo::event event);
+
 
 
     int simulatedEventCount=0;

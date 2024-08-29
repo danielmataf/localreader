@@ -1155,7 +1155,7 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     h_px_el->Write();
     h_py_el->Write();
     h_pz_el->Write();
-    h_ptot_el->Write();
+    h_ptot_el->Write();     //this
     h_theta_el->Write();
     h_phi_el->Write();
     h_polcoord_el->Write();
@@ -1165,9 +1165,9 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     h_px_pi->Write();
     h_py_pi->Write();
     h_pz_pi->Write();
-    h_ptot_pi->Write();
-    h_theta_pi->Write();
-    h_phi_pi->Write();
+    h_ptot_pi->Write();     //this
+    h_theta_pi->Write();    //this
+    h_phi_pi->Write();      //this
     h_polcoord_pi->Write();
     h_E_pi->Write();
     h_E_pi_theta->Write();
