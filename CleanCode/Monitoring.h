@@ -189,7 +189,7 @@ private:
 
 
     //sampling fraction 
-    
+    TH2F *h_sampl_el; //
 
 
             //===Lines for Cuts(TBD)===// 

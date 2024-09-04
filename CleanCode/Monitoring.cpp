@@ -97,6 +97,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_Q2comp(new TH2F(("Q2comp_" + targetName).c_str(), "Q2comp", nubin, QminX, QmaxX,nubin, QminX, QmaxX)),
     h_chi2_el(new TH1F(("chi2_el_" + targetName).c_str(), "chi2_el", 100, -10, 10)),
     h_chi2_pi(new TH1F(("chi2_pi_" + targetName).c_str(), "chi2_pi", 100, -10, 10)),
+    h_sampl_el(new TH2F(("sampl_el_" + targetName).c_str(), "sampl_el", nubin, 0, 3, nubin, 0, 1)),
       counterel_R(0) {
     // Add more histograms as needed
 }
@@ -151,20 +152,24 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
             h_W2->Fill(event.GetW2());
             //h_xQ2pos->Fill(event.Getxb(), event.GetQ2());
             //Particle electron = event.GetElectron();
-            h_epcal->Fill(event.electron.GetEpcal());
-            std::cout << " call particle epcal " <<event.electron.GetEpcal() << std::endl;
+            if (event.electron.Getchi2()>-1.5 && event.electron.Getchi2()<2.0){
+                h_epcal->Fill(event.electron.GetEpcal());
+
+            }
+            h_chi2_el->Fill(event.electron.Getchi2());
+
             h_px_el->Fill(event.electron.GetMomentum().X());
             h_py_el->Fill(event.electron.GetMomentum().Y());
             h_pz_el->Fill(event.electron.GetMomentum().Z());
             h_ptot_el->Fill(sqrt(event.electron.GetMomentum().P()));
-            //h_sampl_el->Fill((event.electron.GetEpcal()/sqrt(electron.GetMomentum().P())), sqrt(electron.GetMomentum().P()));
+            h_sampl_el->Fill(sqrt(event.electron.GetMomentum().P()), (event.electron.GetEpcal()/sqrt(event.electron.GetMomentum().P())) );
+            std::cout << " bump! " << event.electron.GetEpcal()/sqrt(event.electron.GetMomentum().P()) << " , " << sqrt(event.electron.GetMomentum().P()) << std::endl;
             h_theta_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
             h_phi_el->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
             h_polcoord_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().Phi()*180/Constants::PI +180);
             h_E_el->Fill(event.electron.GetMomentum().E());
             h_E_el_theta->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().E());
             h_E_el_phi->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180, event.electron.GetMomentum().E());
-            h_chi2_el->Fill(event.electron.Getchi2());
             for (const Particle& hadron : event.GetHadrons()) {
                 if (cut1.PassCutsHadrons(hadron)==true){
                     if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
@@ -1183,7 +1188,7 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
 
     h_chi2_el->Write();
     h_chi2_pi->Write();
-    //h_sampl_el->Write();
+    h_sampl_el->Write();
 
 
     rootFile->Close();

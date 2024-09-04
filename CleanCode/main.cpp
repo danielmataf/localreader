@@ -85,8 +85,8 @@ int main() {
     int totalevts = 40000;
 
     for (int i=0; i<totalevts; i++){
-        //simCxC  = Sim_CxC.ProcessEventsInFile();
-        //simCxC_MC  = Sim_CxC.ProcessEventsInFileMC();
+        simCxC  = Sim_CxC.ProcessEventsInFile();
+        simCxC_MC  = Sim_CxC.ProcessEventsInFileMC();
         testCxC = RGD_CxC.ProcessEventsInFile(); 
         if (testCxC.has_value()) {
             Event eventtestCxC = testCxC.value();
@@ -95,26 +95,20 @@ int main() {
             //munfTestC2.FillHistComp(eventtestCxC);
             monTestC2.FillHistogramswCuts(eventtestCxC);
         }
-        //if (simCxC_MC.has_value())                          {//CxC sim
-        //    Event eventsimCxC_MC = simCxC_MC.value();
-        //    eventsimCxC_MC.SetTargetType(1);
-        //    eventsimCxC_MC.calcMCAll();
-        //    //eventsimCxC_MC.ReadRunconfig();
-        //    //std::cout << "---------------- " << std::endl;
-        //    //std::cout << "Event count prt MC: " << i << std::endl;
-        //    //std::cout << "Event count fct MC: " << eventsimCxC_MC.GetEvtnbr() << std::endl;
-        //        if ( simCxC.has_value()) {
-        //            Event eventsimCxC = simCxC.value();
-        //            eventsimCxC.SetTargetType(1);
-        //            eventsimCxC.calcAll();
-        //            munfSimC1.FillHistCompwCuts(eventsimCxC, eventsimCxC_MC);
-        //            munfSimC2.FillHistComp(eventsimCxC, eventsimCxC_MC);
-        //            monSimC2.FillHistogramswCuts(eventsimCxC);
-        //            //std::cout << "Event count prt SIM: " << i << std::endl;
-        //            //std::cout << "Event count fct SIM: " << eventsimCxC.GetEvtnbr() << std::endl;
-//
-        //        }
-        //}
+        if (simCxC_MC.has_value())                          {//CxC sim
+            Event eventsimCxC_MC = simCxC_MC.value();
+            eventsimCxC_MC.SetTargetType(1);
+            eventsimCxC_MC.calcMCAll();
+                if ( simCxC.has_value()) {
+                    Event eventsimCxC = simCxC.value();
+                    eventsimCxC.SetTargetType(1);
+                    eventsimCxC.calcAll();
+                    munfSimC1.FillHistCompwCuts(eventsimCxC, eventsimCxC_MC);
+                    munfSimC2.FillHistComp(eventsimCxC, eventsimCxC_MC);
+                    monSimC2.FillHistogramswCuts(eventsimCxC);
+
+                }
+        }
 
             //else{ counter_restCxC++;}
             files.displayProgress(i + 1, totalevts);
