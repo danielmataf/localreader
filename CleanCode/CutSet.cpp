@@ -298,12 +298,12 @@ bool CutSet::PassCutsVariables(const Event& event){
 
 bool CutSet::PassCutsCalo(const Event& event)  {
     // recover calo data from the event
-    double lu = event.Getlu();
-    double lv = event.Getlv();
-    double lw = event.Getlw();
-    double epcal = event.GetEpcal();
-    double eecalin = event.GetEcalin();
-    double ecalout = event.GetEcalout();
+    double lu = event.electron.Getlu();
+    double lv = event.electron.Getlv();
+    double lw = event.electron.Getlw();
+    double epcal = event.electron.GetEpcal();
+    double eecalin = event.electron.GetEcalin();
+    double ecalout = event.electron.GetEcalout();
 
     if (lu >= Constants::cal_lumin  ){
         if (lv >= Constants::cutlv_min ){
@@ -319,8 +319,8 @@ bool CutSet::PassCutsCalo(const Event& event)  {
 
 bool CutSet::PassCutsCherenkov(const Event& event ) {
     // recover cherenkov data from the event
-    double Nphe15 = event.Getnphe15();
-    double Nphe16 = event.Getnphe16();
+    double Nphe15 = event.electron.Getnphe15();
+    double Nphe16 = event.electron.Getnphe16();
     if (Nphe15 >= Constants::Nphe15min   ){
         //if (Nphe16 >= Constants::Nphe16min   ){
             return true;

@@ -77,17 +77,16 @@ int main() {
     int sumevts = 0;
     Monunfold munfSimC1(simC1cuts, "C1_simf");
     Monunfold munfSimC2(simC2cuts, "C2_simf");
-    Monunfold munfTestC2(testC2cuts, "C2_testf");
 
     Monitoring monSimC1(simC1cuts, "C1_sim");     //This needs to be figured out ASAP
     Monitoring monSimC2(simC2cuts, "C2_sim");     //This needs to be figured out ASAP
-    Monitoring monTestC2(testC2cuts, "C2_test");  //This needs to be figured out ASAP
+    Monitoring monTestC2(testC2cuts, "C2_true");  //This needs to be figured out ASAP
 
     int totalevts = 40000;
 
     for (int i=0; i<totalevts; i++){
-        simCxC  = Sim_CxC.ProcessEventsInFile();
-        simCxC_MC  = Sim_CxC.ProcessEventsInFileMC();
+        //simCxC  = Sim_CxC.ProcessEventsInFile();
+        //simCxC_MC  = Sim_CxC.ProcessEventsInFileMC();
         testCxC = RGD_CxC.ProcessEventsInFile(); 
         if (testCxC.has_value()) {
             Event eventtestCxC = testCxC.value();
@@ -96,26 +95,26 @@ int main() {
             //munfTestC2.FillHistComp(eventtestCxC);
             monTestC2.FillHistogramswCuts(eventtestCxC);
         }
-        if (simCxC_MC.has_value())                          {//CxC sim
-            Event eventsimCxC_MC = simCxC_MC.value();
-            eventsimCxC_MC.SetTargetType(1);
-            eventsimCxC_MC.calcMCAll();
-            //eventsimCxC_MC.ReadRunconfig();
-            //std::cout << "---------------- " << std::endl;
-            //std::cout << "Event count prt MC: " << i << std::endl;
-            //std::cout << "Event count fct MC: " << eventsimCxC_MC.GetEvtnbr() << std::endl;
-                if ( simCxC.has_value()) {
-                    Event eventsimCxC = simCxC.value();
-                    eventsimCxC.SetTargetType(1);
-                    eventsimCxC.calcAll();
-                    munfSimC1.FillHistCompwCuts(eventsimCxC, eventsimCxC_MC);
-                    munfSimC2.FillHistComp(eventsimCxC, eventsimCxC_MC);
-                    monSimC2.FillHistogramswCuts(eventsimCxC);
-                    //std::cout << "Event count prt SIM: " << i << std::endl;
-                    //std::cout << "Event count fct SIM: " << eventsimCxC.GetEvtnbr() << std::endl;
-
-                }
-        }
+        //if (simCxC_MC.has_value())                          {//CxC sim
+        //    Event eventsimCxC_MC = simCxC_MC.value();
+        //    eventsimCxC_MC.SetTargetType(1);
+        //    eventsimCxC_MC.calcMCAll();
+        //    //eventsimCxC_MC.ReadRunconfig();
+        //    //std::cout << "---------------- " << std::endl;
+        //    //std::cout << "Event count prt MC: " << i << std::endl;
+        //    //std::cout << "Event count fct MC: " << eventsimCxC_MC.GetEvtnbr() << std::endl;
+        //        if ( simCxC.has_value()) {
+        //            Event eventsimCxC = simCxC.value();
+        //            eventsimCxC.SetTargetType(1);
+        //            eventsimCxC.calcAll();
+        //            munfSimC1.FillHistCompwCuts(eventsimCxC, eventsimCxC_MC);
+        //            munfSimC2.FillHistComp(eventsimCxC, eventsimCxC_MC);
+        //            monSimC2.FillHistogramswCuts(eventsimCxC);
+        //            //std::cout << "Event count prt SIM: " << i << std::endl;
+        //            //std::cout << "Event count fct SIM: " << eventsimCxC.GetEvtnbr() << std::endl;
+//
+        //        }
+        //}
 
             //else{ counter_restCxC++;}
             files.displayProgress(i + 1, totalevts);
@@ -126,14 +125,14 @@ int main() {
     std::cout << "\nProcessing completed \n";
 
     monTestC2.SaveHistRoot("augC2_test");
-    monSimC1.SaveHistRoot("augC1_sim");
-    monSimC1.DrawHistograms("augC1_sim");
+    //monSimC1.SaveHistRoot("augC1_sim");
+    //monSimC1.DrawHistograms("augC1_sim//");
 
     monSimC2.SaveHistRoot("augC2_sim");
 
-    munfSimC1.DrawCompRECMC("augcompC1_sim");
-    munfSimC2.DrawCompRECMC("augcompC2_sim");
-    munfSimC2.DrawMomentainSim("augmomentumC2_sim");
+    //munfSimC1.DrawCompRECMC("augcompC1_sim");
+    //munfSimC2.DrawCompRECMC("augcompC2_sim");
+    //munfSimC2.DrawMomentainSim("augmomentumC2_sim");
 
 
 

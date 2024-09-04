@@ -11,11 +11,12 @@
 
 class Particle {
 public:
-    Particle(const TLorentzVector& , int, int , double);   
+    Particle(const TLorentzVector& , int, int , double, double);   
     const TLorentzVector& GetMomentum() const; 
     const TLorentzVector& GetMCMomentum() const;
     int GetEventIndex() const ;
     int GetPID() const ;  
+    double Getchi2() const;
     void SetMomentum( TLorentzVector);
     void SetTheta(double);
     void SetPhi(double);
@@ -30,17 +31,34 @@ public:
     void SetPx(double );
     void SetPy(double );
     void SetPz(double );
+    void SetChi2(double );
+
+    //Setters of CALO data (only available for electrons)
+    void SetCalSector(int );
+    void Setlu(double );
+    void Setlv(double );
+    void Setlw(double );
+    void SetEpcal(double ); //can be grouped in one function for all enrgs and add sum energy
+    void SetEcalin(double );    //can be grouped in one function for all enrgs and add sum energy
+    void SetEcalout(double );   //can be grouped in one function for all enrgs and add sum energy TBD
+    void SetCalX(double );  //can be grouped in one fct XYZ
+    void SetCalY(double );  //can be grouped in one fct XYZ
+    void SetCalZ(double );  //can be grouped in one fct XYZ TBD
+    void Setnphe15(double );
+    void Setnphe16(double );
+
+
 
     double GetQ2() const ;
     double Getnu()  const ;
     double Gety() const ;
     double GetW2() const ;
     double Getxb() const ;
-        double Getz()    const;
+    double Getz()    const;
     double GetzMC()    const;
-        double Getpt2()  const;
+    double Getpt2()  const;
     double Getpt2MC()  const;
-        double Getphih() const;
+    double Getphih() const;
     double GetphihMC() const;
     double GetTheta() const;
     double GetPhi() const;
@@ -50,11 +68,26 @@ public:
     double GetPx(TLorentzVector) const;
     double GetPy(TLorentzVector) const;
     double GetPz(TLorentzVector) const;
- 
+    double GetCalSector( )const;
+    double Getlu( )const;
+    double Getlv( )const;
+    double Getlw( )const;
+    double GetEpcal( )const;
+    double GetEcalin( )const;
+    double GetEcalout( )const;
+
+    double GetCalX( ) const;
+    double GetCalY( ) const;
+    double GetCalZ( ) const;
+    //Getters of Cherenkov nphe data (only available for electrons)
+    double Getnphe15( ) const;
+    double Getnphe16( ) const;
+
+    //double GetChi2() const;
+
     int GetParticleRow() const;
     int GetParticleIndex() const;
     double GetParticleVertexZ() const;
-
 
 
 
@@ -79,6 +112,7 @@ private:
     double px, py, pz;
     int particleRow;
     int particleIndex;
+    double chi2pid = 0;
     //double particleVertexZ;
 
     struct CalorimeterInfo {
@@ -93,11 +127,15 @@ private:
     //Not sure if a struct for calorimeter data is needed.
     //int layer; 
     //LAYERS not useful to stor, is mainly useful to determine which layere we're in to recover different energies 
-    int sector; //suppose that if a particle crosses all 3 layers, it will be in the same sector CHECK!!!!
+    
+    double cal_sector = -1;
     double lu;
     double lv;
     double lw;
-    double e_pcal = 0, e_ecalin= 0,  e_ecalout=0 ;
+    double Epcal=0.0, Ecalin=0, Ecalout = 0;
+    double calox=0, caloy=0, caloz=0;
+    double nphe15=0, nphe16=0;
+
     //differentiationg Edep per layer, this should be associated to the layer nb the particle crossed. 
     // assigning default 0 values. Allows to see wich layer has been crossed. 
 };

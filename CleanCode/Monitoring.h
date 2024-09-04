@@ -182,6 +182,13 @@ private:
     TH1F *h_phih_plus; // = new TH1F("phih_plus", "phih_plus", 10, 0, 360) ;
     TH1F *h_phih_minus; // = new TH1F("phih_minus", "phih_minus", 10, 0, 360) ;
     TH1 *h_BSA; // = new TH1F("BSA", "BSA", 10, 0, 360) ; 
+
+    //Chi2 histograms
+    TH1F *h_chi2_el; // = new TH1F("chi2", "chi2", 100, 0, 10) ;
+    TH1F *h_chi2_pi; // = new TH1F("chi2", "chi2", 100, 0, 10) ;
+
+
+    //sampling fraction 
     
 
 

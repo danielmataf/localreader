@@ -14,8 +14,8 @@
 //./comphist
 
 void CompareHistograms(const char* target, const std::vector<std::string>& plotTitles, const std::vector<std::string>& xTitles) {
-    std::string file1 = std::string("/home/matamoros/pos") + target + "_data.root";
-    std::string file2 = std::string("/home/matamoros/pos") + target + "_sim.root";
+    std::string file1 = std::string("/home/matamoros/aug") + target + "_data.root";
+    std::string file2 = std::string("/home/matamoros/aug") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {

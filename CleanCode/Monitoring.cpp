@@ -95,6 +95,8 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_phih_minus(new TH1F(("phih_minus_" + targetName).c_str(), "phih_minus", 10, 0, 360)),
     h_BSA(new TH1F(("BSA_" + targetName).c_str(), "BSA", 10, 0, 360)),
     h_Q2comp(new TH2F(("Q2comp_" + targetName).c_str(), "Q2comp", nubin, QminX, QmaxX,nubin, QminX, QmaxX)),
+    h_chi2_el(new TH1F(("chi2_el_" + targetName).c_str(), "chi2_el", 100, -10, 10)),
+    h_chi2_pi(new TH1F(("chi2_pi_" + targetName).c_str(), "chi2_pi", 100, -10, 10)),
       counterel_R(0) {
     // Add more histograms as needed
 }
@@ -119,25 +121,25 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
 void Monitoring::FillHistogramswCuts(const Event& event) {              /// good CUTS in hadron !!!!!!!
     if (cut1.PassCutsDetectors(event)==true){
         // Fill Detector histograms after cuts
-        h_calXY->Fill(event.GetCalX(), event.GetCalY());
-        h_lu->Fill(event.Getlu());
-        h_lv->Fill(event.Getlv());
-        h_lw->Fill(event.Getlw());
-        h_epcal->Fill(event.GetEpcal());
+        h_calXY->Fill(event.electron.GetCalX(), event.electron.GetCalY());
+        h_lu->Fill(event.electron.Getlu());
+        h_lv->Fill(event.electron.Getlv());
+        h_lw->Fill(event.electron.Getlw());
 
         //h_eecalin->Fill(event.GetEcalin());
-        if (event.GetEcalin()>0.01){h_eecalin->Fill(event.GetEcalin());}
+        if (event.electron.GetEcalin()>0.01){h_eecalin->Fill(event.electron.GetEcalin());}
         //h_epcalout->Fill(event.GetEcalout());
-        if (event.GetEcalout()>0.01){h_epcalout->Fill(event.GetEcalout());}
+        if (event.electron.GetEcalout()>0.01){h_epcalout->Fill(event.electron.GetEcalout());}
         //h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
-        if (event.GetEcalout()>0.01 & event.GetEcalout()>0.01){h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());}
-        h_Nphe15->Fill(event.Getnphe15());
-        h_Nphe16->Fill(event.Getnphe16());
-        h_calSector->Fill(event.GetCalSector());
+        if (event.electron.GetEcalout()>0.01 & event.electron.GetEcalout()>0.01){h_calEall->Fill(event.electron.GetEpcal(), event.electron.GetEcalin()+event.electron.GetEcalout());}
+        h_Nphe15->Fill(event.electron.Getnphe15());
+        h_Nphe16->Fill(event.electron.Getnphe16());
+        h_calSector->Fill(event.electron.GetCalSector());
         h_helicity->Fill(event.GetHel());
         h_helicity_raw->Fill(event.GetHelRaw());
 
         if (cut1.PassCutsElectrons(event)==true) {
+
             // Fill Electron variable histograms after cuts on electron
             h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detected !!!!
                                                 //add Vz for the hadron too
@@ -148,21 +150,25 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
             h_nu->Fill(event.Getnu());
             h_W2->Fill(event.GetW2());
             //h_xQ2pos->Fill(event.Getxb(), event.GetQ2());
-            Particle electron = event.GetElectron();
-            h_px_el->Fill(electron.GetMomentum().X());
-            h_py_el->Fill(electron.GetMomentum().Y());
-            h_pz_el->Fill(electron.GetMomentum().Z());
-            h_ptot_el->Fill(sqrt(electron.GetMomentum().P()));
-            h_theta_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI);
-            h_phi_el->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180);
-            h_polcoord_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().Phi()*180/Constants::PI +180);
-            h_E_el->Fill(electron.GetMomentum().E());
-            h_E_el_theta->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().E());
-            h_E_el_phi->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180, electron.GetMomentum().E());
+            //Particle electron = event.GetElectron();
+            h_epcal->Fill(event.electron.GetEpcal());
+            std::cout << " call particle epcal " <<event.electron.GetEpcal() << std::endl;
+            h_px_el->Fill(event.electron.GetMomentum().X());
+            h_py_el->Fill(event.electron.GetMomentum().Y());
+            h_pz_el->Fill(event.electron.GetMomentum().Z());
+            h_ptot_el->Fill(sqrt(event.electron.GetMomentum().P()));
+            //h_sampl_el->Fill((event.electron.GetEpcal()/sqrt(electron.GetMomentum().P())), sqrt(electron.GetMomentum().P()));
+            h_theta_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+            h_phi_el->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+            h_polcoord_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+            h_E_el->Fill(event.electron.GetMomentum().E());
+            h_E_el_theta->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().E());
+            h_E_el_phi->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180, event.electron.GetMomentum().E());
+            h_chi2_el->Fill(event.electron.Getchi2());
             for (const Particle& hadron : event.GetHadrons()) {
                 if (cut1.PassCutsHadrons(hadron)==true){
                     if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
-
+                        h_chi2_pi->Fill(hadron.Getchi2());
                         h_z->Fill(hadron.Getz());
                         h_pt2->Fill(hadron.Getpt2());
                         h_phih->Fill(hadron.Getphih());
@@ -187,7 +193,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
         }
     }
 }
-
+/*
 void Monitoring::FillHistograms(const Event& event) {
     //if (cut1.PassCutLD2Target(event)==false) return;
     h_xQ2->Fill(event.Getxb(), event.GetQ2());
@@ -386,7 +392,7 @@ void Monitoring::Fill_R_Histograms(const Event& event, const std::string target)
     //    }
     //}
 }
-
+*/
 void Monitoring::WriteHistogramsToFile(const std::string filename) {
     //this function recreates a new rootfile everytime is called 
     //useful to have different rootfiles if different cuts were implemented
@@ -1174,6 +1180,10 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     h_E_pi_phi->Write();
     h_vertexZ_pi->Write();
     h_DeltaVz->Write();
+
+    h_chi2_el->Write();
+    h_chi2_pi->Write();
+    //h_sampl_el->Write();
 
 
     rootFile->Close();

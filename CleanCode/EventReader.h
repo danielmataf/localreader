@@ -10,7 +10,8 @@
 class EventReader {
 public:
     EventReader(const std::vector<std::string>& );
-    void ProcessParticle(const TLorentzVector& , int ,double, double, double, int );
+    void ProcessParticle(const TLorentzVector& , int ,double, double, double, int, double );
+    //upper fct has an extra argument for the chi2pid
     void ProcessMCParticle(const TLorentzVector& , int ,double, double, double, int );
     void ProcessParticleMomentum(int, double , double , double );
     void AddCaloInfo(int,  int, double, double,double,double,double,double); 

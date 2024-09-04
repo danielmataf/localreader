@@ -9,31 +9,32 @@
 #include "Particle.h"
 #include "constants.h"
     
-Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0, 0, 0.0),
-                 MCelectron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0, 0, 0.0){
+Event::Event() : electron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0, 0, 0.0, 0.0),
+                 MCelectron(TLorentzVector(0.0, 0.0, 0.0, 0.0), 0, 0, 0.0,0.0){
     m_D = (Constants::MASS_NEUTRON + Constants::MASS_PROTON)/2 ;
 
 }
 
-void Event::AddElectron(const TLorentzVector& electronMomentum, int row, double vertexZ) {
-        electron = Particle(electronMomentum, 11 , row, vertexZ);  
+void Event::AddElectron(const TLorentzVector& electronMomentum, int row, double vertexZ, double chi2row ) {
+        electron = Particle(electronMomentum, 11 , row, vertexZ, chi2row);   
         electron.SetMomentum(electronMomentum);
         
 }
 
 void Event::AddMCElectron(const TLorentzVector& electronMomentum, int row, double vertexZ) {
-        MCelectron = Particle(electronMomentum, 11 , row, vertexZ);  
+        MCelectron = Particle(electronMomentum, 11 , row, vertexZ, 0.0);    
+        //last argument is 0, because the chi2 is not available in the MC data  
         MCelectron.SetMomentum(electronMomentum);
         
 }
 
 
-void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid, int row, double vertexZ) {
-    hadrons.push_back(Particle(hadronMomentum,  pid, row, vertexZ));
+void Event::AddHadron(const TLorentzVector& hadronMomentum, int pid, int row, double vertexZ,  double chi2row) {
+    hadrons.push_back(Particle(hadronMomentum,  pid, row, vertexZ, chi2row));
 }
 
 void Event::AddMCHadron(const TLorentzVector& MChadronMomentum, int MCpid, int MCrow, double MCvertexZ) {
-    MChadrons.push_back(Particle(MChadronMomentum,  MCpid, MCrow, MCvertexZ));
+    MChadrons.push_back(Particle(MChadronMomentum,  MCpid, MCrow, MCvertexZ, 0.0));
 }
 
 int Event::GetEventIndex() const {
@@ -81,43 +82,6 @@ double Event::GetVx()const {
     return vy;
 }
 
-void Event::SetCalSector(int sector){
-    cal_sector = sector;
-}
-void Event::Setlu(double u){
-    lu = u;
-}
-void Event::Setlv(double v){
-    lv = v;
-}
-void Event::Setlw(double w){
-    lw = w;
-}
-void Event::SetCalX(double calx){
-    calox = calx;
-}
-void Event::SetCalY(double caly){
-    caloy = caly;
-}
-void Event::SetCalZ(double calz){
-    caloz = calz;
-}
-void Event::SetEpcal(double epcal){
-    Epcal = epcal;
-}
-void Event::SetEcalin(double ecalin){
-    Ecalin = ecalin;
-}
-void Event::SetEcalout(double ecalout){
-    Ecalout = ecalout;
-}
-
-void Event::Setnphe15(double nphe_15){
-    nphe15 = nphe_15;
-}
-void Event::Setnphe16(double nphe_16){
-    nphe16 = nphe_16;
-}
 void Event::SetHel(int input_hel){
     hel = input_hel;
 }
@@ -334,42 +298,6 @@ double Event::GetAcosyadaMC() const{
 //double Event::Getphih()  const {
 //    return hadron.Getphih(); 
 //}
-double Event::Getlu( )const{
-    return lu;
-}
-double Event::Getlv( )const{
-    return lv;
-}
-double Event::Getlw( )const{
-    return lw;
-}
-double Event::GetEpcal( )const{
-    return Epcal;
-}
-double Event::GetEcalin( )const{
-    return Ecalin;
-}
-double Event::GetEcalout( )const{
-    return Ecalout;
-}
-double Event::GetCalX() const{
-    return calox;
-}
-double Event::GetCalY() const{
-    return caloy;
-}
-double Event::GetCalZ() const{
-    return caloz;
-}
-double Event::GetCalSector( )const{
-    return cal_sector;
-}
-double Event::Getnphe15( ) const{
-    return nphe15;
-}
-double Event::Getnphe16( ) const{
-    return nphe16;
-}
 
 
 int Event::GetTargetType() const {

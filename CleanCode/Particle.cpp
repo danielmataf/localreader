@@ -10,8 +10,8 @@
 
 
 
-    Particle::Particle(const TLorentzVector& momentum, int pid, int row, double particleVertexZ)
-        : momentum(momentum), pid(pid), particleRow(row), particleVertexZ(particleVertexZ) {
+    Particle::Particle(const TLorentzVector& momentum, int pid, int row, double particleVertexZ, double chi2)
+        : momentum(momentum), pid(pid), particleRow(row), particleVertexZ(particleVertexZ), chi2pid(chi2 ) {
 
         }
     const TLorentzVector& Particle::GetMomentum() const {
@@ -31,6 +31,10 @@
 
     int Particle::GetPID() const {
         return pid;
+    }
+
+    double Particle::Getchi2() const {
+        return chi2pid;
     }
     void Particle::SetQ2(double q2) {
         Q2 = q2;
@@ -57,6 +61,51 @@
         this-> particleVertexZ = particleVertexZ;
         
     }
+
+void Particle::SetCalSector(int sector){
+    cal_sector = sector;
+}
+void Particle::Setlu(double u){
+    lu = u;
+}
+void Particle::Setlv(double v){
+    lv = v;
+}
+void Particle::Setlw(double w){
+    lw = w;
+}
+void Particle::SetCalX(double calx){
+    calox = calx;
+}
+void Particle::SetCalY(double caly){
+    caloy = caly;
+}
+void Particle::SetCalZ(double calz){
+    caloz = calz;
+}
+void Particle::SetEpcal(double epcal){
+    std::cout << " "   << std::endl;
+
+    std::cout << "preEpcal_ev: " << Epcal << std::endl;
+    std::cout << "preepcal_ev: " << epcal << std::endl;
+
+    Epcal = epcal;
+    std::cout << "posEpcal_ev: " << Epcal << std::endl;
+    std::cout << "posepcal_ev: " << epcal << std::endl;
+}
+void Particle::SetEcalin(double ecalin){
+    Ecalin = ecalin;
+}
+void Particle::SetEcalout(double ecalout){
+    Ecalout = ecalout;
+}
+
+void Particle::Setnphe15(double nphe_15){
+    nphe15 = nphe_15;
+}
+void Particle::Setnphe16(double nphe_16){
+    nphe16 = nphe_16;
+}
 
     void Particle::SetParticleRow(int row) {
         particleRow = row;
@@ -150,6 +199,42 @@
     //double Particle::GetTheta(TLorentzVector momentum) const {
     //    return momentum.Theta();
     //}
+double Particle::Getlu( )const{
+    return lu;
+}
+double Particle::Getlv( )const{
+    return lv;
+}
+double Particle::Getlw( )const{
+    return lw;
+}
+double Particle::GetEpcal( )const{
+    return Epcal;
+}
+double Particle::GetEcalin( )const{
+    return Ecalin;
+}
+double Particle::GetEcalout( )const{
+    return Ecalout;
+}
+double Particle::GetCalX() const{
+    return calox;
+}
+double Particle::GetCalY() const{
+    return caloy;
+}
+double Particle::GetCalZ() const{
+    return caloz;
+}
+double Particle::GetCalSector( )const{
+    return cal_sector;
+}
+double Particle::Getnphe15( ) const{
+    return nphe15;
+}
+double Particle::Getnphe16( ) const{
+    return nphe16;
+}
 
 
 

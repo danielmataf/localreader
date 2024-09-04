@@ -26,9 +26,9 @@
         return pid != Constants::ELECTRON_PID && pid != Constants::POSITRON_PID;
     }
     
-    void EventReader::ProcessParticle(const TLorentzVector& momentum, int pid, double vertx,double verty,double vertz, int row ) {
+    void EventReader::ProcessParticle(const TLorentzVector& momentum, int pid, double vertx,double verty,double vertz, int row, double chi2_row) {
         if (pid == Constants::ELECTRON_PID) {
-            currentEvent.AddElectron(momentum, row, vertz);
+            currentEvent.AddElectron(momentum, row, vertz, chi2_row);
             currentEvent.SetVertexZ(vertz);
             currentEvent.SetVertexX(vertx);
             currentEvent.SetVertexY(verty);
@@ -36,7 +36,7 @@
             //currentEvent.SetParticleRow(row);
             
         } else if (IsHadron(pid)) {
-            currentEvent.AddHadron(momentum, pid,row, vertz);
+            currentEvent.AddHadron(momentum, pid,row, vertz, chi2_row);
             //currentEvent.SetVertexZ(vertz);
             //currentEvent.SetParticleRow(row);
             for (const Particle& hadron : currentEvent.GetHadrons()) {
@@ -81,13 +81,16 @@
 
     void EventReader::AddCaloInfo(int pid, int sector, double u, double v, double w, double epcal, double ecalin, double ecalout ){
         if (pid == Constants::ELECTRON_PID) {
-            currentEvent.SetCalSector(sector);
-            currentEvent.Setlu(u);
-            currentEvent.Setlv(v);
-            currentEvent.Setlw(w);
-            currentEvent.SetEpcal(epcal);
-            currentEvent.SetEcalin(ecalin);
-            currentEvent.SetEcalout(ecalout);
+            currentEvent.electron.SetCalSector(sector);
+            currentEvent.electron.Setlu(u);
+            currentEvent.electron.Setlv(v);
+            currentEvent.electron.Setlw(w);
+            currentEvent.electron.SetEpcal(epcal);
+            currentEvent.electron.SetEcalin(ecalin);
+            currentEvent.electron.SetEcalout(ecalout);
+
+            std::cout << "Added calo infoepcal: " << epcal << std::endl;
+
 
         } else if (IsHadron(pid)) {
             //SetU(u);
@@ -103,9 +106,9 @@
         //testing a first function, only recovering xyz for first layer of calo and only for electrons
 
         if (pid == Constants::ELECTRON_PID) {
-            currentEvent.SetCalX(xcal);
-            currentEvent.SetCalY(ycal);
-            currentEvent.SetCalZ(zcal); //porbalby useless TBD
+            currentEvent.electron.SetCalX(xcal);
+            currentEvent.electron.SetCalY(ycal);
+            currentEvent.electron.SetCalZ(zcal); //porbalby useless TBD
         }
         // else if (IsHadron(pid)) {
         //    SetCalX(xcal);
@@ -117,8 +120,8 @@
 
     void EventReader::AddCherInfo(int pid, double nphe15, double nphe16){
         if (pid == Constants::ELECTRON_PID) {
-            currentEvent.Setnphe15(nphe15);
-            currentEvent.Setnphe16(nphe16);
+            currentEvent.electron.Setnphe15(nphe15);
+            currentEvent.electron.Setnphe16(nphe16);
         }
     }
 
@@ -253,6 +256,7 @@ bool EventReader::isSimulatedData(hipo::event event) {
             double targetvz = RECgen.getFloat("vz", i);
             double targetvx = RECgen.getFloat("vx", i);
             double targetvy = RECgen.getFloat("vy", i);
+            double chi2_row = RECgen.getFloat("chi2pid", i);
             TLorentzVector momentum;
             momentum.SetPx(RECgen.getFloat("px", i));
             momentum.SetPy(RECgen.getFloat("py", i));
@@ -267,13 +271,13 @@ bool EventReader::isSimulatedData(hipo::event event) {
                     max_energy_electron = momentum.E();
                     //considering trigger electron , not most energetic one
                     //but trigger el should be the most energetic one 
-                    ProcessParticle(momentum , Constants::ELECTRON_PID,targetvx,targetvy,targetvz, i );
+                    ProcessParticle(momentum , Constants::ELECTRON_PID,targetvx,targetvy,targetvz, i, chi2_row);
                     ReadRunconfig(event);
                 }
                 el_detect = true;
             } else if (IsHadron(pid) && el_detect ==true) {
                 //if (pid == Constants::PION_PLUS_PID){
-                    ProcessParticle(momentum, pid,targetvx,targetvy,targetvz,i ); 
+                    ProcessParticle(momentum, pid,targetvx,targetvy,targetvz,i, chi2_row ); 
 
                 //}
             }
@@ -298,8 +302,12 @@ bool EventReader::isSimulatedData(hipo::event event) {
                     //once pindex changes  cal values are reset
                 if (pindex == i) {
                     int cal_layer = RECcalo.getInt("layer", c_row);
+                    //layers (1,4,7) for each calo part, explains why many pindex are the same
+
                     if (cal_layer == 1) {   //pcal
                         e_pcal = RECcalo.getFloat("energy", c_row);
+                        std :: cout << "source e_pcal: " << e_pcal << std::endl;
+                        //we interested in saving this value for a given particle. 
                         lu_pcal = RECcalo.getFloat("lu", c_row);
                         lv_pcal = RECcalo.getFloat("lv", c_row);
                         lw_pcal = RECcalo.getFloat("lw", c_row);
@@ -325,7 +333,8 @@ bool EventReader::isSimulatedData(hipo::event event) {
             //std::cout << "e_pcal: " << e_pcal << std::endl;
             //std::cout << "e_in: " << e_ecalin << std::endl;
             //std::cout << "e_out: " << e_ecalout << std::endl;
-                                AddCaloInfo(pid, sector_pcal, lu_pcal, lv_pcal, lw_pcal, e_pcal, e_ecalin, e_ecalout);
+                    AddCaloInfo(pid, sector_pcal, lu_pcal, lv_pcal, lw_pcal, e_pcal, e_ecalin, e_ecalout);
+                    std::cout<< "Adding to calo e_pcal: " << e_pcal << std::endl;
                     AddCaloXYZ(pid, x_cal, y_cal, z_cal);
             }
             for (int cher_row = 0; cher_row < RECcher.getRows(); ++cher_row){
