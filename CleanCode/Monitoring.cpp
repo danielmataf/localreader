@@ -97,7 +97,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_Q2comp(new TH2F(("Q2comp_" + targetName).c_str(), "Q2comp", nubin, QminX, QmaxX,nubin, QminX, QmaxX)),
     h_chi2_el(new TH1F(("chi2_el_" + targetName).c_str(), "chi2_el", 100, -10, 10)),
     h_chi2_pi(new TH1F(("chi2_pi_" + targetName).c_str(), "chi2_pi", 100, -10, 10)),
-    h_sampl_el(new TH2F(("sampl_el_" + targetName).c_str(), "sampl_el", nubin, 0, 3, nubin, 0, 1)),
+    h_sampl_el(new TH2F(("sampl_el_" + targetName).c_str(), "sampl_el", nubin, 0, 10, nubin, 0, 1)),
       counterel_R(0) {
     // Add more histograms as needed
 }
@@ -126,6 +126,8 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
         h_lu->Fill(event.electron.Getlu());
         h_lv->Fill(event.electron.Getlv());
         h_lw->Fill(event.electron.Getlw());
+
+
 
         //h_eecalin->Fill(event.GetEcalin());
         if (event.electron.GetEcalin()>0.01){h_eecalin->Fill(event.electron.GetEcalin());}
@@ -161,9 +163,9 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
             h_px_el->Fill(event.electron.GetMomentum().X());
             h_py_el->Fill(event.electron.GetMomentum().Y());
             h_pz_el->Fill(event.electron.GetMomentum().Z());
-            h_ptot_el->Fill(sqrt(event.electron.GetMomentum().P()));
-            h_sampl_el->Fill(sqrt(event.electron.GetMomentum().P()), (event.electron.GetEpcal()/sqrt(event.electron.GetMomentum().P())) );
-            std::cout << " bump! " << event.electron.GetEpcal()/sqrt(event.electron.GetMomentum().P()) << " , " << sqrt(event.electron.GetMomentum().P()) << std::endl;
+            h_ptot_el->Fill(event.electron.GetMomentum().P());
+
+            h_sampl_el->Fill(event.electron.GetMomentum().P(), (event.electron.GetEpcal()/event.electron.GetMomentum().P()) );
             h_theta_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
             h_phi_el->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
             h_polcoord_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().Phi()*180/Constants::PI +180);
@@ -293,9 +295,30 @@ void Monitoring::FillHistogramsNoCutsMC(const Event& event) {
 
 
 }
-
+*/
 void Monitoring::FillHistogramsNoCuts(const Event& event) {
     // Fill histograms with no cuts
+    h_calXY->Fill(event.electron.GetCalX(), event.electron.GetCalY());
+    h_lu->Fill(event.electron.Getlu());
+    h_lv->Fill(event.electron.Getlv());
+    h_lw->Fill(event.electron.Getlw());
+    h_epcal->Fill(event.electron.GetEpcal());
+    //h_eecalin->Fill(event.GetEcalin());
+    //h_epcalout->Fill(event.GetEcalout());
+    //h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
+            //h_eecalin->Fill(event.GetEcalin());
+    if (event.electron.GetEcalin()>0.01){h_eecalin->Fill(event.electron.GetEcalin());}
+    //h_epcalout->Fill(event.GetEcalout());
+    if (event.electron.GetEcalout()>0.01){h_epcalout->Fill(event.electron.GetEcalout());}
+    if (event.electron.GetEcalout()>0.01 & event.electron.GetEcalout()>0.01){h_calEall->Fill(event.electron.GetEpcal(), event.electron.GetEcalin()+event.electron.GetEcalout());}
+    //h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
+    h_Nphe15->Fill(event.electron.Getnphe15());
+    h_Nphe16->Fill(event.electron.Getnphe16());
+    h_calSector->Fill(event.electron.GetCalSector());
+    h_helicity->Fill(event.GetHel());
+    h_helicity_raw->Fill(event.GetHelRaw());
+
+
     h_Q2->Fill(event.GetQ2());
     h_xb->Fill(event.Getxb());
     h_y->Fill(event.Gety());
@@ -303,38 +326,20 @@ void Monitoring::FillHistogramsNoCuts(const Event& event) {
     h_W2->Fill(event.GetW2());
     h_vertexZ->Fill(event.GetVz());
     h_xQ2->Fill(event.Getxb(), event.GetQ2());
-    h_calXY->Fill(event.GetCalX(), event.GetCalY());
-    h_lu->Fill(event.Getlu());
-    h_lv->Fill(event.Getlv());
-    h_lw->Fill(event.Getlw());
-    h_epcal->Fill(event.GetEpcal());
     h_thetaelectron->Fill(event.GetThetaElectron());
     h_rapport->Fill(event.GetAcosyada());
-    //h_eecalin->Fill(event.GetEcalin());
-    //h_epcalout->Fill(event.GetEcalout());
-    //h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
-            //h_eecalin->Fill(event.GetEcalin());
-    if (event.GetEcalin()>0.01){h_eecalin->Fill(event.GetEcalin());}
-    //h_epcalout->Fill(event.GetEcalout());
-    if (event.GetEcalout()>0.01){h_epcalout->Fill(event.GetEcalout());}
-    if (event.GetEcalout()>0.01 & event.GetEcalout()>0.01){h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());}
-    //h_calEall->Fill(event.GetEpcal(), event.GetEcalin()+event.GetEcalout());
-    h_Nphe15->Fill(event.Getnphe15());
-    h_Nphe16->Fill(event.Getnphe16());
-    h_calSector->Fill(event.GetCalSector());
-    h_helicity->Fill(event.GetHel());
-    h_helicity_raw->Fill(event.GetHelRaw());
-    Particle electron = event.GetElectron();
-    h_px_el->Fill(electron.GetMomentum().X());
-    h_py_el->Fill(electron.GetMomentum().Y());
-    h_pz_el->Fill(electron.GetMomentum().Z());
-    h_ptot_el->Fill(electron.GetMomentum().P());
-    h_theta_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI);
-    h_phi_el->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180);
-    h_polcoord_el->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().Phi()*180/Constants::PI +180);
-    h_E_el->Fill(electron.GetMomentum().E());
-    h_E_el_theta->Fill(electron.GetMomentum().Theta()*180/Constants::PI, electron.GetMomentum().E());
-    h_E_el_phi->Fill(electron.GetMomentum().Phi()*180/Constants::PI +180, electron.GetMomentum().E());
+
+    //Particle electron = event.GetElectron();
+    h_px_el->Fill(event.electron.GetMomentum().X());
+    h_py_el->Fill(event.electron.GetMomentum().Y());
+    h_pz_el->Fill(event.electron.GetMomentum().Z());
+    h_ptot_el->Fill(event.electron.GetMomentum().P());
+    h_theta_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+    h_phi_el->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+    h_polcoord_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+    h_E_el->Fill(event.electron.GetMomentum().E());
+    h_E_el_theta->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().E());
+    h_E_el_phi->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180, event.electron.GetMomentum().E());
 
     
     
@@ -373,7 +378,7 @@ void Monitoring::FillHistogramsNoCuts(const Event& event) {
     }
 }
 
-
+/*
 void Monitoring::Fill_R_Histograms(const Event& event, const std::string target) {
     if (target == "D" && cut1.PassCutsElectrons(event)==true) {
         R_nu_el->Fill(event.Getnu());
