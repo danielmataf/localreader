@@ -16,8 +16,8 @@
 void CompareHistograms(const char* target, const std::vector<std::string>& plotTitles, const std::vector<std::string>& xTitles) {
     //std::string file1 = std::string("/home/matamoros/sept") + target + "_test.root";
     //std::string file2 = std::string("/home/matamoros/sept") + target + "_sim.root";
-    std::string file1 = std::string("/home/matamoros/elev") + target + "_test.root";
-    std::string file2 = std::string("/home/matamoros/elev") + target + "_sim.root";
+    std::string file1 = std::string("/home/matamoros/zwolf") + target + "_test.root";
+    std::string file2 = std::string("/home/matamoros/zwolf") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {
@@ -235,7 +235,7 @@ void CompareHistograms(const char* target, const std::vector<std::string>& plotT
 }
 
 int main() {
-    const char* target = "C2"; // Change this to the desired target
+    const char* target = "LD2"; // Change this to the desired target
     CompareHistograms(target, {}, {});
     return 0;
 }

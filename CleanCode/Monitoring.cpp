@@ -58,6 +58,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_pid(new TH1F(("pid_" + targetName).c_str(), "pid", 100, -250, 250)),
     h_xQ2(new TH2F(("xQ2_" + targetName).c_str(), "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
     h_xQ2pos(new TH2F(("xQ2pos_" + targetName).c_str(), "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
+    h_pt2z(new TH2F(("pt2z_" + targetName).c_str(), "pt2z", nubin, pt2minX, pt2maxX, nubin, zminX, zmaxX)),
     h_px_el(new TH1F(("px_ele_" + targetName).c_str(), "px_ele", nubin, 0, 10)),
     h_py_el(new TH1F(("py_ele_" + targetName).c_str(), "py_ele", nubin, 0, 10)),
     h_pz_el(new TH1F(("pz_ele_" + targetName).c_str(), "pz_ele", nubin, 0, 10)),
@@ -171,6 +172,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
                         h_chi2_pi->Fill(hadron.Getchi2());
                         h_z->Fill(hadron.Getz());
                         h_pt2->Fill(hadron.Getpt2());
+                        h_pt2z->Fill(hadron.Getpt2(), hadron.Getz());
                         h_phih->Fill(hadron.Getphih());
                         h_px_pi->Fill(hadron.GetMomentum().X());
                         h_py_pi->Fill(hadron.GetMomentum().Y());
@@ -1150,6 +1152,7 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     h_z->Write();
     h_pt2->Write();
     h_phih->Write();
+    h_pt2z->Write();
 
     h_calXY->Write();
     h_lu->Write();

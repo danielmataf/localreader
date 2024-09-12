@@ -97,8 +97,8 @@ int main() {
     simCucuts.SetCutGen4Rat();
 
     int sumevts = 0;
-    Monunfold munfSimC1(simC1cuts, "C1_simf");
     Monunfold munfSimC2(simC2cuts, "C2_simf");
+    Monunfold munfSimLD2(simLD2cuts, "LD2_simf");
 
     Monitoring monSimC1(simC1cuts, "C1_sim");     //This needs to be figured out ASAP
     Monitoring monSimC2(simC2cuts, "C2_sim");     //This needs to be figured out ASAP
@@ -139,8 +139,7 @@ int main() {
                     Event eventsimCxC = simCxC.value();
                     eventsimCxC.SetTargetType(1);
                     eventsimCxC.calcAll();
-                    munfSimC1.FillHistCompwCuts(eventsimCxC, eventsimCxC_MC);
-                    munfSimC2.FillHistComp(eventsimCxC, eventsimCxC_MC);
+                    munfSimC2.FillHistCompwCuts(eventsimCxC, eventsimCxC_MC);
                     monSimC2.FillHistogramswCuts(eventsimCxC);
 
                 }
@@ -159,6 +158,7 @@ int main() {
                 Event eventsimLD2 = simLD2.value();
                 eventsimLD2.SetTargetType(0);
                 eventsimLD2.calcAll();
+                munfSimLD2.FillHistCompwCuts(eventsimLD2, eventsimLD2_MC);
                 monSimLD2.FillHistogramswCuts(eventsimLD2);
             }
         }
@@ -185,7 +185,8 @@ int main() {
     ratC2.writeMatrixToFile("RmatrixRGD");
     simratC2.multiplotR();
     //munfSimC1.DrawCompRECMC("augcompC1_sim");
-    //munfSimC2.DrawCompRECMC("augcompC2_sim");
+    munfSimC2.DrawCompRECMC("zwolfcompC2_sim");
+    munfSimLD2.DrawCompRECMC("zwolfcompLD2_sim");
     //munfSimC2.DrawMomentainSim("augmomentumC2_sim");
 
 
