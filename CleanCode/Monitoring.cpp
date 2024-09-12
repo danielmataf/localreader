@@ -120,7 +120,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
 //}
 
 void Monitoring::FillHistogramswCuts(const Event& event) {              /// good CUTS in hadron !!!!!!!
-    if (cut1.PassCutsDetectors(event)==true){
+    //if (cut1.PassCutsDetectors(event)==true){
         // Fill Detector histograms after cuts
         h_calXY->Fill(event.electron.GetCalX(), event.electron.GetCalY());
         h_lu->Fill(event.electron.Getlu());
@@ -140,9 +140,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
         h_calSector->Fill(event.electron.GetCalSector());
         h_helicity->Fill(event.GetHel());
         h_helicity_raw->Fill(event.GetHelRaw());
-
         if (cut1.PassCutsElectrons(event)==true) {
-
             // Fill Electron variable histograms after cuts on electron
             h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detected !!!!
                                                 //add Vz for the hadron too
@@ -152,12 +150,6 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
             h_y->Fill(event.Gety());    
             h_nu->Fill(event.Getnu());
             h_W2->Fill(event.GetW2());
-            //h_xQ2pos->Fill(event.Getxb(), event.GetQ2());
-            //Particle electron = event.GetElectron();
-            if (event.electron.Getchi2()>-1.5 && event.electron.Getchi2()<2.0){
-                h_epcal->Fill(event.electron.GetEpcal());
-
-            }
             h_chi2_el->Fill(event.electron.Getchi2());
 
             h_px_el->Fill(event.electron.GetMomentum().X());
@@ -175,6 +167,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
             for (const Particle& hadron : event.GetHadrons()) {
                 if (cut1.PassCutsHadrons(hadron)==true){
                     if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
+                        h_epcal->Fill(event.electron.GetEpcal());
                         h_chi2_pi->Fill(hadron.Getchi2());
                         h_z->Fill(hadron.Getz());
                         h_pt2->Fill(hadron.Getpt2());
@@ -198,7 +191,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
 
             }
         }
-    }
+    //}
 }
 /*
 void Monitoring::FillHistograms(const Event& event) {

@@ -13,7 +13,9 @@
 #include "Particle.h"
 
 
-
+//files.SnDir2Vector("/volatile/clas12/dmat/test/CC/", simufilesCxC);  //uncomment for sim 
+///volatile/clas12/osg/jsalvg/job_8156/output/  
+//files.Files2Vector("/volatile/clas12/osg/jsalvg/job_8156/output/", simufilesCxC);
  
 class Event {
 public:

@@ -14,8 +14,10 @@
 //./comphist
 
 void CompareHistograms(const char* target, const std::vector<std::string>& plotTitles, const std::vector<std::string>& xTitles) {
-    std::string file1 = std::string("/home/matamoros/aug") + target + "_data.root";
-    std::string file2 = std::string("/home/matamoros/aug") + target + "_sim.root";
+    //std::string file1 = std::string("/home/matamoros/sept") + target + "_test.root";
+    //std::string file2 = std::string("/home/matamoros/sept") + target + "_sim.root";
+    std::string file1 = std::string("/home/matamoros/elev") + target + "_test.root";
+    std::string file2 = std::string("/home/matamoros/elev") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {
@@ -225,7 +227,7 @@ void CompareHistograms(const char* target, const std::vector<std::string>& plotT
             }
         }
 
-        canvas->SaveAs(Form("Comparison_%s_vs_%s.png", pair.first.c_str(), pair.second.c_str()));
+        canvas->SaveAs(Form("septComparison_%s_vs_%s.png", pair.first.c_str(), pair.second.c_str()));
     }
 
     rootFile1->Close();

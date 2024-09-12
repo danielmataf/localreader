@@ -89,7 +89,7 @@
             currentEvent.electron.SetEcalin(ecalin);
             currentEvent.electron.SetEcalout(ecalout);
 
-            std::cout << "Added calo infoepcal: " << epcal << std::endl;
+            //std::cout << "Added calo infoepcal: " << epcal << std::endl;
 
 
         } else if (IsHadron(pid)) {
@@ -306,7 +306,7 @@ bool EventReader::isSimulatedData(hipo::event event) {
 
                     if (cal_layer == 1) {   //pcal
                         e_pcal = RECcalo.getFloat("energy", c_row);
-                        std :: cout << "source e_pcal: " << e_pcal << std::endl;
+                        //std :: cout << "source e_pcal: " << e_pcal << std::endl;
                         //we interested in saving this value for a given particle. 
                         lu_pcal = RECcalo.getFloat("lu", c_row);
                         lv_pcal = RECcalo.getFloat("lv", c_row);
@@ -334,7 +334,7 @@ bool EventReader::isSimulatedData(hipo::event event) {
             //std::cout << "e_in: " << e_ecalin << std::endl;
             //std::cout << "e_out: " << e_ecalout << std::endl;
                     AddCaloInfo(pid, sector_pcal, lu_pcal, lv_pcal, lw_pcal, e_pcal, e_ecalin, e_ecalout);
-                    std::cout<< "Adding to calo e_pcal: " << e_pcal << std::endl;
+                    //std::cout<< "Adding to calo e_pcal: " << e_pcal << std::endl;
                     AddCaloXYZ(pid, x_cal, y_cal, z_cal);
             }
             for (int cher_row = 0; cher_row < RECcher.getRows(); ++cher_row){

@@ -305,7 +305,9 @@ int Event::GetTargetType() const {
 }
 void Event::SetTargetType(int type) {
     target_type = type;
-    //0=D, 1=Sn, 2=Cu   
+    //0=LD2, 1=Sn, 2=Cu   
+    //apparently only two target types:
+    //0=LD2, 1=heavier nuclei
 }
 
 int Event::GetHel() const {

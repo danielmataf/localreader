@@ -84,14 +84,14 @@ void Particle::SetCalZ(double calz){
     caloz = calz;
 }
 void Particle::SetEpcal(double epcal){
-    std::cout << " "   << std::endl;
+    //std::cout << " "   << std::endl//;
 
-    std::cout << "preEpcal_ev: " << Epcal << std::endl;
-    std::cout << "preepcal_ev: " << epcal << std::endl;
+    //std::cout << "preEpcal_ev: " << Epcal << std::endl;
+    //std::cout << "preepcal_ev: " << epcal << std::endl;
 
     Epcal = epcal;
-    std::cout << "posEpcal_ev: " << Epcal << std::endl;
-    std::cout << "posepcal_ev: " << epcal << std::endl;
+//    std::cout << "posEpcal_ev: " << Epcal << std::endl;
+//    std::cout << "posepcal_ev: " << epcal << std::endl;
 }
 void Particle::SetEcalin(double ecalin){
     Ecalin = ecalin;

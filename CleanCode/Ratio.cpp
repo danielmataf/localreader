@@ -62,7 +62,6 @@ void Ratio::FillHistograms(const Event& event) {
     //add passcut el onlyu once ten cut on target. inverse to =false
     //then add  ALu o cut needed + pass cut hadrons 
 
-
                                                 //using a flag for targets 
     //forget condition on taarget, that should directly be a cut !!!! TBD 
     if (targetType == 0 && cutd.PassCutsElectrons(event)==true && cutd.PassCutsDetectors(event)==true) {
@@ -197,7 +196,12 @@ void Ratio::calcR(){
                 double interm2nu = (val_nuelD > 0) ? valD / val_nuelD : 0.0;
                 double ratvalue  = (interm2nu > 0) ?interm1nu/interm2nu : 0.0;
                 //std::cout << " valeurs = " << val_nuelA << ";  " << val_nuelD << ";  " << interm2nu << " ; "<< interm1nu<< std::endl;
-                
+                //std::cout << " ratvalue = " << ratvalue << "= interm1nu/interm2nu =  " << interm1nu << " /   " << interm2nu << std::endl;
+                //std::cout << " interm1nu = " << interm1nu << "= valA / val_nuelA =  " << valA  << " /   " << val_nuelA << std::endl;
+                //std::cout << " interm2nu = " << interm2nu << "= valD / val_nuelD =  " << valD  << " /   " << val_nuelD << std::endl;
+                //std::cout << " valA = " << std::endl;
+                //std::cout << "          " << std::endl;
+                //
                 double raterr = ratvalue * sqrt(1/valA + 1/valD + 1/val_nuelA + 1/val_nuelD);
                 ratMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
                 errorMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
