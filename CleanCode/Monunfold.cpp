@@ -42,6 +42,7 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_vertexZMC(new TH1F(("U_targetVz_MC" + targetName).c_str(), "vertex4targetMC", 100, -20, 10)),
     h_vertexYMC(new TH1F(("U_targetVy_MC" + targetName).c_str(), "vertex4targetMC", 100, -10, 10)),
     h_vertexXMC(new TH1F(("U_targetVx_MC" + targetName).c_str(), "vertex4targetMC", 100, -10, 10)),
+    h_pt2zMC(new TH2F(("U_pt2z_MC" + targetName).c_str(), "pt2zMC", nubin, pt2minX, pt2maxX, nubin, zminX, zmaxX)),
 
 
     h_Q2comp(new TH2F(("U_Q2comp_" + targetName).c_str(), "Q2comp", nubin, QminX, QmaxX, nubin, QminX, QmaxX)),
@@ -288,11 +289,11 @@ void Monunfold::FillHistogramswCutsMC(const Event& event) {
         h_vertexZMC->Fill(event.GetVz()); // Fill MC vertex Z histogram
 
         // Fill other histograms related to MC electron variables
-        h_Q2MC->Fill(event.GetQ2());
-        h_xbMC->Fill(event.Getxb());
-        h_yMC->Fill(event.Gety());
-        h_nuMC->Fill(event.Getnu());
-        h_W2MC->Fill(event.GetW2());
+        h_Q2MC->Fill(event.GetQ2MC());
+        h_xbMC->Fill(event.GetxbMC());
+        h_yMC->Fill(event.GetyMC());
+        h_nuMC->Fill(event.GetnuMC());
+        h_W2MC->Fill(event.GetW2MC());
 
         // Fill MC electron momentum histograms
         Particle electron = event.GetElectron();
@@ -308,12 +309,13 @@ void Monunfold::FillHistogramswCutsMC(const Event& event) {
         //h_E_el_phi->Fill(electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0, electron.GetMomentum().E());
 
         // Loop over MC hadrons and fill histograms for those passing hadron cuts
-        for (const Particle& hadron : event.GetHadrons()) {
+        for (const Particle& hadron : event.GetMCHadrons()) {
             if (cut1.PassCutsHadrons(hadron)) {
                 if (hadron.GetPID() == Constants::PION_PLUS_PID) {
-                    h_zMC->Fill(hadron.Getz());
-                    h_pt2MC->Fill(hadron.Getpt2());
-                    h_phihMC->Fill(hadron.Getphih());
+                    h_zMC->Fill(hadron.GetzMC());
+                    h_pt2MC->Fill(hadron.Getpt2MC());
+                    h_phihMC->Fill(hadron.GetphihMC());
+                    h_pt2zMC->Fill(hadron.Getpt2MC(), hadron.GetzMC());
                     //h_px_pi->Fill(hadron.GetMomentum().X()); // Assuming the same histogram as in real data
                     //h_py_pi->Fill(hadron.GetMomentum().Y());
                     //h_pz_pi->Fill(hadron.GetMomentum().Z());
@@ -347,6 +349,7 @@ void Monunfold::FillHistogramsNoCutsMC(const Event& event) {            //EVERYT
         h_zMC->Fill(MChadron.GetzMC());
         h_pt2MC->Fill(MChadron.Getpt2MC());
         h_phihMC->Fill(MChadron.GetphihMC());
+        h_pt2zMC->Fill(MChadron.Getpt2MC(), MChadron.GetzMC());
         }
     }
 }
@@ -444,6 +447,7 @@ void Monunfold::FillHistComp(const Event& eventsim, const Event& eventmc){
                 h_E_picomp->Fill(hadron.GetMomentum().E(), MChadron.GetMomentum().E());
                 h_zcomp->Fill(hadron.Getz(), MChadron.GetzMC());
                 h_pt2comp->Fill(hadron.Getpt2(), MChadron.Getpt2MC());
+
 
 
             }
@@ -898,7 +902,11 @@ TCanvas c3("c3", "c3", 800, 600);
     c3.cd(6);
     h_phihcomp->Draw("colz");
     c3.cd(7);
+    h_pt2zMC->Draw("colz");
+
     c3.Print((filename + ".pdf)").c_str());
+
+    
 
 
     //c2.Print((filename + ".pdf)").c_str());

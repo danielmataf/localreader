@@ -20,11 +20,18 @@ public:
     void FillHistograms(const Event& );
     void WriteHistos(const std::string );
     void calcSratio();
+
     void writeMatrixToFile(const std::string& );
-    void multiplotSratio();
-    void multiplotSratio( sratio& , sratio&);
+    
+    void multiplotSratio(); //for only one target
+    void multiplotSratio( sratio& , sratio&);   //for 3 targets (Sn, Cu, CxC)
+    void multiplotSratio( sratio& , sratio& , sratio&);   //for 4 targets (Sn, Cu, C1, C2)
 
+    void multiSratsimus(sratio&,sratio&,sratio&); //for 4 targets in simulation
+    void multiSratRGD(sratio&,sratio&,sratio&); //for 4 targets in RGD data (real)
 
+    void multiSratall(sratio&,sratio&,sratio&,sratio&,sratio&,sratio&,sratio&); //for 4 targets in sim and RGD (separation of C1 & C2)
+    void multiSratall2(sratio&,sratio&,sratio&,sratio&,sratio&); // three ragets in sim and RGD ( no separation of CxC)
 
 
 private:

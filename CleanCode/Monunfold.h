@@ -145,6 +145,7 @@ private:
     TH1F *h_pid;    //= new TH1F("pid", "pid", 100, -250, 250) ;
     TH2F *h_xQ2;    //= new TH2F("xQ2", "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
     TH2F *h_xQ2pos; //= new TH2F("xQ2pos", "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX) ;
+    TH2F *h_pt2zMC;  //= new TH2F("pt2z", "pt2z", nubin, pt2minX, pt2maxX, nubin, zminX, zmaxX) ;
 
     TH1F *h_px_el;
     TH1F *h_py_el;
