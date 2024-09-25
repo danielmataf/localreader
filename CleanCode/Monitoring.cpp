@@ -373,18 +373,32 @@ void Monitoring::FillHistogramsNoCuts(const Event& event) {
     }
 }
 
-/*
-void Monitoring::Fill_R_Histograms(const Event& event, const std::string target) {
-    if (target == "D" && cut1.PassCutsElectrons(event)==true) {
-        R_nu_el->Fill(event.Getnu());
+
+void Monitoring::Fill_sR_Histograms(const Event& event  ) {
+    //int monhel is an option if we want to have the helicity in histograms.
+    int targetType = event.GetTargetType();
+    int helicity = event.GetHel();  //only use this to monitor sinus
+
+    if ( cut1.PassCutsElectrons(event)==true) {
+        h_nu->Fill(event.Getnu(),helicity);
+
         for (const Particle& hadron : event.GetHadrons()) {
             if (cut1.PassCutsHadrons(hadron)==true){
-                R_nu_had->Fill(event.Getnu());
-                R_z->Fill(hadron.Getz());
-                R_pt2->Fill(hadron.Getpt2());
+                double phiD = hadron.Getphih();
+                h_Q2->Fill(event.GetQ2(),sin(phiD)*helicity);
+                h_xb->Fill(event.Getxb(),sin(phiD)*helicity);
+                h_z->Fill(hadron.Getz(), sin(phiD)*helicity);
+                //consider filling 3D histos for visuals
+                //h_wD_Sratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiD)*helicity) ;    //3 arguments and the WEIGHT
+                //h_wD_sqSratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiD)*sin(phiD)*helicity);    //3 arguments and the WEIGHT (pt2 squared) 4 variance
+                //h_D_Sratio3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight (cphi)
+
             }
         }
     }
+}
+
+
     //else if (target == "Sn" && cuta.PassCutsElectrons(event)==true) {
     //    R_nu_el->Fill(event.Getnu());
     //    for (const Particle& hadron : event.GetHadrons()) {
@@ -396,8 +410,33 @@ void Monitoring::Fill_R_Histograms(const Event& event, const std::string target)
     //        }
     //    }
     //}
-}
+
+/*       DELETE THIS EFTER previous function is done 
+void sratio::FillHistograms(const Event& event){
+        //Retrieving helicity to consider "loss" or "cost" when value is -1. gain when value = +1
+        //for 'loss' and 'gain' we'll add additionnal weight in count histograms. And adding a helicity factor to the histos already weighted. 
+            counter_elLD2 ++;
+            //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
+                }
+            }
+        }
+        else if (targetType == 1 && cuta.PassCutsElectrons(event)==true) {
+            counter_elSn++; //counter for only electrons for z and pt
+            //here change the else if to just else in order to have a generic target 
+            hSratio_nuA->Fill(event.Getnu());
+            for (const Particle& hadron : event.GetHadrons()) {
+                if (cuta.PassCutsHadrons(hadron)==true){
+                    double phiA = hadron.Getphih();
+                    h_wA_Sratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*helicity);    //3 arguments and the WEIGHT
+                    h_wA_sqSratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*sin(phiA)*helicity);    //3 arguments and the WEIGHT (pt2 squared)
+                    h_A_Sratio3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight
+
+                }
+            }
+        }
+    }
 */
+
 void Monitoring::WriteHistogramsToFile(const std::string filename) {
     //this function recreates a new rootfile everytime is called 
     //useful to have different rootfiles if different cuts were implemented

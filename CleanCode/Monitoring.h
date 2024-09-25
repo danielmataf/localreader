@@ -18,7 +18,8 @@ public:
 
     void WriteHistogramsToFile(const std::string ); 
     void FillHistograms(const Event& );
-    void Fill_R_Histograms(const Event& event, const std::string target) ;
+    void Fill_sR_Histograms(const Event& event) ;
+    void Fill_R_Histograms(const Event& event) ;
     void FillHistogramsNoCuts( const Event&);
     void FillHistogramswCuts(const Event& );
     void FillHistogramsNoCutsMC(const Event& ); 
