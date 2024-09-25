@@ -1179,6 +1179,21 @@ void Monitoring::DrawCompRECMC(const std::string filename){
 
 }
 
+void Monitoring::DrawMonSratio(const std::string filename){
+    TCanvas MonS("MonS", "MonS");
+    MonS.Divide(2, 2);
+    MonS.cd(1);
+    h_nu->Draw("hist");
+    MonS.cd(2);
+    h_Q2->Draw("hist");
+    MonS.cd(3);
+    h_xb->Draw("hist");
+    MonS.cd(4);
+    h_z->Draw("hist");
+    MonS.Print((filename + ".pdf").c_str());
+
+}
+
 
 void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     TFile* rootFile = new TFile((filenameREC + ".root").c_str(), "RECREATE");

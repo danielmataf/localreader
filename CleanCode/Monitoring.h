@@ -44,6 +44,7 @@ public:
     void DrawVertexHistograms(const std::string);
     void DrawHelicityHistograms(const std::string);
     void DrawCompRECMC(const std::string);
+    void DrawMonSratio(const std::string);
 
     void SaveHistRoot(const std::string& ) ;
 
