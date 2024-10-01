@@ -16,8 +16,8 @@
 void CompareHistograms(const char* target, const std::vector<std::string>& plotTitles, const std::vector<std::string>& xTitles) {
     //std::string file1 = std::string("/home/matamoros/sept") + target + "_test.root";
     //std::string file2 = std::string("/home/matamoros/sept") + target + "_sim.root";
-    std::string file1 = std::string("/home/matamoros/zwolf") + target + "_test.root";
-    std::string file2 = std::string("/home/matamoros/zwolf") + target + "_sim.root";
+    std::string file1 = std::string("/home/matamoros/oct") + target + "_test.root";
+    std::string file2 = std::string("/home/matamoros/oct") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {
@@ -31,35 +31,35 @@ void CompareHistograms(const char* target, const std::vector<std::string>& plotT
     }
 
     const std::vector<std::pair<std::string, std::string>> histogramPairs = {
-        {"Q2_" + std::string(target) + "_true", "Q2_" + std::string(target) + "_sim"},
-        {"W2_" + std::string(target) + "_true", "W2_" + std::string(target) + "_sim"},
-        {"nu_" + std::string(target) + "_true", "nu_" + std::string(target) + "_sim"},
-        {"phih_" + std::string(target) + "_true", "phih_" + std::string(target) + "_sim"},
-        {"xb_" + std::string(target) + "_true", "xb_" + std::string(target) + "_sim"},
-        {"y_" + std::string(target) + "_true", "y_" + std::string(target) + "_sim"},
-        {"z_" + std::string(target) + "_true", "z_" + std::string(target) + "_sim"},
-        {"targetVz_" + std::string(target) + "_true", "targetVz_" + std::string(target) + "_sim"},
-        {"pt2_" + std::string(target) + "_true", "pt2_" + std::string(target) + "_sim"},
-        {"ptot_ele_" + std::string(target) + "_true", "ptot_ele_" + std::string(target) + "_sim"},
-        {"px_ele_" + std::string(target) + "_true", "px_ele_" + std::string(target) + "_sim"},
-        {"py_ele_" + std::string(target) + "_true", "py_ele_" + std::string(target) + "_sim"},
-        {"pz_ele_" + std::string(target) + "_true", "pz_ele_" + std::string(target) + "_sim"},
-        {"E_el" + std::string(target) + "_true", "E_el" + std::string(target) + "_sim"},
-        {"E_pi" + std::string(target) + "_true", "E_pi" + std::string(target) + "_sim"},
-        {"theta_el" + std::string(target) + "_true", "theta_el" + std::string(target) + "_sim"},
-        {"phi_el" + std::string(target) + "_true", "phi_el" + std::string(target) + "_sim"},
-        {"ptot_pro_" + std::string(target) + "_true", "ptot_pro_" + std::string(target) + "_sim"},
-        {"px_pro_" + std::string(target) + "_true", "px_pro_" + std::string(target) + "_sim"},
-        {"py_pro_" + std::string(target) + "_true", "py_pro_" + std::string(target) + "_sim"},
-        {"pz_pro_" + std::string(target) + "_true", "pz_pro_" + std::string(target) + "_sim"},
-        {"theta_pi" + std::string(target) + "_true", "theta_pi" + std::string(target) + "_sim"},
-        {"phi_pi" + std::string(target) + "_true", "phi_pi" + std::string(target) + "_sim"},
-        {"lu_el"+ std::string(target) + "_true", "lu_el" + std::string(target) + "_sim"},
-        {"lv_el"+ std::string(target) + "_true", "lv_el" + std::string(target) + "_sim"},
-        {"lw_el"+ std::string(target) + "_true", "lw_el" + std::string(target) + "_sim"},
-        {"epcal_el"+ std::string(target) + "_true", "epcal_el" + std::string(target) + "_sim"},
-        {"Nphe15_"+ std::string(target) + "_true", "Nphe15_" + std::string(target) + "_sim"},
-        {"Nphe16_"+ std::string(target) + "_true", "Nphe16_" + std::string(target) + "_sim"}
+        {"Q2_" + std::string(target) + "_RGD", "Q2_" + std::string(target) + "_sim"},
+        {"W2_" + std::string(target) + "_RGD", "W2_" + std::string(target) + "_sim"},
+        {"nu_" + std::string(target) + "_RGD", "nu_" + std::string(target) + "_sim"},
+        {"phih_" + std::string(target) + "_RGD", "phih_" + std::string(target) + "_sim"},
+        {"xb_" + std::string(target) + "_RGD", "xb_" + std::string(target) + "_sim"},
+        {"y_" + std::string(target) + "_RGD", "y_" + std::string(target) + "_sim"},
+        {"z_" + std::string(target) + "_RGD", "z_" + std::string(target) + "_sim"},
+        {"targetVz_" + std::string(target) + "_RGD", "targetVz_" + std::string(target) + "_sim"},
+        {"pt2_" + std::string(target) + "_RGD", "pt2_" + std::string(target) + "_sim"},
+        {"ptot_ele_" + std::string(target) + "_RGD", "ptot_ele_" + std::string(target) + "_sim"},
+        {"px_ele_" + std::string(target) + "_RGD", "px_ele_" + std::string(target) + "_sim"},
+        {"py_ele_" + std::string(target) + "_RGD", "py_ele_" + std::string(target) + "_sim"},
+        {"pz_ele_" + std::string(target) + "_RGD", "pz_ele_" + std::string(target) + "_sim"},
+        {"E_el" + std::string(target) + "_RGD", "E_el" + std::string(target) + "_sim"},
+        {"E_pi" + std::string(target) + "_RGD", "E_pi" + std::string(target) + "_sim"},
+        {"theta_el" + std::string(target) + "_RGD", "theta_el" + std::string(target) + "_sim"},
+        {"phi_el" + std::string(target) + "_RGD", "phi_el" + std::string(target) + "_sim"},
+        {"ptot_pro_" + std::string(target) + "_RGD", "ptot_pro_" + std::string(target) + "_sim"},
+        {"px_pro_" + std::string(target) + "_RGD", "px_pro_" + std::string(target) + "_sim"},
+        {"py_pro_" + std::string(target) + "_RGD", "py_pro_" + std::string(target) + "_sim"},
+        {"pz_pro_" + std::string(target) + "_RGD", "pz_pro_" + std::string(target) + "_sim"},
+        {"theta_pi" + std::string(target) + "_RGD", "theta_pi" + std::string(target) + "_sim"},
+        {"phi_pi" + std::string(target) + "_RGD", "phi_pi" + std::string(target) + "_sim"},
+        {"lu_el"+ std::string(target) + "_RGD", "lu_el" + std::string(target) + "_sim"},
+        {"lv_el"+ std::string(target) + "_RGD", "lv_el" + std::string(target) + "_sim"},
+        {"lw_el"+ std::string(target) + "_RGD", "lw_el" + std::string(target) + "_sim"},
+        {"epcal_el"+ std::string(target) + "_RGD", "epcal_el" + std::string(target) + "_sim"},
+        {"Nphe15_"+ std::string(target) + "_RGD", "Nphe15_" + std::string(target) + "_sim"},
+        {"Nphe16_"+ std::string(target) + "_RGD", "Nphe16_" + std::string(target) + "_sim"}
     };
 
     std::map<std::string, int> targetMap = {
@@ -93,67 +93,67 @@ void CompareHistograms(const char* target, const std::vector<std::string>& plotT
     }
 
     const std::map<std::string, std::vector<double>> xStartValues = {
-        {"Q2_" + std::string(target) + "_true", {1.5, 100.0}},
-        {"W2_" + std::string(target) + "_true", {0.0, 100.0}},
-        {"nu_" + std::string(target) + "_true", {100.0, 100.0}}, // No lines for "nu"
-        {"phih_" + std::string(target) + "_true", {100.0, 100.0}}, // No lines for "phih"
-        {"xb_" + std::string(target) + "_true", {100.0, 100.0}}, // No lines for "xb"
-        {"y_" + std::string(target) + "_true", {100.0, 100.0}}, // No lines for "y2"
-        {"z_" + std::string(target) + "_true", {0.3, 0.7}},
-        {"targetVz_" + std::string(target) + "_true", {lowvz, highvz}},
-        {"pt2_" + std::string(target) + "_true", {-10.0, 1.5}},
-        {"ptot_ele_" + std::string(target) + "_true", {100.0, 100.0}},  // exaggerating values because no lines here
-        {"px_ele_" + std::string(target) + "_true", {100.0, 100.0}}, 
-        {"py_ele_" + std::string(target) + "_true", {100.0, 100.0}}, 
-        {"pz_ele_" + std::string(target) + "_true", {100.0, 100.0}},
-        {"E_el" + std::string(target) + "_true", {100.0, 100.0}},
-        {"E_pi" + std::string(target) + "_true", {100.0, 100.0}},
-        {"theta_el" + std::string(target) + "_true", {100.0, 100.0}}, 
-        {"phi_el" + std::string(target) + "_true", {100.0, 100.0}}, 
-        {"ptot_pro_" + std::string(target) + "_true", {100.0, 100.0}}, 
-        {"px_pro_" + std::string(target) + "_true", {100.0, 100.0}}, 
-        {"py_pro_" + std::string(target) + "_true", {100.0, 100.0}}, 
-        {"pz_pro_" + std::string(target) + "_true", {100.0, 100.0}},
-        {"theta_pi" + std::string(target) + "_true", {100.0, 100.0}}, 
-        {"phi_pi" + std::string(target) + "_true", {100.0, 100.0}}, 
-        {"lu_el"+ std::string(target) + "_true", {100.0, 100.0}}, 
-        {"lv_el"+ std::string(target) + "_true", {100.0, 100.0}}, 
-        {"lw_el"+ std::string(target) + "_true", {100.0, 100.0}},
-        {"epcal_el"+ std::string(target) + "_true", {100.0, 100.0}}, 
-        {"Nphe15_"+ std::string(target) + "_true", {100.0, 100.0}}, 
-        {"Nphe16_"+ std::string(target) + "_true", {100.0, 100.0}} 
+        {"Q2_" + std::string(target) + "_RGD", {1.5, 100.0}},
+        {"W2_" + std::string(target) + "_RGD", {0.0, 100.0}},
+        {"nu_" + std::string(target) + "_RGD", {100.0, 100.0}}, // No lines for "nu"
+        {"phih_" + std::string(target) + "_RGD", {100.0, 100.0}}, // No lines for "phih"
+        {"xb_" + std::string(target) + "_RGD", {100.0, 100.0}}, // No lines for "xb"
+        {"y_" + std::string(target) + "_RGD", {100.0, 100.0}}, // No lines for "y2"
+        {"z_" + std::string(target) + "_RGD", {0.3, 0.7}},
+        {"targetVz_" + std::string(target) + "_RGD", {lowvz, highvz}},
+        {"pt2_" + std::string(target) + "_RGD", {-10.0, 1.5}},
+        {"ptot_ele_" + std::string(target) + "_RGD", {100.0, 100.0}},  // exaggerating values because no lines here
+        {"px_ele_" + std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"py_ele_" + std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"pz_ele_" + std::string(target) + "_RGD", {100.0, 100.0}},
+        {"E_el" + std::string(target) + "_RGD", {100.0, 100.0}},
+        {"E_pi" + std::string(target) + "_RGD", {100.0, 100.0}},
+        {"theta_el" + std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"phi_el" + std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"ptot_pro_" + std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"px_pro_" + std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"py_pro_" + std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"pz_pro_" + std::string(target) + "_RGD", {100.0, 100.0}},
+        {"theta_pi" + std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"phi_pi" + std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"lu_el"+ std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"lv_el"+ std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"lw_el"+ std::string(target) + "_RGD", {100.0, 100.0}},
+        {"epcal_el"+ std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"Nphe15_"+ std::string(target) + "_RGD", {100.0, 100.0}}, 
+        {"Nphe16_"+ std::string(target) + "_RGD", {100.0, 100.0}} 
     };
 
     //map defining x-axis titles and plot titles & association to histos  
     std::map<std::string, std::pair<std::string, std::string>> titleMap = {
-        {"pt2_" + std::string(target) + "_true", {"Comparison of p_{t}^{2}", "p_{t}^{2} (GeV^{2})"}},
-        {"Q2_" + std::string(target) + "_true", {"Comparison of Q^{2}", "Q^{2} (GeV^{2})"}},
-        {"W2_" + std::string(target) + "_true", {"Comparison of W^{2}", "W^{2} (GeV^{2})"}},
-        {"xb_" + std::string(target) + "_true", {"Comparison of x_{B}", "x_{B}"}},
-        {"y_" + std::string(target) + "_true", {"Comparison of y", "y"}},
-        {"z_" + std::string(target) + "_true", {"Comparison of z", "z"}},
-        {"targetVz_" + std::string(target) + "_true", {"Comparison of V_{z}", "V_{z} (cm)"}},
-        {"phih_" + std::string(target) + "_true", {"Comparison of \\phi_{h}", "\\phi_{h} (deg)"}},
-        {"ptot_ele_" + std::string(target) + "_true", {"Comparison of p_{tot, e}", "p_{tot, e} (GeV)"}},
-        {"px_ele_" + std::string(target) + "_true", {"Comparison of p_{x, e}", "p_{x, e} (GeV)"}},
-        {"py_ele_" + std::string(target) + "_true", {"Comparison of p_{y, e}", "p_{y, e} (GeV)"}},
-        {"pz_ele_" + std::string(target) + "_true", {"Comparison of p_{z, e}", "p_{z, e} (GeV)"}},
-        {"E_el" + std::string(target) + "_true", {"Comparison of E_{e}", "E_{e} (GeV)"}},
-        {"E_pi" + std::string(target) + "_true", {"Comparison of E_{\\pi}", "E_{\\pi} (GeV)"}},
-        {"theta_el" + std::string(target) + "_true", {"Comparison of \\theta_{e}", "\\theta_{e} (deg)"}},
-        {"phi_el" + std::string(target) + "_true", {"Comparison of \\phi_{e}", "\\phi_{e} (deg)"}},
-        {"ptot_pro_" + std::string(target) + "_true", {"Comparison of p_{tot, \\pi}", "p_{tot, \\pi} (GeV)"}},
-        {"px_pro_" + std::string(target) + "_true", {"Comparison of p_{x, \\pi}", "p_{x, \\pi} (GeV)"}},
-        {"py_pro_" + std::string(target) + "_true", {"Comparison of p_{y, \\pi}", "p_{y, \\pi} (GeV)"}},
-        {"pz_pro_" + std::string(target) + "_true", {"Comparison of p_{z, \\pi}", "p_{z, \\pi} (GeV)"}},
-        {"theta_pi" + std::string(target) + "_true", {"Comparison of \\theta_{\\pi}", "\\theta_{\\pi} (deg)"}},
-        {"phi_pi" + std::string(target) + "_true", {"Comparison of \\phi_{\\pi}", "\\phi_{\\pi} (deg)"}},
-        {"lu_el"+ std::string(target) + "_true", {"Comparison of l_{u}", "l_{u} (cm)"}},
-        {"lv_el"+ std::string(target) + "_true", {"Comparison of l_{v}", "l_{v} (cm)"}},
-        {"lw_el"+ std::string(target) + "_true", {"Comparison of l_{w}", "l_{w} (cm)"}},
-        {"epcal_el"+ std::string(target) + "_true", {"Comparison of E_{pcal e}", "E_{pcal e} (GeV)"}},
-        {"Nphe15_"+ std::string(target) + "_true", {"Comparison of Nphe15", "Nphe15"}},
-        {"Nphe16_"+ std::string(target) + "_true", {"Comparison of Nphe16", "Nphe16"}}
+        {"pt2_" + std::string(target) + "_RGD", {"Comparison of p_{t}^{2}", "p_{t}^{2} (GeV^{2})"}},
+        {"Q2_" + std::string(target) + "_RGD", {"Comparison of Q^{2}", "Q^{2} (GeV^{2})"}},
+        {"W2_" + std::string(target) + "_RGD", {"Comparison of W^{2}", "W^{2} (GeV^{2})"}},
+        {"xb_" + std::string(target) + "_RGD", {"Comparison of x_{B}", "x_{B}"}},
+        {"y_" + std::string(target) + "_RGD", {"Comparison of y", "y"}},
+        {"z_" + std::string(target) + "_RGD", {"Comparison of z", "z"}},
+        {"targetVz_" + std::string(target) + "_RGD", {"Comparison of V_{z}", "V_{z} (cm)"}},
+        {"phih_" + std::string(target) + "_RGD", {"Comparison of \\phi_{h}", "\\phi_{h} (deg)"}},
+        {"ptot_ele_" + std::string(target) + "_RGD", {"Comparison of p_{tot, e}", "p_{tot, e} (GeV)"}},
+        {"px_ele_" + std::string(target) + "_RGD", {"Comparison of p_{x, e}", "p_{x, e} (GeV)"}},
+        {"py_ele_" + std::string(target) + "_RGD", {"Comparison of p_{y, e}", "p_{y, e} (GeV)"}},
+        {"pz_ele_" + std::string(target) + "_RGD", {"Comparison of p_{z, e}", "p_{z, e} (GeV)"}},
+        {"E_el" + std::string(target) + "_RGD", {"Comparison of E_{e}", "E_{e} (GeV)"}},
+        {"E_pi" + std::string(target) + "_RGD", {"Comparison of E_{\\pi}", "E_{\\pi} (GeV)"}},
+        {"theta_el" + std::string(target) + "_RGD", {"Comparison of \\theta_{e}", "\\theta_{e} (deg)"}},
+        {"phi_el" + std::string(target) + "_RGD", {"Comparison of \\phi_{e}", "\\phi_{e} (deg)"}},
+        {"ptot_pro_" + std::string(target) + "_RGD", {"Comparison of p_{tot, \\pi}", "p_{tot, \\pi} (GeV)"}},
+        {"px_pro_" + std::string(target) + "_RGD", {"Comparison of p_{x, \\pi}", "p_{x, \\pi} (GeV)"}},
+        {"py_pro_" + std::string(target) + "_RGD", {"Comparison of p_{y, \\pi}", "p_{y, \\pi} (GeV)"}},
+        {"pz_pro_" + std::string(target) + "_RGD", {"Comparison of p_{z, \\pi}", "p_{z, \\pi} (GeV)"}},
+        {"theta_pi" + std::string(target) + "_RGD", {"Comparison of \\theta_{\\pi}", "\\theta_{\\pi} (deg)"}},
+        {"phi_pi" + std::string(target) + "_RGD", {"Comparison of \\phi_{\\pi}", "\\phi_{\\pi} (deg)"}},
+        {"lu_el"+ std::string(target) + "_RGD", {"Comparison of l_{u}", "l_{u} (cm)"}},
+        {"lv_el"+ std::string(target) + "_RGD", {"Comparison of l_{v}", "l_{v} (cm)"}},
+        {"lw_el"+ std::string(target) + "_RGD", {"Comparison of l_{w}", "l_{w} (cm)"}},
+        {"epcal_el"+ std::string(target) + "_RGD", {"Comparison of E_{pcal e}", "E_{pcal e} (GeV)"}},
+        {"Nphe15_"+ std::string(target) + "_RGD", {"Comparison of Nphe15", "Nphe15"}},
+        {"Nphe16_"+ std::string(target) + "_RGD", {"Comparison of Nphe16", "Nphe16"}}
 
     };
 
@@ -235,7 +235,7 @@ void CompareHistograms(const char* target, const std::vector<std::string>& plotT
 }
 
 int main() {
-    const char* target = "LD2"; // Change this to the desired target
+    const char* target = "Cu"; // Change this to the desired target
     CompareHistograms(target, {}, {});
     return 0;
 }

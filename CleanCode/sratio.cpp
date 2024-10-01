@@ -63,19 +63,25 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
         if (targetType == 0 && cutd.PassCutsElectrons(event)==true) {
             counter_elLD2 ++;
             //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
-            hSratio_nuD->Fill(event.Getnu(), helicity); //only counts. Weighting with helicity 
+            hSratio_nuD->Fill(event.electron.Getnu(), helicity); //only counts. Weighting with helicity 
             //should be X ????
+
+
+
             for (const Particle& hadron : event.GetHadrons()) {
                 if (cutd.PassCutsHadrons(hadron)==true){
-                    double phiD = hadron.Getphih();
-                    h_wD_Sratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiD)*helicity) ;    //3 arguments and the WEIGHT
-                    h_wD_sqSratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiD)*sin(phiD)*helicity);    //3 arguments and the WEIGHT (pt2 squared) 4 variance
-                    h_D_Sratio3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight (cphi)
-                    h_xphiD->Fill(event.Getxb() , phiD);
-                    h_QphiD->Fill(event.GetQ2() , phiD);
-                    h_zphiD->Fill(hadron.Getz() , phiD);        
-                    h_xQD->Fill(event.Getxb(), event.GetQ2()); 
-                    h_phiMonD->Fill(phiD);
+                    if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
+
+                        double phiD = hadron.Getphih();
+                        h_wD_Sratio->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz(), sin(phiD)*helicity) ;    //3 arguments and the WEIGHT
+                        h_wD_sqSratio->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz(), sin(phiD)*sin(phiD)*helicity);    //3 arguments and the WEIGHT (pt2 squared) 4 variance
+                        h_D_Sratio3D->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight (cphi)
+                        h_xphiD->Fill(event.electron.Getxb() , phiD);
+                        h_QphiD->Fill(event.electron.GetQ2() , phiD);
+                        h_zphiD->Fill(hadron.Getz() , phiD);        
+                        h_xQD->Fill(event.electron.Getxb(), event.electron.GetQ2()); 
+                        h_phiMonD->Fill(phiD);
+                    }
                 }
             }
         }
@@ -85,15 +91,18 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
             hSratio_nuA->Fill(event.Getnu());
             for (const Particle& hadron : event.GetHadrons()) {
                 if (cuta.PassCutsHadrons(hadron)==true){
-                    double phiA = hadron.Getphih();
-                    h_wA_Sratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*helicity);    //3 arguments and the WEIGHT
-                    h_wA_sqSratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*sin(phiA)*helicity);    //3 arguments and the WEIGHT (pt2 squared)
-                    h_A_Sratio3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight
-                    h_xphiA->Fill(event.Getxb() , phiA);
-                    h_QphiA->Fill(event.GetQ2() , phiA);
-                    h_zphiA->Fill(hadron.Getz() , phiA);
-                    h_xQA->Fill(event.Getxb(), event.GetQ2());
-                    h_phiMonA->Fill(phiA);
+                    if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
+
+                        double phiA = hadron.Getphih();
+                        h_wA_Sratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*helicity);    //3 arguments and the WEIGHT
+                        h_wA_sqSratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*sin(phiA)*helicity);    //3 arguments and the WEIGHT (pt2 squared)
+                        h_A_Sratio3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight
+                        h_xphiA->Fill(event.Getxb() , phiA);
+                        h_QphiA->Fill(event.GetQ2() , phiA);
+                        h_zphiA->Fill(hadron.Getz() , phiA);
+                        h_xQA->Fill(event.Getxb(), event.GetQ2());
+                        h_phiMonA->Fill(phiA);
+                    }
                 }
             }
         }
