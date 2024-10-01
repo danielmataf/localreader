@@ -22,6 +22,8 @@ public:
     void calcSratio();
 
     void writeMatrixToFile(const std::string& );
+
+    void DrawMonSinrat(const std::string&);
     
     void multiplotSratio(); //for only one target
     void multiplotSratio( sratio& , sratio&);   //for 3 targets (Sn, Cu, CxC)
@@ -80,8 +82,8 @@ private:
 
     double numinCratio = 4;
     double numaxCratio = 9;
-    double xminCratio = 0;
-    double xmaxCratio = 0.4;
+    double xminCratio = 0.1;
+    double xmaxCratio = 0.6;
     double QminCratio = Constants::RcutminQ;       //correct these  4 Dpt. To be changed in constants  TBD   
     double QmaxCratio = Constants::RcutmaxQ;       //correct these  4 Dpt. To be changed in constants.h
     double zminCratio = Constants::RcutminZ;       //correct these  4 Dpt. To be changed in constants.h
@@ -118,6 +120,19 @@ private:
     //histograms (3D, x,Q,z) for weighted  in squared cos  useful for VARIANCE
     TH3 *h_wD_sqSratio ; //= new TH3F("wD_sqCratio", "wD_sqCratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );//definition w/ 3 args
     TH3 *h_wA_sqSratio ; //= new TH3F("wA_sqCratio", "wA_sqCratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );
+
+
+    //2D histograms for phi monitoring (useful?)
+    TH2 *h_xphiD; //= new TH2F("xphiD", "xphiD", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2 *h_xphiA; //= new TH2F("xphiA", "xphiA", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2 *h_QphiD; //= new TH2F("QphiD", "QphiD", Cratiobin_Q, QminCratio, QmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2 *h_QphiA; //= new TH2F("QphiA", "QphiA", Cratiobin_Q, QminCratio, QmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2 *h_zphiD; //= new TH2F("zphiD", "zphiD", Cratiobin_z, zminCratio, zmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2 *h_zphiA; //= new TH2F("zphiA", "zphiA", Cratiobin_z, zminCratio, zmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2 *h_xQA; //= new TH2F("xQA", "xQA", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_Q, QminCratio, QmaxCratio);
+    TH2 *h_xQD; //= new TH2F("xzA", "xzA", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_z, zminCratio, zmaxCratio);
+    TH1 *h_phiMonA;
+    TH1 *h_phiMonD;
 
 
 

@@ -46,13 +46,13 @@ int main() {
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCuSn/dst/recon/018624/", filenamesCuSn);
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCxC/dst/recon/018451/", filenamesCxC);
     ////uncommment also below for sim  on ifarm
-    //files.SnDir2Vector("/volatile/clas12/dmat/gen/LD2/", simufilesLD2);  //uncomment for sim
-    //files.SnDir2Vector("/volatile/clas12/dmat/gen/CC/", simufilesCxC);  //uncomment for sim 
-    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Cu/", simufilesCu);  //uncomment for sim 
-    //files.SnDir2Vector("/volatile/clas12/dmat/gen/Sn/", simufilesSn);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/LD2/", simufilesLD2);  //uncomment for sim
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/CC/", simufilesCxC);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/Cu/", simufilesCu);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/Sn/", simufilesSn);  //uncomment for sim 
 
 
-    std::cout<< "Hello world \n";
+    std::cout<< "Analysis in progress... \n";
     EventReader Sim_CxC(simufilesCxC);
     EventReader RGD_CxC(filenamesCxC);
     EventReader Sim_LD2(simufilesLD2);
@@ -85,32 +85,35 @@ int main() {
     CutSet simLD2cuts;
     CutSet testLD2cuts;
     CutSet simCucuts;
+    CutSet testCucuts;
     CutSet simSncuts;
     CutSet testSncuts;
-    CutSet testCucuts;
 
 
-    simC1cuts.SetCutVz(Constants::RcutminVzC1,Constants::RcutminVzC2);     //vz cut for C1 target
+
+    //Defining cuts here. Vz cuts for SIM and RGD may differ -> check Mon Vz
+    simC1cuts.SetCutVz(Constants::RcutminVzC1,Constants::RcutminVzC1);     //vz cut for C1 target
+    simC1cuts.SetCutGen4Rat();
+
     simC2cuts.SetCutVz(Constants::RcutminVzC2, Constants::RcutmaxVzC2);     //vz cut for C2 target
+    simC2cuts.SetCutGen4Rat();
     testC2cuts.SetCutVz(Constants::RcutminVzC2, Constants::RcutmaxVzC2);    //vz cut for C2 target
-    simLD2cuts.SetCutGen4Rat();
+    testC2cuts.SetCutGen4Rat();
 
     simLD2cuts.SetCutVz(Constants::RcutminVzLD2,Constants::RcutmaxVzLD2);     //vz cut for LD2 target
-    testLD2cuts.SetCutGen4Rat();
+    simLD2cuts.SetCutGen4Rat();
     testLD2cuts.SetCutVz(Constants::RcutminVzLD2,Constants::RcutmaxVzLD2);     //vz cut for LD2 target
+    testLD2cuts.SetCutGen4Rat();
 
     simCucuts.SetCutVz(Constants::RcutminVzCu,Constants::RcutmaxVzCu);     //vz cut for Cu target
-    simC1cuts.SetCutGen4Rat();
-    simC2cuts.SetCutGen4Rat();
-    testC2cuts.SetCutGen4Rat();
+    simCucuts.SetCutGen4Rat();
+    testCucuts.SetCutVz(Constants::RcutminVzCu,Constants::RcutmaxVzCu);     //vz cut for Cu target
+    testCucuts.SetCutGen4Rat();
     
     simSncuts.SetCutVz(Constants::RcutminVzSn,Constants::RcutmaxVzSn);     //vz cut for Sn targeta
     simSncuts.SetCutGen4Rat();
-    simCucuts.SetCutGen4Rat();
-    testSncuts.SetCutGen4Rat();
-    testCucuts.SetCutGen4Rat();
-    testCucuts.SetCutVz(Constants::RcutminVzCu,Constants::RcutmaxVzCu);     //vz cut for Cu target
     testSncuts.SetCutVz(Constants::RcutminVzSn,Constants::RcutmaxVzSn);     //vz cut for Sn target
+    testSncuts.SetCutGen4Rat();
 
     int sumevts = 0;
     Monunfold munfSimC2(simC2cuts, "C2_simf");
@@ -121,18 +124,28 @@ int main() {
 
     Monitoring monSimC1(simC1cuts, "C1_sim");     //This needs to be figured out ASAP
     Monitoring monSimC2(simC2cuts, "C2_sim");     //This needs to be figured out ASAP
-    Monitoring monTestC2(testC2cuts, "C2_true");  //This needs to be figured out ASAP
+    Monitoring monTestC2(testC2cuts, "C2_RGD");  //This needs to be figured out ASAP
     Monitoring monSimLD2(simLD2cuts, "LD2_sim");  
-    Monitoring monTestLD2(testLD2cuts, "LD2_true");
+    Monitoring monTestLD2(testLD2cuts, "LD2_RGD");
     Monitoring monSimCu(simCucuts, "Cu_sim");
-    Monitoring monTestCu(testCucuts, "Cu_true");
+    Monitoring monTestCu(testCucuts, "Cu_RGD");
     Monitoring monSimSn(simSncuts, "Sn_sim");
-    Monitoring monTestSn(testSncuts, "Sn_true");
+    Monitoring monTestSn(testSncuts, "Sn_RGD");
 
+
+    Ratio ratC2(testLD2cuts, testC2cuts, "C2_RGD");
+    Ratio ratSn(testLD2cuts, testSncuts, "Sn_RGD");
+    Ratio ratCu(testLD2cuts, testCucuts, "Cu_RGD");
     Ratio simratC2(simLD2cuts, simC2cuts, "C2_sim");
-    Ratio ratC2(testLD2cuts, testC2cuts, "C2_true");
+    Ratio simratSn(simLD2cuts, simSncuts, "Sn_sim");
+    Ratio simratCu(simLD2cuts, simCucuts, "Cu_sim");
+
+    sratio sratC2(testLD2cuts, testC2cuts, "C2_RGD");
     sratio sratSn(testLD2cuts, testSncuts, "Sn_RGD");
-    sratio sratC2(testLD2cuts, testC2cuts, "Cu_RGD");
+    sratio sratCu(testLD2cuts, testCucuts, "Cu_RGD");
+    sratio simsratC2(simLD2cuts, simC2cuts, "C2_sim");
+    sratio simsratSn(simLD2cuts, simSncuts, "Sn_sim");
+    sratio simsratCu(simLD2cuts, simCucuts, "Cu_sim");
 
     int totalevts = 9000;
 
@@ -153,120 +166,146 @@ int main() {
         simSn_MC = Sim_Sn.ProcessEventsInFileMC();
         testSn = RGD_CuSn.ProcessEventsInFile();
 
-        //simCu = Sim_Cu.ProcessEventsInFile();
-        //simCu_MC = Sim_Cu.ProcessEventsInFileMC();
-
         if (testLD2.has_value()) {
             Event eventtestLD2 = testLD2.value();
             eventtestLD2.SetTargetType(0);
             eventtestLD2.calcAll();
             monTestLD2.FillHistogramswCuts(eventtestLD2);
+            ratC2.FillHistograms(eventtestLD2);
+            ratSn.FillHistograms(eventtestLD2);
+            ratCu.FillHistograms(eventtestLD2);
             sratC2.FillHistograms(eventtestLD2);
             sratSn.FillHistograms(eventtestLD2);
+            sratCu.FillHistograms(eventtestLD2);
         }
-        //if (simLD2_MC.has_value()) {
-        //    Event eventsimLD2_MC = simLD2_MC.value();
-        //    eventsimLD2_MC.SetTargetType(0);
-        //    eventsimLD2_MC.calcMCAll();
-        //    munfSimLD2.FillHistogramswCutsMC(eventsimLD2_MC);
-        //    if (simLD2.has_value()) {
-        //        Event eventsimLD2 = simLD2.value();
-        //        eventsimLD2.SetTargetType(0);
-        //        eventsimLD2.calcAll();
-        //        munfSimLD2.FillHistCompwCuts(eventsimLD2, eventsimLD2_MC);
-        //        monSimLD2.FillHistogramswCuts(eventsimLD2);
-        //    }
-        //}
+        if (simLD2_MC.has_value()) {
+            Event eventsimLD2_MC = simLD2_MC.value();
+            eventsimLD2_MC.SetTargetType(0);
+            eventsimLD2_MC.calcMCAll();
+            munfSimLD2.FillHistogramswCutsMC(eventsimLD2_MC);
+            if (simLD2.has_value()) {
+                Event eventsimLD2 = simLD2.value();
+                eventsimLD2.SetTargetType(0);
+                eventsimLD2.calcAll();
+                munfSimLD2.FillHistCompwCuts(eventsimLD2, eventsimLD2_MC);
+                monSimLD2.FillHistogramswCuts(eventsimLD2);
+                simratC2.FillHistograms(eventsimLD2);
+                simratSn.FillHistograms(eventsimLD2);
+                simratCu.FillHistograms(eventsimLD2);
+                simsratC2.FillHistograms(eventsimLD2);
+                simsratSn.FillHistograms(eventsimLD2);
+                simsratCu.FillHistograms(eventsimLD2);
+
+            }
+        }
 
 
-        //if (testCu.has_value()) {
-        //    Event eventtestCu = testCu.value();
-        //    eventtestCu.SetTargetType(1);
-        //    eventtestCu.calcAll();
-        //    monTestSn.FillHistogramswCuts(eventtestCu);
-        //}
-        //if (simCu_MC.has_value()) {
-        //    Event eventsimCu_MC = simCu_MC.value();
-        //    eventsimCu_MC.SetTargetType(1);
-        //    eventsimCu_MC.calcMCAll();
-        //    if (simCu.has_value()) {
-        //        Event eventsimCu = simCu.value();
-        //        eventsimCu.SetTargetType(1);
-        //        eventsimCu.calcAll();
-        //        munfSimCu.FillHistCompwCuts(eventsimCu, eventsimCu_MC);
-        //        monSimCu.FillHistogramswCuts(eventsimCu);
-        //    }
-        //}
+        if (testCu.has_value()) {
+            Event eventtestCu = testCu.value();
+            eventtestCu.SetTargetType(1);
+            eventtestCu.calcAll();
+            monTestCu.FillHistogramswCuts(eventtestCu);
+            ratCu.FillHistograms(eventtestCu);
+            sratCu.FillHistograms(eventtestCu);
+
+        }
+        if (simCu_MC.has_value()) {
+            Event eventsimCu_MC = simCu_MC.value();
+            eventsimCu_MC.SetTargetType(1);
+            eventsimCu_MC.calcMCAll();
+            if (simCu.has_value()) {
+                Event eventsimCu = simCu.value();
+                eventsimCu.SetTargetType(1);
+                eventsimCu.calcAll();
+                munfSimCu.FillHistCompwCuts(eventsimCu, eventsimCu_MC);
+                monSimCu.FillHistogramswCuts(eventsimCu);
+                simratCu.FillHistograms(eventsimCu);
+                simsratCu.FillHistograms(eventsimCu);
+            }
+        }
         if (testSn.has_value()) {
             Event eventtestSn = testSn.value();
             eventtestSn.SetTargetType(1);
             eventtestSn.calcAll();
             monTestSn.FillHistogramswCuts(eventtestSn);
+            ratSn.FillHistograms(eventtestSn);
             sratSn.FillHistograms(eventtestSn);
+
         }
-        //if (simSn_MC.has_value()) {
-        //    Event eventsimSn_MC = simSn_MC.value();
-        //    eventsimSn_MC.SetTargetType(1);
-        //    eventsimSn_MC.calcMCAll();
-        //    if (simSn.has_value()) {
-        //        Event eventsimSn = simSn.value();
-        //        eventsimSn.SetTargetType(1);
-        //        eventsimSn.calcAll();
-        //        munfSimSn.FillHistCompwCuts(eventsimSn, eventsimSn_MC);
-        //        monSimSn.FillHistogramswCuts(eventsimSn);
-        //    }
-        //}
+        if (simSn_MC.has_value()) {
+            Event eventsimSn_MC = simSn_MC.value();
+            eventsimSn_MC.SetTargetType(1);
+            eventsimSn_MC.calcMCAll();
+            if (simSn.has_value()) {
+                Event eventsimSn = simSn.value();
+                eventsimSn.SetTargetType(1);
+                eventsimSn.calcAll();
+                munfSimSn.FillHistCompwCuts(eventsimSn, eventsimSn_MC);
+                monSimSn.FillHistogramswCuts(eventsimSn);
+                simratSn.FillHistograms(eventsimSn);
+                simsratSn.FillHistograms(eventsimSn);
+            }
+        }
         if (testCxC.has_value()) {
             Event eventtestCxC = testCxC.value();
             eventtestCxC.SetTargetType(1);
             eventtestCxC.calcAll();
             //munfTestC2.FillHistComp(eventtestCxC);
             monTestC2.FillHistogramswCuts(eventtestCxC);
+            ratC2.FillHistograms(eventtestCxC);
             sratC2.FillHistograms(eventtestCxC);
+
         }
-        //if (simCxC_MC.has_value())                          {//CxC sim
-        //    Event eventsimCxC_MC = simCxC_MC.value();
-        //    eventsimCxC_MC.SetTargetType(1);
-        //    eventsimCxC_MC.calcMCAll();
-        //    munfSimC2.FillHistogramswCutsMC(eventsimCxC_MC);
-        //        if ( simCxC.has_value()) {
-        //            Event eventsimCxC = simCxC.value();
-        //            eventsimCxC.SetTargetType(1);
-        //            eventsimCxC.calcAll();
-        //            munfSimC2.FillHistCompwCuts(eventsimCxC, eventsimCxC_MC);
-        //            monSimC2.FillHistogramswCuts(eventsimCxC);
-//
-        //        }
-        //}
+        if (simCxC_MC.has_value())                          {//CxC sim
+            Event eventsimCxC_MC = simCxC_MC.value();
+            eventsimCxC_MC.SetTargetType(1);
+            eventsimCxC_MC.calcMCAll();
+            munfSimC2.FillHistogramswCutsMC(eventsimCxC_MC);
+                if ( simCxC.has_value()) {
+                    Event eventsimCxC = simCxC.value();
+                    eventsimCxC.SetTargetType(1);
+                    eventsimCxC.calcAll();
+                    munfSimC2.FillHistCompwCuts(eventsimCxC, eventsimCxC_MC);
+                    monSimC2.FillHistogramswCuts(eventsimCxC);
+                    simratC2.FillHistograms(eventsimCxC);
+                    simsratC2.FillHistograms(eventsimCxC);
+                }
+        }
             //else{ counter_restCxC++;}
-            files.displayProgress(i + 1, totalevts);
-        
-    
-    
+        files.displayProgress(i + 1, totalevts);
     }
     std::cout << "\nProcessing completed \n";
 
-    //monTestC2.SaveHistRoot("otherC2_test");
-    //monSimC2.SaveHistRoot("otherC2_sim");
-    //monTestLD2.SaveHistRoot("otherLD2_test");
-    //monSimLD2.SaveHistRoot("otherLD2_sim");
-    //monTestSn.SaveHistRoot("otherSn_test");
-    //monSimSn.SaveHistRoot("otherSn_sim");
-    //monTestCu.SaveHistRoot("otherCu_test");
-    //monSimCu.SaveHistRoot("otherCu_sim");
+    monTestC2.SaveHistRoot("octC2_test");
+    monSimC2.SaveHistRoot("octC2_sim");
+    monTestLD2.SaveHistRoot("octLD2_test");
+    monSimLD2.SaveHistRoot("octLD2_sim");
+    monTestSn.SaveHistRoot("octSn_test");
+    monSimSn.SaveHistRoot("octSn_sim");
+    monTestCu.SaveHistRoot("octCu_test");
+    monSimCu.SaveHistRoot("octCu_sim");
 
-    //simratC2.calcR();
-    ////ratC2.calcR();
     //ratC2.DrawHistos(simratC2);
     //simratC2.writeMatrixToFile("Rmatrix");
     //ratC2.writeMatrixToFile("RmatrixRGD");
     //simratC2.multiplotR();
     //munfSimC1.DrawCompRECMC("augcompC1_sim");
+    ratC2.calcR();
+    ratSn.calcR();
+    ratCu.calcR();
+    simratC2.calcR();
+    simratSn.calcR();
+    simratCu.calcR();
     sratC2.calcSratio();
     sratSn.calcSratio();
+    sratCu.calcSratio();
+    simsratC2.calcSratio();
+    simsratSn.calcSratio();
+    simsratCu.calcSratio();
     sratC2.writeMatrixToFile("sRmatrixC2");
     sratSn.writeMatrixToFile("sRmatrixSn");
     sratC2.multiplotSratio();
+    sratC2.DrawMonSinrat("augmonSratioC2");
     //sratSn.multiplotR();    
 
     //munfSimC2.DrawCompRECMC("seventcompC2_sim");

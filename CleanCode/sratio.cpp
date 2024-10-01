@@ -35,7 +35,18 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
     h_D_Sratio3D ( new TH3F(("countSratio:D"+targetName).c_str(), ("count:wD_Sratio"+targetName).c_str(), Constants::Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
     h_A_Sratio3D ( new TH3F(("countSratio:A"+targetName).c_str(), ("count:wD_Sratio"+targetName).c_str(), Constants::Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
     h_wD_sqSratio ( new TH3F(("wD_sqSratio"+targetName).c_str(), ("wD_sqSratio"+targetName).c_str(),Constants::Cratiobin_x  , xminCratio, xmaxCratio,Constants::Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ ) ),//definition w/ 3 args
-    h_wA_sqSratio ( new TH3F(("wA_sqSratio"+targetName).c_str(), ("wA_sqSratio"+targetName).c_str(),Constants::Cratiobin_x  , xminCratio, xmaxCratio,Constants::Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ ) ){
+    h_wA_sqSratio ( new TH3F(("wA_sqSratio"+targetName).c_str(), ("wA_sqSratio"+targetName).c_str(),Constants::Cratiobin_x  , xminCratio, xmaxCratio,Constants::Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ ) ),
+    h_phiMonA ( new TH1F(("phiMonA"+targetName).c_str(), ("phiMonA"+targetName).c_str(), 100, 0, 360)),
+    h_phiMonD ( new TH1F(("phiMonD"+targetName).c_str(), ("phiMonD"+targetName).c_str(), 100, 0, 360)),
+    h_xQA ( new TH2F(("xQA"+targetName).c_str(), ("xQA"+targetName).c_str(), 100, xminCratio, xmaxCratio, 100, Constants::RcutminQ, Constants::RcutmaxQ)),
+    h_xQD ( new TH2F(("xQD"+targetName).c_str(), ("xQD"+targetName).c_str(), 100, xminCratio, xmaxCratio, 100, Constants::RcutminQ, Constants::RcutmaxQ)),
+    h_xphiA ( new TH2F(("xphiA"+targetName).c_str(), ("xphiA"+targetName).c_str(),  100, 0, 360, 100, xminCratio, xmaxCratio)),
+    h_xphiD ( new TH2F(("xphiD"+targetName).c_str(), ("xphiD"+targetName).c_str(),  100, 0, 360, 100, xminCratio, xmaxCratio)),
+    h_QphiA ( new TH2F(("QphiA"+targetName).c_str(), ("QphiA"+targetName).c_str(),  100, 0, 360, 100, Constants::RcutminQ, Constants::RcutmaxQ)),
+    h_QphiD ( new TH2F(("QphiD"+targetName).c_str(), ("QphiD"+targetName).c_str(),  100, 0, 360, 100, Constants::RcutminQ, Constants::RcutmaxQ)),
+    h_zphiA ( new TH2F(("zphiA"+targetName).c_str(), ("zphiA"+targetName).c_str(),  100, 0, 360, 100, Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_zphiD ( new TH2F(("zphiD"+targetName).c_str(), ("zphiD"+targetName).c_str(),  100, 0, 360, 100, Constants::RcutminZ, Constants::RcutmaxZ)){
+
 
 
     cutd = cutsD;
@@ -53,12 +64,18 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
             counter_elLD2 ++;
             //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
             hSratio_nuD->Fill(event.Getnu(), helicity); //only counts. Weighting with helicity 
+            //should be X ????
             for (const Particle& hadron : event.GetHadrons()) {
                 if (cutd.PassCutsHadrons(hadron)==true){
                     double phiD = hadron.Getphih();
                     h_wD_Sratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiD)*helicity) ;    //3 arguments and the WEIGHT
                     h_wD_sqSratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiD)*sin(phiD)*helicity);    //3 arguments and the WEIGHT (pt2 squared) 4 variance
                     h_D_Sratio3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight (cphi)
+                    h_xphiD->Fill(event.Getxb() , phiD);
+                    h_QphiD->Fill(event.GetQ2() , phiD);
+                    h_zphiD->Fill(hadron.Getz() , phiD);        
+                    h_xQD->Fill(event.Getxb(), event.GetQ2()); 
+                    h_phiMonD->Fill(phiD);
                 }
             }
         }
@@ -72,7 +89,11 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
                     h_wA_Sratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*helicity);    //3 arguments and the WEIGHT
                     h_wA_sqSratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*sin(phiA)*helicity);    //3 arguments and the WEIGHT (pt2 squared)
                     h_A_Sratio3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight
-
+                    h_xphiA->Fill(event.Getxb() , phiA);
+                    h_QphiA->Fill(event.GetQ2() , phiA);
+                    h_zphiA->Fill(hadron.Getz() , phiA);
+                    h_xQA->Fill(event.Getxb(), event.GetQ2());
+                    h_phiMonA->Fill(phiA);
                 }
             }
         }
@@ -453,6 +474,38 @@ void sratio::multiSratsimus(sratio& SratioCu ,sratio& SratioC1,sratio& SratioC2)
 
 }
 
+
+
+
+void sratio::DrawMonSinrat(const std::string& outputname){
+    TCanvas canvasSmon("c", "Mon Sratio", 1200, 800);
+    canvasSmon.Divide(2, 2); 
+    canvasSmon.cd(1);
+    h_xphiA->Draw("colz");
+    canvasSmon.cd(2);
+    h_QphiA->Draw("colz");
+    canvasSmon.cd(3);
+    h_zphiA->Draw("colz");
+    canvasSmon.cd(4);
+    //h_xQA->Draw("colz");
+    h_phiMonA->Draw();
+
+    canvasSmon.Print((outputname + ".pdf(").c_str());
+    TCanvas canvasSmon2("c2", "Mon Sratio2", 1200, 800);
+    canvasSmon2.Divide(2, 2); 
+    canvasSmon2.cd(1);
+    h_xphiD->Draw("colz");
+    canvasSmon2.cd(2);
+    h_QphiD->Draw("colz");
+    canvasSmon2.cd(3);
+    h_zphiD->Draw("colz");
+    canvasSmon2.cd(4);
+    //h_xQD->Draw("colz");
+    h_phiMonD->Draw();
+    canvasSmon2.Print((outputname + ".pdf)").c_str());
+
+
+}
 
 //void multiSratRGD(sratio&,sratio&,sratio&); //for 4 targets in RGD data (real)
 //void multiSratall(sratio&,sratio&,sratio&,sratio&,sratio&,sratio&,sratio&); //for 4 targets in sim and RGD (separation of C1 & C2)
