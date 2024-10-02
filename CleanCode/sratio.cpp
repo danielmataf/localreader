@@ -76,9 +76,9 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
                         h_wD_Sratio->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz(), sin(phiD)*helicity) ;    //3 arguments and the WEIGHT
                         h_wD_sqSratio->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz(), sin(phiD)*sin(phiD)*helicity);    //3 arguments and the WEIGHT (pt2 squared) 4 variance
                         h_D_Sratio3D->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight (cphi)
-                        h_xphiD->Fill(event.electron.Getxb() , phiD);
-                        h_QphiD->Fill(event.electron.GetQ2() , phiD);
-                        h_zphiD->Fill(hadron.Getz() , phiD);        
+                        h_xphiD->Fill(phiD, event.electron.Getxb()  );
+                        h_QphiD->Fill(phiD, event.electron.GetQ2()  );
+                        h_zphiD->Fill(phiD, hadron.Getz() );        
                         h_xQD->Fill(event.electron.Getxb(), event.electron.GetQ2()); 
                         h_phiMonD->Fill(phiD);
                     }
@@ -97,9 +97,9 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
                         h_wA_Sratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*helicity);    //3 arguments and the WEIGHT
                         h_wA_sqSratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*sin(phiA)*helicity);    //3 arguments and the WEIGHT (pt2 squared)
                         h_A_Sratio3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight
-                        h_xphiA->Fill(event.Getxb() , phiA);
-                        h_QphiA->Fill(event.GetQ2() , phiA);
-                        h_zphiA->Fill(hadron.Getz() , phiA);
+                        h_xphiA->Fill(phiA, event.Getxb()  );
+                        h_QphiA->Fill(phiA, event.GetQ2()  );
+                        h_zphiA->Fill(phiA, hadron.Getz()  );
                         h_xQA->Fill(event.Getxb(), event.GetQ2());
                         h_phiMonA->Fill(phiA);
                     }
@@ -129,11 +129,11 @@ void sratio::calcSratio(){
 
                 double varianceD = (countD != 0) ? sqvalD/countD - wavg_SratioD*wavg_SratioD : 0.0;
                 double varianceA = (countA != 0) ? sqvalA/countA - wavg_SratioA*wavg_SratioA : 0.0;
-                double Err_valD = (countD != 0) ? sqrt(varianceD/countD) : 0.0;
-                double Err_valA = (countA != 0) ? sqrt(varianceA/countA) : 0.0;
+                double Err_valD = 0.01;// (countD != 0) ? sqrt(varianceD/countD) : 0.0;
+                double Err_valA = 0.01;// (countA != 0) ? sqrt(varianceA/countA) : 0.0;
                 //double Err_Cratio_point = Cratio_point * sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
                 //double Err_Cratio_point = Cratio_point * sqrt(pow(Err_valA / wavg_CratioA, 2) + pow(Err_valD / wavg_CratioD, 2));
-                double Err_Sratio_point = (wavg_SratioA != 0 && wavg_SratioD != 0) ? Sratio_point * sqrt(pow(Err_valA / wavg_SratioA, 2) + pow(Err_valD / wavg_SratioD, 2)) : 0.0;
+                double Err_Sratio_point = 0.01; //(wavg_SratioA != 0 && wavg_SratioD != 0) ? Sratio_point * sqrt(pow(Err_valA / wavg_SratioA, 2) + pow(Err_valD / wavg_SratioD, 2)) : 0.0;
 
 
 //                double Err_dpt_point = sqrt(Err_valD*Err_valD + Err_valA*Err_valA);

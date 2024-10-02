@@ -275,15 +275,22 @@ int main() {
         files.displayProgress(i + 1, totalevts);
     }
     std::cout << "\nProcessing completed \n";
-
+    std::cout << "//========= RGD data C2 ==========//  \n";
     monTestC2.SaveHistRoot("octC2_test");
+    std::cout << "//========= Simulation C2 ==========//  \n";
     monSimC2.SaveHistRoot("octC2_sim");
+    std::cout << "//========= RGD data LD2 ==========//  \n";
     monTestLD2.SaveHistRoot("octLD2_test");
+    std::cout << "//========= Simulation LD2 ==========//  \n";
     monSimLD2.SaveHistRoot("octLD2_sim");
+    std::cout << "//========= RGD data Sn ==========//  \n";
     monTestSn.SaveHistRoot("octSn_test");
+    std::cout << "//========= Simulation Sn ==========//  \n";
     monSimSn.SaveHistRoot("octSn_sim");
-    monTestCu.SaveHistRoot("octCu_test");
-    monSimCu.SaveHistRoot("octCu_sim");
+
+    
+    //monTestCu.SaveHistRoot("octCu_test");
+    //monSimCu.SaveHistRoot("octCu_sim");
 
     //ratC2.DrawHistos(simratC2);
     //simratC2.writeMatrixToFile("Rmatrix");

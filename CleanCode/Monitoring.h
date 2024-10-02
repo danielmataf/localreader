@@ -81,6 +81,16 @@ private:
     int phihmaxX = 360;
 
     int counterel_R = 0;
+    int counterprecuts = 0;
+    int counterpassVz = 0;
+    int counterpassQ2 = 0;
+    int counterpassy = 0;
+    int counterpassnu = 0;
+    int counterpassw = 0;
+    int counterpassz = 0;
+    int counterpasspt2 = 0;
+    int counterpasshadid = 0;
+
 
     //PROPAGATE BORDERS AND LIMITS TO CONSTANTS.H AND USE THEM HERE!!!!! urgent TBD 
 
