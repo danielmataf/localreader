@@ -304,11 +304,12 @@ int main() {
     simratSn.calcR();
     simratCu.calcR();
     sratC2.calcSratio();
-    sratSn.calcSratio();
-    sratCu.calcSratio();
+    //sratSn.calcSratio();
+    //sratCu.calcSratio();
     simsratC2.calcSratio();
     simsratSn.calcSratio();
     simsratCu.calcSratio();
+    sratC2.calcSratio1D();
     sratC2.writeMatrixToFile("sRmatrixC2");
     sratSn.writeMatrixToFile("sRmatrixSn");
     sratC2.multiplotSratio();

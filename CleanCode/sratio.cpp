@@ -30,6 +30,10 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
     hSratio_nu_z_pt2D_onlye ( new TH3F(("Sratio:Q2, nu,z,D onlye"+targetName).c_str(), ("Sratio:histo_e Q2,nu,z for A"+targetName).c_str(), Constants::Cratiobin_Q, Constants::RcutminQ, Constants::RcutmaxQ,Constants::Cratiobin_nu,Constants::numinCratio,numaxCratio,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ ) ),
     hSratio_nuA ( new TH1F(("Sratio:nu_A"+targetName).c_str(), ("Sratio:nu_A"+targetName).c_str(), Constants::Cratiobin_nu,Constants::numinCratio,numaxCratio)) ,
     hSratio_nuD ( new TH1F(("Sratio:nu_D"+targetName).c_str(), ("Sratio:nu_D"+targetName).c_str(), Constants::Cratiobin_nu,Constants::numinCratio,numaxCratio)) ,
+    hSratio_zA ( new TH1F(("Sratio:z_A"+targetName).c_str(), ("Sratio:z_A"+targetName).c_str(), Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
+    hSratio_zD ( new TH1F(("Sratio:z_D"+targetName).c_str(), ("Sratio:z_D"+targetName).c_str(), Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
+    hSratio_zA_w ( new TH1F(("Sratio:z_A_w"+targetName).c_str(), ("Sratio:z_A_w"+targetName).c_str(), Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
+    hSratio_zD_w ( new TH1F(("Sratio:z_D_w"+targetName).c_str(), ("Sratio:z_D_w"+targetName).c_str(), Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
     h_wD_Sratio ( new TH3F(("wD_Sratio"+targetName).c_str(), ("wD_Sratio"+targetName).c_str(),Constants::Cratiobin_x  , xminCratio, xmaxCratio,Constants::Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
     h_wA_Sratio ( new TH3F(("wA_Sratio"+targetName).c_str(), ("wA_Sratio"+targetName).c_str(),Constants::Cratiobin_x  , xminCratio, xmaxCratio,Constants::Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
     h_D_Sratio3D ( new TH3F(("countSratio:D"+targetName).c_str(), ("count:wD_Sratio"+targetName).c_str(), Constants::Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
@@ -60,12 +64,15 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
         int helicity = event.GetHel();
         //Retrieving helicity to consider "loss" or "cost" when value is -1. gain when value = +1
         //for 'loss' and 'gain' we'll add additionnal weight in count histograms. And adding a helicity factor to the histos already weighted. 
+            //std::cout << " S " << std::endl;
+
         if (targetType == 0 && cutd.PassCutsElectrons(event)==true) {
+            //std::cout << " D " << std::endl;
+
             counter_elLD2 ++;
             //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
             hSratio_nuD->Fill(event.electron.Getnu(), helicity); //only counts. Weighting with helicity 
             //should be X ????
-
 
 
             for (const Particle& hadron : event.GetHadrons()) {
@@ -75,12 +82,17 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
                         double phiD = hadron.Getphih();
                         h_wD_Sratio->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz(), sin(phiD)*helicity) ;    //3 arguments and the WEIGHT
                         h_wD_sqSratio->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz(), sin(phiD)*sin(phiD)*helicity);    //3 arguments and the WEIGHT (pt2 squared) 4 variance
-                        h_D_Sratio3D->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight (cphi)
+                        h_D_Sratio3D->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz());    //3 arguments only counts not weight (cphi)
+                        //std::cout << " D -> x value" <<event.electron.Getxb()<< std::endl;
+                        //std::cout << " D -> Q2 value" << event.electron.GetQ2()<< std::endl;
+                        //std::cout << " D -> z value" << hadron.Getz() << std::endl;
                         h_xphiD->Fill(phiD, event.electron.Getxb()  );
                         h_QphiD->Fill(phiD, event.electron.GetQ2()  );
                         h_zphiD->Fill(phiD, hadron.Getz() );        
                         h_xQD->Fill(event.electron.Getxb(), event.electron.GetQ2()); 
                         h_phiMonD->Fill(phiD);
+                        hSratio_zD->Fill(hadron.Getz());    //*helicity
+                        hSratio_zD_w->Fill(hadron.Getz(), sin(phiD)*helicity);
                     }
                 }
             }
@@ -94,19 +106,46 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
                     if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
 
                         double phiA = hadron.Getphih();
-                        h_wA_Sratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*helicity);    //3 arguments and the WEIGHT
-                        h_wA_sqSratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), sin(phiA)*sin(phiA)*helicity);    //3 arguments and the WEIGHT (pt2 squared)
-                        h_A_Sratio3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz()*helicity);    //3 arguments only counts not weight
+                        h_wA_Sratio->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz(), sin(phiA)*helicity);    //3 arguments and the WEIGHT
+                        h_wA_sqSratio->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz(), sin(phiA)*sin(phiA)*helicity);    //3 arguments and the WEIGHT (pt2 squared)
+                        h_A_Sratio3D->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz());    //3 arguments only counts not weight
+                        std::cout << " A -> x value" <<event.electron.Getxb()<< std::endl;
+                        std::cout << " A -> Q2 value" << event.electron.GetQ2()<< std::endl;
+                        std::cout << " A -> z value" << hadron.Getz() << std::endl;
+
                         h_xphiA->Fill(phiA, event.Getxb()  );
                         h_QphiA->Fill(phiA, event.GetQ2()  );
                         h_zphiA->Fill(phiA, hadron.Getz()  );
                         h_xQA->Fill(event.Getxb(), event.GetQ2());
                         h_phiMonA->Fill(phiA);
+                        hSratio_zA->Fill(hadron.Getz() );   //*helicity
+                        hSratio_zA_w->Fill(hadron.Getz(), sin(phiA)*helicity);
+
                     }
                 }
             }
         }
     }
+
+void sratio::calcSratio1D(){
+    int numBins1D = hSratio_zD->GetNbinsX();    //supp: same bins 4 Deut and A
+    for (int bin1D=1 ; bin1D <= numBins1D; bin1D++){
+        double valD = hSratio_zD_w->GetBinContent(bin1D);
+        double valA = hSratio_zA_w->GetBinContent(bin1D);
+        double countD = hSratio_zA->GetBinContent(bin1D);    //3D histo no counts
+        double countA = hSratio_zA->GetBinContent(bin1D);
+        double wavg_SratioD = (countD != 0) ? valD/countD : 0.002;   //weighted average ok 
+        double wavg_SratioA = (countA != 0) ? valA/countA : 0.001;
+        double Sratio_point = (wavg_SratioD != 0) ? wavg_SratioA / wavg_SratioD : 0.003;
+        std::cout << "wavA = valA/countA = "<< wavg_SratioA << " = " << valA << " / "<< countA << std::endl; 
+        std::cout << "wavA = valD/countD = "<< wavg_SratioD << " = " << valD << " / "<< countD << std::endl; 
+        std::cout << "Sratio_point = wavA/wavD =  " << Sratio_point << " = "<<  wavg_SratioA << " /  " <<wavg_SratioD  <<std::endl;
+        
+    }
+
+}
+
+
 
 
 void sratio::calcSratio(){
@@ -123,9 +162,10 @@ void sratio::calcSratio(){
                 double sqvalD = h_wD_sqSratio->GetBinContent(Xbin,Ybin,Zbin);
                 double sqvalA = h_wA_sqSratio->GetBinContent(Xbin,Ybin,Zbin);
                 double wavg_SratioD = (countD != 0) ? valD/countD : 0.0;   //weighted average ok 
-                double wavg_SratioA = (countA != 0) ? valA/countA : 0.0;
-                double Sratio_point = (wavg_SratioD != 0) ? wavg_SratioA / wavg_SratioD : 0.0;
-
+                double wavg_SratioA = (countA != 0) ? valA/countA : 0.001;
+                //double Sratio_point = (wavg_SratioD != 0) ? wavg_SratioA / wavg_SratioD : 0.0;
+                double Sratio_point =  wavg_SratioD ;
+                //std::cout << "Sratio_point = " << Sratio_point << std::endl;
 
                 double varianceD = (countD != 0) ? sqvalD/countD - wavg_SratioD*wavg_SratioD : 0.0;
                 double varianceA = (countA != 0) ? sqvalA/countA - wavg_SratioA*wavg_SratioA : 0.0;
@@ -133,18 +173,16 @@ void sratio::calcSratio(){
                 double Err_valA = 0.01;// (countA != 0) ? sqrt(varianceA/countA) : 0.0;
                 //double Err_Cratio_point = Cratio_point * sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
                 //double Err_Cratio_point = Cratio_point * sqrt(pow(Err_valA / wavg_CratioA, 2) + pow(Err_valD / wavg_CratioD, 2));
-                double Err_Sratio_point = 0.01; //(wavg_SratioA != 0 && wavg_SratioD != 0) ? Sratio_point * sqrt(pow(Err_valA / wavg_SratioA, 2) + pow(Err_valD / wavg_SratioD, 2)) : 0.0;
+                double Err_Sratio_point = 0.01;//(wavg_SratioA != 0 && wavg_SratioD != 0) ? Sratio_point * sqrt(pow(Err_valA / wavg_SratioA, 2) + pow(Err_valD / wavg_SratioD, 2)) : 0.0;
 
 
-//                double Err_dpt_point = sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
+////                double Err_dpt_point = sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
                 SratioMatrix[Xbin-1][Ybin-1][Zbin-1] = Sratio_point;
                 errorSratioMatrix[Xbin-1][Ybin-1][Zbin-1] = Err_Sratio_point;
 
             }
         }
     }  
-
-
 
 }
 

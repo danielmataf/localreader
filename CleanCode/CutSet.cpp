@@ -238,17 +238,17 @@ bool CutSet::PassCutOnlyVz(const Event& event){     //assimilate to cutset class
 bool CutSet::PassCutsElectrons(const Event& event)  {
     // recover kinematic variables from the event
     // Pass cut electrons also filters Vz initially!! (cool)
-    double Q2 = event.GetQ2();
-    double y  = event.Gety();
-    double v  = event.Getnu();
-    double w  = event.GetW2();
+    double Q2 = event.electron.GetQ2();
+    double y  = event.electron.Gety();
+    double v  = event.electron.Getnu();
+    double w  = event.electron.GetW2();
     double Vz = event.GetVz();
     double Vx = event.GetVx();
     double Vy = event.GetVy();
     if (Vz >= cutVzMin && Vz <= cutVzMax ){
-        if (Q2 >= cutQMin && Q2 <= Constants::RcutmaxQ ){
-            if (y >= cutYMin && y <= cutYMax){
-                if (v >= cutVMin && v <= cutVMax ){
+        if (Q2 >= Constants::RcutmaxQ && Q2 <= Constants::RcutmaxQ ){
+            if (y >= Constants::RcutminY && y <= Constants::RcutmaxY){
+                if (v >= cutVMin && v <= cutVMax ){             //not specified... is broad enough not to be considered
                     if (w >= Constants::RcutminW && w <= Constants::RcutmaxW ){
                         return true;
                     }

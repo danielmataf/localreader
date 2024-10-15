@@ -20,6 +20,8 @@ public:
     void FillHistograms(const Event& );
     void WriteHistos(const std::string );
     void calcSratio();
+    void calcSratio1D();
+
 
     void writeMatrixToFile(const std::string& );
 
@@ -135,6 +137,14 @@ private:
     TH1 *h_phiMonD;
 
 
+
+
+
+    //calc Sratio in 1 dimension (here z)
+    TH1F *hSratio_zD ; //= new TH1F("Cratio:z_D", "Cratio:z_D", Cratiobin_z, zminCratio, zmaxCratio);
+    TH1F *hSratio_zA ; //= new TH1F("Cratio:z_A", "Cratio:z_A", Cratiobin_z, zminCratio, zmaxCratio);
+    TH1F *hSratio_zD_w ; // weighted D
+    TH1F *hSratio_zA_w ; // weighted A
 
     //Graphs
     TGraphErrors* graph_Srat= new TGraphErrors();
