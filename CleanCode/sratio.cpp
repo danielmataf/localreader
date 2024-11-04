@@ -42,6 +42,7 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
     h_wA_sqSratio ( new TH3F(("wA_sqSratio"+targetName).c_str(), ("wA_sqSratio"+targetName).c_str(),Constants::Cratiobin_x  , xminCratio, xmaxCratio,Constants::Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ ) ),
     h_phiMonA ( new TH1F(("phiMonA"+targetName).c_str(), ("phiMonA"+targetName).c_str(), 100, 0, 360)),
     h_phiMonD ( new TH1F(("phiMonD"+targetName).c_str(), ("phiMonD"+targetName).c_str(), 100, 0, 360)),
+
     h_xQA ( new TH2F(("xQA"+targetName).c_str(), ("xQA"+targetName).c_str(), 100, xminCratio, xmaxCratio, 100, Constants::RcutminQ, Constants::RcutmaxQ)),
     h_xQD ( new TH2F(("xQD"+targetName).c_str(), ("xQD"+targetName).c_str(), 100, xminCratio, xmaxCratio, 100, Constants::RcutminQ, Constants::RcutmaxQ)),
     h_xphiA ( new TH2F(("xphiA"+targetName).c_str(), ("xphiA"+targetName).c_str(),  100, 0, 360, 100, xminCratio, xmaxCratio)),
@@ -109,9 +110,6 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
                         h_wA_Sratio->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz(), sin(phiA)*helicity);    //3 arguments and the WEIGHT
                         h_wA_sqSratio->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz(), sin(phiA)*sin(phiA)*helicity);    //3 arguments and the WEIGHT (pt2 squared)
                         h_A_Sratio3D->Fill(event.electron.Getxb(), event.electron.GetQ2(), hadron.Getz());    //3 arguments only counts not weight
-                        std::cout << " A -> x value" <<event.electron.Getxb()<< std::endl;
-                        std::cout << " A -> Q2 value" << event.electron.GetQ2()<< std::endl;
-                        std::cout << " A -> z value" << hadron.Getz() << std::endl;
 
                         h_xphiA->Fill(phiA, event.Getxb()  );
                         h_QphiA->Fill(phiA, event.GetQ2()  );

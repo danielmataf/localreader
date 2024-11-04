@@ -120,6 +120,8 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
 //    h_W2pre->Fill(event.GetW2());
 //}
 
+
+
 void Monitoring::FillHistogramswCuts(const Event& event) {              /// good CUTS in hadron !!!!!!!
     //if (cut1.PassCutsDetectors(event)==true){
         // Fill Detector histograms after cuts
@@ -141,80 +143,61 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
         h_calSector->Fill(event.electron.GetCalSector());
         h_helicity->Fill(event.GetHel());
         h_helicity_raw->Fill(event.GetHelRaw());
-        counterprecuts ++;
+        if (cut1.PassCutsElectrons(event)==true) {
+            // Fill Electron variable histograms after cuts on electron
+            h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detected !!!!
+                                                //add Vz for the hadron too
+            h_Q2->Fill(event.electron.GetQ2());
 
+            h_xb->Fill(event.Getxb());
+            h_y->Fill(event.Gety());    
+            h_nu->Fill(event.Getnu());
+            h_W2->Fill(event.GetW2());
+            h_chi2_el->Fill(event.electron.Getchi2());
 
-    if (cut1.PassCutsElectrons(event) ==true) {}
-    if (event.GetVz() >= Constants::RcutminVzLD2 && event.GetVz() <= Constants::RcutmaxVzLD2 ){
-        counterpassVz ++;
+            h_px_el->Fill(event.electron.GetMomentum().X());
+            h_py_el->Fill(event.electron.GetMomentum().Y());
+            h_pz_el->Fill(event.electron.GetMomentum().Z());
+            h_ptot_el->Fill(event.electron.GetMomentum().P());
 
-            if (event.GetQ2() >= Constants::RcutminQ && event.GetQ2() <= Constants::RcutmaxQ ){
-                counterpassQ2 ++;
+            h_sampl_el->Fill(event.electron.GetMomentum().P(), (event.electron.GetEpcal()/event.electron.GetMomentum().P()) );
+            h_theta_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+            h_phi_el->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+            h_polcoord_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+            h_E_el->Fill(event.electron.GetMomentum().E());
+            h_E_el_theta->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().E());
+            h_E_el_phi->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180, event.electron.GetMomentum().E());
+            for (const Particle& hadron : event.GetHadrons()) {
+                if (cut1.PassCutsHadrons(hadron)==true){
+                    if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
+                        h_epcal->Fill(event.electron.GetEpcal());
+                        h_chi2_pi->Fill(hadron.Getchi2());
+                        h_z->Fill(hadron.Getz());
+                        h_pt2->Fill(hadron.Getpt2());
+                        h_pt2z->Fill(hadron.Getpt2(), hadron.Getz());
+                        h_phih->Fill(hadron.Getphih());
+                        h_px_pi->Fill(hadron.GetMomentum().X());
+                        h_py_pi->Fill(hadron.GetMomentum().Y());
+                        h_pz_pi->Fill(hadron.GetMomentum().Z());
+                        h_ptot_pi->Fill(hadron.GetMomentum().P());
+                        h_theta_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI);
+                        h_phi_pi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180);
+                        h_polcoord_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().Phi()*180/Constants::PI +180);
+                        h_E_pi->Fill(hadron.GetMomentum().E());
+                        h_E_pi_theta->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().E());
+                        h_E_pi_phi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180, hadron.GetMomentum().E());
+                        h_vertexZ_pi->Fill(hadron.GetParticleVertexZ());
+                        h_DeltaVz->Fill(event.GetVz()-hadron.GetParticleVertexZ());
 
-                if (event.Gety() >= Constants::RcutminY && event.Gety() <= Constants::RcutmaxY ){
-                    counterpassy ++;
-
-                    if (event.Getnu() >= 0 && event.Getnu() <= 10 ){
-                        counterpassnu ++;
-                        if (sqrt(event.GetW2()) >= Constants::RcutminW && sqrt(event.GetW2()) <= Constants::RcutmaxW ){
-                        counterpassw ++;
-
-                        // Fill Electron variable histograms after cuts on electron
-                        h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detected !!!!
-                                                            //add Vz for the hadron too
-                        h_Q2->Fill(event.GetQ2());
-                        h_xb->Fill(event.Getxb());
-                        h_y->Fill(event.Gety());    
-                        h_nu->Fill(event.Getnu());
-                        h_W2->Fill(event.GetW2());
-                        h_chi2_el->Fill(event.electron.Getchi2());
-                        h_px_el->Fill(event.electron.GetMomentum().X());
-                        h_py_el->Fill(event.electron.GetMomentum().Y());
-                        h_pz_el->Fill(event.electron.GetMomentum().Z());
-                        h_ptot_el->Fill(event.electron.GetMomentum().P());
-                        h_sampl_el->Fill(event.electron.GetMomentum().P(), (event.electron.GetEpcal()/event.electron.GetMomentum().P()) );
-                        h_theta_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
-                        h_phi_el->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
-                        h_polcoord_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().Phi()*180/Constants::PI +180);
-                        h_E_el->Fill(event.electron.GetMomentum().E());
-                        h_E_el_theta->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().E());
-                        h_E_el_phi->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180, event.electron.GetMomentum().E());
-                        for (const Particle& hadron : event.GetHadrons()) {
-                            if (cut1.PassCutsHadrons(hadron)==true){
-                                    counterpassz ++;
-                                    counterpasspt2 ++;
-                                if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
-                                    counterpasshadid ++;
-                                    h_epcal->Fill(event.electron.GetEpcal());
-                                    h_chi2_pi->Fill(hadron.Getchi2());
-                                    h_z->Fill(hadron.Getz());
-                                    h_pt2->Fill(hadron.Getpt2());
-                                    h_pt2z->Fill(hadron.Getpt2(), hadron.Getz());
-                                    h_phih->Fill(hadron.Getphih());
-                                    h_px_pi->Fill(hadron.GetMomentum().X());
-                                    h_py_pi->Fill(hadron.GetMomentum().Y());
-                                    h_pz_pi->Fill(hadron.GetMomentum().Z());
-                                    h_ptot_pi->Fill(hadron.GetMomentum().P());
-                                    h_theta_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI);
-                                    h_phi_pi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180);
-                                    h_polcoord_pi->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().Phi()*180/Constants::PI +180);
-                                    h_E_pi->Fill(hadron.GetMomentum().E());
-                                    h_E_pi_theta->Fill(hadron.GetMomentum().Theta()*180/Constants::PI, hadron.GetMomentum().E());
-                                    h_E_pi_phi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180, hadron.GetMomentum().E());
-                                    h_vertexZ_pi->Fill(hadron.GetParticleVertexZ());
-                                    h_DeltaVz->Fill(event.GetVz()-hadron.GetParticleVertexZ());
-
-                                }
-                            }
-                        }
                     }
                 }
+
+
             }
         }
-    }    
-
     //}
 }
+
 /*
 void Monitoring::FillHistograms(const Event& event) {
     //if (cut1.PassCutLD2Target(event)==false) return;
@@ -1267,16 +1250,19 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
 
 
     rootFile->Close();
-    delete rootFile; 
-    std::cout << " counterprecuts = " <<  counterprecuts << std::endl;
-    std::cout << " counterpassVz = " <<  counterpassVz << std::endl;
-    std::cout << " counterpassQ2 = " <<  counterpassQ2 << std::endl;
-    std::cout << " counterpassy = " <<  counterpassy << std::endl;
-    std::cout << " counterpassnu = " <<  counterpassnu << std::endl;
-    std::cout << " counterpassw = " <<  counterpassw << std::endl;
-    std::cout << " counterpassz = " <<  counterpassz << std::endl;
-    std::cout << " counterpasspt2 = " <<  counterpasspt2 << std::endl;
-    std::cout << " counterpasshadid = " <<  counterpasshadid << std::endl;
+    delete rootFile;
+
+
+    //counters are here to monitor cut evolution 
+    //std::cout << " counterprecuts = " <<  counterprecuts << std::endl;
+    //std::cout << " counterpassVz = " <<  counterpassVz << std::endl;
+    //std::cout << " counterpassQ2 = " <<  counterpassQ2 << std::endl;
+    //std::cout << " counterpassy = " <<  counterpassy << std::endl;
+    //std::cout << " counterpassnu = " <<  counterpassnu << std::endl;
+    //std::cout << " counterpassw = " <<  counterpassw << std::endl;
+    //std::cout << " counterpassz = " <<  counterpassz << std::endl;
+    //std::cout << " counterpasspt2 = " <<  counterpasspt2 << std::endl;
+    //std::cout << " counterpasshadid = " <<  counterpasshadid << std::endl;
 
 
 }

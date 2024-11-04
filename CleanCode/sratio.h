@@ -136,6 +136,10 @@ private:
     TH1 *h_phiMonA;
     TH1 *h_phiMonD;
 
+    //3D histo for asymmetries ( plus and minus )
+    TH3 *h_Dplus;
+    TH3 *h_Dminus;
+
 
 
 

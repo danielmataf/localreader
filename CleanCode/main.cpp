@@ -46,10 +46,10 @@ int main() {
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCuSn/dst/recon/018624/", filenamesCuSn);
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCxC/dst/recon/018451/", filenamesCxC);
     ////uncommment also below for sim  on ifarm
-    //files.SnDir2Vector("/volatile/clas12/dmat/test/LD2/", simufilesLD2);  //uncomment for sim
-    //files.SnDir2Vector("/volatile/clas12/dmat/test/CC/", simufilesCxC);  //uncomment for sim 
-    //files.SnDir2Vector("/volatile/clas12/dmat/test/Cu/", simufilesCu);  //uncomment for sim 
-    //files.SnDir2Vector("/volatile/clas12/dmat/test/Sn/", simufilesSn);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgd/", simufilesLD2);  //uncomment for sim
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdCC/", simufilesCxC);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdCu/", simufilesCu);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdSn/", simufilesSn);  //uncomment for sim 
 
 
     std::cout<< "Analysis in progress... \n";
@@ -251,7 +251,7 @@ int main() {
             eventtestCxC.SetTargetType(1);
             eventtestCxC.calcAll();
             //munfTestC2.FillHistComp(eventtestCxC);
-            monTestC2.FillHistogramswCuts(eventtestCxC);
+            monTestC2.FillHistogramsNoCuts(eventtestCxC);
             ratC2.FillHistograms(eventtestCxC);
             sratC2.FillHistograms(eventtestCxC);
 
@@ -266,7 +266,7 @@ int main() {
                     eventsimCxC.SetTargetType(1);
                     eventsimCxC.calcAll();
                     munfSimC2.FillHistCompwCuts(eventsimCxC, eventsimCxC_MC);
-                    monSimC2.FillHistogramswCuts(eventsimCxC);
+                    monSimC2.FillHistogramsNoCuts(eventsimCxC);
                     simratC2.FillHistograms(eventsimCxC);
                     simsratC2.FillHistograms(eventsimCxC);
                 }
@@ -276,17 +276,17 @@ int main() {
     }
     std::cout << "\nProcessing completed \n";
     std::cout << "//========= RGD data C2 ==========//  \n";
-    monTestC2.SaveHistRoot("octC2_test");
+    monTestC2.SaveHistRoot("novC2_test");
     std::cout << "//========= Simulation C2 ==========//  \n";
-    monSimC2.SaveHistRoot("octC2_sim");
+    monSimC2.SaveHistRoot("novC2_sim");
     std::cout << "//========= RGD data LD2 ==========//  \n";
-    monTestLD2.SaveHistRoot("octLD2_test");
+    monTestLD2.SaveHistRoot("novLD2_test");
     std::cout << "//========= Simulation LD2 ==========//  \n";
-    monSimLD2.SaveHistRoot("octLD2_sim");
+    monSimLD2.SaveHistRoot("novLD2_sim");
     std::cout << "//========= RGD data Sn ==========//  \n";
-    monTestSn.SaveHistRoot("octSn_test");
+    monTestSn.SaveHistRoot("novSn_test");
     std::cout << "//========= Simulation Sn ==========//  \n";
-    monSimSn.SaveHistRoot("octSn_sim");
+    monSimSn.SaveHistRoot("novSn_sim");
 
     
     //monTestCu.SaveHistRoot("octCu_test");
@@ -297,21 +297,21 @@ int main() {
     //ratC2.writeMatrixToFile("RmatrixRGD");
     //simratC2.multiplotR();
     //munfSimC1.DrawCompRECMC("augcompC1_sim");
-    ratC2.calcR();
-    ratSn.calcR();
-    ratCu.calcR();
-    simratC2.calcR();
-    simratSn.calcR();
-    simratCu.calcR();
+    //////!!!ratC2.calcR();
+    //////!!!ratSn.calcR();
+    //////!!!ratCu.calcR();
+    //simratC2.calcR();
+    //simratSn.calcR();
+    //simratCu.calcR();
     sratC2.calcSratio();
-    //sratSn.calcSratio();
-    //sratCu.calcSratio();
+    sratSn.calcSratio();
+    sratCu.calcSratio();
     simsratC2.calcSratio();
     simsratSn.calcSratio();
     simsratCu.calcSratio();
-    sratC2.calcSratio1D();
-    sratC2.writeMatrixToFile("sRmatrixC2");
-    sratSn.writeMatrixToFile("sRmatrixSn");
+    //////!!!sratC2.calcSratio1D();
+    //////!!!sratC2.writeMatrixToFile("sRmatrixC2");
+    //////!!!sratSn.writeMatrixToFile("sRmatrixSn");
     sratC2.multiplotSratio();
     sratC2.DrawMonSinrat("augmonSratioC2");
     //sratSn.multiplotR();    
