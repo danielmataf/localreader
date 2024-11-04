@@ -43,6 +43,9 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
     h_phiMonA ( new TH1F(("phiMonA"+targetName).c_str(), ("phiMonA"+targetName).c_str(), 100, 0, 360)),
     h_phiMonD ( new TH1F(("phiMonD"+targetName).c_str(), ("phiMonD"+targetName).c_str(), 100, 0, 360)),
 
+    h_Dminus (new TH3F (( " count3Dm"+targetName).c_str(), ( "count3Dm"+targetName).c_str(),5, Constants::RcutminZ, Constants::RcutmaxZ, 5 , Constants::RcutminPt2, Constants::RcutmaxPt2, 5, 0,360)),
+    h_Dplus (new TH3F (( " count3Dp"+targetName).c_str(), ( "count3Dp"+targetName).c_str(), 5, Constants::RcutminZ, Constants::RcutmaxZ, 5 , Constants::RcutminPt2, Constants::RcutmaxPt2, 5, 0,360)),
+
     h_xQA ( new TH2F(("xQA"+targetName).c_str(), ("xQA"+targetName).c_str(), 100, xminCratio, xmaxCratio, 100, Constants::RcutminQ, Constants::RcutmaxQ)),
     h_xQD ( new TH2F(("xQD"+targetName).c_str(), ("xQD"+targetName).c_str(), 100, xminCratio, xmaxCratio, 100, Constants::RcutminQ, Constants::RcutmaxQ)),
     h_xphiA ( new TH2F(("xphiA"+targetName).c_str(), ("xphiA"+targetName).c_str(),  100, 0, 360, 100, xminCratio, xmaxCratio)),
@@ -94,6 +97,12 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
                         h_phiMonD->Fill(phiD);
                         hSratio_zD->Fill(hadron.Getz());    //*helicity
                         hSratio_zD_w->Fill(hadron.Getz(), sin(phiD)*helicity);
+                        if (helicity == -1){
+                            h_Dminus->Fill(hadron.Getz(), hadron.Getpt2(), phiD);
+                        }
+                        else if (helicity == 1){
+                            h_Dplus->Fill(hadron.Getz(), hadron.Getpt2(), phiD);
+                        }       
                     }
                 }
             }
@@ -247,6 +256,75 @@ void sratio::multiplotSratio(){
     }
 
 }
+
+void sratio::calcAsymmetries(){
+    TCanvas canvasAsy("c", "asy Sratiomon", 1200, 800);
+    canvasAsy.Divide(1, 2);
+    TH3 *h_num = (TH3*) h_Dplus->Clone("h_num");
+    TH3 *h_den = (TH3*) h_Dplus->Clone("h_den");
+    TH3 *h_A;
+    h_num->Add(h_Dminus, -1);
+    h_den ->Add(h_Dminus);
+    h_A = (TH3*) h_num->Clone("h_as"); 
+    h_A->Divide(h_den);
+
+    delete h_num;
+    delete h_den;
+    canvasAsy.cd(1);
+    h_A->SetTitle("AsyPhiMon");
+    h_A->SetLineColor(kRed);
+    h_A->SetAxisRange(-0.6,0.6,"Y");
+    h_A->Draw();
+    canvasAsy.Print("asyphi.pdf)");
+
+    for (int Xbin = 1; Xbin <= h_Dplus->GetNbinsX(); Xbin++) {
+        double xValue = h_Dplus->GetXaxis()->GetBinCenter(Xbin + 1);
+        std::string pdfFileName = "calcPlotAsymphih_z" + std::to_string(xValue) + ".pdf";
+        //this is one pdf for each x value ( which is z )
+        TCanvas canvasphi("c", "Multiplot phih", 1200, 800);
+        //one canvas per pdf, which be divided in 6 (we ll use 5 pads)
+        canvasphi.Divide(3, 2);
+        for (int Ybin = 1; Ybin <= h_Dplus->GetNbinsY(); Ybin++) {
+            //both X,Y are binned the same for h_Dplus and h_Dminus
+            double YValue = h_Dplus->GetYaxis()->GetBinCenter(Ybin + 1);
+            canvasphi.cd(Ybin + 1);
+            TGraphErrors* graphphih = new TGraphErrors();
+            //create one graph per pad, so per pt2 value. 
+            //following loop allows to have graphs as a fct of Phih
+            for (int Zbin = 1; Zbin <= h_Dplus->GetNbinsZ(); Zbin++) {
+                //same here, Z is binned the same for h_Dplus and h_Dminus
+                double ZValue = h_Dplus->GetZaxis()->GetBinCenter(Zbin + 1);
+                double valueplus = h_Dplus->GetBinContent(Xbin, Ybin, Zbin);
+                double valueminus = h_Dminus->GetBinContent(Xbin, Ybin, Zbin);
+                double AsymPoint =  (valueplus - valueminus) / (valueplus + valueminus) ;
+                //double error = h_Dplus->GetBinError(Xbin, Ybin, Zbin); //maybe errors are lost in the 3D hist. Ignore this.
+                //std::cout << "Asymmetry = " << value << " +- " << error << std::endl;
+                graphphih->SetPoint(Zbin, ZValue, AsymPoint);
+                //std::cout << "phih = " << ZValue << std::endl;
+                //graphphih->SetPointError(z, 0.0, Err_AsymPoint);
+     
+            }
+            graphphih->SetTitle(("<#phi_{h}>_D , pt2=" + std::to_string(YValue)).c_str());
+            graphphih->GetXaxis()->SetTitle("p_{t}^{2}");
+            graphphih->GetYaxis()->SetTitle("<sin #phi_{h}>_D");
+            graphphih->SetMarkerStyle(20);
+            graphphih->GetYaxis()->SetRangeUser(-10.0, 10.0);
+            graphphih->Draw("AP");
+            TLine* line = new TLine(graphphih->GetXaxis()->GetXmin(), 0.0, graphphih->GetXaxis()->GetXmax(), 0.0);
+            line->SetLineStyle(2);
+            line->Draw("same");
+        }
+        canvasphi.SaveAs(pdfFileName.c_str());
+    }
+
+
+
+
+
+    
+}
+
+
 
 
 void sratio::multiplotSratio( sratio& SratioOther, sratio& SratioThird){

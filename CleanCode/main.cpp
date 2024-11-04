@@ -287,6 +287,10 @@ int main() {
     monTestSn.SaveHistRoot("novSn_test");
     std::cout << "//========= Simulation Sn ==========//  \n";
     monSimSn.SaveHistRoot("novSn_sim");
+    std::cout << "//========= RGD data Cu ==========//  \n";
+    monTestCu.SaveHistRoot("novCu_test");
+    std::cout << "//========= Simulation Cu ==========//  \n";
+    monSimCu.SaveHistRoot("novCu_sim");
 
     
     //monTestCu.SaveHistRoot("octCu_test");
@@ -313,6 +317,7 @@ int main() {
     //////!!!sratC2.writeMatrixToFile("sRmatrixC2");
     //////!!!sratSn.writeMatrixToFile("sRmatrixSn");
     sratC2.multiplotSratio();
+    sratC2.calcAsymmetries();
     sratC2.DrawMonSinrat("augmonSratioC2");
     //sratSn.multiplotR();    
 

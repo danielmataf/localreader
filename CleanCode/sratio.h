@@ -37,6 +37,7 @@ public:
     void multiSratall(sratio&,sratio&,sratio&,sratio&,sratio&,sratio&,sratio&); //for 4 targets in sim and RGD (separation of C1 & C2)
     void multiSratall2(sratio&,sratio&,sratio&,sratio&,sratio&); // three ragets in sim and RGD ( no separation of CxC)
 
+    void calcAsymmetries();
 
 private:
     CutSet cutd;
