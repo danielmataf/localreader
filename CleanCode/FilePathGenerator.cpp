@@ -47,7 +47,7 @@ void FilePathGenerator::readFilePathsFromTextFile(const std::string& filename, s
 }
 
 void FilePathGenerator::Files2Vector(const std::string& directory, std::vector<std::string>& filepaths) {
-    // Generate file paths automatically from a directory and append them to the vector
+    //generate file paths automatically from a directory and append them to the vector
     for (const auto& entry : fs::directory_iterator(directory)) {
         if (entry.path().extension() == ".hipo") {
             //std::cout << entry.path() << std::endl;

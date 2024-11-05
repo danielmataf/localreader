@@ -176,14 +176,14 @@ void sratio::calcSratio(){
 
                 double varianceD = (countD != 0) ? sqvalD/countD - wavg_SratioD*wavg_SratioD : 0.0;
                 double varianceA = (countA != 0) ? sqvalA/countA - wavg_SratioA*wavg_SratioA : 0.0;
-                double Err_valD = 0.01;// (countD != 0) ? sqrt(varianceD/countD) : 0.0;
-                double Err_valA = 0.01;// (countA != 0) ? sqrt(varianceA/countA) : 0.0;
+                double Err_valD =  (countD != 0) ? sqrt(varianceD/countD) : 0.0;
+                double Err_valA =  (countA != 0) ? sqrt(varianceA/countA) : 0.0;
                 //double Err_Cratio_point = Cratio_point * sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
                 //double Err_Cratio_point = Cratio_point * sqrt(pow(Err_valA / wavg_CratioA, 2) + pow(Err_valD / wavg_CratioD, 2));
-                double Err_Sratio_point = 0.01;//(wavg_SratioA != 0 && wavg_SratioD != 0) ? Sratio_point * sqrt(pow(Err_valA / wavg_SratioA, 2) + pow(Err_valD / wavg_SratioD, 2)) : 0.0;
+                double Err_Sratio_point = (wavg_SratioA != 0 && wavg_SratioD != 0) ? Sratio_point * sqrt(pow(Err_valA / wavg_SratioA, 2) + pow(Err_valD / wavg_SratioD, 2)) : 0.0;
 
 
-////                double Err_dpt_point = sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
+                double Err_dpt_point = sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
                 SratioMatrix[Xbin-1][Ybin-1][Zbin-1] = Sratio_point;
                 errorSratioMatrix[Xbin-1][Ybin-1][Zbin-1] = Err_Sratio_point;
 
@@ -278,7 +278,7 @@ void sratio::calcAsymmetries(){
     canvasAsy.Print("asyphi.pdf)");
 
     for (int Xbin = 1; Xbin <= h_Dplus->GetNbinsX(); Xbin++) {
-        double xValue = h_Dplus->GetXaxis()->GetBinCenter(Xbin + 1);
+        double xValue = h_Dplus->GetXaxis()->GetBinCenter(Xbin);
         std::string pdfFileName = "calcPlotAsymphih_z" + std::to_string(xValue) + ".pdf";
         //this is one pdf for each x value ( which is z )
         TCanvas canvasphi("c", "Multiplot phih", 1200, 800);
@@ -286,14 +286,14 @@ void sratio::calcAsymmetries(){
         canvasphi.Divide(3, 2);
         for (int Ybin = 1; Ybin <= h_Dplus->GetNbinsY(); Ybin++) {
             //both X,Y are binned the same for h_Dplus and h_Dminus
-            double YValue = h_Dplus->GetYaxis()->GetBinCenter(Ybin + 1);
-            canvasphi.cd(Ybin + 1);
+            double YValue = h_Dplus->GetYaxis()->GetBinCenter(Ybin);
+            canvasphi.cd(Ybin );
             TGraphErrors* graphphih = new TGraphErrors();
             //create one graph per pad, so per pt2 value. 
             //following loop allows to have graphs as a fct of Phih
             for (int Zbin = 1; Zbin <= h_Dplus->GetNbinsZ(); Zbin++) {
                 //same here, Z is binned the same for h_Dplus and h_Dminus
-                double ZValue = h_Dplus->GetZaxis()->GetBinCenter(Zbin + 1);
+                double ZValue = h_Dplus->GetZaxis()->GetBinCenter(Zbin );
                 double valueplus = h_Dplus->GetBinContent(Xbin, Ybin, Zbin);
                 double valueminus = h_Dminus->GetBinContent(Xbin, Ybin, Zbin);
                 double AsymPoint =  (valueplus - valueminus) / (valueplus + valueminus) ;
@@ -308,8 +308,7 @@ void sratio::calcAsymmetries(){
             graphphih->GetXaxis()->SetTitle("#phi_{h}");
             graphphih->GetYaxis()->SetTitle("A(#phi_{h})");
             graphphih->SetMarkerStyle(20);
-            graphphih->GetYaxis()->SetRangeUser(-2.0, 2.0);
-            graphphih->Draw("AP");
+            graphphih->GetYaxis()->SetRangeUser(-1.5, 1.5);            graphphih->Draw("AP");
             TLine* line = new TLine(graphphih->GetXaxis()->GetXmin(), 0.0, graphphih->GetXaxis()->GetXmax(), 0.0);
             line->SetLineStyle(2);
             line->Draw("same");

@@ -42,9 +42,9 @@ int main() {
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/Sn", simufilesSn);  //uncomment for sim
 
     //Uncomment 4 test on ifarm, comment all above
-    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideLD2/dst/recon/018528/", filenamesLD2);
-    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCuSn/dst/recon/018624/", filenamesCuSn);
-    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/prod/v4ob_aideCxC/dst/recon/018451/", filenamesCxC);
+    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v5/LD2/", filenamesLD2);
+    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v5/CuSn/", filenamesCuSn);
+    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v5/CxC/", filenamesCxC);
     ////uncommment also below for sim  on ifarm
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgd/", simufilesLD2);  //uncomment for sim
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdCC/", simufilesCxC);  //uncomment for sim 
@@ -319,7 +319,7 @@ int main() {
     sratC2.multiplotSratio();
     sratC2.calcAsymmetries();
     sratC2.DrawMonSinrat("augmonSratioC2");
-    //sratSn.multiplotR();    
+    ratSn.multiplotR(ratCu,ratC2);    
 
     //munfSimC2.DrawCompRECMC("seventcompC2_sim");
     //munfSimLD2.DrawCompRECMC("seventcompLD2_sim");
