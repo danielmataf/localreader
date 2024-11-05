@@ -149,7 +149,7 @@ void CompareHistograms(const char* target, const std::vector<std::string>& plotT
 }
 
 int main() {
-    const char* target = "Sn"; // can be changed to targets Cu, Sn, LD2, C1, C2
+    const char* target = "C2"; // can be changed to targets Cu, Sn, LD2, C1, C2
     CompareHistograms(target, {}, {});
     return 0;
 }

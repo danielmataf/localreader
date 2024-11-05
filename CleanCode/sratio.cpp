@@ -144,9 +144,9 @@ void sratio::calcSratio1D(){
         double wavg_SratioD = (countD != 0) ? valD/countD : 0.002;   //weighted average ok 
         double wavg_SratioA = (countA != 0) ? valA/countA : 0.001;
         double Sratio_point = (wavg_SratioD != 0) ? wavg_SratioA / wavg_SratioD : 0.003;
-        std::cout << "wavA = valA/countA = "<< wavg_SratioA << " = " << valA << " / "<< countA << std::endl; 
-        std::cout << "wavA = valD/countD = "<< wavg_SratioD << " = " << valD << " / "<< countD << std::endl; 
-        std::cout << "Sratio_point = wavA/wavD =  " << Sratio_point << " = "<<  wavg_SratioA << " /  " <<wavg_SratioD  <<std::endl;
+        //std::cout << "wavA = valA/countA = "<< wavg_SratioA << " = " << valA << " / "<< countA << std::endl; 
+        //std::cout << "wavA = valD/countD = "<< wavg_SratioD << " = " << valD << " / "<< countD << std::endl; 
+        //std::cout << "Sratio_point = wavA/wavD =  " << Sratio_point << " = "<<  wavg_SratioA << " /  " <<wavg_SratioD  <<std::endl;
         
     }
 
@@ -170,8 +170,8 @@ void sratio::calcSratio(){
                 double sqvalA = h_wA_sqSratio->GetBinContent(Xbin,Ybin,Zbin);
                 double wavg_SratioD = (countD != 0) ? valD/countD : 0.0;   //weighted average ok 
                 double wavg_SratioA = (countA != 0) ? valA/countA : 0.001;
-                //double Sratio_point = (wavg_SratioD != 0) ? wavg_SratioA / wavg_SratioD : 0.0;
-                double Sratio_point =  wavg_SratioD ;
+                double Sratio_point = (wavg_SratioD != 0) ? wavg_SratioA / wavg_SratioD : 0.01;
+                //double Sratio_point =  wavg_SratioD ;
                 //std::cout << "Sratio_point = " << Sratio_point << std::endl;
 
                 double varianceD = (countD != 0) ? sqvalD/countD - wavg_SratioD*wavg_SratioD : 0.0;
@@ -304,11 +304,11 @@ void sratio::calcAsymmetries(){
                 //graphphih->SetPointError(z, 0.0, Err_AsymPoint);
      
             }
-            graphphih->SetTitle(("<#phi_{h}>_D , pt2=" + std::to_string(YValue)).c_str());
-            graphphih->GetXaxis()->SetTitle("p_{t}^{2}");
-            graphphih->GetYaxis()->SetTitle("<sin #phi_{h}>_D");
+            graphphih->SetTitle(("Asymmetry (#phi_{h}>_D) , pt2=" + std::to_string(YValue)).c_str());
+            graphphih->GetXaxis()->SetTitle("#phi_{h}");
+            graphphih->GetYaxis()->SetTitle("A(#phi_{h})");
             graphphih->SetMarkerStyle(20);
-            graphphih->GetYaxis()->SetRangeUser(-10.0, 10.0);
+            graphphih->GetYaxis()->SetRangeUser(-2.0, 2.0);
             graphphih->Draw("AP");
             TLine* line = new TLine(graphphih->GetXaxis()->GetXmin(), 0.0, graphphih->GetXaxis()->GetXmax(), 0.0);
             line->SetLineStyle(2);

@@ -251,7 +251,7 @@ int main() {
             eventtestCxC.SetTargetType(1);
             eventtestCxC.calcAll();
             //munfTestC2.FillHistComp(eventtestCxC);
-            monTestC2.FillHistogramsNoCuts(eventtestCxC);
+            monTestC2.FillHistogramswCuts(eventtestCxC);
             ratC2.FillHistograms(eventtestCxC);
             sratC2.FillHistograms(eventtestCxC);
 
@@ -266,7 +266,7 @@ int main() {
                     eventsimCxC.SetTargetType(1);
                     eventsimCxC.calcAll();
                     munfSimC2.FillHistCompwCuts(eventsimCxC, eventsimCxC_MC);
-                    monSimC2.FillHistogramsNoCuts(eventsimCxC);
+                    monSimC2.FillHistogramswCuts(eventsimCxC);
                     simratC2.FillHistograms(eventsimCxC);
                     simsratC2.FillHistograms(eventsimCxC);
                 }
