@@ -24,6 +24,7 @@ public:
 
 
     void writeMatrixToFile(const std::string& );
+    void writeAsymmToFile(const std::string& );
 
     void DrawMonSinrat(const std::string&);
     
@@ -157,6 +158,8 @@ private:
     //Storage of points (and errors)
     std::vector<std::vector<std::vector<double>>> SratioMatrix;    //three vectors for 3D matrix
     std::vector<std::vector<std::vector<double>>> errorSratioMatrix;
+    std::vector<std::vector<std::vector<double>>> AsymmMatrix;    //three vectors for 3D matrix
+    std::vector<std::vector<std::vector<double>>> errorAsymmMatrix;
 
     //TFile* outputFile;
     CutSet cutsD;

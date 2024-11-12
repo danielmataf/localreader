@@ -254,6 +254,7 @@ int main() {
             monTestC2.FillHistogramswCuts(eventtestCxC);
             ratC2.FillHistograms(eventtestCxC);
             sratC2.FillHistograms(eventtestCxC);
+            //sratC2.calcAsymmetries();
 
         }
         if (simCxC_MC.has_value())                          {//CxC sim
@@ -276,21 +277,21 @@ int main() {
     }
     std::cout << "\nProcessing completed \n";
     std::cout << "//========= RGD data C2 ==========//  \n";
-    monTestC2.SaveHistRoot("novC2_test");
+    //monTestC2.SaveHistRoot("novC2_test");
     std::cout << "//========= Simulation C2 ==========//  \n";
-    monSimC2.SaveHistRoot("novC2_sim");
+    //monSimC2.SaveHistRoot("novC2_sim");
     std::cout << "//========= RGD data LD2 ==========//  \n";
-    monTestLD2.SaveHistRoot("novLD2_test");
+    //monTestLD2.SaveHistRoot("novLD2_test");
     std::cout << "//========= Simulation LD2 ==========//  \n";
-    monSimLD2.SaveHistRoot("novLD2_sim");
+    //monSimLD2.SaveHistRoot("novLD2_sim");
     std::cout << "//========= RGD data Sn ==========//  \n";
-    monTestSn.SaveHistRoot("novSn_test");
+    //monTestSn.SaveHistRoot("novSn_test");
     std::cout << "//========= Simulation Sn ==========//  \n";
-    monSimSn.SaveHistRoot("novSn_sim");
+    //monSimSn.SaveHistRoot("novSn_sim");
     std::cout << "//========= RGD data Cu ==========//  \n";
-    monTestCu.SaveHistRoot("novCu_test");
+    //monTestCu.SaveHistRoot("novCu_test");
     std::cout << "//========= Simulation Cu ==========//  \n";
-    monSimCu.SaveHistRoot("novCu_sim");
+    //monSimCu.SaveHistRoot("novCu_sim");
 
     
     //monTestCu.SaveHistRoot("octCu_test");
@@ -308,6 +309,8 @@ int main() {
     //simratSn.calcR();
     //simratCu.calcR();
     sratC2.calcSratio();
+    sratC2.calcAsymmetries();
+    sratC2.writeAsymmToFile("testasymmetriesC2");
     sratSn.calcSratio();
     sratCu.calcSratio();
     simsratC2.calcSratio();
@@ -317,7 +320,6 @@ int main() {
     //////!!!sratC2.writeMatrixToFile("sRmatrixC2");
     //////!!!sratSn.writeMatrixToFile("sRmatrixSn");
     sratC2.multiplotSratio();
-    sratC2.calcAsymmetries();
     sratC2.DrawMonSinrat("augmonSratioC2");
     ratSn.multiplotR(ratCu,ratC2);    
 

@@ -23,6 +23,8 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
     targetName(targetName),
     SratioMatrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
     errorSratioMatrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
+    AsymmMatrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
+    errorAsymmMatrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
 
     hSratio_Q_nu_zD ( new TH3F(("Sratio:nu,z,pt2,D"+targetName).c_str(), ("Sratio:histo nu,z,pt2 for D"+targetName).c_str(),Constants::Cratiobin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Cratiobin_nu,Constants::numinCratio,numaxCratio,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
     hSratio_Q_nu_zA ( new TH3F(("Sratio:nu,z,pt2,A"+targetName).c_str(), ("Sratio:histo nu,z,pt2 for A"+targetName).c_str(),Constants::Cratiobin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Cratiobin_nu,Constants::numinCratio,numaxCratio,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
@@ -180,7 +182,7 @@ void sratio::calcSratio(){
                 double Err_valA =  (countA != 0) ? sqrt(varianceA/countA) : 0.0;
                 //double Err_Cratio_point = Cratio_point * sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
                 //double Err_Cratio_point = Cratio_point * sqrt(pow(Err_valA / wavg_CratioA, 2) + pow(Err_valD / wavg_CratioD, 2));
-                double Err_Sratio_point = (wavg_SratioA != 0 && wavg_SratioD != 0) ? Sratio_point * sqrt(pow(Err_valA / wavg_SratioA, 2) + pow(Err_valD / wavg_SratioD, 2)) : 0.0;
+                double Err_Sratio_point = (wavg_SratioA != 0 && wavg_SratioD != 0) ? Sratio_point * sqrt(pow(Err_valA / wavg_SratioA, 2) + pow(Err_valD / wavg_SratioD, 2)) : 0.5;
 
 
                 double Err_dpt_point = sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
@@ -192,9 +194,6 @@ void sratio::calcSratio(){
     }  
 
 }
-
-
-
 
 void sratio::writeMatrixToFile(const std::string& filename){
     //not needed unless output in file wanted 
@@ -214,9 +213,6 @@ void sratio::writeMatrixToFile(const std::string& filename){
     }
     outputFile.close();
 }
-    
-
-
 
 void sratio::multiplotSratio(){
     for (int x = 0; x < Cratiobin; ++x){
@@ -241,7 +237,7 @@ void sratio::multiplotSratio(){
             graphSratio->GetXaxis()->SetTitle("z");
             graphSratio->GetYaxis()->SetTitle("<sin #phi_{h}>_A / <sin #phi_{h}>_D");
             graphSratio->SetMarkerStyle(20);
-            graphSratio->GetYaxis()->SetRangeUser(-10.0, 10.0); // Set Y axis range from 0.0 to 2.0
+            graphSratio->GetYaxis()->SetRangeUser(-5.0, 5.0); // Set Y axis range from 0.0 to 2.0
             graphSratio->Draw("AP");
             TLine *line = new TLine(graphSratio->GetXaxis()->GetXmin(), 1.0, graphSratio->GetXaxis()->GetXmax(), 1.0);
             line->SetLineStyle(2); // Dotted line
@@ -258,72 +254,108 @@ void sratio::multiplotSratio(){
 }
 
 void sratio::calcAsymmetries(){
-    TCanvas canvasAsy("c", "asy Sratiomon", 1200, 800);
-    canvasAsy.Divide(1, 2);
-    TH3 *h_num = (TH3*) h_Dplus->Clone("h_num");
-    TH3 *h_den = (TH3*) h_Dplus->Clone("h_den");
-    TH3 *h_A;
-    h_num->Add(h_Dminus, -1);
-    h_den ->Add(h_Dminus);
-    h_A = (TH3*) h_num->Clone("h_as"); 
-    h_A->Divide(h_den);
+    //TCanvas canvasAsy("c", "asy Sratiomon", 1200, 800);
+    //canvasAsy.Divide(1, 2);
+    //TH3 *h_num = (TH3*) h_Dplus->Clone("h_num");
+    //TH3 *h_den = (TH3*) h_Dplus->Clone("h_den");
+    //TH3 *h_A;
+    //h_num->Add(h_Dminus, -1);
+    //h_den ->Add(h_Dminus);
+    //h_A = (TH3*) h_num->Clone("h_as"); 
+    //h_A->Divide(h_den);
+//
+    //delete h_num;
+    //delete h_den;
+    //canvasAsy.cd(1);
+    //h_A->SetTitle("AsyPhiMon");
+    //h_A->SetLineColor(kRed);
+    //h_A->SetAxisRange(-0.6,0.6,"Y");
+    //h_A->Draw();
+    //canvasAsy.Print("asyphi.pdf)");
+    
+    int numBinsX = h_Dplus->GetNbinsX();    //same bins 4 Dplus and Dminus 
+    int numBinsY = h_Dplus->GetNbinsY(); 
+    int numBinsZ = h_Dplus->GetNbinsZ(); 
 
-    delete h_num;
-    delete h_den;
-    canvasAsy.cd(1);
-    h_A->SetTitle("AsyPhiMon");
-    h_A->SetLineColor(kRed);
-    h_A->SetAxisRange(-0.6,0.6,"Y");
-    h_A->Draw();
-    canvasAsy.Print("asyphi.pdf)");
 
-    for (int Xbin = 1; Xbin <= h_Dplus->GetNbinsX(); Xbin++) {
-        double xValue = h_Dplus->GetXaxis()->GetBinCenter(Xbin);
-        std::string pdfFileName = "calcPlotAsymphih_z" + std::to_string(xValue) + ".pdf";
-        //this is one pdf for each x value ( which is z )
-        TCanvas canvasphi("c", "Multiplot phih", 1200, 800);
-        //one canvas per pdf, which be divided in 6 (we ll use 5 pads)
-        canvasphi.Divide(3, 2);
-        for (int Ybin = 1; Ybin <= h_Dplus->GetNbinsY(); Ybin++) {
-            //both X,Y are binned the same for h_Dplus and h_Dminus
-            double YValue = h_Dplus->GetYaxis()->GetBinCenter(Ybin);
-            canvasphi.cd(Ybin );
-            TGraphErrors* graphphih = new TGraphErrors();
-            //create one graph per pad, so per pt2 value. 
-            //following loop allows to have graphs as a fct of Phih
-            for (int Zbin = 1; Zbin <= h_Dplus->GetNbinsZ(); Zbin++) {
+    for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {
+        //double xValue = h_Dplus->GetXaxis()->GetBinCenter(Xbin+1);
+        //std::string pdfFileName = "calcPlotAsymphih_z" + std::to_string(xValue) + ".pdf";
+        ////this is one pdf for each x value ( which is z )
+        //TCanvas canvasphi("c", "Multiplot phih", 1200, 800);
+        ////one canvas per pdf, which be divided in 6 (we ll use 5 pads)
+        //canvasphi.Divide(3, 2);
+        for (int Ybin = 1; Ybin <= numBinsY; Ybin++) {
+            ////both X,Y are binned the same for h_Dplus and h_Dminus
+            //double YValue = h_Dplus->GetYaxis()->GetBinCenter(Ybin+1);
+            //canvasphi.cd(Ybin+ 1);
+            //TGraphErrors* graphphih = new TGraphErrors();
+            ////create one graph per pad, so per pt2 value. 
+            ////following loop allows to have graphs as a fct of Phih
+            for (int Zbin = 1; Zbin <= numBinsZ; Zbin++) {
                 //same here, Z is binned the same for h_Dplus and h_Dminus
-                double ZValue = h_Dplus->GetZaxis()->GetBinCenter(Zbin );
+                double ZValue = h_Dplus->GetZaxis()->GetBinCenter(Zbin );   //useless here
                 double valueplus = h_Dplus->GetBinContent(Xbin, Ybin, Zbin);
                 double valueminus = h_Dminus->GetBinContent(Xbin, Ybin, Zbin);
-                double AsymPoint =  (valueplus - valueminus) / (valueplus + valueminus) ;
-                //double error = h_Dplus->GetBinError(Xbin, Ybin, Zbin); //maybe errors are lost in the 3D hist. Ignore this.
+                double errorplus = (valueplus > 0) ? sqrt(valueplus) : 0.0;
+                double errorminus = (valueminus > 0) ? sqrt(valueminus) : 0.0; 
+                double AsymPoint =  (valueplus - valueminus) / (valueplus + valueminus) ;   //add ward here ?
+                double Err_AsymPoint = (2 * sqrt((valueminus * errorplus) * (valueminus * errorplus) + (valueplus * errorminus) * (valueplus * errorminus))) /((valueplus + valueminus) * (valueplus + valueminus));
+
                 //std::cout << "Asymmetry = " << value << " +- " << error << std::endl;
-                graphphih->SetPoint(Zbin, ZValue, AsymPoint);
+                //graphphih->SetPoint(Zbin, ZValue, AsymPoint);
                 //std::cout << "phih = " << ZValue << std::endl;
                 //graphphih->SetPointError(z, 0.0, Err_AsymPoint);
+                AsymmMatrix[Xbin-1][Ybin-1][Zbin-1] = AsymPoint;
+                errorAsymmMatrix[Xbin-1][Ybin-1][Zbin-1] = Err_AsymPoint;
+
      
             }
-            graphphih->SetTitle(("Asymmetry (#phi_{h}>_D) , pt2=" + std::to_string(YValue)).c_str());
-            graphphih->GetXaxis()->SetTitle("#phi_{h}");
-            graphphih->GetYaxis()->SetTitle("A(#phi_{h})");
-            graphphih->SetMarkerStyle(20);
-            graphphih->GetYaxis()->SetRangeUser(-1.5, 1.5);            graphphih->Draw("AP");
-            TLine* line = new TLine(graphphih->GetXaxis()->GetXmin(), 0.0, graphphih->GetXaxis()->GetXmax(), 0.0);
-            line->SetLineStyle(2);
-            line->Draw("same");
+            //graphphih->SetTitle(("Asymmetry (#phi_{h}>_D) , pt2=" + std::to_string(YValue)).c_str());
+            //graphphih->GetXaxis()->SetTitle("#phi_{h}");
+            //graphphih->GetYaxis()->SetTitle("A(#phi_{h})");
+            //graphphih->SetMarkerStyle(20);
+            //graphphih->GetYaxis()->SetRangeUser(-1.5, 1.5);            graphphih->Draw("AP");
+            //TLine* line = new TLine(graphphih->GetXaxis()->GetXmin(), 0.0, graphphih->GetXaxis()->GetXmax(), 0.0);
+            //line->SetLineStyle(2);
+            //line->Draw("same");
         }
-        canvasphi.SaveAs(pdfFileName.c_str());
+        //canvasphi.SaveAs(pdfFileName.c_str());
     }
-
-
-
-
-
     
 }
+//if ((valueplus + valueminus) != 0) {
+//        double AsymPoint = (valueplus - valueminus) / (valueplus + valueminus);
+//        double Err_AsymPoint = (2 * sqrt((valueminus * errorplus) * (valueminus * errorplus) + (valueplus * errorminus) * (valueplus * errorminus))) /
+//                               ((valueplus + valueminus) * (valueplus + valueminus));
+//
+//        // Set the point and error in the TGraphErrors
+//        graphphih->SetPoint(Zbin, ZValue, AsymPoint);
+//        graphphih->SetPointError(Zbin, 0.0, Err_AsymPoint);
+//    } else {
+//        // Handle division by zero if the denominator is zero
+//        graphphih->SetPoint(Zbin, ZValue, 0);
+//        graphphih->SetPointError(Zbin, 0.0, 0.0);
+//    }
 
-
+void sratio::writeAsymmToFile(const std::string& filename){
+    //not needed unless output in file wanted for verification  
+    std::ofstream outputFile(filename);
+    for (int x = 0; x < Cratiobin; ++x) { //cratiobin should be 5 
+        double xaxisval = h_Dplus->GetXaxis()->GetBinCenter(x + 1);
+        outputFile << "z = " << xaxisval << std::endl;
+        for (int y =0; y< Cratiobin; ++y) {
+            for (int z = 0; z < Cratiobin; ++z) {
+                double value = AsymmMatrix[x][y][z];
+                double error = errorAsymmMatrix[x][y][z];
+                outputFile << value << " +- " << error << "\t\t";
+            }
+            outputFile << std::endl;
+        }
+        outputFile << std::endl << std::endl;
+    }
+    outputFile.close();
+}
 
 
 void sratio::multiplotSratio( sratio& SratioOther, sratio& SratioThird){
