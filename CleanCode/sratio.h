@@ -122,25 +122,28 @@ private:
     
 
     //histograms (3D, x,Q,z) for weighted  in squared cos  useful for VARIANCE
-    TH3 *h_wD_sqSratio ; //= new TH3F("wD_sqCratio", "wD_sqCratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );//definition w/ 3 args
-    TH3 *h_wA_sqSratio ; //= new TH3F("wA_sqCratio", "wA_sqCratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );
+    TH3F *h_wD_sqSratio ; //= new TH3F("wD_sqCratio", "wD_sqCratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );//definition w/ 3 args
+    TH3F *h_wA_sqSratio ; //= new TH3F("wA_sqCratio", "wA_sqCratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );
 
 
     //2D histograms for phi monitoring (useful?)
-    TH2 *h_xphiD; //= new TH2F("xphiD", "xphiD", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
-    TH2 *h_xphiA; //= new TH2F("xphiA", "xphiA", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
-    TH2 *h_QphiD; //= new TH2F("QphiD", "QphiD", Cratiobin_Q, QminCratio, QmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
-    TH2 *h_QphiA; //= new TH2F("QphiA", "QphiA", Cratiobin_Q, QminCratio, QmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
-    TH2 *h_zphiD; //= new TH2F("zphiD", "zphiD", Cratiobin_z, zminCratio, zmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
-    TH2 *h_zphiA; //= new TH2F("zphiA", "zphiA", Cratiobin_z, zminCratio, zmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
-    TH2 *h_xQA; //= new TH2F("xQA", "xQA", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_Q, QminCratio, QmaxCratio);
-    TH2 *h_xQD; //= new TH2F("xzA", "xzA", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_z, zminCratio, zmaxCratio);
-    TH1 *h_phiMonA;
-    TH1 *h_phiMonD;
+    TH2F *h_xphiD; //= new TH2F("xphiD", "xphiD", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2F *h_xphiA; //= new TH2F("xphiA", "xphiA", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2F *h_QphiD; //= new TH2F("QphiD", "QphiD", Cratiobin_Q, QminCratio, QmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2F *h_QphiA; //= new TH2F("QphiA", "QphiA", Cratiobin_Q, QminCratio, QmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2F *h_zphiD; //= new TH2F("zphiD", "zphiD", Cratiobin_z, zminCratio, zmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2F *h_zphiA; //= new TH2F("zphiA", "zphiA", Cratiobin_z, zminCratio, zmaxCratio, Cratiobin_phih, phihminCratio, phihmaxCratio);
+    TH2F *h_xQA; //= new TH2F("xQA", "xQA", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_Q, QminCratio, QmaxCratio);
+    TH2F *h_xQD; //= new TH2F("xzA", "xzA", Cratiobin_x, xminCratio, xmaxCratio, Cratiobin_z, zminCratio, zmaxCratio);
+    TH1F *h_phiMonA;
+    TH1F *h_phiMonD;
 
     //3D histo for asymmetries ( plus and minus )
-    TH3 *h_Dplus;
-    TH3 *h_Dminus;
+    TH3F *h_Dplus;
+    TH3F *h_Dminus;
+    TH3F *h_Aplus;
+    TH3F *h_Aminus;
+
 
 
 

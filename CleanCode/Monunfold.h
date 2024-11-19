@@ -203,6 +203,10 @@ private:
     TH2F *h_vycomp;
 
 
+    TH1F *h_chi2_el; // = new TH1F("chi2", "chi2", 100, 0, 10) ;
+    TH1F *h_chi2_pi; // = new TH1F("chi2", "chi2", 100, 0, 10) ;
+
+
 
     TH1F *h_evtnbrdiff;   //evtnbr_sim - evtnbr_mc should be 0 iw we are reading the same event.    
 

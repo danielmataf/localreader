@@ -102,6 +102,8 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_E_picomp(new TH2F(("U_E_picomp_" + targetName).c_str(), "E_picomp", nubin, 0, 10, nubin, 0, 10)),
     h_vxcomp(new TH2F(("U_vxcomp_" + targetName).c_str(), "vxcomp", nubin, -10, 10, nubin, -10, 10)),
     h_vycomp(new TH2F(("U_vycomp_" + targetName).c_str(), "vycomp", nubin, -10, 10, nubin, -10, 10)), 
+    h_chi2_el(new TH1F(("U_chi2_el_" + targetName).c_str(), "chi2_el", nubin, 0, 10)),
+    h_chi2_pi(new TH1F(("U_chi2_pi_" + targetName).c_str(), "chi2_pi", nubin, 0, 10)),
 
 
 
@@ -251,6 +253,7 @@ void Monunfold::FillHistogramswCuts(const Event& event) {
         h_ptot_el->Fill(sqrt(electron.GetMomentum().Mag2()));
         h_theta_el->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI);
         h_phi_el->Fill(electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+        h_chi2_el->Fill(electron.Getchi2());
         //h_polcoord_el->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI, electron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
         //h_E_el->Fill(electron.GetMomentum().E());
         //h_E_el_theta->Fill(electron.GetMomentum().Theta() * 180.0 / Constants::PI, electron.GetMomentum().E());
@@ -269,6 +272,7 @@ void Monunfold::FillHistogramswCuts(const Event& event) {
                     h_ptot_pi->Fill(hadron.GetMomentum().P());
                     h_theta_pi->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI);
                     h_phi_pi->Fill(hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+                    h_chi2_pi->Fill(hadron.Getchi2());
                     //h_polcoord_pi->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI, hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
                     //h_E_pi->Fill(hadron.GetMomentum().E());
                     //h_E_pi_theta->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI, hadron.GetMomentum().E());
@@ -653,6 +657,8 @@ void Monunfold::SaveHistRoot(const std::string& filenameREC) {
     //h_DeltaVz->Write();
 
     //    outputFile.Close();
+    h_chi2_el->Write();
+    h_chi2_pi->Write();
     rootFile->Close();
     delete rootFile; 
 

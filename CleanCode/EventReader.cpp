@@ -131,6 +131,7 @@
         currentEvent.SetHelRaw(hel_raw);
     }
 
+
     double EventReader::GetMassID(int id) {
             //a function that retunrs the mass according to the particle PID in argument
     switch (id) {
@@ -227,6 +228,7 @@ bool EventReader::isSimulatedData(hipo::event event) {
         event.getStructure(RECcher);
         event.getStructure(HELbank);
         event.getStructure(MCpart);
+        event.getStructure(RECevt);
 
         
         //RECgen.show();
@@ -361,8 +363,10 @@ bool EventReader::isSimulatedData(hipo::event event) {
             int hel_evt = 0;
             int hel_raw = 0;
             //for (int hel_row = 0; hel_row < HELbank.getRows(); ++hel_row){
-            hel_evt = HELbank.getInt("helicity", 0);
-            hel_raw = HELbank.getInt("helicityRaw", 0);
+            hel_evt = RECevt.getInt("helicity", 0);
+            hel_raw = RECevt.getInt("helicityRaw", 0);
+            //std::cout << "hel_evt: " << hel_evt << std::endl;
+            //std::cout << "hel_raw: " << hel_raw << std::endl;
             AddHelInfo(hel_evt, hel_raw);
         }
         
@@ -405,6 +409,7 @@ std::optional<Event> EventReader::ProcessEventsInFile() {
             //HELbank = factory.getSchema("REC::Event"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
             //HELbank = factory.getSchema("HEL::flip"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
             MCpart = factory.getSchema("MC::Particle");
+            MCevt = factory.getSchema("MC::Event");
             //RUNconfig = factory.getSchema("RUN::config");
             std::cout << "Processing file: " << filename << std::endl;
         } 
@@ -436,6 +441,7 @@ std::optional<Event> EventReader::ProcessEventsInFileMC() {
             reader.readDictionary(factory);
             RUNconfig = factory.getSchema("RUN::config");
             MCpart = factory.getSchema("MC::Particle");
+            MCevt = factory.getSchema("MC::Event");
             std::cout << "Processing file MC: " << filename << std::endl;   //I guess we can delete this!
         } 
         hipo::event hipoEvent;

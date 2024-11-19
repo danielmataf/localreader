@@ -188,7 +188,8 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
                         h_E_pi_phi->Fill(hadron.GetMomentum().Phi()*180/Constants::PI +180, hadron.GetMomentum().E());
                         h_vertexZ_pi->Fill(hadron.GetParticleVertexZ());
                         h_DeltaVz->Fill(event.GetVz()-hadron.GetParticleVertexZ());
-
+                        h_helicity->Fill(event.GetHel());
+                        h_helicity_raw->Fill(event.GetHelRaw());
                     }
                 }
 

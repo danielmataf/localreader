@@ -64,11 +64,11 @@ void Ratio::FillHistograms(const Event& event) {
 
                                                 //using a flag for targets 
     //forget condition on taarget, that should directly be a cut !!!! TBD 
-    if (targetType == 0 && cutd.PassCutsElectrons(event)==true && cutd.PassCutsDetectors(event)==true) {
+    if (targetType == 0 && cutd.PassCutsElectrons(event)==true && cutd.PassCutsDetectors(event)==true ) { 
         counter_elLD2 ++;
         //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
         h_nuD->Fill(event.Getnu());
-        //std::cout << "nu = " << event.Getnu() << std::endl;
+        //std::cout << "nu = " << event.Getnu() << std::endl; /bump
         for (const Particle& hadron : event.GetHadrons()) {
             if (cutd.PassCutsHadrons(hadron)==true){
                 //if (hadron.GetPID() == Constants::PION_PLUS_PID  ){
@@ -152,17 +152,23 @@ void Ratio::DrawSelfHistos(Ratio& ratioOther ){
     TCanvas *cSelf = new TCanvas("mon4self", "mon4self");
     cSelf->Divide(2,2);
     cSelf->cd(1);
-    h_nuA->Draw();
     h_nuA->SetTitle("nu_C");
+    //h_nuD->SetLineColor(kRed);
+    //h_nuD->Draw();
+    h_nuA->Draw();
+
     cSelf->cd(2);
     h_nu_A_had->Draw();
     h_nu_A_had->SetTitle("nu_C_had");
+
     cSelf->cd(3);
     h_z_A_had->Draw();
     h_z_A_had->SetTitle("z_C_had");
+    
     cSelf->cd(4);
     h_pt2_A_had->Draw();
     h_pt2_A_had->SetTitle("pt2_C_had");
+
     cSelf->SaveAs("self_histos.pdf");
 
 
@@ -980,6 +986,87 @@ void Ratio::multiRall2(  Ratio& ratioCu,    Ratio& ratioC, Ratio& ratioSnsim , R
             prelimText->SetTextAlign(22);  // centered alignment
             prelimText->DrawLatex(0.5, 0.5, "preliminary");
         }
+        canvas.SaveAs(pdfFileName.c_str());
+    }
+}
+
+void Ratio::Rtargetsimcomp( Ratio& ratiosim){
+    for (int x = 0; x < Rbin; ++x) {
+
+        double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "singletargetcomp_" + targetName + "_nu" + std::to_string(nuValue) + ".pdf";
+        TCanvas canvas("c", "Multiplot double R", 1200, 800);
+        canvas.Divide(3, 2); 
+        for (int z = 0; z < Rbin; ++z) {
+            TMultiGraph *mg = new TMultiGraph();
+
+            double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
+            canvas.cd(z + 1);
+            TGraphErrors *graph = new TGraphErrors();
+            TGraphErrors *graphsim = new TGraphErrors();
+            
+            for (int y = 0; y < Rbin; ++y) {
+                double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
+                double value = ratMatrix[x][y][z];
+                double error = errorMatrix[x][y][z];
+                double valuesim = ratiosim.getRatMatrix()[x][y][z];
+                double errorsim = ratiosim.getErrorMatrix()[x][y][z];
+
+                graph->SetPoint(y, zValue, value);
+                graph->SetPointError(y, 0.0, error); 
+                graphsim->SetPoint(y, zValue+0.01, valuesim);
+                graphsim->SetPointError(y+0.01, 0.0, errorsim);
+                
+
+            }
+
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << pt2Value;
+            std::string formattedPt2Value = ss.str();
+            //std::cout << "formattedPt2Value = " << formattedPt2Value << std::endl;
+            std::string title = "R vs z for " + targetName + ", p_{t}^{2}=" + formattedPt2Value + " GeV^{2}";
+            //std::string title = "R vs z, p_{t}^{2}=" + formattedPt2Value + " GeV^{2}";          /// how to display proper title!!!! here///
+
+            graph->SetTitle(title.c_str());
+            graph->GetXaxis()->SetTitle("z");
+            graph->GetYaxis()->SetTitle("R");
+            graph->SetMarkerStyle(20);
+            graphsim->SetMarkerStyle(20);
+            graph->GetYaxis()->SetRangeUser(0.0, 2.0); // this seems useless
+            //graph->Draw("AP");
+            graphsim->SetMarkerColor(kRed);
+
+            graph->SetMarkerColor(kBlue);
+            
+
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graph, "data", "lp");
+            legend->AddEntry(graphsim, "simulated", "lp");
+
+            TLine *line = new TLine(graph->GetXaxis()->GetXmin()+0.02, 1.0, graph->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // dotted line
+            line->SetLineColor(kGray + 1); //grayer for aethetic 
+            mg->Add(graph);
+            mg->Add(graphsim);
+            mg->SetTitle((title).c_str() );
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("R");
+            mg->GetYaxis()->SetRangeUser(-1.0, 2.0); // 
+
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        
+        }
+
         canvas.SaveAs(pdfFileName.c_str());
     }
 }

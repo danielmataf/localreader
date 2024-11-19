@@ -6,6 +6,7 @@
 #include <chrono>
 #include <thread>
 #include "FilePathGenerator.h"
+#include <stdexcept>
 
 // Default constructor definition
 FilePathGenerator::FilePathGenerator() {
@@ -47,14 +48,41 @@ void FilePathGenerator::readFilePathsFromTextFile(const std::string& filename, s
 }
 
 void FilePathGenerator::Files2Vector(const std::string& directory, std::vector<std::string>& filepaths) {
-    //generate file paths automatically from a directory and append them to the vector
-    for (const auto& entry : fs::directory_iterator(directory)) {
-        if (entry.path().extension() == ".hipo") {
-            //std::cout << entry.path() << std::endl;
-            filepaths.push_back(entry.path().string());
+    try {
+        // Check if the directory exists and is not empty
+        if (!fs::exists(directory)) {
+            std::cerr << "Error: Directory does not exist: " << directory << std::endl;
+            return;
+        }
+
+        filepaths.clear();  // Ensure filepaths vector is empty before populating
+
+        // Iterate through directory and add all .hipo files to the vector
+        int fileCount = 0;
+        for (const auto& entry : fs::directory_iterator(directory)) {
+            if (entry.path().extension() == ".hipo") {
+                std::string filePath = entry.path().string();
+                std::cout << "Found .hipo file: " << filePath << std::endl;  // Debugging line
+                filepaths.push_back(filePath);
+                fileCount++;
+            }
+        }
+
+        // Post-iteration checks
+        if (filepaths.empty()) {
+            std::cerr << "No .hipo files found in the directory: " << directory << std::endl;
+        } else {
+            std::cout << "Total .hipo files added to vector: " << fileCount << std::endl;
         }
     }
+    catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+    }
 }
+
 
 void FilePathGenerator::ParDir2Vector(const std::string& parentDirectory, std::vector<std::string>& filepaths) {
     //This function takes a folder, and goes inside all the directories inside to recover every hipo file and put it in a vector
@@ -71,24 +99,68 @@ void FilePathGenerator::ParDir2Vector(const std::string& parentDirectory, std::v
     }
 }
 
- void FilePathGenerator::SnDir2Vector(const std::string& parentDirectory, std::vector<std::string>& filepaths) {
-        // this should go through all folders inside  '/volatile/clas12/dmat/gen/Sn/'
-        //std::cout << "pathfinding starts : " << parentDirectory << std::endl;
+// void FilePathGenerator::SnDir2Vector(const std::string& parentDirectory, std::vector<std::string>& filepaths) {
+//        // this should go through all folders inside  '/volatile/clas12/dmat/gen/Sn/'
+//        //std::cout << "pathfinding starts : " << parentDirectory << std::endl;
+//        for (const auto& entry : fs::directory_iterator(parentDirectory)) {
+//            if (entry.is_directory()) {
+//                std::string subdirectory = entry.path().string();
+//                std::cout << "subdirectory path: " << subdirectory << std::endl;
+//                // check if the subdir has the file we want
+//                std::string targetFile = subdirectory + "/sidis_mc-master/r_ttest3S.hipo";    //this is gonna be a problem... we need to change the name of the file in simu output 
+//                //in the meantime another function LD2 specific has been created below
+//                //wait, maybe not; To be continued  
+//                if (fs::exists(targetFile)) {
+//                    std::cout << "target file found: " << targetFile << std::endl;
+//                    filepaths.push_back(targetFile);
+//                }
+//            }
+//        }
+//    }
+
+
+
+void FilePathGenerator::SnDir2Vector(const std::string& parentDirectory, std::vector<std::string>& filepaths) {
+    try {
+        // Check if the parent directory exists before iterating
+        if (!fs::exists(parentDirectory)) {
+            throw std::runtime_error("Parent directory does not exist: " + parentDirectory);
+        }
+
         for (const auto& entry : fs::directory_iterator(parentDirectory)) {
             if (entry.is_directory()) {
                 std::string subdirectory = entry.path().string();
-                std::cout << "subdirectory path: " << subdirectory << std::endl;
-                // check if the subdir has the file we want
-                std::string targetFile = subdirectory + "/sidis_mc-master/r_ttest3S.hipo";    //this is gonna be a problem... we need to change the name of the file in simu output 
-                //in the meantime another function LD2 specific has been created below
-                //wait, maybe not; To be continued  
+                std::cout << "Subdirectory path: " << subdirectory << std::endl;
+
+                std::string targetFile = subdirectory + "/sidis_mc-master/r_ttest3S.hipo";
+                
                 if (fs::exists(targetFile)) {
-                    std::cout << "target file found: " << targetFile << std::endl;
+                    std::cout << "Target file found: " << targetFile << std::endl;
                     filepaths.push_back(targetFile);
+                } else {
+                    std::cerr << "Target file not found in: " << subdirectory << std::endl;
                 }
             }
         }
+
+        // Extra validation to check if filepaths vector has elements before accessing it
+        if (filepaths.empty()) {
+            std::cerr << "No target files were found in the specified directory." << std::endl;
+        } else {
+            std::cout << "Total files found: " << filepaths.size() << std::endl;
+        }
     }
+    catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << std::endl;
+    }
+    catch (const std::out_of_range& e) {
+        std::cerr << "Out of range error: " << e.what() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+    }
+}
+
 
 // Function to display progress with a percentage and a loading bar
 void FilePathGenerator::displayProgress(int current, int total) {

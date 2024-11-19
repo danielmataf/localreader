@@ -52,7 +52,7 @@ private:
     hipo::reader reader;
     hipo::event event;
     hipo::dictionary factory;
-    int filenb;
+    int filenb ;
     std::vector<std::string> filelist;
     Event currentEvent;
 

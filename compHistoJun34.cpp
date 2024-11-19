@@ -23,8 +23,8 @@
 #include <map>
 
 void CompareHistograms(const char* target, const std::vector<std::string>& plotTitles, const std::vector<std::string>& xTitles) {
-    std::string file1 = std::string("/home/matamoros/novv6") + target + "_test.root";
-    std::string file2 = std::string("/home/matamoros/novv6") + target + "_sim.root";
+    std::string file1 = std::string("/home/matamoros/v6") + target + "_test.root";
+    std::string file2 = std::string("/home/matamoros/v6") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {
@@ -66,7 +66,13 @@ void CompareHistograms(const char* target, const std::vector<std::string>& plotT
         {"lw_el"+ std::string(target) + "_RGD", "lw_el" + std::string(target) + "_sim"},
         {"epcal_el"+ std::string(target) + "_RGD", "epcal_el" + std::string(target) + "_sim"},
         {"Nphe15_"+ std::string(target) + "_RGD", "Nphe15_" + std::string(target) + "_sim"},
-        {"Nphe16_"+ std::string(target) + "_RGD", "Nphe16_" + std::string(target) + "_sim"}
+        {"Nphe16_"+ std::string(target) + "_RGD", "Nphe16_" + std::string(target) + "_sim"},
+        {"chi2_el_"+ std::string(target) + "_RGD", "chi2_el_" + std::string(target) + "_sim"},
+        {"chi2_pi_"+ std::string(target) + "_RGD", "chi2_pi_" + std::string(target) + "_sim"},
+        {"helicity_"+ std::string(target) + "_RGD", "helicity_" + std::string(target) + "_sim"},
+        {"helicity_raw_"+ std::string(target) + "_RGD", "helicity_raw_" + std::string(target) + "_sim"},
+
+
     };
 
     TCanvas* pdfCanvas = new TCanvas("pdfCanvas", "Combined Histogram Comparison", 1000, 800);
@@ -149,7 +155,7 @@ void CompareHistograms(const char* target, const std::vector<std::string>& plotT
 }
 
 int main() {
-    const char* target = "Cu"; // can be changed to targets Cu, Sn, LD2, C1, C2
+    const char* target = "C2"; // can be changed to targets Cu, Sn, LD2, C1, C2
     CompareHistograms(target, {}, {});
     return 0;
 }

@@ -47,6 +47,8 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
 
     h_Dminus (new TH3F (( " count3Dm"+targetName).c_str(), ( "count3Dm"+targetName).c_str(),5, Constants::RcutminZ, Constants::RcutmaxZ, 5 , Constants::RcutminPt2, Constants::RcutmaxPt2, 5, 0,360)),
     h_Dplus (new TH3F (( " count3Dp"+targetName).c_str(), ( "count3Dp"+targetName).c_str(), 5, Constants::RcutminZ, Constants::RcutmaxZ, 5 , Constants::RcutminPt2, Constants::RcutmaxPt2, 5, 0,360)),
+    h_Aminus (new TH3F (( " count3Am"+targetName).c_str(), ( "count3Am"+targetName).c_str(),5, Constants::RcutminZ, Constants::RcutmaxZ, 5 , Constants::RcutminPt2, Constants::RcutmaxPt2, 5, 0,360)),
+    h_Aplus (new TH3F (( " count3Ap"+targetName).c_str(), ( "count3Ap"+targetName).c_str(), 5, Constants::RcutminZ, Constants::RcutmaxZ, 5 , Constants::RcutminPt2, Constants::RcutmaxPt2, 5, 0,360)),
 
     h_xQA ( new TH2F(("xQA"+targetName).c_str(), ("xQA"+targetName).c_str(), 100, xminCratio, xmaxCratio, 100, Constants::RcutminQ, Constants::RcutmaxQ)),
     h_xQD ( new TH2F(("xQD"+targetName).c_str(), ("xQD"+targetName).c_str(), 100, xminCratio, xmaxCratio, 100, Constants::RcutminQ, Constants::RcutmaxQ)),
@@ -68,20 +70,22 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
     void sratio::FillHistograms(const Event& event){
         int targetType = event.GetTargetType();
         int helicity = event.GetHel();
-        //Retrieving helicity to consider "loss" or "cost" when value is -1. gain when value = +1
+
+        //retrieve hel to consider "loss" when value is -1. aka gain when value = +1
         //for 'loss' and 'gain' we'll add additionnal weight in count histograms. And adding a helicity factor to the histos already weighted. 
             //std::cout << " S " << std::endl;
 
-        if (targetType == 0 && cutd.PassCutsElectrons(event)==true) {
+        if (targetType == 0 && cutd.PassCutsElectrons(event)==true && cutd.PassCutsDetectors(event)==true) {
             //std::cout << " D " << std::endl;
-
             counter_elLD2 ++;
             //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
             hSratio_nuD->Fill(event.electron.Getnu(), helicity); //only counts. Weighting with helicity 
+            // I think this is useless. We dont care about electron count anymore
             //should be X ????
 
 
             for (const Particle& hadron : event.GetHadrons()) {
+
                 if (cutd.PassCutsHadrons(hadron)==true){
                     if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
 
@@ -101,8 +105,10 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
                         hSratio_zD_w->Fill(hadron.Getz(), sin(phiD)*helicity);
                         if (helicity == -1){
                             h_Dminus->Fill(hadron.Getz(), hadron.Getpt2(), phiD);
+
                         }
                         else if (helicity == 1){
+
                             h_Dplus->Fill(hadron.Getz(), hadron.Getpt2(), phiD);
                         }       
                     }
@@ -129,6 +135,12 @@ sratio::sratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
                         h_phiMonA->Fill(phiA);
                         hSratio_zA->Fill(hadron.Getz() );   //*helicity
                         hSratio_zA_w->Fill(hadron.Getz(), sin(phiA)*helicity);
+                        if (helicity == -1){
+                            h_Aminus->Fill(hadron.Getz(), hadron.Getpt2(), phiA);
+                        }
+                        else if (helicity == 1){
+                            h_Aplus->Fill(hadron.Getz(), hadron.Getpt2(), phiA);
+                        }       
 
                     }
                 }
@@ -170,7 +182,7 @@ void sratio::calcSratio(){
                 double countA = h_A_Sratio3D->GetBinContent(Xbin,Ybin,Zbin);
                 double sqvalD = h_wD_sqSratio->GetBinContent(Xbin,Ybin,Zbin);
                 double sqvalA = h_wA_sqSratio->GetBinContent(Xbin,Ybin,Zbin);
-                double wavg_SratioD = (countD != 0) ? valD/countD : 0.0;   //weighted average ok 
+                double wavg_SratioD = (countD != 0) ? valD/countD : 0.01;   //weighted average ok 
                 double wavg_SratioA = (countA != 0) ? valA/countA : 0.001;
                 double Sratio_point = (wavg_SratioD != 0) ? wavg_SratioA / wavg_SratioD : 0.01;
                 //double Sratio_point =  wavg_SratioD ;
@@ -273,9 +285,9 @@ void sratio::calcAsymmetries(){
     //h_A->Draw();
     //canvasAsy.Print("asyphi.pdf)");
     
-    int numBinsX = h_Dplus->GetNbinsX();    //same bins 4 Dplus and Dminus 
-    int numBinsY = h_Dplus->GetNbinsY(); 
-    int numBinsZ = h_Dplus->GetNbinsZ(); 
+    int numBinsX = h_Aplus->GetNbinsX();    //same bins 4 Dplus and Dminus 
+    int numBinsY = h_Aplus->GetNbinsY(); 
+    int numBinsZ = h_Aplus->GetNbinsZ(); 
 
 
     for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {
@@ -294,9 +306,9 @@ void sratio::calcAsymmetries(){
             ////following loop allows to have graphs as a fct of Phih
             for (int Zbin = 1; Zbin <= numBinsZ; Zbin++) {
                 //same here, Z is binned the same for h_Dplus and h_Dminus
-                double ZValue = h_Dplus->GetZaxis()->GetBinCenter(Zbin );   //useless here
-                double valueplus = h_Dplus->GetBinContent(Xbin, Ybin, Zbin);
-                double valueminus = h_Dminus->GetBinContent(Xbin, Ybin, Zbin);
+                double ZValue = h_Aplus->GetZaxis()->GetBinCenter(Zbin );   //useless here
+                double valueplus = h_Aplus->GetBinContent(Xbin, Ybin, Zbin);
+                double valueminus = h_Aminus->GetBinContent(Xbin, Ybin, Zbin);
                 double errorplus = (valueplus > 0) ? sqrt(valueplus) : 0.0;
                 double errorminus = (valueminus > 0) ? sqrt(valueminus) : 0.0; 
                 double AsymPoint =  (valueplus - valueminus) / (valueplus + valueminus) ;   //add ward here ?
