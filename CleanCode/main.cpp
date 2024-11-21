@@ -80,21 +80,23 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
 
     CutSet testC1cuts;  //C1 RGD
     CutSet simC1cuts;   //C1
-    CutSet simC2cuts;   //C2
     CutSet testC2cuts;  //C2 RGD  
-    CutSet simLD2cuts;
+    CutSet simC2cuts;   //C2
     CutSet testLD2cuts;
-    CutSet simCucuts;
+    CutSet simLD2cuts;
     CutSet testCucuts;
-    CutSet simSncuts;
+    CutSet simCucuts;
     CutSet testSncuts;
+    CutSet simSncuts;
 
 
 
     //Defining cuts here. Vz cuts for SIM and RGD may differ -> check Mon Vz
-    simC1cuts.SetCutVz(Constants::RcutminVzC1sim,Constants::RcutminVzC1sim);     //vz cut for C1 target
+    //simC1cuts.SetCutVz(Constants::RcutminVzC1sim,Constants::RcutminVzC1sim);     //vz cut for C1 target
+    simC1cuts.SetCutVz(Constants::RcutminVzC1sim,Constants::RcutmaxVzC1sim);     //vz cut for C1 target
     simC1cuts.SetCutGen4Rat();
-    testC1cuts.SetCutVz(Constants::RcutminVzC1data,Constants::RcutminVzC1data);     //vz cut for C1 target
+    //testC1cuts.SetCutVz(Constants::RcutminVzC1data,Constants::RcutminVzC1data);     //vz cut for C1 target
+    testC1cuts.SetCutVz(Constants::RcutminVzC1data,Constants::RcutmaxVzC1data);     //vz cut for C1 target
     testC1cuts.SetCutGen4Rat();
 
     simC2cuts.SetCutVz(Constants::RcutminVzC2sim    , Constants::RcutmaxVzC2sim);     //vz cut for C2 target
@@ -139,6 +141,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     Ratio ratC2(testLD2cuts, testC2cuts, "C2_RGD");
     Ratio ratSn(testLD2cuts, testSncuts, "Sn_RGD");
     Ratio ratCu(testLD2cuts, testCucuts, "Cu_RGD");
+    Ratio simratC1(simLD2cuts, simC1cuts, "C1_sim");
     Ratio simratC2(simLD2cuts, simC2cuts, "C2_sim");
     Ratio simratSn(simLD2cuts, simSncuts, "Sn_sim");
     Ratio simratCu(simLD2cuts, simCucuts, "Cu_sim");
@@ -196,6 +199,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
                 eventsimLD2.calcAll();
                 munfSimLD2.FillHistCompwCuts(eventsimLD2, eventsimLD2_MC);
                 monSimLD2.FillHistogramswCuts(eventsimLD2);
+                simratC1.FillHistograms(eventsimLD2);
                 simratC2.FillHistograms(eventsimLD2);
                 simratSn.FillHistograms(eventsimLD2);
                 //simsratC2.FillHistograms(eventsimLD2);
@@ -223,8 +227,10 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
                     Event eventsimCxC = simCxC.value();
                     eventsimCxC.SetTargetType(1);
                     eventsimCxC.calcAll();
-                    munfSimC2.FillHistCompwCuts(eventsimCxC, eventsimCxC_MC);
+                    munfSimC2.FillHistComp(eventsimCxC, eventsimCxC_MC);
+                    monSimC1.FillHistogramswCuts(eventsimCxC);
                     monSimC2.FillHistogramswCuts(eventsimCxC);
+                    //simratC1.FillHistograms(eventsimCxC);
                     simratC2.FillHistograms(eventsimCxC);
                     //simsratC2.FillHistograms(eventsimCxC);
                 }
@@ -261,6 +267,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     monTestC1.SaveHistRoot("v6C1_test");
     std::cout << "//========= Simulation C2 ==========//  \n";
     monSimC2.SaveHistRoot("v6C2_sim");
+    monSimC1.SaveHistRoot("v6C1_sim");
     monTestC2.DrawHelicityHistograms("HELIXc2");
     //ratC2.calcRatios();
     //ratC1.calcRatios();
@@ -273,8 +280,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     ratSn.Rtargetsimcomp(simratSn);
     simratSn.DrawSelfHistos(simratSn);
     simratSn.multiplotR();
-
-    munfSimC2.SaveHistRoot("munfC2_sim");
+    munfSimC2.DrawCompRECMC("MUNFv6C2");
+    //munfSimC2.SaveHistRoot("munfC2_sim");
 
     //simsratC2.calcSratio();
     //simsratC2.calcAsymmetries();

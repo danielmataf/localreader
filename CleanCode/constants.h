@@ -111,7 +111,7 @@ namespace Constants {
     static const double RcutmaxY = 0.85 ;
     static const double RcutmaxW = 30.0 ;
     static const double RcutmaxZ = 0.7 ;
-    static const double RcutmaxPt2 = 1.0 ;   
+    static const double RcutmaxPt2 = 1.5 ;   
     static const double Rcutminnu = 4.0 ;
     static const double Rcutmaxnu = 9.0 ;
     static const int Rbin = 100;
@@ -167,8 +167,8 @@ namespace Constants {
     static const double RcutmaxVzCusim = -6 ;    //arbitrary +-.5
     static const double RcutminVzCsim = -7.5 ;     //default (for LD2)
     static const double RcutmaxVzCsim = -2.5 ;     //default (for LD2)
-    static const double RcutminVzC1sim = -4 ;    
-    static const double RcutmaxVzC1sim = -1 ;
+    static const double RcutminVzC1sim = -3.5 ;    
+    static const double RcutmaxVzC1sim = -1.5 ;
     static const double RcutminVzC2sim = -9 ;
     static const double RcutmaxVzC2sim = -6 ;
 
@@ -178,8 +178,8 @@ namespace Constants {
     static const double RcutmaxVzSndata = -2 ;
     static const double RcutminVzCudata = -10 ;    //arbitrary +-.5
     static const double RcutmaxVzCudata = -7 ;    //arbitrary +-.5
-    static const double RcutminVzC1data = -5 ;    
-    static const double RcutmaxVzC1data = -2 ;
+    static const double RcutminVzC1data = -4.5 ;    
+    static const double RcutmaxVzC1data = -2.5 ;
     static const double RcutminVzC2data = -10 ;
     static const double RcutmaxVzC2data = -7 ;
 

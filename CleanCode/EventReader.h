@@ -47,6 +47,7 @@ private:
     hipo::bank HELbank;
     hipo::bank RECevt;
     hipo::bank MCpart;
+    hipo::bank MCevt;
     //if other banks shoul be added, add here then propagate to ProcessEventsInFile in the .cpp
 
     hipo::reader reader;

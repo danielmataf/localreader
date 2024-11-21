@@ -200,6 +200,7 @@ private:
     //Chi2 histograms
     TH1F *h_chi2_el; // = new TH1F("chi2", "chi2", 100, 0, 10) ;
     TH1F *h_chi2_pi; // = new TH1F("chi2", "chi2", 100, 0, 10) ;
+    TH2F *h_chi2_pid_pi;
 
 
     //sampling fraction 

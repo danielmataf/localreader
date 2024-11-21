@@ -98,6 +98,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_Q2comp(new TH2F(("Q2comp_" + targetName).c_str(), "Q2comp", nubin, QminX, QmaxX,nubin, QminX, QmaxX)),
     h_chi2_el(new TH1F(("chi2_el_" + targetName).c_str(), "chi2_el", 100, -10, 10)),
     h_chi2_pi(new TH1F(("chi2_pi_" + targetName).c_str(), "chi2_pi", 100, -10, 10)),
+    h_chi2_pid_pi(new TH2F(("chi2_pid_pi_" + targetName).c_str(), "chi2_pid_pi", 100, -15, 15, 100, 0, 1)),
     h_sampl_el(new TH2F(("sampl_el_" + targetName).c_str(), "sampl_el", nubin, 0, 10, nubin, 0, 1)),
       counterel_R(0) {
     // Add more histograms as needed
@@ -169,6 +170,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
             h_E_el_phi->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180, event.electron.GetMomentum().E());
             for (const Particle& hadron : event.GetHadrons()) {
                 if (cut1.PassCutsHadrons(hadron)==true){
+
                     if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
                         h_epcal->Fill(event.electron.GetEpcal());
                         h_chi2_pi->Fill(hadron.Getchi2());
@@ -190,6 +192,8 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
                         h_DeltaVz->Fill(event.GetVz()-hadron.GetParticleVertexZ());
                         h_helicity->Fill(event.GetHel());
                         h_helicity_raw->Fill(event.GetHelRaw());
+                        h_chi2_pid_pi->Fill(hadron.Getchi2(),  (event.electron.GetEpcal()/event.electron.GetMomentum().P()) );
+
                     }
                 }
 
@@ -1247,6 +1251,7 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
 
     h_chi2_el->Write();
     h_chi2_pi->Write();
+    h_chi2_pid_pi->Write();
     h_sampl_el->Write();
 
 

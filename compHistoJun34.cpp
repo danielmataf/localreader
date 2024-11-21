@@ -23,8 +23,8 @@
 #include <map>
 
 void CompareHistograms(const char* target, const std::vector<std::string>& plotTitles, const std::vector<std::string>& xTitles) {
-    std::string file1 = std::string("/home/matamoros/v6") + target + "_test.root";
-    std::string file2 = std::string("/home/matamoros/v6") + target + "_sim.root";
+    std::string file1 = std::string("/home/matamoros/midnovv6") + target + "_test.root";
+    std::string file2 = std::string("/home/matamoros/midnovv6") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {

@@ -104,6 +104,13 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_vycomp(new TH2F(("U_vycomp_" + targetName).c_str(), "vycomp", nubin, -10, 10, nubin, -10, 10)), 
     h_chi2_el(new TH1F(("U_chi2_el_" + targetName).c_str(), "chi2_el", nubin, 0, 10)),
     h_chi2_pi(new TH1F(("U_chi2_pi_" + targetName).c_str(), "chi2_pi", nubin, 0, 10)),
+    h_px_piDelta(new TH1F (("U_Delta_px_pi_" + targetName).c_str(), "Delta_px_pi", nubin, -1, 1)),
+    h_py_piDelta(new TH1F (("U_Delta_py_pi_" + targetName).c_str(), "Delta_py_pi", nubin, -1, 1)),
+    h_pz_piDelta(new TH1F (("U_Delta_pz_pi_" + targetName).c_str(), "Delta_pz_pi", nubin, -1, 1)),
+    h_ptot_piDelta(new TH1F (("U_Delta_ptot_pi_" + targetName).c_str(), "Delta_ptot_pi", nubin, -1, 1)),
+    h_theta_piDelta(new TH1F (("U_Delta_theta_pi_" + targetName).c_str(), "Delta_theta_pi", nubin, -10, 10)),
+    h_phi_piDelta(new TH1F (("U_Delta_phi_pi_" + targetName).c_str(), "Delta_phi_pi", nubin, -100, 100)),
+    h_E_piDelta(new TH1F (("U_Delta_E_pi_" + targetName).c_str(), "Delta_E_pi", nubin, -1, 1)),
 
 
 
@@ -451,6 +458,16 @@ void Monunfold::FillHistComp(const Event& eventsim, const Event& eventmc){
                 h_E_picomp->Fill(hadron.GetMomentum().E(), MChadron.GetMomentum().E());
                 h_zcomp->Fill(hadron.Getz(), MChadron.GetzMC());
                 h_pt2comp->Fill(hadron.Getpt2(), MChadron.Getpt2MC());
+                h_px_piDelta->Fill(hadron.GetMomentum().X()-MChadron.GetMomentum().X());
+                h_py_piDelta->Fill(hadron.GetMomentum().Y()-MChadron.GetMomentum().Y());
+                h_pz_piDelta->Fill(hadron.GetMomentum().Z()-MChadron.GetMomentum().Z());
+                h_ptot_piDelta->Fill(hadron.GetMomentum().P()-MChadron.GetMomentum().P());
+                h_theta_piDelta->Fill(hadron.GetMomentum().Theta() * 180.0 / Constants::PI - MChadron.GetMomentum().Theta() * 180.0 / Constants::PI);
+                h_phi_piDelta->Fill(hadron.GetMomentum().Phi() * 180.0 / Constants::PI  - MChadron.GetMomentum().Phi() * 180.0 / Constants::PI );
+                //std::cout << " " << std::endl;
+                //std::cout << "phiREC = " << hadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0  << std::endl;
+                //std::cout << "phiMC = " << MChadron.GetMomentum().Phi() * 180.0 / Constants::PI + 180.0 << std::endl;
+                h_E_piDelta->Fill(hadron.GetMomentum().E()-MChadron.GetMomentum().E());
 
 
 
@@ -911,7 +928,25 @@ TCanvas c3("c3", "c3", 800, 600);
     c3.cd(7);
     h_pt2zMC->Draw("colz");
 
-    c3.Print((filename + ".pdf)").c_str());
+
+    c3.Print((filename + ".pdf").c_str());
+TCanvas c4("c4", "c4", 800, 600);
+    c4.Divide(3, 3);
+    c4.cd(1);
+    h_px_piDelta->Draw();
+    c4.cd(2);
+    h_py_piDelta->Draw();
+    c4.cd(3);
+    h_pz_piDelta->Draw();
+    c4.cd(4);
+    h_ptot_piDelta->Draw();
+    c4.cd(5);
+    h_theta_piDelta->Draw();
+    c4.cd(6);
+    h_phi_piDelta->Draw();
+    c4.cd(7);
+    h_E_piDelta->Draw();
+    c4.Print((filename + ".pdf)").c_str());
 
     
 

@@ -30,8 +30,6 @@ public:
     void FillHistogramswCuts(const Event& );
     void FillHistogramswCutsMC(const Event& );
     void FillHistogramsNoCutsMC(const Event& ); 
-    void Fill2DHistogramsRECMC(const Event& ); 
-    void CompareHistograms(Monunfold& , Monunfold& , const std::string& ) ;
     void FillHistComp(const Event&, const Event&);
     void FillHistCompwCuts(const Event&, const Event&);
 
@@ -203,8 +201,18 @@ private:
     TH2F *h_vycomp;
 
 
-    TH1F *h_chi2_el; // = new TH1F("chi2", "chi2", 100, 0, 10) ;
-    TH1F *h_chi2_pi; // = new TH1F("chi2", "chi2", 100, 0, 10) ;
+    //Monitor generated and sim with Deltas dor Pi+ reconstruction 
+    TH1F *h_px_piDelta;
+    TH1F *h_py_piDelta;
+    TH1F *h_pz_piDelta;
+    TH1F *h_ptot_piDelta;
+    TH1F *h_theta_piDelta;
+    TH1F *h_phi_piDelta;
+    TH1F *h_E_piDelta;
+
+
+    TH1F *h_chi2_el; // = new TH1F("chi2", "chi2", 100, 0, 10) ; //there is no chi2 in generated data obviously
+    TH1F *h_chi2_pi; // = new TH1F("chi2", "chi2", 100, 0, 10) ; //there is no chi2 in generated data obviously
 
 
 
