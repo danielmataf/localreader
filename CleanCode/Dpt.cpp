@@ -260,6 +260,7 @@ TH3F* deltaptsq::getHA3D() {
 }
 
 void deltaptsq::calcDptCarbon( deltaptsq& deltaptsqOther){
+    //I understand this only works wit hsame carbon target, so no including LD2 deuterium. W/o mentioning this is a calc, not a comp (plot) 
     int graph_pointnb=0;
     //x= xb, y=Q2, z=z
     TH3F* h_wA2_pt    = deltaptsqOther.getHwA();
@@ -389,6 +390,87 @@ void deltaptsq::multiplotDpt(deltaptsq& dptother, deltaptsq& dptthird){
         
     }
 }
+
+
+
+void deltaptsq::Dpttargetsimcomp( deltaptsq& dptsim){
+        for (int x = 0; x < Dptbin; ++x) {
+        double xValue = h_wD_pt->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "singletargetDptcomp_"+ targetName + "_x" + std::to_string(xValue) + ".pdf";
+        TCanvas canvasDpt("c", "Multiplot Dpt", 1200, 800);
+        canvasDpt.Divide(3, 2); 
+
+        for (int y=0; y < Dptbin; ++y) {
+            TMultiGraph *mg = new TMultiGraph();
+            double Q2Value = h_wD_pt->GetYaxis()->GetBinCenter(y + 1);
+            canvasDpt.cd(y + 1);
+            TGraphErrors *graphDpt = new TGraphErrors();
+            TGraphErrors *graphsim = new TGraphErrors();
+
+            for (int z=0; z < Dptbin; ++z) {
+
+                double zValue = h_wD_pt->GetZaxis()->GetBinCenter(z + 1);
+                double value = DptMatrix[x][y][z];
+                double error = errorDptMatrix[x][y][z];
+                double valuesim = dptsim.getDptMatrix()[x][y][z];
+                double errorsim = dptsim.getErrorMatrix()[x][y][z];
+                //std::cout << "("<< x<<" ,"<<y <<" ,"<< z<< " ) = "<<std::endl;   // value << " +- " << error << "\t\t";
+
+                graphDpt->SetPoint(z, zValue, value);
+                graphDpt->SetPointError(z, 0.0, error); 
+                graphsim->SetPoint(z, zValue+0.01, valuesim);
+                graphsim->SetPointError(z+0.01, 0.0, errorsim);   
+            }
+
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << Q2Value;
+            std::string formattedQ2Value = ss.str();
+            std::string title = "#Delta <p_{t}^{2}> vs z for " + targetName +  ", Q^{2}=" + formattedQ2Value + " GeV^{2}";
+
+            graphDpt->SetTitle((title).c_str());
+            graphDpt->GetXaxis()->SetTitle("z");
+            graphDpt->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+            graphDpt->SetMarkerStyle(20);
+            graphsim->SetMarkerStyle(20);
+            graphDpt->GetYaxis()->SetRangeUser(-1.0, 1.0); // Set Y axis range from -0.1 to 0.1
+            graphDpt->Draw("AP");
+
+            graphDpt->SetMarkerColor(kBlue);
+            graphsim->SetMarkerColor(kRed);
+
+
+            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            legend->AddEntry(graphDpt, "data", "lp");
+            legend->AddEntry(graphsim, "simulated", "lp");
+
+            //TLine *line = new TLine(graph->GetXaxis()->GetXmin()+0.02, 1.0, graphDpt->GetXaxis()->GetXmax(), 1.0);
+            TLine *line = new TLine(graphDpt->GetXaxis()->GetXmin(), 0.0, graphDpt->GetXaxis()->GetXmax(), 0.0);
+            line->SetLineStyle(2); // dotted line
+            line->SetLineColor(kGray + 1); //grayer for aethetic 
+            mg->Add(graphDpt);
+            mg->Add(graphsim);
+            mg->SetTitle((title).c_str() );
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
+
+            mg->GetYaxis()->SetRangeUser(-1.0, 2.0); // 
+
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+            
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);  // Larger text size
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);  // Centered alignment
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+        canvasDpt.SaveAs(pdfFileName.c_str());
+    }
+}
+
 
 void deltaptsq::multiplotDptbis(){
    for (int x = 0; x< Dptbin; ++x){

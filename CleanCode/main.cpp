@@ -146,6 +146,15 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     Ratio simratSn(simLD2cuts, simSncuts, "Sn_sim");
     Ratio simratCu(simLD2cuts, simCucuts, "Cu_sim");
 
+    deltaptsq dptC1(testLD2cuts, testC1cuts, "C1_RGD");
+    deltaptsq dptC2(testLD2cuts, testC2cuts, "C2_RGD");
+    deltaptsq dptSn(testLD2cuts, testSncuts, "Sn_RGD");
+    deltaptsq dptCu(testLD2cuts, testCucuts, "Cu_RGD");
+    deltaptsq simdptC1(simLD2cuts, simC1cuts, "C1_sim");
+    deltaptsq simdptC2(simLD2cuts, simC2cuts, "C2_sim");
+    deltaptsq simdptSn(simLD2cuts, simSncuts, "Sn_sim");
+    deltaptsq simdptCu(simLD2cuts, simCucuts, "Cu_sim");
+
     sratio sratC2(testLD2cuts, testC2cuts, "C2_RGD");
     sratio sratSn(testLD2cuts, testSncuts, "Sn_RGD");
     sratio sratCu(testLD2cuts, testCucuts, "Cu_RGD");
@@ -184,8 +193,13 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             ratC1.FillHistograms(eventtestLD2);
             ratC2.FillHistograms(eventtestLD2);
             ratSn.FillHistograms(eventtestLD2);
+            dptC1.FillHistograms(eventtestLD2);
+            dptC2.FillHistograms(eventtestLD2);
+            dptSn.FillHistograms(eventtestLD2);
+            dptCu.FillHistograms(eventtestLD2);
             sratCu.FillHistograms(eventtestLD2);
             sratC2.FillHistograms(eventtestLD2);
+
 
         }
         if (simLD2_MC.has_value()) {
@@ -197,11 +211,15 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
                 Event eventsimLD2 = simLD2.value();
                 eventsimLD2.SetTargetType(0);
                 eventsimLD2.calcAll();
-                munfSimLD2.FillHistCompwCuts(eventsimLD2, eventsimLD2_MC);
+                munfSimLD2.FillHistComp(eventsimLD2, eventsimLD2_MC);
                 monSimLD2.FillHistogramswCuts(eventsimLD2);
                 simratC1.FillHistograms(eventsimLD2);
                 simratC2.FillHistograms(eventsimLD2);
                 simratSn.FillHistograms(eventsimLD2);
+                simdptC1.FillHistograms(eventsimLD2);
+                simdptC2.FillHistograms(eventsimLD2);
+                simdptSn.FillHistograms(eventsimLD2);
+                simdptCu.FillHistograms(eventsimLD2);
                 //simsratC2.FillHistograms(eventsimLD2);
 
             }
@@ -215,6 +233,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             monTestC1.FillHistogramswCuts(eventtestCxC);
             ratC2.FillHistograms(eventtestCxC);
             ratC1.FillHistograms(eventtestCxC);
+            dptC1.FillHistograms(eventtestCxC);
+            dptC2.FillHistograms(eventtestCxC);
             //sratC2.FillHistograms(eventtestCxC);
 
         }
@@ -230,9 +250,11 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
                     munfSimC2.FillHistComp(eventsimCxC, eventsimCxC_MC);
                     monSimC1.FillHistogramswCuts(eventsimCxC);
                     monSimC2.FillHistogramswCuts(eventsimCxC);
-                    //simratC1.FillHistograms(eventsimCxC);
-                    simratC2.FillHistograms(eventsimCxC);
-                    //simsratC2.FillHistograms(eventsimCxC);
+                    simratC1.FillHistograms(eventsimCxC);
+                    //simratC2.FillHistograms(eventsimCxC);
+                    simsratC2.FillHistograms(eventsimCxC);
+                    simdptC1.FillHistograms(eventsimCxC);
+                    simdptC2.FillHistograms(eventsimCxC);
                 }
         }
         if (testSn.has_value()) {
@@ -242,6 +264,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             monTestSn.FillHistogramswCuts(eventtestSn);
             ratSn.FillHistograms(eventtestSn);
             sratSn.FillHistograms(eventtestSn);
+            dptSn.FillHistograms(eventtestSn);
+
 
         }
         if (simSn_MC.has_value()) {
@@ -256,6 +280,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
                 monSimSn.FillHistogramswCuts(eventsimSn);
                 simratSn.FillHistograms(eventsimSn);
                 simsratSn.FillHistograms(eventsimSn);
+                simdptSn.FillHistograms(eventsimSn);
             }
         }
             //else{ counter_restCxC++;}
@@ -263,11 +288,13 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     }
     std::cout << "\nProcessing completed \n";
     std::cout << "//========= RGD data CxC ==========//  \n";
-    monTestC2.SaveHistRoot("v6C2_test");
-    monTestC1.SaveHistRoot("v6C1_test");
+    monTestC2.SaveHistRoot("nov6C2_test");
+    monTestC1.SaveHistRoot("nov6C1_test");
     std::cout << "//========= Simulation C2 ==========//  \n";
-    monSimC2.SaveHistRoot("v6C2_sim");
-    monSimC1.SaveHistRoot("v6C1_sim");
+    monSimC2.SaveHistRoot("nov6C2_sim");
+    monSimC1.SaveHistRoot("nov6C1_sim");
+    monTestLD2.SaveHistRoot("nov6LD2_test");
+    monSimLD2.SaveHistRoot("nov6LD2_sim");
     monTestC2.DrawHelicityHistograms("HELIXc2");
     //ratC2.calcRatios();
     //ratC1.calcRatios();
@@ -275,6 +302,14 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     simratC2.calcR();
     ratSn.calcR();
     simratSn.calcR();
+    dptC2.calcDpt();
+    simdptC2.calcDpt();
+    dptSn.calcDpt();
+    simdptSn.calcDpt();
+    dptC2.Dpttargetsimcomp(simdptC2);
+    dptSn.Dpttargetsimcomp(simdptSn);
+    
+
 
     ratC2.Rtargetsimcomp(simratC2);
     ratSn.Rtargetsimcomp(simratSn);

@@ -73,6 +73,7 @@
             //currentEvent.SetPy(pyValue);
             //currentEvent.SetPz(pzValue);
         } else if (IsHadron(pid)) {
+            
             //SetPx(pxValue);
             //SetPy(pyValue);
             //SetPz(pzValue);
@@ -93,6 +94,17 @@
 
 
         } else if (IsHadron(pid)) {
+            for (const Particle& hadron : currentEvent.GetHadrons()) {
+                if (hadron.GetPID() == Constants::PION_PLUS_PID) {
+            //        //SetCalSector(sector);
+                    //hadron.Setlu(u);
+                    //hadron.Setlv(v);
+                    //hadron.Setlw(w);
+                    //SetEpcal(epcal);
+                    //SetEecal(ecalin);
+                    //SetEecalout(ecalout);
+                }
+            }
             //SetU(u);
             //SetV(v);
             //SetW(w);
@@ -283,7 +295,7 @@ bool EventReader::isSimulatedData(hipo::event event) {
 
                 //}
             }
-            if (pid == Constants::ELECTRON_PID) {
+            //if (pid == Constants::ELECTRON_PID) {
 
                 double e_pcal = 0 ;
                 double e_ecalin = 0 ;
@@ -300,6 +312,7 @@ bool EventReader::isSimulatedData(hipo::event event) {
                 //int index = RECcalo.getInt("index", c_row);
                 int pindex = RECcalo.getInt("pindex", c_row);
                 //check if  i matches the pindex
+                //normally this should work for all particels not only electrons right ? (-DM25nov)
                 
                     //once pindex changes  cal values are reset
                 if (pindex == i) {
@@ -336,9 +349,12 @@ bool EventReader::isSimulatedData(hipo::event event) {
             //std::cout << "e_in: " << e_ecalin << std::endl;
             //std::cout << "e_out: " << e_ecalout << std::endl;
                     AddCaloInfo(pid, sector_pcal, lu_pcal, lv_pcal, lw_pcal, e_pcal, e_ecalin, e_ecalout);
-                    //std::cout<< "Adding to calo e_pcal: " << e_pcal << std::endl;
+                    //if (pid == Constants::PION_PLUS_PID){
+                    //    std::cout<< pid << ","<< lu_pcal<< "," << lv_pcal << "," << lw_pcal << std::endl;
+                    //}
+                    
                     AddCaloXYZ(pid, x_cal, y_cal, z_cal);
-            }
+            //}
             for (int cher_row = 0; cher_row < RECcher.getRows(); ++cher_row){
                 int pindex_cher = RECcher.getInt("pindex", cher_row);
                 

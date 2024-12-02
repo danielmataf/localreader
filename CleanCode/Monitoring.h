@@ -202,6 +202,10 @@ private:
     TH1F *h_chi2_pi; // = new TH1F("chi2", "chi2", 100, 0, 10) ;
     TH2F *h_chi2_pid_pi;
 
+    //pion chi2 fixing
+    TH2F * h_luthetael; // = new TH2F("luthetapi", "luthetapi", 100, 0, 400, 100, 0, 80) ; 
+
+
 
     //sampling fraction 
     TH2F *h_sampl_el; //

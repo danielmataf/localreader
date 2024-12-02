@@ -111,7 +111,13 @@ void Ratio::FillHistograms(const Event& event) {
         }
         //Add Here Cu && change cut for Sn here. 1st cut is passelectrons 
     }
-
+    //add below target type 2 in order to have CxC with vertex separation then including
+    //make a new fct in cutset for pass cut electron w/o vertex, then add a fct vertex cut taht get vzmin,max for both C1 et C2 
+    //else if (targetType == 2 && cuta.PassCutsElectrons(event)==true && cuta.PassCutsDetectors(event)==true) {
+    //    h_nuA->Fill(event.Getnu()); //can be plotted just like this 
+    //    for (const Particle& hadron : event.GetHadrons()) {
+    //    }
+    //}
     //Add CxC
 
 }
@@ -266,6 +272,42 @@ void Ratio::calcRcarbon( Ratio& ratioOther){
     }   
 }
 
+
+void Ratio::calcRwCC( Ratio& ratioOther){
+    int graph_pointnb = 0;
+    //TH1D* h_nuA2 = dynamic_cast<TH1D*>(ratioOther.h_nuA);
+    //TH1D* h_nu_z_pt2A2 = dynamic_cast<TH1D*>(ratioOther.h_nu_z_pt2A);
+    TH1F* h_nuA2 = ratioOther.getHNuA();
+    TH3F* h_nu_z_pt2A2 = ratioOther.getHNuzptA();
+    //h_nuA.Add(ratioOther.getHNuA);
+    //h_nu_z_pt2A.Add(ratioOther.getHNuzptA);
+    //h_nu_z_pt2A.Add(ratioOther.get)   //need to figure this one out 
+    //h_nu_z_pt2A.Add(ratioOther.get)   //need to figure this one out 
+    //h_nu_z_pt2A.Add(ratioOther.get)   //need to figure this one out 
+    //IN 3d HISTO x=nu; y= z; z=pt2;    
+    int counter_3D = 0;
+    int numBinsX = h_nu_z_pt2A->GetNbinsX();    //same bins 4 Deut and A 
+    int numBinsY = h_nu_z_pt2A->GetNbinsY(); 
+    int numBinsZ = h_nu_z_pt2A->GetNbinsZ(); 
+//    for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {  
+//        double val_nuelC2 = h_nuA2->GetBinContent(Xbin); 
+//        double val_nuelC1 = h_nuA->GetBinContent(Xbin); 
+//        for (int Ybin = 1; Ybin <= numBinsY; Ybin++ ){
+//            for (int Zbin = 1; Zbin <= numBinsZ; Zbin++ ){
+//                // loop with 125 values (5 per axis)
+//                double valC2 = h_nu_z_pt2A2->GetBinContent(Xbin,Ybin,Zbin);   //seems to properly recover value 
+//                double valC1 = h_nu_z_pt2A->GetBinContent(Xbin,Ybin,Zbin);
+//                double interm1nu = (val_nuelC1 > 0) ? valC1 / val_nuelC1 : 0.0;
+//                double interm2nu = (val_nuelC2 > 0) ? valC2 / val_nuelC2 : 0.0;
+//                double ratvalue  = (interm2nu > 0) ?interm1nu/interm2nu : 0.0;
+//                double raterr = ratvalue * sqrt(1/valC1 + 1/valC2 + 1/val_nuelC1 + 1/val_nuelC2);
+//                ratMatrixbis[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
+//                errorMatrixbis[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
+//
+//            }
+//        }
+//    }   
+}
 
 
 

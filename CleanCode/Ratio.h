@@ -32,6 +32,7 @@ public:
     void DrawSelfHistos(Ratio& ); //new
 
     void calcRcarbon(Ratio&) ;        //new
+    void calcRwCC( Ratio& );
     void PlotRatio(const std::string );
     void writeMatrixToFile(const std::string& );
     void calculateMRat(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 

@@ -41,6 +41,8 @@ public:
         return errorDptMatrix;
     }
 
+
+    void Dpttargetsimcomp(deltaptsq&); //this for comparison with simulationnnn
     void multiDptsimus( deltaptsq&,  deltaptsq& , deltaptsq& );
     void multiDpttrue(  deltaptsq&,  deltaptsq& , deltaptsq& );
     void multiDptall(   deltaptsq&,  deltaptsq& , deltaptsq& , deltaptsq&, deltaptsq& , deltaptsq&, deltaptsq& );

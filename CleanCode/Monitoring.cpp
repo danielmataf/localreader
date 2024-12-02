@@ -63,9 +63,9 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_py_el(new TH1F(("py_ele_" + targetName).c_str(), "py_ele", nubin, 0, 10)),
     h_pz_el(new TH1F(("pz_ele_" + targetName).c_str(), "pz_ele", nubin, 0, 10)),
     h_ptot_el(new TH1F(("ptot_ele_" + targetName).c_str(), "ptot_ele", nubin, 0, 10)),
-    h_px_pi(new TH1F(("px_pro_" + targetName).c_str(), "px_pro", nubin, 0, 10)),
-    h_py_pi(new TH1F(("py_pro_" + targetName).c_str(), "py_pro", nubin, 0, 10)),
-    h_pz_pi(new TH1F(("pz_pro_" + targetName).c_str(), "pz_pro", nubin, 0, 10)),
+    h_px_pi(new TH1F(("px_pi_" + targetName).c_str(), "px_pi", nubin, 0, 10)),
+    h_py_pi(new TH1F(("py_pi_" + targetName).c_str(), "py_pi", nubin, 0, 10)),
+    h_pz_pi(new TH1F(("pz_pi_" + targetName).c_str(), "pz_pi", nubin, 0, 10)),
     h_ptot_pi(new TH1F(("ptot_pro_" + targetName).c_str(), "ptot_pro", nubin, 0, 10)),
     h_theta_el(new TH1F(("theta_el" + targetName).c_str(), "theta", nubin, 0, 30)),
     h_phi_el(new TH1F(("phi_el" + targetName).c_str(), "phi", nubin, 0, 360)),
@@ -99,6 +99,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_chi2_el(new TH1F(("chi2_el_" + targetName).c_str(), "chi2_el", 100, -10, 10)),
     h_chi2_pi(new TH1F(("chi2_pi_" + targetName).c_str(), "chi2_pi", 100, -10, 10)),
     h_chi2_pid_pi(new TH2F(("chi2_pid_pi_" + targetName).c_str(), "chi2_pid_pi", 100, -15, 15, 100, 0, 1)),
+    h_luthetael(new TH2F(("u_vs_thetael_" + targetName).c_str(), "u_vs_thetael", 100, 0, 400, 100, 0, 40)),
     h_sampl_el(new TH2F(("sampl_el_" + targetName).c_str(), "sampl_el", nubin, 0, 10, nubin, 0, 1)),
       counterel_R(0) {
     // Add more histograms as needed
@@ -126,10 +127,6 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
 void Monitoring::FillHistogramswCuts(const Event& event) {              /// good CUTS in hadron !!!!!!!
     //if (cut1.PassCutsDetectors(event)==true){
         // Fill Detector histograms after cuts
-        h_calXY->Fill(event.electron.GetCalX(), event.electron.GetCalY());
-        h_lu->Fill(event.electron.Getlu());
-        h_lv->Fill(event.electron.Getlv());
-        h_lw->Fill(event.electron.Getlw());
 
 
 
@@ -165,13 +162,21 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
             h_theta_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
             h_phi_el->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
             h_polcoord_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().Phi()*180/Constants::PI +180);
-            h_E_el->Fill(event.electron.GetMomentum().E());
             h_E_el_theta->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().E());
             h_E_el_phi->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180, event.electron.GetMomentum().E());
+        h_calXY->Fill(event.electron.GetCalX(), event.electron.GetCalY());
+        h_lu->Fill(event.electron.Getlu());
+        h_lv->Fill(event.electron.Getlv());
+        h_lw->Fill(event.electron.Getlw());
+            h_luthetael->Fill(event.electron.Getlu(), event.electron.GetMomentum().Theta()*180/Constants::PI);
+
             for (const Particle& hadron : event.GetHadrons()) {
                 if (cut1.PassCutsHadrons(hadron)==true){
 
                     if (hadron.GetPID() == Constants::PION_PLUS_PID  ){   //adding this condition for pion+ and erasing the condit at evtprocessr
+
+            h_E_el->Fill(event.electron.GetMomentum().E());
+
                         h_epcal->Fill(event.electron.GetEpcal());
                         h_chi2_pi->Fill(hadron.Getchi2());
                         h_z->Fill(hadron.Getz());
@@ -1252,6 +1257,7 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     h_chi2_el->Write();
     h_chi2_pi->Write();
     h_chi2_pid_pi->Write();
+    h_luthetael->Write();
     h_sampl_el->Write();
 
 

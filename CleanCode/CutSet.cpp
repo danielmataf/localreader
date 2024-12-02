@@ -133,6 +133,8 @@ void CutSet::SetCutGen4Rat(){
     //cut in vertex should be fixed here (?)
 }
 
+
+//I think the function below is trash ( 27 nov 2024)
 //both functions could be used? propagate to main if below is used.
 void CutSet::SetCutGentest(const Event& event){
     int target = event.GetTargetType();
@@ -262,6 +264,8 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
 
 bool CutSet::PassCutVzselection(const Event& event){
     double Vz = event.GetVz();
+    int targetType = event.GetTargetType();
+
     if (Vz >= cutVzMin && Vz <= cutVzMax ){
         return true;
     }
