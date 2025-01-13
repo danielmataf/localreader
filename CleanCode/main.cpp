@@ -46,8 +46,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v6/CuSn/", filenamesCuSn);
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v6/CxC/", filenamesCxC);
     ////uncommment also below for sim  on ifarm
-    //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgd/", simufilesLD2);  //uncomment for sim
-    //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdCC/", simufilesCxC);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/jan_aicv_newrgdLD2/", simufilesLD2);  //uncomment for sim
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/jan_aicv_newrgdCC/", simufilesCxC);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdCu/", simufilesCu);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdSn/", simufilesSn);  //uncomment for sim 
 
@@ -288,14 +288,14 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     }
     std::cout << "\nProcessing completed \n";
     std::cout << "//========= RGD data CxC ==========//  \n";
-    monTestC2.SaveHistRoot("nov6C2_test");
-    monTestC1.SaveHistRoot("nov6C1_test");
+    monTestC2.SaveHistRoot("janC2_test");
+    monTestC1.SaveHistRoot("janC1_test");
     std::cout << "//========= Simulation C2 ==========//  \n";
-    monSimC2.SaveHistRoot("nov6C2_sim");
-    monSimC1.SaveHistRoot("nov6C1_sim");
-    monTestLD2.SaveHistRoot("nov6LD2_test");
-    monSimLD2.SaveHistRoot("nov6LD2_sim");
-    monTestC2.DrawHelicityHistograms("HELIXc2");
+    monSimC2.SaveHistRoot("janC2_sim");
+    monSimC1.SaveHistRoot("janC1_sim");
+    monTestLD2.SaveHistRoot("janLD2_test");
+    monSimLD2.SaveHistRoot("janLD2_sim");
+    //monTestC2.DrawHelicityHistograms("HELIXc2");
     //ratC2.calcRatios();
     //ratC1.calcRatios();
     ratC2.calcR();  

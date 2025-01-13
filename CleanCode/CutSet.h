@@ -66,7 +66,7 @@ public:
     bool PassCutsCalo(const Event& );
     bool PassCutsCherenkov(const Event& );
     bool PassCutsDetectors(const Event& );
-    
+    bool PassCutTarget2Vz(const Event& );
     
     bool PassCutsAll(const Event&);
 

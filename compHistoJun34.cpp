@@ -23,8 +23,8 @@
 #include <map>
 
 void CompareHistograms(const char* target, const std::vector<std::string>& plotTitles, const std::vector<std::string>& xTitles) {
-    std::string file1 = std::string("/home/matamoros/Lamiaa") + target + "_test.root";
-    std::string file2 = std::string("/home/matamoros/Lamiaa") + target + "_sim.root";
+    std::string file1 = std::string("/home/matamoros/def") + target + "_test.root";
+    std::string file2 = std::string("/home/matamoros/def") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {
@@ -56,9 +56,9 @@ void CompareHistograms(const char* target, const std::vector<std::string>& plotT
         {"theta_el" + std::string(target) + "_RGD", "theta_el" + std::string(target) + "_sim"},
         {"phi_el" + std::string(target) + "_RGD", "phi_el" + std::string(target) + "_sim"},
         {"ptot_pro_" + std::string(target) + "_RGD", "ptot_pro_" + std::string(target) + "_sim"},
-        {"px_pro_" + std::string(target) + "_RGD", "px_pro_" + std::string(target) + "_sim"},
-        {"py_pro_" + std::string(target) + "_RGD", "py_pro_" + std::string(target) + "_sim"},
-        {"pz_pro_" + std::string(target) + "_RGD", "pz_pro_" + std::string(target) + "_sim"},
+        {"px_pi_" + std::string(target) + "_RGD", "px_pi_" + std::string(target) + "_sim"},
+        {"py_pi_" + std::string(target) + "_RGD", "py_pi_" + std::string(target) + "_sim"},
+        {"pz_pi_" + std::string(target) + "_RGD", "pz_pi_" + std::string(target) + "_sim"},
         {"theta_pi" + std::string(target) + "_RGD", "theta_pi" + std::string(target) + "_sim"},
         {"phi_pi" + std::string(target) + "_RGD", "phi_pi" + std::string(target) + "_sim"},
         {"lu_el"+ std::string(target) + "_RGD", "lu_el" + std::string(target) + "_sim"},

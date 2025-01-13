@@ -372,3 +372,14 @@ bool CutSet::PassCuts4R(const Event& event, const Particle& hadron)  {
     return false;
 }
 
+bool CutSet::PassCutTarget2Vz(const Event& event)  {
+    //this function can only be used when calling a carbon on carbon ratio. 
+    //maybe we need to run the whole code just for the C on C ratio function. Annoying but necessary
+    //maybe keep the 
+    int targetType = event.GetTargetType();
+    double Vz = event.GetVz();
+    if (targetType == 3) {
+        return true;
+    }
+    return false;
+}
