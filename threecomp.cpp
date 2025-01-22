@@ -12,9 +12,9 @@
 //./threecomp
 
 void Compare3Histograms(const char* target, const std::vector<std::string>& plotTitles, const std::vector<std::string>& xTitles) {
-    std::string file1 = std::string("/home/matamoros/def") + target + "_test.root";
-    std::string file2 = std::string("/home/matamoros/def") + target + "_sim1.root";
-    std::string file3 = std::string("/home/matamoros/def") + target + "_sim2.root";
+    std::string file1 = std::string("/home/matamoros/ful") + target + "_test.root";
+    std::string file2 = std::string("/home/matamoros/ful") + target + "_sim.root";
+    std::string file3 = std::string("/home/matamoros/other") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {
@@ -51,15 +51,15 @@ void Compare3Histograms(const char* target, const std::vector<std::string>& plot
 
     for (const auto& name : histogramNames) {
         std::string histName1 = name + std::string(target) + "_RGD";
-        std::string histName2 = name + std::string(target) + "_sim1";
-        std::string histName3 = name + std::string(target) + "_sim2";
+        std::string histName2 = name + std::string(target) + "_sim";
+        std::string histName3 = name + std::string(target) + "_sim";
 
         TH1F* h1 = dynamic_cast<TH1F*>(rootFile1->Get(histName1.c_str()));
         TH1F* h2 = dynamic_cast<TH1F*>(rootFile2->Get(histName2.c_str()));
         TH1F* h3 = dynamic_cast<TH1F*>(rootFile3->Get(histName3.c_str()));
 
         if (!h1 || !h2 || !h3) {
-            std::cerr << "Error: Cannot retrieve histograms from files!" << std::endl;
+            std::cerr << "Error retrieving histograms from files" << std::endl;
             continue;
         }
 
@@ -91,9 +91,9 @@ void Compare3Histograms(const char* target, const std::vector<std::string>& plot
         h3->Draw("hist same");
 
         TLegend* legend = new TLegend(0.7, 0.7, 0.9, 0.9);
-        legend->AddEntry(h1, "Data", "l");
-        legend->AddEntry(h2, "Simulation 1", "l");
-        legend->AddEntry(h3, "Simulation 2", "l");
+        legend->AddEntry(h1, "RGD Data", "l");
+        legend->AddEntry(h2, "FullTorus", "l");
+        legend->AddEntry(h3, "SymmTorus", "l");
         legend->Draw();
 
         canvas->SaveAs(Form("Comparison_%s.png", histName1.c_str()));
@@ -130,7 +130,7 @@ void Compare3Histograms(const char* target, const std::vector<std::string>& plot
 }
 
 int main() {
-    const char* target = "LD2";
+    const char* target = "C2";
     Compare3Histograms(target, {}, {});
     return 0;
 }
