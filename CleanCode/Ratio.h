@@ -50,6 +50,11 @@ public:
         //this same as b4 to plot only with the carbon on CxC
     TH1F* getHNuA() ;
     TH3F* getHNuzptA() ;
+
+
+    //debugging? 
+    void ValidateHistograms();
+    void LogBinContent();
     
     std::vector<std::vector<std::vector<double>>> getRatMatrix() const{
         return ratMatrix;
@@ -68,7 +73,7 @@ public:
 
 
 
-
+    ~Ratio();
 
 private:
     //CutSet cut1;

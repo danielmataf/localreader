@@ -95,8 +95,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     //simC1cuts.SetCutVz(Constants::RcutminVzC1sim,Constants::RcutminVzC1sim);     //vz cut for C1 target
     simC1cuts.SetCutVz(Constants::RcutminVzC1sim,Constants::RcutmaxVzC1sim);     //vz cut for C1 target
     simC1cuts.SetCutGen4Rat();
-    //testC1cuts.SetCutVz(Constants::RcutminVzC1data,Constants::RcutminVzC1data);     //vz cut for C1 target
-    testC1cuts.SetCutVz(Constants::RcutminVzC1data,Constants::RcutmaxVzC1data);     //vz cut for C1 target
+    //testC1cuts.SetCutVz(Constants::RcutminVzC1data,Constants::RcutmaxVzC1data);     //previous cut, b4jan2025. We change for uncalib data (?) peaks shifted of -1cm
+    testC1cuts.SetCutVz(Constants::RcutminVzC1data,Constants::RcutmaxVzC1data);     //Changing values in constants, also widening the cut
     testC1cuts.SetCutGen4Rat();
 
     simC2cuts.SetCutVz(Constants::RcutminVzC2sim    , Constants::RcutmaxVzC2sim);     //vz cut for C2 target
@@ -163,28 +163,17 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     sratio simsratCu(simLD2cuts, simCucuts, "Cu_sim");
 
     int totalevts = 19000;
+    // int totalevts =3500000   //uncomment this on farm for fullT on C2 
 
     for (int i=0; i<totalevts; i++){
         simCxC  = Sim_CxC.ProcessEventsInFile();
         simCxC_MC  = Sim_CxC.ProcessEventsInFileMC();
         testCxC = RGD_CxC.ProcessEventsInFile(); 
 
-        simSn = Sim_Sn.ProcessEventsInFile();
-        simSn_MC = Sim_Sn.ProcessEventsInFileMC();
-        testSn = RGD_CuSn.ProcessEventsInFile();
-
         simLD2 = Sim_LD2.ProcessEventsInFile();
         simLD2_MC = Sim_LD2.ProcessEventsInFileMC();
         testLD2 = RGD_LD2.ProcessEventsInFile();
 
-//
-//        simCu = Sim_Cu.ProcessEventsInFile();
-//        simCu_MC = Sim_Cu.ProcessEventsInFileMC();
-//        testCu = RGD_CuSn.ProcessEventsInFile();
-//
-//        simSn = Sim_Sn.ProcessEventsInFile();
-//        simSn_MC = Sim_Sn.ProcessEventsInFileMC();
-//        testSn = RGD_CuSn.ProcessEventsInFile();
         if (testLD2.has_value()) {
             Event eventtestLD2 = testLD2.value();
             eventtestLD2.SetTargetType(0);
@@ -192,10 +181,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             monTestLD2.FillHistogramswCuts(eventtestLD2);
             ratC1.FillHistograms(eventtestLD2);
             ratC2.FillHistograms(eventtestLD2);
-            ratSn.FillHistograms(eventtestLD2);
             dptC1.FillHistograms(eventtestLD2);
             dptC2.FillHistograms(eventtestLD2);
-            dptSn.FillHistograms(eventtestLD2);
             dptCu.FillHistograms(eventtestLD2);
             sratCu.FillHistograms(eventtestLD2);
             sratC2.FillHistograms(eventtestLD2);
@@ -215,10 +202,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
                 monSimLD2.FillHistogramswCuts(eventsimLD2);
                 simratC1.FillHistograms(eventsimLD2);
                 simratC2.FillHistograms(eventsimLD2);
-                simratSn.FillHistograms(eventsimLD2);
                 simdptC1.FillHistograms(eventsimLD2);
                 simdptC2.FillHistograms(eventsimLD2);
-                simdptSn.FillHistograms(eventsimLD2);
                 simdptCu.FillHistograms(eventsimLD2);
                 //simsratC2.FillHistograms(eventsimLD2);
 
@@ -251,38 +236,13 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
                     monSimC1.FillHistogramswCuts(eventsimCxC);
                     monSimC2.FillHistogramswCuts(eventsimCxC);
                     simratC1.FillHistograms(eventsimCxC);
-                    //simratC2.FillHistograms(eventsimCxC);
+                    simratC2.FillHistograms(eventsimCxC);
                     simsratC2.FillHistograms(eventsimCxC);
                     simdptC1.FillHistograms(eventsimCxC);
                     simdptC2.FillHistograms(eventsimCxC);
                 }
         }
-        if (testSn.has_value()) {
-            Event eventtestSn = testSn.value();
-            eventtestSn.SetTargetType(1);
-            eventtestSn.calcAll();
-            monTestSn.FillHistogramswCuts(eventtestSn);
-            ratSn.FillHistograms(eventtestSn);
-            sratSn.FillHistograms(eventtestSn);
-            dptSn.FillHistograms(eventtestSn);
-
-
-        }
-        if (simSn_MC.has_value()) {
-            Event eventsimSn_MC = simSn_MC.value();
-            eventsimSn_MC.SetTargetType(1);
-            eventsimSn_MC.calcMCAll();
-            if (simSn.has_value()) {
-                Event eventsimSn = simSn.value();
-                eventsimSn.SetTargetType(1);
-                eventsimSn.calcAll();
-                munfSimSn.FillHistCompwCuts(eventsimSn, eventsimSn_MC);
-                monSimSn.FillHistogramswCuts(eventsimSn);
-                simratSn.FillHistograms(eventsimSn);
-                simsratSn.FillHistograms(eventsimSn);
-                simdptSn.FillHistograms(eventsimSn);
-            }
-        }
+ 
             //else{ counter_restCxC++;}
         files.displayProgress(i + 1, totalevts);
     }
@@ -293,36 +253,21 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     std::cout << "//========= Simulation C2 ==========//  \n";
     monSimC2.SaveHistRoot("janC2_sim");
     monSimC1.SaveHistRoot("janC1_sim");
-    monTestLD2.SaveHistRoot("janLD2_test");
-    monSimLD2.SaveHistRoot("janLD2_sim");
+    //monTestLD2.SaveHistRoot("janLD2_test");
+    //monSimLD2.SaveHistRoot("janLD2_sim");
     //monTestC2.DrawHelicityHistograms("HELIXc2");
     //ratC2.calcRatios();
-    //ratC1.calcRatios();
     ratC2.calcR();  
     simratC2.calcR();
-    ratSn.calcR();
-    simratSn.calcR();
-    dptC2.calcDpt();
-    simdptC2.calcDpt();
-    dptSn.calcDpt();
-    simdptSn.calcDpt();
-    dptC2.Dpttargetsimcomp(simdptC2);
-    dptSn.Dpttargetsimcomp(simdptSn);
     
-
-
     ratC2.Rtargetsimcomp(simratC2);
-    ratSn.Rtargetsimcomp(simratSn);
-    simratSn.DrawSelfHistos(simratSn);
-    simratSn.multiplotR();
-    munfSimC2.DrawCompRECMC("MUNFv6C2");
-    //munfSimC2.SaveHistRoot("munfC2_sim");
+    ratC2.DrawHistos(ratC1);
+    ratC2.DrawSelfHistos(ratC1);
+    simratC2.DrawHistos(simratC1);
+    simratC2.DrawSelfHistos(simratC1);
+    ratC2.ValidateHistograms();
+    ratC2.LogBinContent();
 
-    //simsratC2.calcSratio();
-    //simsratC2.calcAsymmetries();
-    //simsratC2.writeAsymmToFile("testasymmetriesC2");
-    //simsratC2.multiplotSratio();
-    //simsratC2.DrawMonSinrat("augmonSratioC2");
 
     return 0;
 }

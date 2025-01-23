@@ -51,8 +51,19 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     //class takes a set of cuts anyway 
     //in order to determine Ratio from the histos with these cuts 
 }
-
-//~ add deletes 
+//~ add deletes complete
+Ratio::~Ratio() {
+    delete h_nu_z_pt2D;
+    delete h_nu_z_pt2A;
+    delete h_nu_z_pt2D_onlye;
+    delete h_nu_z_pt2A_onlye;
+    delete h_nuA;
+    delete h_nuD;
+    delete h_nu_A_had;
+    delete h_z_A_had;
+    delete h_pt2_A_had;
+    delete graph_rat;
+}
 
 
 void Ratio::FillHistograms(const Event& event) {
@@ -1111,4 +1122,92 @@ void Ratio::Rtargetsimcomp( Ratio& ratiosim){
 
         canvas.SaveAs(pdfFileName.c_str());
     }
+}
+
+
+void Ratio::ValidateHistograms() {
+    // Validate histograms for both deuterium and target nucleus
+    std::cout << "Histogram h_nuD has " << h_nuD->GetEntries() << " entries." << std::endl;
+    std::cout << "Histogram h_nuA has " << h_nuA->GetEntries() << " entries." << std::endl;
+    std::cout << "Histogram h_nu_z_pt2D has " << h_nu_z_pt2D->GetEntries() << " entries." << std::endl;
+    std::cout << "Histogram h_nu_z_pt2A has " << h_nu_z_pt2A->GetEntries() << " entries." << std::endl;
+
+    if (h_nuD->GetEntries() == 0 || h_nuA->GetEntries() == 0) {
+        std::cerr << "Warning: Histograms h_nuD or h_nuA are empty!" << std::endl;
+    }
+    if (h_nu_z_pt2D->GetEntries() == 0) {
+        std::cerr << "Warning: Histogram h_nu_z_pt2D is empty!" << std::endl;
+    }
+    if (h_nu_z_pt2A->GetEntries() == 0) {
+        std::cerr << "Warning: Histogram h_nu_z_pt2A is empty!" << std::endl;
+    }
+}
+
+//void Ratio::LogBinContent() {
+//    // Log bin contents for both h_nu_z_pt2D and h_nu_z_pt2A
+//    std::cout << "Logging bin content for h_nu_z_pt2D:" << std::endl;
+//    for (int x = 1; x <= h_nu_z_pt2D->GetNbinsX(); ++x) {
+//        for (int y = 1; y <= h_nu_z_pt2D->GetNbinsY(); ++y) {
+//            for (int z = 1; z <= h_nu_z_pt2D->GetNbinsZ(); ++z) {
+//                double content = h_nu_z_pt2D->GetBinContent(x, y, z);
+//                if (content > 0) {
+//                    std::cout << "Bin (D) (" << x << ", " << y << ", " << z << ") = " << content << std::endl;
+//                }
+//            }
+//        }
+//    }
+//
+//    std::cout << "Logging bin content for h_nu_z_pt2A:" << std::endl;
+//    for (int x = 1; x <= h_nu_z_pt2A->GetNbinsX(); ++x) {
+//        for (int y = 1; y <= h_nu_z_pt2A->GetNbinsY(); ++y) {
+//            for (int z = 1; z <= h_nu_z_pt2A->GetNbinsZ(); ++z) {
+//                double content = h_nu_z_pt2A->GetBinContent(x, y, z);
+//                if (content > 0) {
+//                    std::cout << "Bin (A) (" << x << ", " << y << ", " << z << ") = " << content << std::endl;
+//                }
+//            }
+//        }
+//    }
+//}
+
+void Ratio::LogBinContent() {
+    // generalized histo selectioner
+    auto logHistogram = [](TH3F* hist, const std::string& name) {
+        //careful w/ auto  ???
+        int numBinsX = hist->GetNbinsX();
+        int numBinsY = hist->GetNbinsY();
+        int numBinsZ = hist->GetNbinsZ();
+
+        std::cout << "BIN CONTENT FOR " << name << " (3D):" << std::endl;
+
+        for (int x = 1; x <= numBinsX; ++x) { // Loop over 'nu' bins
+            double nuValue = hist->GetXaxis()->GetBinCenter(x);
+            std::cout << "nu = " << nuValue << " (Layer " << x << "):" << std::endl;
+
+            // Print column headers (z values)
+            std::cout << std::setw(10) << "pt2 \\ z";
+            for (int y = 1; y <= numBinsY; ++y) {
+                double zValue = hist->GetYaxis()->GetBinCenter(y);
+                std::cout << std::setw(10) << zValue;
+            }
+            std::cout << std::endl;
+
+            // Print matrix content for fixed 'nu' layer
+            for (int z = 1; z <= numBinsZ; ++z) {
+                double pt2Value = hist->GetZaxis()->GetBinCenter(z);
+                std::cout << std::setw(10) << pt2Value; // Row header (pt2)
+
+                for (int y = 1; y <= numBinsY; ++y) {
+                    double content = hist->GetBinContent(x, y, z);
+                    std::cout << std::setw(10) << content; // Bin content
+                }
+                std::cout << std::endl;
+            }
+            std::cout << std::endl; // Separate layers for clarity
+        }
+    };
+
+    // Log both histograms
+    logHistogram(h_nu_z_pt2D, "h_nu_z_pt2D");
+    logHistogram(h_nu_z_pt2A, "h_nu_z_pt2A");
 }
