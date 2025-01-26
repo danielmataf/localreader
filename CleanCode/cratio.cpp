@@ -568,3 +568,46 @@ void cratio::multiCratall( cratio& cratioCu,  cratio& cratioC1 , cratio& cratioC
         canvasCratio.SaveAs(pdfFileName.c_str());
     }
 }
+void cratio::ValidateHistograms() {
+    std::cout << "Validating histograms for Cratio calculations..." << std::endl;
+    std::vector<std::pair<TH3F*, std::string>> histograms = {
+        {h_wD_Cratio, "h_wD_Cratio"},
+        {h_wA_Cratio, "h_wA_Cratio"},
+        {h_D_Cratio3D, "h_D_Cratio3D"},
+        {h_A_Cratio3D, "h_A_Cratio3D"}
+    };
+
+    for (const auto& [hist, name] : histograms) {
+        if (!hist || hist->GetEntries() == 0) {
+            std::cerr << "Warning: Histogram " << name << " is empty or not initialized!" << std::endl;
+        }
+    }
+}
+void cratio::LogBinContent() {
+    auto logHistogram = [](TH3F* hist, const std::string& name) {
+        int numBinsX = hist->GetNbinsX();
+        int numBinsY = hist->GetNbinsY();
+        int numBinsZ = hist->GetNbinsZ();
+
+        std::cout << "Contents of histogram " << name << ":" << std::endl;
+
+        for (int x = 1; x <= numBinsX; ++x) {
+            double xCenter = hist->GetXaxis()->GetBinCenter(x);
+            std::cout << "x = " << xCenter << ":" << std::endl;
+
+            for (int y = 1; y <= numBinsY; ++y) {
+                double yCenter = hist->GetYaxis()->GetBinCenter(y);
+                std::cout << "  y = " << yCenter << ": ";
+
+                for (int z = 1; z <= numBinsZ; ++z) {
+                    double content = hist->GetBinContent(x, y, z);
+                    std::cout << content << " ";
+                }
+                std::cout << std::endl;
+            }
+        }
+    };
+
+    logHistogram(h_wD_Cratio, "h_wD_Cratio");
+    logHistogram(h_wA_Cratio, "h_wA_Cratio");
+}

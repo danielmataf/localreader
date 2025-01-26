@@ -31,6 +31,9 @@ public:
     void multiCratall(   cratio&,  cratio& , cratio& , cratio&, cratio& , cratio&, cratio& );
     void multiCratall2 ( cratio& , cratio&, cratio& , cratio&,cratio& ); 
 
+    //Debugging Ratio inspired, and also used in Dpt
+    void ValidateHistograms();
+    void LogBinContent();
 
 
 

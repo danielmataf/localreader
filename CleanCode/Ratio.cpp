@@ -1127,6 +1127,7 @@ void Ratio::Rtargetsimcomp( Ratio& ratiosim){
 
 void Ratio::ValidateHistograms() {
     // Validate histograms for both deuterium and target nucleus
+    std::cout << "RATIO VALIDATION " <<std::endl;
     std::cout << "Histogram h_nuD has " << h_nuD->GetEntries() << " entries." << std::endl;
     std::cout << "Histogram h_nuA has " << h_nuA->GetEntries() << " entries." << std::endl;
     std::cout << "Histogram h_nu_z_pt2D has " << h_nu_z_pt2D->GetEntries() << " entries." << std::endl;
@@ -1178,7 +1179,7 @@ void Ratio::LogBinContent() {
         int numBinsY = hist->GetNbinsY();
         int numBinsZ = hist->GetNbinsZ();
 
-        std::cout << "BIN CONTENT FOR " << name << " (3D):" << std::endl;
+        std::cout << "RATIO BIN CONTENT FOR " << name << " (3D):" << std::endl;
 
         for (int x = 1; x <= numBinsX; ++x) { // Loop over 'nu' bins
             double nuValue = hist->GetXaxis()->GetBinCenter(x);

@@ -39,6 +39,8 @@ public:
     void multiSratall2(sratio&,sratio&,sratio&,sratio&,sratio&); // three ragets in sim and RGD ( no separation of CxC)
 
     void calcAsymmetries();
+    void ValidateHistograms();
+    void LogBinContent();
 
 private:
     CutSet cutd;

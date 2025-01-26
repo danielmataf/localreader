@@ -50,6 +50,10 @@ public:
     void multiDptall2 ( deltaptsq& , deltaptsq&, deltaptsq& , deltaptsq&,deltaptsq& ); 
         //this same as b4 to plot only with the carbon on CxC
 
+    //debugging (Ratio inspired)
+    void ValidateHistograms();
+    void LogBinContent();
+
 
     TH3F* getHwA();
     TH3F* getHwA_sqpt2() ;

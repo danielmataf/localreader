@@ -676,3 +676,119 @@ void sratio::DrawMonSinrat(const std::string& outputname){
 //void multiSratRGD(sratio&,sratio&,sratio&); //for 4 targets in RGD data (real)
 //void multiSratall(sratio&,sratio&,sratio&,sratio&,sratio&,sratio&,sratio&); //for 4 targets in sim and RGD (separation of C1 & C2)
 //void multiSratall2(sratio&,sratio&,sratio&,sratio&,sratio&); // three ragets in sim and RGD ( no separation of CxC)
+void sratio::ValidateHistograms() {
+    std::cout << "Validating histograms for Sratio calculations..." << std::endl;
+
+    // List of 1D histograms to validate
+    std::vector<std::pair<TH1F*, std::string>> hist1D = {
+        {hSratio_nuD, "hSratio_nuD"},
+        {hSratio_nuA, "hSratio_nuA"},
+        {hSratio_zD, "hSratio_zD"},
+        {hSratio_zA, "hSratio_zA"}
+    };
+
+    // List of 3D histograms to validate
+    std::vector<std::pair<TH3F*, std::string>> hist3D = {
+        {h_wD_Sratio, "h_wD_Sratio"},
+        {h_wA_Sratio, "h_wA_Sratio"},
+        {h_D_Sratio3D, "h_D_Sratio3D"},
+        {h_A_Sratio3D, "h_A_Sratio3D"}
+    };
+
+    // Validate and track 1D histograms
+    for (const auto& [hist, name] : hist1D) {
+        if (hist) {
+            std::cout << "Histogram " << name << " has " << hist->GetEntries() << " entries." << std::endl;
+            if (hist->GetEntries() == 0) {
+                std::cerr << "Warning: Histogram " << name << " is empty!" << std::endl;
+            }
+        } else {
+            std::cerr << "Error: Histogram " << name << " is not initialized!" << std::endl;
+        }
+    }
+
+    // Validate and track 3D histograms
+    for (const auto& [hist, name] : hist3D) {
+        if (hist) {
+            std::cout << "Histogram " << name << " has " << hist->GetEntries() << " entries." << std::endl;
+            if (hist->GetEntries() == 0) {
+                std::cerr << "Warning: Histogram " << name << " is empty!" << std::endl;
+            }
+        } else {
+            std::cerr << "Error: Histogram " << name << " is not initialized!" << std::endl;
+        }
+    }
+
+    // Check consistency of binning between corresponding histograms
+    if (h_wD_Sratio && h_wA_Sratio) {
+        if (h_wD_Sratio->GetNbinsX() != h_wA_Sratio->GetNbinsX() ||
+            h_wD_Sratio->GetNbinsY() != h_wA_Sratio->GetNbinsY() ||
+            h_wD_Sratio->GetNbinsZ() != h_wA_Sratio->GetNbinsZ()) {
+            std::cerr << "Error: Binning mismatch between h_wD_Sratio and h_wA_Sratio!" << std::endl;
+        }
+    } else {
+        std::cerr << "Error: h_wD_Sratio or h_wA_Sratio is not initialized!" << std::endl;
+    }
+
+    // Add further specific validations if needed
+    std::cout << "Histogram validation completed." << std::endl;
+}
+
+void sratio::LogBinContent() {
+    std::cout << "Logging bin content for 3D histograms in Sratio..." << std::endl;
+
+    // Function to log a 3D histogram in a table-like format
+    auto logHistogram = [](TH3F* hist, const std::string& name) {
+        if (!hist) {
+            std::cerr << "Error: Histogram " << name << " is not initialized!" << std::endl;
+            return;
+        }
+
+        int numBinsX = hist->GetNbinsX();
+        int numBinsY = hist->GetNbinsY();
+        int numBinsZ = hist->GetNbinsZ();
+
+        std::cout << "BIN CONTENT FOR " << name << " (3D):" << std::endl;
+
+        for (int x = 1; x <= numBinsX; ++x) { // Loop over 'xb' bins
+            double xValue = hist->GetXaxis()->GetBinCenter(x);
+            std::cout << "xb = " << xValue << " (Layer " << x << "):" << std::endl;
+
+            // Print column headers (z values)
+            std::cout << std::setw(10) << "pt2 \\ z";
+            for (int y = 1; y <= numBinsY; ++y) {
+                double zValue = hist->GetYaxis()->GetBinCenter(y);
+                std::cout << std::setw(10) << zValue;
+            }
+            std::cout << std::endl;
+
+            // Print matrix content for fixed 'xb' layer
+            for (int z = 1; z <= numBinsZ; ++z) {
+                double pt2Value = hist->GetZaxis()->GetBinCenter(z);
+                std::cout << std::setw(10) << pt2Value; // Row header (pt2)
+
+                for (int y = 1; y <= numBinsY; ++y) {
+                    double content = hist->GetBinContent(x, y, z);
+                    std::cout << std::setw(10) << content; // Bin content
+                }
+                std::cout << std::endl;
+            }
+            std::cout << std::endl; // Separate layers for clarity
+        }
+    };
+
+    // List of 3D histograms to log
+    std::vector<std::pair<TH3F*, std::string>> histograms = {
+        {h_wD_Sratio, "h_wD_Sratio"},
+        {h_wA_Sratio, "h_wA_Sratio"},
+        {h_D_Sratio3D, "h_D_Sratio3D"},
+        {h_A_Sratio3D, "h_A_Sratio3D"}
+    };
+
+    // Log the contents of each histogram
+    for (const auto& [hist, name] : histograms) {
+        logHistogram(hist, name);
+    }
+
+    std::cout << "Finished logging bin contents for 3D histograms in Sratio." << std::endl;
+}

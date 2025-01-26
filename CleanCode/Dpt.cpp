@@ -907,3 +907,82 @@ void deltaptsq::multiDptall2(  deltaptsq& DptCu, deltaptsq& DptC, deltaptsq& Dpt
     }
 
 }
+void deltaptsq::ValidateHistograms() {
+    std::cout << "DELTA PTSQ VALIDATION FOR TARGET: " << targetName << std::endl;
+
+    // Validate all histograms used in FillHistograms
+    std::cout << "Histogram hDpt_nuD has " << hDpt_nuD->GetEntries() << " entries." << std::endl;
+    std::cout << "Histogram hDpt_nuA has " << hDpt_nuA->GetEntries() << " entries." << std::endl;
+    std::cout << "Histogram h_D_pt3D has " << h_D_pt3D->GetEntries() << " entries." << std::endl;
+    std::cout << "Histogram h_A_pt3D has " << h_A_pt3D->GetEntries() << " entries." << std::endl;
+    std::cout << "Histogram h_wD_pt has " << h_wD_pt->GetEntries() << " entries." << std::endl;
+    std::cout << "Histogram h_wA_pt has " << h_wA_pt->GetEntries() << " entries." << std::endl;
+    std::cout << "Histogram h_wD_sqpt2 has " << h_wD_sqpt2->GetEntries() << " entries." << std::endl;
+    std::cout << "Histogram h_wA_sqpt2 has " << h_wA_sqpt2->GetEntries() << " entries." << std::endl;
+
+    // Check for empty histograms
+    if (hDpt_nuD->GetEntries() == 0 || hDpt_nuA->GetEntries() == 0) {
+        std::cerr << "Warning: Histograms hDpt_nuD or hDpt_nuA are empty!" << std::endl;
+    }
+    if (h_D_pt3D->GetEntries() == 0 || h_A_pt3D->GetEntries() == 0) {
+        std::cerr << "Warning: Histograms h_D_pt3D or h_A_pt3D are empty!" << std::endl;
+    }
+    if (h_wD_pt->GetEntries() == 0 || h_wA_pt->GetEntries() == 0) {
+        std::cerr << "Warning: Histograms h_wD_pt or h_wA_pt are empty!" << std::endl;
+    }
+    if (h_wD_sqpt2->GetEntries() == 0 || h_wA_sqpt2->GetEntries() == 0) {
+        std::cerr << "Warning: Histograms h_wD_sqpt2 or h_wA_sqpt2 are empty!" << std::endl;
+    }
+
+    std::cout << "Validation complete.\n";
+}
+
+
+
+
+void deltaptsq::LogBinContent() {
+    // Generalized logging function for 3D histograms
+    auto logHistogram = [](TH3F* hist, const std::string& name) {
+        int numBinsX = hist->GetNbinsX();
+        int numBinsY = hist->GetNbinsY();
+        int numBinsZ = hist->GetNbinsZ();
+
+        std::cout << "DELTA PTSQ BIN CONTENT FOR " << name << " (3D):" << std::endl;
+
+        for (int x = 1; x <= numBinsX; ++x) { // Loop over 'x' bins
+            double xValue = hist->GetXaxis()->GetBinCenter(x);
+            std::cout << "X = " << xValue << " (Layer " << x << "):" << std::endl;
+
+            // Print column headers (z values)
+            std::cout << std::setw(10) << "Y \\ Z";
+            for (int y = 1; y <= numBinsY; ++y) {
+                double yValue = hist->GetYaxis()->GetBinCenter(y);
+                std::cout << std::setw(10) << yValue;
+            }
+            std::cout << std::endl;
+
+            // Print matrix content for fixed 'X' layer
+            for (int z = 1; z <= numBinsZ; ++z) {
+                double zValue = hist->GetZaxis()->GetBinCenter(z);
+                std::cout << std::setw(10) << zValue; // Row header (Z)
+
+                for (int y = 1; y <= numBinsY; ++y) {
+                    double content = hist->GetBinContent(x, y, z);
+                    std::cout << std::setw(10) << content; // Bin content
+                }
+                std::cout << std::endl;
+            }
+            std::cout << std::endl; // Separate layers for clarity
+        }
+    };
+
+    // Log all 3D histograms used in calcDpt
+    logHistogram(h_wD_pt, "h_wD_pt");
+    logHistogram(h_wA_pt, "h_wA_pt");
+    logHistogram(h_wD_sqpt2, "h_wD_sqpt2");
+    logHistogram(h_wA_sqpt2, "h_wA_sqpt2");
+    logHistogram(h_D_pt3D, "h_D_pt3D");
+    logHistogram(h_A_pt3D, "h_A_pt3D");
+}
+
+
