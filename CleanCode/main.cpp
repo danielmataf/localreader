@@ -42,12 +42,12 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novSn", simufilesSn);  //uncomment for sim
 
     //Uncomment 4 test on ifarm, comment all above
-    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v6/LD2/", filenamesLD2);
-    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v6/CuSn/", filenamesCuSn);
-    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v6/CxC/", filenamesCxC);
+    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v7/LD2/", filenamesLD2);
+    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v7/CuSn/", filenamesCuSn);
+    //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v7/CxC/", filenamesCxC);
     ////uncommment also below for sim  on ifarm
-    //files.SnDir2Vector("/volatile/clas12/dmat/test/jan_aicv_newrgdLD2/", simufilesLD2);  //uncomment for sim
-    //files.SnDir2Vector("/volatile/clas12/dmat/test/jan_aicv_newrgdCC/", simufilesCxC);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/fulltorus_aicv_newrgdLD2/", simufilesLD2);  //uncomment for sim
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/fulltorus_aicv_newrgdLD2/", simufilesCxC);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdCu/", simufilesCu);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdSn/", simufilesSn);  //uncomment for sim 
 
@@ -163,7 +163,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     sratio simsratCu(simLD2cuts, simCucuts, "Cu_sim");
 
     int totalevts = 19000;
-    // int totalevts =3500000   //uncomment this on farm for fullT on C2 
+    // int totalevts =3500000;   //uncomment this on farm for fullT on C2 
 
     for (int i=0; i<totalevts; i++){
         simCxC  = Sim_CxC.ProcessEventsInFile();

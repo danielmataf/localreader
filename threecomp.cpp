@@ -7,11 +7,11 @@
 #include <iostream>
 #include <vector>
 #include <map>
-//how to compile and run 
-//g++ -o threecomp threecomp.cpp $(root-config --cflags --libs)
-//./threecomp
+// How to compile and run
+// g++ -o threecomp threecomp.cpp $(root-config --cflags --libs)
+// ./threecomp
 
-void Compare3Histograms(const char* target, const std::vector<std::string>& plotTitles, const std::vector<std::string>& xTitles) {
+void Compare3Histograms(const char* target) {
     std::string file1 = std::string("/home/matamoros/ful") + target + "_test.root";
     std::string file2 = std::string("/home/matamoros/ful") + target + "_sim.root";
     std::string file3 = std::string("/home/matamoros/other") + target + "_sim.root";
@@ -42,6 +42,16 @@ void Compare3Histograms(const char* target, const std::vector<std::string>& plot
         "helicity_raw_"
     };
 
+    const std::vector<std::string> xTitles = {
+        "Q^{2} [GeV^{2}]", "W^{2} [GeV^{2}]", "#nu [GeV]", "#phi_{h} [deg]", "x_{B}", "y", "z", 
+        "Target V_{z} [cm]", "p_{T}^{2} [GeV^{2}]", "p_{tot} Electron [GeV]", "p_{x} Electron [GeV]",
+        "p_{y} Electron [GeV]", "p_{z} Electron [GeV]", "E Electron [GeV]", "E Pion [GeV]", 
+        "#theta Electron [deg]", "#phi Electron [deg]", "p_{tot} Pion [GeV]", "p_{x} Pion [GeV]",
+        "p_{y} Pion [GeV]", "p_{z} Pion [GeV]", "#theta Pion [deg]", "#phi Pion [deg]", 
+        "lu Electron", "lv Electron", "lw Electron", "E_{PCAL} Electron [GeV]", "Nphe15", "Nphe16", 
+        "#chi^{2} Electron", "#chi^{2} Pion", "Helicity", "Helicity (Raw)"
+    };
+
     TCanvas* pdfCanvas = new TCanvas("pdfCanvas", "Combined Histogram Comparison", 1000, 800);
     pdfCanvas->Divide(3, 3);
     int canvasIndex = 1;
@@ -49,10 +59,10 @@ void Compare3Histograms(const char* target, const std::vector<std::string>& plot
 
     pdfCanvas->Print("Comparison.pdf[");
 
-    for (const auto& name : histogramNames) {
-        std::string histName1 = name + std::string(target) + "_RGD";
-        std::string histName2 = name + std::string(target) + "_sim";
-        std::string histName3 = name + std::string(target) + "_sim";
+    for (size_t i = 0; i < histogramNames.size(); ++i) {
+        std::string histName1 = histogramNames[i] + std::string(target) + "_RGD";
+        std::string histName2 = histogramNames[i] + std::string(target) + "_sim";
+        std::string histName3 = histogramNames[i] + std::string(target) + "_sim";
 
         TH1F* h1 = dynamic_cast<TH1F*>(rootFile1->Get(histName1.c_str()));
         TH1F* h2 = dynamic_cast<TH1F*>(rootFile2->Get(histName2.c_str()));
@@ -78,13 +88,13 @@ void Compare3Histograms(const char* target, const std::vector<std::string>& plot
         if (integral2 != 0) h2->Scale(1.0 / integral2);
         if (integral3 != 0) h3->Scale(1.0 / integral3);
 
-        float max1 = h1->GetMaximum();
-        float max2 = h2->GetMaximum();
-        float max3 = h3->GetMaximum();
-        float max = std::max({max1, max2, max3});
-
+        float max = std::max({h1->GetMaximum(), h2->GetMaximum(), h3->GetMaximum()});
         h1->SetMaximum(max * 1.1);
         h1->SetMinimum(0);
+
+        h1->GetXaxis()->SetTitle(xTitles[i].c_str());
+        h2->GetXaxis()->SetTitle(xTitles[i].c_str());
+        h3->GetXaxis()->SetTitle(xTitles[i].c_str());
 
         h1->Draw("hist");
         h2->Draw("hist same");
@@ -131,6 +141,6 @@ void Compare3Histograms(const char* target, const std::vector<std::string>& plot
 
 int main() {
     const char* target = "C2";
-    Compare3Histograms(target, {}, {});
+    Compare3Histograms(target);
     return 0;
 }
