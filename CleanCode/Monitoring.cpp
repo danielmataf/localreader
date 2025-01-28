@@ -148,6 +148,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
             h_Q2->Fill(event.electron.GetQ2());
 
             h_xb->Fill(event.Getxb());
+            h_xQ2->Fill(event.Getxb(), event.electron.GetQ2());
             h_y->Fill(event.Gety());    
             h_nu->Fill(event.Getnu());
             h_W2->Fill(event.GetW2());
@@ -511,80 +512,168 @@ void Monitoring::DrawR_Histograms(const std::string filename) {
 
 }
 
-
 void Monitoring::DrawHistograms(const std::string filename) {
-    TCanvas MonC("Monitoring canvas", "Monitoring Histograms");
-    MonC.Divide(3, 3);
-    MonC.cd(1);
-    h_Q2->Draw("hist");
-    h_Q2->SetTitle("Q2 Distribution");
+    // Initialize the PDF file
+    TCanvas canvas("canvas", "Monitoring Histograms", 800, 600);
+    canvas.Divide(3, 3);
+
+    // First page: All histograms with TLines
+    canvas.cd(1);
+    h_Q2->SetTitle("Q^{2} Distribution");
     h_Q2->GetXaxis()->SetTitle("Q^{2} (GeV^{2})");
-    h_Q2->GetXaxis()->SetRangeUser(1,5);
+    h_Q2->GetXaxis()->SetRangeUser(0, 5);
+    h_Q2->SetMinimum(0);
+    h_Q2->Draw("hist");
     TLine *line_Q2 = new TLine(Constants::RcutminQ, h_Q2->GetMinimum(), Constants::RcutminQ, h_Q2->GetMaximum());
-    line_Q2->SetLineStyle(2); // Dashed line style
+    line_Q2->SetLineStyle(2);
     line_Q2->Draw();
-    MonC.cd(2);
-    h_xb->Draw("hist");
+
+    canvas.cd(2);
     h_xb->SetTitle("xb Distribution");
     h_xb->GetXaxis()->SetTitle("x_{B}");
-    h_xb->GetXaxis()->SetRangeUser(0,0.6);
-    MonC.cd(3);
-    h_y->Draw("hist");
+    h_xb->GetXaxis()->SetRangeUser(0, 0.6);
+    h_xb->SetMinimum(0);
+    h_xb->Draw("hist");
+
+    canvas.cd(3);
     h_y->SetTitle("y Distribution");
     h_y->GetXaxis()->SetTitle("y");
-    TLine *line_y = new TLine(Constants::RcutminY, h_y->GetMinimum(), Constants::RcutminY, h_y->GetMaximum());  
-    line_y->SetLineStyle(2); // Dashed line style
+    h_y->SetMinimum(0);
+    h_y->Draw("hist");
+    TLine *line_y = new TLine(Constants::RcutminY, h_y->GetMinimum(), Constants::RcutminY, h_y->GetMaximum());
+    line_y->SetLineStyle(2);
     line_y->Draw();
-    MonC.cd(4);
-    h_nu->Draw("hist");
+
+    canvas.cd(4);
     h_nu->SetTitle("nu Distribution");
     h_nu->GetXaxis()->SetTitle("nu (GeV)");
-    h_nu->GetXaxis()->SetRangeUser(3,10);
-    MonC.cd(5);
-    h_W2->Draw("hist");
+    h_nu->GetXaxis()->SetRangeUser(0, 10);
+    h_nu->SetMinimum(0);
+    h_nu->Draw("hist");
+
+    canvas.cd(5);
     h_W2->SetTitle("W^{2} Distribution");
     h_W2->GetXaxis()->SetTitle("W^{2} (GeV^{2})");
+    h_W2->SetMinimum(0);
+    h_W2->Draw("hist");
     TLine *line_W2 = new TLine(Constants::RcutminW, h_W2->GetMinimum(), Constants::RcutminW, h_W2->GetMaximum());
-    line_W2->SetLineStyle(2); // Dashed line style
+    line_W2->SetLineStyle(2);
     line_W2->Draw();
-    MonC.cd(6);
-    h_z->Draw("hist");
+
+    canvas.cd(6);
     h_z->SetTitle("z Distribution");
     h_z->GetXaxis()->SetTitle("z");
+    h_z->SetMinimum(0);
+    h_z->Draw("hist");
     TLine *line_z = new TLine(Constants::RcutminZ, h_z->GetMinimum(), Constants::RcutminZ, h_z->GetMaximum());
-    line_z->SetLineStyle(2); // Dashed line style
-    line_z->Draw();
     TLine *line_zmax = new TLine(Constants::RcutmaxZ, h_z->GetMinimum(), Constants::RcutmaxZ, h_z->GetMaximum());
-    line_zmax->SetLineStyle(2); // Dashed line style
+    line_z->SetLineStyle(2);
+    line_zmax->SetLineStyle(2);
+    line_z->Draw();
     line_zmax->Draw();
-    MonC.cd(6)->SetLogy();  // Set logarithmic scale on y-axis for h_z
-    //add log scale on y axis to z distribution
-    MonC.cd(7);
-    h_pt2->Draw("hist");
+
+    canvas.cd(7);
     h_pt2->SetTitle("pt2 Distribution");
     h_pt2->GetXaxis()->SetTitle("p_{t}^{2} (GeV^{2})");
+    h_pt2->SetMinimum(0);
+    h_pt2->Draw("hist");
     TLine *line_pt2 = new TLine(Constants::RcutminPt2, h_pt2->GetMinimum(), Constants::RcutminPt2, h_pt2->GetMaximum());
-    line_pt2->SetLineStyle(2); // Dashed line style
-    line_pt2->Draw();
     TLine *line_pt2max = new TLine(Constants::RcutmaxPt2, h_pt2->GetMinimum(), Constants::RcutmaxPt2, h_pt2->GetMaximum());
-    line_pt2max->SetLineStyle(2); // Dashed line style
+    line_pt2->SetLineStyle(2);
+    line_pt2max->SetLineStyle(2);
+    line_pt2->Draw();
     line_pt2max->Draw();
 
-    MonC.cd(7)->SetLogy();  // Set logarithmic scale on y-axis for h_z
-    //add log scale on y axis to pt distribution
-
-
-
-
-    MonC.cd(8);
-    h_phih->Draw("hist");
+    canvas.cd(8);
     h_phih->SetTitle("phih Distribution");
-    h_phih->GetXaxis()->SetTitle("phi_{h} (degrees)");
-    MonC.cd(9);
-    h_vertexZ->Draw("hist");
+    h_phih->GetXaxis()->SetTitle("phi_{h}");
+    h_phih->SetMinimum(0);
+    h_phih->Draw("hist");
+
+    canvas.cd(9);
     h_vertexZ->SetTitle("Vertex Z Distribution");
-    MonC.Print((filename + ".pdf").c_str());
+    h_vertexZ->GetXaxis()->SetTitle("Z_{vertex}");
+    h_vertexZ->SetMinimum(0);
+    h_vertexZ->Draw("hist");
+
+    // Save the first page
+    canvas.Print((filename + ".pdf(").c_str()); // Open PDF and save the first page
+
+    // Second page: Selected histograms and 2D distributions
+    canvas.Clear();
+    canvas.Divide(3, 3);
+
+    canvas.cd(1);
+    h_Q2->SetTitle("Q^{2} Distribution");
+    h_Q2->GetXaxis()->SetTitle("Q^{2} (GeV^{2})");
+    h_Q2->GetXaxis()->SetRangeUser(0, 5);
+    h_Q2->SetMinimum(0);
+    h_Q2->Draw("hist");
+    TLine *line_Q2bis = new TLine(Constants::RcutminQ, h_Q2->GetMinimum(), Constants::RcutminQ, h_Q2->GetMaximum());
+    line_Q2bis->SetLineStyle(2);
+    line_Q2bis->Draw();
+
+    canvas.cd(2);
+    h_xb->SetTitle("x_{B} Distribution");
+    h_xb->GetXaxis()->SetTitle("x_{B}");
+    h_xb->GetXaxis()->SetRangeUser(0, 0.6);
+    h_xb->SetMinimum(0);
+    h_xb->Draw("hist");
+
+    canvas.cd(3);
+    h_z->SetTitle("z Distribution");
+    h_z->GetXaxis()->SetTitle("z");
+    h_z->SetMinimum(0);
+    h_z->Draw("hist");
+    TLine *line_zbis = new TLine(Constants::RcutminZ, h_z->GetMinimum(), Constants::RcutminZ, h_z->GetMaximum());
+    TLine *line_zmaxbis = new TLine(Constants::RcutmaxZ, h_z->GetMinimum(), Constants::RcutmaxZ, h_z->GetMaximum());
+    line_zbis->SetLineStyle(2);
+    line_zmaxbis->SetLineStyle(2);
+    line_zbis->Draw();
+    line_zmaxbis->Draw();
+
+    canvas.cd(4);
+    h_pt2->SetTitle("p_{t}^{2} Distribution");
+    h_pt2->GetXaxis()->SetTitle("p_{t}^{2} (GeV^{2})");
+    h_pt2->SetMinimum(0);
+    h_pt2->Draw("hist");
+    TLine *line_pt2bis = new TLine(Constants::RcutminPt2, h_pt2->GetMinimum(), Constants::RcutminPt2, h_pt2->GetMaximum());
+    TLine *line_pt2maxbis = new TLine(Constants::RcutmaxPt2, h_pt2->GetMinimum(), Constants::RcutmaxPt2, h_pt2->GetMaximum());
+    line_pt2bis->SetLineStyle(2);
+    line_pt2maxbis->SetLineStyle(2);
+    line_pt2bis->Draw();
+    line_pt2maxbis->Draw();
+
+    canvas.cd(5);
+    h_xQ2->SetTitle("x_{B} vs Q^{2}");
+    h_xQ2->GetXaxis()->SetTitle("x_{B}");
+    h_xQ2->GetYaxis()->SetTitle("Q^{2} (GeV^{2})");
+    h_xQ2->Draw("COLZ");
+
+    canvas.cd(6);
+    h_pt2z->SetTitle("z vs p_{t}^{2}");
+    h_pt2z->GetXaxis()->SetTitle("p_{t}^{2} (GeV^{2})");
+    h_pt2z->GetYaxis()->SetTitle("z");
+    h_pt2z->Draw("COLZ");
+
+//    canvas.cd(7);
+//    h_thetaelectron->SetTitle("Theta Electron");
+//    h_thetaelectron->Draw("hist");
+//
+//    canvas.cd(8);
+//    h_thetaelectronMC->SetTitle("Theta Electron MC");
+//    h_thetaelectronMC->Draw("hist");
+//
+//    canvas.cd(9);
+//    h_chi2_el->SetTitle("Chi2 Electron");
+//    h_chi2_el->Draw("hist");
+
+    // Save the second page and close the PDF
+    canvas.Print((filename + ".pdf)").c_str()); // Close the PDF
 }
+
+
+
 
 
 void Monitoring::DrawQmonitoring(Monitoring& monTrue, const std::string filename){
