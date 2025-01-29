@@ -175,6 +175,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
         testLD2 = RGD_LD2.ProcessEventsInFile();
 
         testSn = RGD_CuSn.ProcessEventsInFile();
+        testCu = RGD_CuSn.ProcessEventsInFile();
 
         if (testLD2.has_value()) {
             Event eventtestLD2 = testLD2.value();
@@ -184,6 +185,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             ratC1.FillHistograms(eventtestLD2);
             ratC2.FillHistograms(eventtestLD2);
             ratSn.FillHistograms(eventtestLD2);
+            ratCu.FillHistograms(eventtestLD2);
             dptC1.FillHistograms(eventtestLD2);
             dptC2.FillHistograms(eventtestLD2);
             dptCu.FillHistograms(eventtestLD2);
@@ -256,7 +258,14 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             ratSn.FillHistograms(eventtestSn);
             dptSn.FillHistograms(eventtestSn);
             sratSn.FillHistograms(eventtestSn);
-
+        }
+        if (testCu.has_value()) {
+            Event eventtestCu = testCu.value();
+            eventtestCu.SetTargetType(1);
+            eventtestCu.calcAll();
+            monTestCu.FillHistogramswCuts(eventtestCu);
+            ratCu.FillHistograms(eventtestCu);
+            sratCu.FillHistograms(eventtestCu);
         }
             //else{ counter_restCxC++;}
         files.displayProgress(i + 1, totalevts);
@@ -279,6 +288,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
 
     ratC2.calcR();  
     ratSn.calcR();
+    ratCu.calcR();
     simratC2.calcR();
     dptC2.calcDpt();
     simdptC2.calcDpt();
@@ -286,6 +296,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     simsratC2.calcSratio();
 
     ratC2.multiplotR(ratSn);
+    ratSn.multiplotR(ratCu, ratC2);
     
     //ratC2.Rtargetsimcomp(simratC2);
     //dptC2.Dpttargetsimcomp(simdptC2);

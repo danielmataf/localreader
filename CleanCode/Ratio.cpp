@@ -422,7 +422,7 @@ void Ratio::multiplotR() {
             graph->GetXaxis()->SetTitle("z");
             graph->GetYaxis()->SetTitle("R");
             graph->SetMarkerStyle(20);
-            graph->GetYaxis()->SetRangeUser(-.5, 0.5);
+            graph->GetYaxis()->SetRangeUser(0, 0.5);
             graph->Draw("AP");
 
             
@@ -480,7 +480,11 @@ void Ratio::multiplotR(Ratio& ratioSecond) {
             graphSn->SetMarkerStyle(20);
             graphSn->SetMarkerColor(kOrange);
             
-            TLegend *legend = new TLegend(0.7, 0.7, 0.9, 0.9);
+            // Legend: Smaller size and bottom-left position
+            TLegend *legend = new TLegend(0.15, 0.15, 0.35, 0.30); // Bottom-left corner
+            legend->SetTextSize(0.03);
+            legend->SetBorderSize(0);  // No border
+            legend->SetFillStyle(0);   // Transparent background
             legend->AddEntry(graphC, "C", "lp");
             legend->AddEntry(graphSn, "Sn", "lp");
 
@@ -492,7 +496,7 @@ void Ratio::multiplotR(Ratio& ratioSecond) {
             mg->SetTitle(title.c_str());
             mg->GetXaxis()->SetTitle("z");
             mg->GetYaxis()->SetTitle("R");
-            mg->GetYaxis()->SetRangeUser(-0.5, 1.5);
+            mg->GetYaxis()->SetRangeUser(0.0, 1.5);
             
             mg->Draw("APE1");
             legend->Draw("same");
@@ -504,12 +508,13 @@ void Ratio::multiplotR(Ratio& ratioSecond) {
             prelimText->SetTextColorAlpha(kGray + 1, 0.3);
             prelimText->SetNDC();
             prelimText->SetTextAlign(22);
-            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+            prelimText->DrawLatex(0.5, 0.5, "very preliminary");
         }
         
         canvas.SaveAs(pdfFileName.c_str());
     }
 }
+
 
 void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
     //THIS FUINCTION COMPARES 3 TARGETS, USUALLY c, cU AND TIN
@@ -562,14 +567,16 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
             graphThird->SetMarkerStyle(20);
             graph->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
             //graph->Draw("AP");
-            graphOther->SetMarkerColor(kBlue);
+            graphOther->SetMarkerColor(kGreen);
 
-            graph->SetMarkerColor(kRed);
-            graphThird->SetMarkerColor(kGreen);
+            graph->SetMarkerColor(kOrange);
+            graphThird->SetMarkerColor(kBlack);
             //graphOther->Draw("P");
             
 
-            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            //TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            TLegend *legend = new TLegend(0.15, 0.15, 0.35, 0.30); // Bottom-left corner
+
             legend->AddEntry(graph, "Sn", "lp");
             legend->AddEntry(graphOther, "Cu", "lp");
             legend->AddEntry(graphThird, "C", "lp");
@@ -583,7 +590,7 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
             mg->SetTitle((title).c_str() );
             mg->GetXaxis()->SetTitle("z");
             mg->GetYaxis()->SetTitle("R");
-            mg->GetYaxis()->SetRangeUser(-0.5, 1.5); // 
+            mg->GetYaxis()->SetRangeUser(0.0, 1.5); // 
 
 
             mg->Draw("APE1");
@@ -596,7 +603,8 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
             prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
             prelimText->SetNDC();
             prelimText->SetTextAlign(22);  // Centered alignment
-            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+            prelimText->DrawLatex(0.5, 0.5, "very preliminary");
+            
         
         }
 
