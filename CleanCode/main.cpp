@@ -47,7 +47,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v7/CxC/", filenamesCxC);
     ////uncommment also below for sim  on ifarm
     //files.SnDir2Vector("/volatile/clas12/dmat/test/fulltorus_aicv_newrgdLD2/", simufilesLD2);  //uncomment for sim
-    //files.SnDir2Vector("/volatile/clas12/dmat/test/fulltorus_aicv_newrgdLD2/", simufilesCxC);  //uncomment for sim 
+    //files.SnDir2Vector("/volatile/clas12/dmat/test/fullTorus_aicv_newrgdCC/", simufilesCxC);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdCu/", simufilesCu);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdSn/", simufilesSn);  //uncomment for sim 
 
@@ -174,6 +174,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
         simLD2_MC = Sim_LD2.ProcessEventsInFileMC();
         testLD2 = RGD_LD2.ProcessEventsInFile();
 
+        testSn = RGD_CuSn.ProcessEventsInFile();
+
         if (testLD2.has_value()) {
             Event eventtestLD2 = testLD2.value();
             eventtestLD2.SetTargetType(0);
@@ -181,6 +183,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             monTestLD2.FillHistogramswCuts(eventtestLD2);
             ratC1.FillHistograms(eventtestLD2);
             ratC2.FillHistograms(eventtestLD2);
+            ratSn.FillHistograms(eventtestLD2);
             dptC1.FillHistograms(eventtestLD2);
             dptC2.FillHistograms(eventtestLD2);
             dptCu.FillHistograms(eventtestLD2);
@@ -213,6 +216,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             Event eventtestCxC = testCxC.value();
             eventtestCxC.SetTargetType(1);
             eventtestCxC.calcAll();
+
             //munfTestC2.FillHistComp(eventtestCxC);
             monTestC2.FillHistogramswCuts(eventtestCxC);
             monTestC1.FillHistogramswCuts(eventtestCxC);
@@ -242,7 +246,18 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
                     simdptC2.FillHistograms(eventsimCxC);
                 }
         }
- 
+        if (testSn.has_value()) {
+            Event eventtestSn = testSn.value();
+            eventtestSn.SetTargetType(1);
+            eventtestSn.calcAll();
+
+            monTestSn.FillHistogramswCuts(eventtestSn);
+            //monTestSn.FillHistogramsNoCuts(eventtestSn);
+            ratSn.FillHistograms(eventtestSn);
+            dptSn.FillHistograms(eventtestSn);
+            sratSn.FillHistograms(eventtestSn);
+
+        }
             //else{ counter_restCxC++;}
         files.displayProgress(i + 1, totalevts);
     }
@@ -250,6 +265,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     std::cout << "//========= RGD data CxC ==========//  \n";
     monTestC2.SaveHistRoot("janC2_test");
     monTestC2.DrawHistograms("monC2_test");
+    monTestSn.SaveHistRoot("janSn_test");
+    monTestSn.DrawHistograms("SnUrgent");
     std::cout << "//========= Simulation C2 ==========//  \n";
     monSimC2.SaveHistRoot("janC2_sim");
     monSimC1.SaveHistRoot("janC1_sim");
@@ -257,31 +274,34 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     //monSimLD2.SaveHistRoot("janLD2_sim");
     //monTestC2.DrawHelicityHistograms("HELIXc2");
     //ratC2.calcRatios();
+    simratC1.DrawHistos(ratC1);
+    simratC1.DrawSelfHistos(ratC1);
+
     ratC2.calcR();  
+    ratSn.calcR();
     simratC2.calcR();
     dptC2.calcDpt();
     simdptC2.calcDpt();
     sratC2.calcSratio();
     simsratC2.calcSratio();
 
+    ratC2.multiplotR(ratSn);
     
-    ratC2.Rtargetsimcomp(simratC2);
-    dptC2.Dpttargetsimcomp(simdptC2);
-    ratC2.DrawHistos(ratC1);
-    ratC2.DrawSelfHistos(ratC1);
-    simratC2.DrawHistos(simratC1);
-    simratC2.DrawSelfHistos(simratC1);
+    //ratC2.Rtargetsimcomp(simratC2);
+    //dptC2.Dpttargetsimcomp(simdptC2);
+    //simratC2.DrawHistos(simratC1);
+    //simratC2.DrawSelfHistos(simratC1);
     std::cout << "//========= Validations ==========//  \n";
     ratC2.ValidateHistograms();
     ratC2.LogBinContent();
-    std::cout << "//===================//  \n";
-
-    dptC2.ValidateHistograms();
-    dptC2.LogBinContent();
-    std::cout << "//===================//  \n";
-
-    sratC2.ValidateHistograms();
-    sratC2.LogBinContent();
+    //std::cout << "//===================//  \n";
+//
+    //dptC2.ValidateHistograms();
+    //dptC2.LogBinContent();
+    //std::cout << "//===================//  \n";
+//
+    //sratC2.ValidateHistograms();
+    //sratC2.LogBinContent();
 
 
 

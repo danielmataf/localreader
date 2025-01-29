@@ -12,9 +12,9 @@
 // ./threecomp
 
 void Compare3Histograms(const char* target) {
-    std::string file1 = std::string("/home/matamoros/ful") + target + "_test.root";
-    std::string file2 = std::string("/home/matamoros/ful") + target + "_sim.root";
-    std::string file3 = std::string("/home/matamoros/other") + target + "_sim.root";
+    std::string file1 = std::string("/home/matamoros/RGDv7") + target + "_test.root";
+    std::string file2 = std::string("/home/matamoros/jan") + target + "_sim.root";
+    std::string file3 = std::string("/home/matamoros/symm") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {
@@ -101,7 +101,7 @@ void Compare3Histograms(const char* target) {
         h3->Draw("hist same");
 
         TLegend* legend = new TLegend(0.7, 0.7, 0.9, 0.9);
-        legend->AddEntry(h1, "RGD Data", "l");
+        legend->AddEntry(h1, "RGD Data 0v7", "l");
         legend->AddEntry(h2, "FullTorus", "l");
         legend->AddEntry(h3, "SymmTorus", "l");
         legend->Draw();

@@ -29,6 +29,9 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     //h_nu_z_pt2A(new TH3F("nu,z,pt2,A", "histo nu,z,pt2 for A", Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu , Constants::Rbin_z ,Constants::RcutminZ, Constants::RcutmaxZ, Constants::Rbin_pt2 , Constants::RcutminPt2, Constants::RcutmaxPt2  )),
     h_nu_z_pt2D(new TH3F(("nu,z,pt2_D_"+targetName).c_str(), ("histo nu,z,pt2 for D"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu , Constants::Rbin_z ,Constants::RcutminZ, Constants::RcutmaxZ, Constants::Rbin_pt2 , Constants::RcutminPt2, Constants::RcutmaxPt2  )),
     h_nu_z_pt2A(new TH3F(("nu,z,pt2_A_"+targetName).c_str(), ("histo nu,z,pt2 for A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu , Constants::Rbin_z ,Constants::RcutminZ, Constants::RcutmaxZ, Constants::Rbin_pt2 , Constants::RcutminPt2, Constants::RcutmaxPt2  )),
+    //Debugging z histos
+    h_z_A(new TH1F(("z_A_hadbis"+targetName).c_str(), ("z_A_hadbis"+targetName).c_str(), Constants::Rbin_z , Constants::RcutminZ , Constants::RcutmaxZ)),
+    h_z_D(new TH1F(("z_D_hadbis"+targetName).c_str(), ("z_D_hadbis"+targetName).c_str(), Constants::Rbin_z , Constants::RcutminZ , Constants::RcutmaxZ)),
     //histo after passcutelectrons only e for nu unse only
     h_nu_z_pt2A_onlye(new TH3F(("nu,z,pt2,A onlye_"+targetName).c_str(), ("histo_e nu,z,pt2 for A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu ,Constants::Rcutmaxnu ,Rbin_z,Constants::RcutminZ, Constants::RcutmaxZ,Rbin_pt2, Constants::RcutminPt2, Constants::RcutmaxPt2  )),
     h_nu_z_pt2D_onlye(new TH3F(("nu,z,pt2,D onlye_"+targetName).c_str(), ("histo_e nu,z,pt2 for A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu ,Constants::Rcutmaxnu ,Rbin_z,Constants::RcutminZ, Constants::RcutmaxZ,Rbin_pt2, Constants::RcutminPt2, Constants::RcutmaxPt2  )),
@@ -36,6 +39,8 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     h_nuD(new TH1F(("nu_D"+targetName).c_str(), ("nu_D"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
     h_nu_A_had(new TH1F(("nu_A_had"+targetName).c_str(), ("nu_A_had"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
     h_z_A_had(new TH1F(("z_A_had"+targetName).c_str(), ("z_A_had"+targetName).c_str(), Constants::Rbin_z , Constants::RcutminZ , Constants::RcutmaxZ)),
+    h_nu_D_had(new TH1F(("nu_D_had"+targetName).c_str(), ("nu_D_had"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
+    h_pt2_D_had(new TH1F(("pt2_D_had"+targetName).c_str(), ("pt2_D_had"+targetName).c_str(), Constants::Rbin_pt2 , Constants::RcutminPt2 , Constants::RcutmaxPt2)),
     h_pt2_A_had(new TH1F(("pt2_A_had"+targetName).c_str(), ("pt2_A_had"+targetName).c_str(), Constants::Rbin_pt2 , Constants::RcutminPt2 , Constants::RcutmaxPt2)),
     h_nuC1(new TH1F(("nu_C1"+targetName).c_str(), ("nu_C1"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)), 
     h_nuC2(new TH1F(("nu_C2"+targetName).c_str(), ("nu_C2"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu))
@@ -84,8 +89,11 @@ void Ratio::FillHistograms(const Event& event) {
             if (cutd.PassCutsHadrons(hadron)==true){
                 //if (hadron.GetPID() == Constants::PION_PLUS_PID  ){
                 ////not using the if (==false) return statement 
-
+                h_z_D->Fill(hadron.Getz()); //debugging Ybins jan25
                 h_nu_z_pt2D->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
+                h_nu_D_had->Fill(event.Getnu() );   //these  histos  added to to track binning switch
+                h_pt2_D_had->Fill(hadron.Getpt2()); //these  histos  added to to track binning switch
+
             //std::cout << "nimporte quoi" << event.Getnu()<< ";" << hadron.Getz()<<","<< hadron.Getpt2() <<std::endl;
                 //}
             }
@@ -110,6 +118,7 @@ void Ratio::FillHistograms(const Event& event) {
                 h_nu_A_had->Fill(event.Getnu() );   //these 3 histos were added to monitor CxC self Ratio
                 h_z_A_had->Fill(hadron.Getz()); //these 3 histos were added to monitor CxC self Ratio
                 h_pt2_A_had->Fill(hadron.Getpt2()); //these 3 histos were added to monitor CxC self Ratio
+                h_z_A->Fill(hadron.Getz()); //debugging Ybins jan25
                 //if (targetName == "C1" ) {
                 //    h_nu_z_pt2C1->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 //}
@@ -136,7 +145,7 @@ void Ratio::FillHistograms(const Event& event) {
 void Ratio::DrawHistos(Ratio& ratioOther ){
     //this is only to monitor the nu histograms for self ratio 
     TCanvas *chR = new TCanvas("c", "c");
-    chR->Divide(2, 2);
+    chR->Divide(3, 3);
     TH1F* h_nuA2 = ratioOther.getHNuA();
     TH3F* h_nu_z_pt2A2 = ratioOther.getHNuzptA();
     
@@ -153,6 +162,12 @@ void Ratio::DrawHistos(Ratio& ratioOther ){
     h_nu_z_pt2A2->Draw();
     h_nu_z_pt2A2->SetTitle("nu_z_pt2_A(C2)");
 
+    chR->cd(5);
+    h_z_D->Draw();
+    h_z_D->SetTitle("check z bins D");
+    chR->cd(6);
+    h_z_A->Draw();
+    h_z_A->SetTitle("check z bins D");
 
     chR->SaveAs("nu_histos.pdf");
     delete chR;
@@ -167,7 +182,7 @@ void Ratio::DrawHistos(Ratio& ratioOther ){
 void Ratio::DrawSelfHistos(Ratio& ratioOther ){
     //this is to draw the histograms used for self ratio
     TCanvas *cSelf = new TCanvas("mon4self", "mon4self");
-    cSelf->Divide(2,2);
+    cSelf->Divide(3,3);
     cSelf->cd(1);
     h_nuA->SetTitle("nu_C");
     //h_nuD->SetLineColor(kRed);
@@ -185,6 +200,25 @@ void Ratio::DrawSelfHistos(Ratio& ratioOther ){
     cSelf->cd(4);
     h_pt2_A_had->Draw();
     h_pt2_A_had->SetTitle("pt2_C_had");
+
+    cSelf->cd(5);
+    h_nuD->SetTitle("nu_D");
+    //h_nuD->SetLineColor(kRed);
+    //h_nuD->Draw();
+    h_nuD->Draw();
+
+    cSelf->cd(6);
+    h_nu_D_had->Draw();
+    h_nu_D_had->SetTitle("nu_D_had");
+
+    cSelf->cd(7);
+    h_z_D->Draw();
+    h_z_D->SetTitle("z_D_had");
+    
+    cSelf->cd(8);
+    h_pt2_D_had->Draw();
+    h_pt2_D_had->SetTitle("pt2_D_had");
+
 
     cSelf->SaveAs("self_histos.pdf");
 
@@ -204,6 +238,9 @@ void Ratio::calcR(){
     int numBinsX = h_nu_z_pt2D->GetNbinsX();    //same bins 4 Deut and A 
     int numBinsY = h_nu_z_pt2D->GetNbinsY(); 
     int numBinsZ = h_nu_z_pt2D->GetNbinsZ(); 
+    std::cout << "numBinsX = " << numBinsX << std::endl;
+    std::cout << "numBinsY = " << numBinsY << std::endl;
+    std::cout << "numBinsZ = " << numBinsZ << std::endl;
     for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {  
         double val_nuelD = h_nuD->GetBinContent(Xbin); 
         //std :: cout << "val_nuelD = " << val_nuelD << std::endl;  
@@ -211,8 +248,11 @@ void Ratio::calcR(){
           
         for (int Ybin = 1; Ybin <= numBinsY; Ybin++ ){
             for (int Zbin = 1; Zbin <= numBinsZ; Zbin++ ){
+                counter_3D ++;
+                std ::cout << "counter_3D = " << counter_3D << std::endl;
 
                 // loop with 125 values (5 per axis)
+                // if we use with bins = 6 then a total of 216 for counter_3D
                 double valD = h_nu_z_pt2D->GetBinContent(Xbin,Ybin,Zbin);   //seems to properly recover value 
                 double valA = h_nu_z_pt2A->GetBinContent(Xbin,Ybin,Zbin);
                 double interm1nu = (val_nuelA > 0) ? valA / val_nuelA : 0.0;
@@ -226,8 +266,12 @@ void Ratio::calcR(){
                 //std::cout << "          " << std::endl;
                 //
                 double raterr = ratvalue * sqrt(1/valA + 1/valD + 1/val_nuelA + 1/val_nuelD);
+                //std::cout << "ratvalue = " << ratvalue << "+-"<< raterr<< std::endl;
                 ratMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
+                //std::cout << "Xbin = "<< Xbin << " Ybin = " << Ybin << " Zbin = " << Zbin << std::endl;
+
                 errorMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
+                //std::cout << "raterr = " << raterr << std::endl;
             }
         }
 
@@ -235,6 +279,7 @@ void Ratio::calcR(){
     //    R_v->SetPoint(bin-1, x_axis, interm3 );
 	//	//	
     }   
+    //std::cout << "total counter_3D = " << counter_3D << std::endl;
 }
 
 TH1F* Ratio::getHNuA() {
@@ -348,6 +393,7 @@ void Ratio::writeMatrixToFile(const std::string& filename) {
 
 
 void Ratio::multiplotR() {
+    //this function pltos only one target.
     for (int x = 0; x < Rbin; ++x) {
         double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
         std::string pdfFileName = "multiplotR_nu" + std::to_string(nuValue) + ".pdf";
@@ -376,7 +422,7 @@ void Ratio::multiplotR() {
             graph->GetXaxis()->SetTitle("z");
             graph->GetYaxis()->SetTitle("R");
             graph->SetMarkerStyle(20);
-            graph->GetYaxis()->SetRangeUser(0.0, 2.0);
+            graph->GetYaxis()->SetRangeUser(-.5, 0.5);
             graph->Draw("AP");
 
             
@@ -391,8 +437,82 @@ void Ratio::multiplotR() {
         canvas.SaveAs(pdfFileName.c_str());
     }
 }
+void Ratio::multiplotR(Ratio& ratioSecond) {
+    // THIS FUNCTION COMPARES 2 TARGETS, USUALLY C AND SN
+    for (int x = 0; x < Rbin; ++x) {
+        double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "doubleTargetR_nu" + std::to_string(nuValue) + ".pdf";
+        TCanvas canvas("c", "Multiplot R", 1200, 800);
+        canvas.Divide(3, 2);
+
+        for (int z = 0; z < Rbin; ++z) {
+            TMultiGraph *mg = new TMultiGraph();
+            double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
+            canvas.cd(z + 1);
+            
+            TGraphErrors *graphC = new TGraphErrors(); // Carbon (C)
+            TGraphErrors *graphSn = new TGraphErrors(); // Tin (Sn)
+            
+            for (int y = 0; y < Rbin; ++y) {
+                double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
+                double valueC = ratMatrix[x][y][z];
+                double errorC = errorMatrix[x][y][z];
+                double valueSn = ratioSecond.getRatMatrix()[x][y][z];
+                double errorSn = ratioSecond.getErrorMatrix()[x][y][z];
+                
+                graphC->SetPoint(y, zValue, valueC);
+                graphC->SetPointError(y, 0.0, errorC);
+                graphSn->SetPoint(y, zValue + 0.01, valueSn);
+                graphSn->SetPointError(y + 0.01, 0.0, errorSn);
+            }
+            
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << pt2Value;
+            std::string formattedPt2Value = ss.str();
+            std::string title = "R vs z, p_{t}^{2}=" + formattedPt2Value + " GeV^{2}";
+            
+            graphC->SetTitle(title.c_str());
+            graphC->GetXaxis()->SetTitle("z");
+            graphC->GetYaxis()->SetTitle("R");
+            graphC->SetMarkerStyle(20);
+            graphC->SetMarkerColor(kBlack);
+            
+            graphSn->SetMarkerStyle(20);
+            graphSn->SetMarkerColor(kOrange);
+            
+            TLegend *legend = new TLegend(0.7, 0.7, 0.9, 0.9);
+            legend->AddEntry(graphC, "C", "lp");
+            legend->AddEntry(graphSn, "Sn", "lp");
+
+            TLine *line = new TLine(graphC->GetXaxis()->GetXmin(), 1.0, graphC->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2); // Dotted line
+
+            mg->Add(graphC);
+            mg->Add(graphSn);
+            mg->SetTitle(title.c_str());
+            mg->GetXaxis()->SetTitle("z");
+            mg->GetYaxis()->SetTitle("R");
+            mg->GetYaxis()->SetRangeUser(-0.5, 1.5);
+            
+            mg->Draw("APE1");
+            legend->Draw("same");
+            line->Draw("same");
+
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+        
+        canvas.SaveAs(pdfFileName.c_str());
+    }
+}
 
 void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
+    //THIS FUINCTION COMPARES 3 TARGETS, USUALLY c, cU AND TIN
     for (int x = 0; x < Rbin; ++x) {
 
         double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
@@ -463,6 +583,8 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
             mg->SetTitle((title).c_str() );
             mg->GetXaxis()->SetTitle("z");
             mg->GetYaxis()->SetTitle("R");
+            mg->GetYaxis()->SetRangeUser(-0.5, 1.5); // 
+
 
             mg->Draw("APE1");
             legend->Draw("same");
@@ -569,6 +691,7 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird, Ratio& ratiosimone
             mg->SetTitle(("R vs z, pt2=" + formattedPt2Value).c_str());
             mg->GetXaxis()->SetTitle("z");
             mg->GetYaxis()->SetTitle("R");
+            mg->GetYaxis()->SetRangeUser(-0.5, 1.5); // 
 
             mg->Draw("APE1");
             legend->Draw("same");
@@ -1104,7 +1227,7 @@ void Ratio::Rtargetsimcomp( Ratio& ratiosim){
             mg->SetTitle((title).c_str() );
             mg->GetXaxis()->SetTitle("z");
             mg->GetYaxis()->SetTitle("R");
-            mg->GetYaxis()->SetRangeUser(-1.0, 2.0); // 
+            mg->GetYaxis()->SetRangeUser(-0.5, 1.5); // 
 
             mg->Draw("APE1");
             legend->Draw("same");

@@ -37,6 +37,7 @@ public:
     void writeMatrixToFile(const std::string& );
     void calculateMRat(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
     void multiplotR();
+    void multiplotR(Ratio& );
     void multiplotR( Ratio& , Ratio&);
     void multiplotR( Ratio& , Ratio& , Ratio& ,   Ratio& );
     void multiplotRbis();
@@ -83,7 +84,7 @@ private:
     //BINNING 4 MULTIBINNING
     int nubin = 100;
     int phibin= 10;
-    int Rbin = 5   ;
+    int Rbin = Constants::Rbin_nu   ;
     int Rbin_nu  = 5   ;
     int Rbin_z   = 5   ;
     int Rbin_pt2 = 5   ;
@@ -177,6 +178,11 @@ private:
     TH1F *h_nu_A_had;
     TH1F *h_z_A_had;
     TH1F *h_pt2_A_had;
+
+    TH1F *h_z_A;
+    TH1F *h_z_D;
+    TH1F *h_nu_D_had;
+    TH1F *h_pt2_D_had;
 
 
     //Graphs

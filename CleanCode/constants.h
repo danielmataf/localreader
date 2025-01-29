@@ -111,13 +111,13 @@ namespace Constants {
     static const double RcutmaxY = 0.85 ;
     static const double RcutmaxW = 30.0 ;
     static const double RcutmaxZ = 0.7 ;
-    static const double RcutmaxPt2 = 1.5 ;   
+    static const double RcutmaxPt2 = 1.2 ;   
     static const double Rcutminnu = 4.0 ;
     static const double Rcutmaxnu = 9.0 ;
     static const int Rbin = 100;
-    static const int Rbin_nu = 5;
-    static const int Rbin_z  = 5;
-    static const int Rbin_pt2= 5;
+    static const int Rbin_nu = 6;
+    static const int Rbin_z  = 6;
+    static const int Rbin_pt2= 6;
 
     static const int Dptbin_nu  = 5;
     static const int Dptbin_z   = 5;
