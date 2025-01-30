@@ -119,10 +119,10 @@ namespace Constants {
     static const int Rbin_z  = 6;
     static const int Rbin_pt2= 6;
 
-    static const int Dptbin_nu  = 5;
-    static const int Dptbin_z   = 5;
-    static const int Dptbin_Q = 5;
-    static const int Dptbin_x = 5;
+    static const int Dptbin_nu  = 6;
+    static const int Dptbin_z   = 6;
+    static const int Dptbin_Q = 6;
+    static const int Dptbin_x = 6;
 
     //binning & others 4 ratios 
     static const int Cratiobin = 5;
@@ -136,10 +136,11 @@ namespace Constants {
     
     
     
-    static const double numinDpt = 4;
+    //static const double numinDpt = 4;
+    static const double numinDpt = 2.8;
     static const double numaxDpt = 9;
-    static const double xminDpt = 0;
-    static const double xmaxDpt = 0;
+    static const double xminDpt = 0.07;
+    static const double xmaxDpt = 0.5;
     static const double phihminDpt = 0;
     static const double phihmaxDpt = 360;
 

@@ -188,6 +188,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             ratCu.FillHistograms(eventtestLD2);
             dptC1.FillHistograms(eventtestLD2);
             dptC2.FillHistograms(eventtestLD2);
+            dptSn.FillHistograms(eventtestLD2);
             dptCu.FillHistograms(eventtestLD2);
             sratCu.FillHistograms(eventtestLD2);
             sratC2.FillHistograms(eventtestLD2);
@@ -276,6 +277,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     monTestC2.DrawHistograms("monC2_test");
     monTestSn.SaveHistRoot("janSn_test");
     monTestSn.DrawHistograms("SnUrgent");
+    monTestCu.SaveHistRoot("janCu_test");
+    monTestCu.DrawHistograms("CuUrgent");
     std::cout << "//========= Simulation C2 ==========//  \n";
     monSimC2.SaveHistRoot("janC2_sim");
     monSimC1.SaveHistRoot("janC1_sim");
@@ -289,14 +292,16 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     ratC2.calcR();  
     ratSn.calcR();
     ratCu.calcR();
-    simratC2.calcR();
     dptC2.calcDpt();
+    dptSn.calcDpt();
+    dptCu.calcDpt();
     simdptC2.calcDpt();
     sratC2.calcSratio();
     simsratC2.calcSratio();
 
     ratC2.multiplotR(ratSn);
     ratSn.multiplotR(ratCu, ratC2);
+    dptSn.multiplotDpt(dptCu, dptC2);
     
     //ratC2.Rtargetsimcomp(simratC2);
     //dptC2.Dpttargetsimcomp(simdptC2);

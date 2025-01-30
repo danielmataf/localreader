@@ -69,7 +69,7 @@ private:
     //BINNING 4 MULTIBINNING
     int nubin = 100;
     int phibin= 10;
-    int Dptbin = 5   ;
+    int Dptbin = Constants::Dptbin_Q   ;
     int Dptbin_nu  = 5   ;
     int Dptbin_z   = 5   ;
     int Dptbin_Q = 5   ;

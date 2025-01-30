@@ -348,13 +348,18 @@ void deltaptsq::multiplotDpt(deltaptsq& dptother, deltaptsq& dptthird){
             graphThird->SetMarkerStyle(20);
             graph->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
             //graph->Draw("AP");
-            graphOther->SetMarkerColor(kBlue);
+            graphOther->SetMarkerColor(kGreen);
 
-            graphDpt->SetMarkerColor(kRed);
-            graphThird->SetMarkerColor(kGreen);
+            graphDpt->SetMarkerColor(kOrange);
+            graphThird->SetMarkerColor(kBlack);
             //graphOther->Draw("P");
             
-            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            //TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+            TLegend *legend = new TLegend(0.15, 0.15, 0.35, 0.30); // Bottom-left corner
+            legend->SetTextSize(0.03);
+            legend->SetBorderSize(0);  // No border
+            legend->SetFillStyle(0);   // Transparent background
+
             legend->AddEntry(graphDpt, "Sn", "lp");
             legend->AddEntry(graphOther, "Cu", "lp");
             legend->AddEntry(graphThird, "C", "lp");
@@ -379,7 +384,7 @@ void deltaptsq::multiplotDpt(deltaptsq& dptother, deltaptsq& dptthird){
             prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
             prelimText->SetNDC();
             prelimText->SetTextAlign(22);  // Centered alignment
-            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+            prelimText->DrawLatex(0.5, 0.5, "very preliminary");
 
         
 

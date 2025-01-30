@@ -576,6 +576,9 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
 
             //TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
             TLegend *legend = new TLegend(0.15, 0.15, 0.35, 0.30); // Bottom-left corner
+            legend->SetTextSize(0.03);
+            legend->SetBorderSize(0);  // No border
+            legend->SetFillStyle(0);   // Transparent background
 
             legend->AddEntry(graph, "Sn", "lp");
             legend->AddEntry(graphOther, "Cu", "lp");
