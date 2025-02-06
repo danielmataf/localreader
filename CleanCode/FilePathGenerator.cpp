@@ -160,6 +160,94 @@ void FilePathGenerator::SnDir2Vector(const std::string& parentDirectory, std::ve
         std::cerr << "An error occurred: " << e.what() << std::endl;
     }
 }
+void FilePathGenerator::SnDir2VectorBis(const std::string& parentDirectory, std::vector<std::string>& filepaths) {
+    try {
+        // Ensure parent directory exists
+        if (!fs::exists(parentDirectory)) {
+            throw std::runtime_error("Parent directory does not exist: " + parentDirectory);
+        }
+
+        // Iterate over all subdirectories
+        for (const auto& entry : fs::directory_iterator(parentDirectory)) {
+            if (entry.is_directory()) {
+                std::string subdirectory = entry.path().string();
+                std::cout << "Subdirectory path: " << subdirectory << std::endl;
+
+                std::string targetFile = subdirectory + "/sidis_mc-master/bis_ttest3S.hipo";
+                
+                // Check if the target file exists
+                if (fs::exists(targetFile)) {
+                    std::cout << "Target file found: " << targetFile << std::endl;
+                    filepaths.push_back(targetFile);
+                } else {
+                    std::cerr << "Target file not found in: " << subdirectory << std::endl;
+                }
+            }
+        }
+
+        // Validation check: Ensure at least one file was found
+        if (filepaths.empty()) {
+            std::cerr << "No target files (bis_ttest3S.hipo) were found in the specified directory." << std::endl;
+        } else {
+            std::cout << "Total files found: " << filepaths.size() << std::endl;
+        }
+    }
+    catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << std::endl;
+    }
+    catch (const std::out_of_range& e) {
+        std::cerr << "Out of range error: " << e.what() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+    }
+}
+
+
+//
+void FilePathGenerator::SnDir2VectorThird(const std::string& parentDirectory, std::vector<std::string>& filepaths) {
+    try {
+        // Ensure parent directory exists
+        if (!fs::exists(parentDirectory)) {
+            throw std::runtime_error("Parent directory does not exist: " + parentDirectory);
+        }
+
+        // Iterate over all subdirectories
+        for (const auto& entry : fs::directory_iterator(parentDirectory)) {
+            if (entry.is_directory()) {
+                std::string subdirectory = entry.path().string();
+                std::cout << "Subdirectory path: " << subdirectory << std::endl;
+
+                std::string targetFile = subdirectory + "/sidis_mc-master/third_ttest3S.hipo";
+                
+                // Check if the target file exists
+                if (fs::exists(targetFile)) {
+                    std::cout << "Target file found: " << targetFile << std::endl;
+                    filepaths.push_back(targetFile);
+                } else {
+                    std::cerr << "Target file not found in: " << subdirectory << std::endl;
+                }
+            }
+        }
+
+        // Validation check: Ensure at least one file was found
+        if (filepaths.empty()) {
+            std::cerr << "No target files (bis_ttest3S.hipo) were found in the specified directory." << std::endl;
+        } else {
+            std::cout << "Total files found: " << filepaths.size() << std::endl;
+        }
+    }
+    catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << std::endl;
+    }
+    catch (const std::out_of_range& e) {
+        std::cerr << "Out of range error: " << e.what() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+    }
+}
+
 
 
 // Function to display progress with a percentage and a loading bar

@@ -24,7 +24,10 @@ public:
     //takes the path of parentDirectory, it will look the directories inside of it, enter in thel and append hipofiles to the vector filepaths
     void SnDir2Vector(const std::string& parentDirectory, std::vector<std::string>& filepaths);
     //this takes the specific path to recover simus, since we have called as numbers ans the hipo files are called the same way. see detail in .cpp
-
+    void SnDir2VectorBis(const std::string& parentDirectory, std::vector<std::string>& filepaths);
+    //this is the same function only it is made to read a second file with a diff name in the same directory. RIDICULOUS? yes. needs to be fixed
+    void SnDir2VectorThird(const std::string& parentDirectory, std::vector<std::string>& filepaths);
+    //the same function again to read a third file....
     void progressEvents(int totalEvents);
     void displayProgress(int current, int total);
 

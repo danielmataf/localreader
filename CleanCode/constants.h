@@ -150,14 +150,14 @@ namespace Constants {
     static const double RcutmaxVzLD2 = -2.5 ;   
     static const double RcutminVzSn = -4 ;
     static const double RcutmaxVzSn = -1 ;
-    static const double RcutminVzCu = -9 ;    //arbitrary +-.5
-    static const double RcutmaxVzCu = -6 ;    //arbitrary +-.5
+    static const double RcutminVzCu = -10 ;    //arbitrary +-.5
+    static const double RcutmaxVzCu = -7 ;    //arbitrary +-.5
     static const double RcutminVzC = -7.5 ;     //default (for LD2)
     static const double RcutmaxVzC = -2.5 ;     //default (for LD2)
     static const double RcutminVzC1 = -4 ;    
     static const double RcutmaxVzC1 = -1 ;
     static const double RcutminVzC2 = -9 ;
-    static const double RcutmaxVzC2 = -6 ;
+    static const double RcutmaxVzC2 = -8 ;
     
 
     static const double RcutminVzLD2sim = -7.5 ;   
