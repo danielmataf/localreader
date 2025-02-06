@@ -59,6 +59,11 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_py_el(new TH1F(("py_ele_" + targetName).c_str(), "py_ele", nubin, 0, 3)),
     h_pz_el(new TH1F(("pz_ele_" + targetName).c_str(), "pz_ele", nubin, 0, 10)),
     h_ptot_el(new TH1F(("ptot_ele_" + targetName).c_str(), "ptot_ele", nubin, 0, 10)),
+    h_Delta_px_el(new TH1F(("px_ele_" + targetName).c_str(), "px_ele", nubin, -1, 1)),
+    h_Delta_py_el(new TH1F(("py_ele_" + targetName).c_str(), "py_ele", nubin, -1, 1)),
+    h_Delta_pz_el(new TH1F(("pz_ele_" + targetName).c_str(), "pz_ele", nubin, -1, 1)),
+    h_Delta_ptot_el(new TH1F(("ptot_ele_" + targetName).c_str(), "ptot_ele", nubin, -1, 1)),
+
     h_px_pi(new TH1F(("px_had_" + targetName).c_str(), "px_had", nubin, 0, 3)),
     h_py_pi(new TH1F(("py_had_" + targetName).c_str(), "py_had", nubin, 0, 3)),
     h_pz_pi(new TH1F(("pz_had_" + targetName).c_str(), "pz_had", nubin, 0, 10)),
@@ -66,6 +71,9 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_theta_el(new TH1F(("theta_el" + targetName).c_str(), "theta", nubin, 0, 30)),
     h_phi_el(new TH1F(("phi_el" + targetName).c_str(), "phi", nubin, 0, 360)),
     h_theta_pi(new TH1F(("theta_pi" + targetName).c_str(), "theta", nubin, 0, 150)),
+    h_Delta_theta_el(new TH1F(("theta_el" + targetName).c_str(), "theta", nubin, -2,2)),
+    h_Delta_phi_el(new TH1F(("phi_el" + targetName).c_str(), "phi", nubin, -5,5)),
+
     h_phi_pi(new TH1F(("phi_pi" + targetName).c_str(), "phi", nubin, 0, 360)),
     h_px_elMC(new TH1F(("px_ele_MC" + targetName).c_str(), "px_eleMC", nubin, 0, 2)),
     h_py_elMC(new TH1F(("py_ele_MC" + targetName).c_str(), "py_eleMC", nubin, 0, 2)),
@@ -405,8 +413,15 @@ void Monunfold::FillHistComp(const Event& eventsim, const Event& eventmc){
             h_py_elcomp->Fill(eventsim.GetElectron().GetMomentum().Y(), eventmc.GetElectronMC().GetMomentum().Y());
             h_pz_elcomp->Fill(eventsim.GetElectron().GetMomentum().Z(), eventmc.GetElectronMC().GetMomentum().Z());
             h_ptot_elcomp->Fill(eventsim.GetElectron().GetMomentum().P(), eventmc.GetElectronMC().GetMomentum().P());
+            h_Delta_px_el->Fill(eventmc.GetElectronMC().GetMomentum().X()- eventsim.GetElectron().GetMomentum().X());
+            h_Delta_py_el->Fill(eventmc.GetElectronMC().GetMomentum().Y()- eventsim.GetElectron().GetMomentum().Y());
+            h_Delta_pz_el->Fill(eventmc.GetElectronMC().GetMomentum().Z()- eventsim.GetElectron().GetMomentum().Z());
+            h_Delta_ptot_el->Fill(eventmc.GetElectronMC().GetMomentum().P()- eventsim.GetElectron().GetMomentum().P()); 
             h_theta_elcomp->Fill(eventsim.GetElectron().GetMomentum().Theta() * 180.0 / Constants::PI, eventmc.GetElectronMC().GetMomentum().Theta() * 180.0 / Constants::PI);
             h_phi_elcomp->Fill(eventsim.GetElectron().GetMomentum().Phi() * 180.0 / Constants::PI + 180.0, eventmc.GetElectronMC().GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
+            h_Delta_phi_el->Fill( ( eventmc.GetElectronMC().GetMomentum().Phi() - eventsim.GetElectron().GetMomentum().Phi()   )*180 );
+            //h_Delta_theta_el->Fill(eventmc.GetElectronMC().GetMomentum().Theta() * 180.0 / Constants::PI - eventsim.GetElectron().GetMomentum().Theta() * 180.0 / Constants::PI  );
+            h_Delta_theta_el->Fill(( eventmc.GetElectronMC().GetMomentum().Theta() - eventsim.GetElectron().GetMomentum().Theta()  )*180  );
             h_E_elcomp->Fill(eventsim.GetElectron().GetMomentum().E(), eventmc.GetElectronMC().GetMomentum().E());
         }
     }
@@ -947,6 +962,27 @@ TCanvas c4("c4", "c4", 800, 600);
     c4.cd(7);
     h_E_piDelta->Draw();
     c4.Print((filename + ".pdf)").c_str());
+
+TCanvas c5("c5", "c5", 800, 600);
+    c5.Divide(3, 3);
+    c5.cd(1);
+    h_Delta_px_el->Draw();
+    c5.cd(2);
+    h_Delta_py_el->Draw();
+    c5.cd(3);
+    h_Delta_pz_el->Draw();
+    c5.cd(4);
+    h_Delta_ptot_el->Draw();
+    c5.cd(5);
+    h_Delta_theta_el->Draw();
+    c5.cd(6);
+    h_Delta_phi_el->Draw();
+    c5.cd(7);
+    h_E_elcomp->Draw("colz");   
+    c5.Print((filename + ".pdf").c_str());
+
+
+
 
     
 

@@ -210,6 +210,14 @@ private:
     TH1F *h_phi_piDelta;
     TH1F *h_E_piDelta;
 
+    TH1F *h_Delta_px_el;
+    TH1F *h_Delta_py_el;
+    TH1F *h_Delta_pz_el;
+    TH1F *h_Delta_ptot_el;
+    TH1F *h_Delta_theta_el;
+    TH1F *h_Delta_phi_el;
+
+
 
     TH1F *h_chi2_el; // = new TH1F("chi2", "chi2", 100, 0, 10) ; //there is no chi2 in generated data obviously
     TH1F *h_chi2_pi; // = new TH1F("chi2", "chi2", 100, 0, 10) ; //there is no chi2 in generated data obviously

@@ -281,6 +281,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     std::cout << "//========= RGD data CxC ==========//  \n";
     monTestC2.SaveHistRoot("janC2_test");
     monTestC2.DrawHistograms("monC2_test");
+    munfSimC2.DrawCompRECMC("DeltasC2_sim");
     monTestSn.SaveHistRoot("janSn_test");
     monTestSn.DrawHistograms("SnUrgent");
     monTestCu.SaveHistRoot("janCu_test");
