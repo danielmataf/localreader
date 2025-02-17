@@ -27,6 +27,7 @@ public:
 
     void FillMomentumHistograms(const Event& );
 
+    void SaveKeyHistograms();
     void DrawHistograms(const std::string);
     void DrawHistTrueandSIM(Monitoring& , const std::string ) ;
     //void DrawHistTrueRECandMC(const std::string);

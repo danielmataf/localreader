@@ -272,6 +272,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             eventtestCu.calcAll();
             monTestCu.FillHistogramswCuts(eventtestCu);
             ratCu.FillHistograms(eventtestCu);
+            dptCu.FillHistograms(eventtestCu);
             sratCu.FillHistograms(eventtestCu);
         }
             //else{ counter_restCxC++;}
@@ -281,6 +282,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     std::cout << "//========= RGD data CxC ==========//  \n";
     monTestC2.SaveHistRoot("janC2_test");
     monTestC2.DrawHistograms("monC2_test");
+    monTestC2.SaveKeyHistograms();
     munfSimC2.DrawCompRECMC("DeltasC2_sim");
     monTestSn.SaveHistRoot("janSn_test");
     monTestSn.DrawHistograms("SnUrgent");

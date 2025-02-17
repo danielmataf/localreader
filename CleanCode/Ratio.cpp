@@ -514,25 +514,20 @@ void Ratio::multiplotR(Ratio& ratioSecond) {
         canvas.SaveAs(pdfFileName.c_str());
     }
 }
-
-
-void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
-    //THIS FUINCTION COMPARES 3 TARGETS, USUALLY c, cU AND TIN
+void Ratio::multiplotR(Ratio& ratioOther, Ratio& ratiothird) {
+    //THIS FUNCTION COMPARES 3 TARGETS, USUALLY C, CU, AND TIN
     for (int x = 0; x < Rbin; ++x) {
-
         double nuValue = h_nu_z_pt2D->GetXaxis()->GetBinCenter(x + 1);
         std::string pdfFileName = "tripleTargetR_nu" + std::to_string(nuValue) + ".pdf";
         TCanvas canvas("c", "Multiplot double R", 1200, 800);
-        canvas.Divide(3, 2); 
-        for (int z = 0; z < Rbin; ++z) {
-            TMultiGraph *mg = new TMultiGraph();
+        canvas.Divide(3, 2);
 
+        for (int z = 0; z < Rbin; ++z) {
             double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
-            canvas.cd(z + 1);
             TGraphErrors *graph = new TGraphErrors();
             TGraphErrors *graphOther = new TGraphErrors();
             TGraphErrors *graphThird = new TGraphErrors();
-            
+
             for (int y = 0; y < Rbin; ++y) {
                 double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
                 double value = ratMatrix[x][y][z];
@@ -542,78 +537,83 @@ void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird){
                 double valueThird = ratiothird.getRatMatrix()[x][y][z];
                 double errorThird = ratiothird.getErrorMatrix()[x][y][z];
 
-                //std::cout << "Sn= " << value << "; Cu= " << valueOther << std::endl;
                 graph->SetPoint(y, zValue, value);
-                graph->SetPointError(y, 0.0, error); 
-                graphOther->SetPoint(y, zValue+0.01, valueOther);
-                graphOther->SetPointError(y+0.01, 0.0, errorOther);
-                graphThird->SetPoint(y, zValue+0.02, valueThird);
-                graphThird->SetPointError(y+0.02, 0.0, errorThird);
-                
-
+                graph->SetPointError(y, 0.0, error);
+                graphOther->SetPoint(y, zValue + 0.01, valueOther);
+                graphOther->SetPointError(y, 0.0, errorOther);
+                graphThird->SetPoint(y, zValue + 0.02, valueThird);
+                graphThird->SetPointError(y, 0.0, errorThird);
             }
 
-            std::stringstream ss;
-            ss << std::fixed << std::setprecision(2) << pt2Value;
-            std::string formattedPt2Value = ss.str();
-            //std::cout << "formattedPt2Value = " << formattedPt2Value << std::endl;
-            std::string title = "R vs z, p_{t}^{2}=" + formattedPt2Value + " GeV^{2}";          /// how to display proper title!!!! here///
-
-            graph->SetTitle(title.c_str());
             graph->GetXaxis()->SetTitle("z");
             graph->GetYaxis()->SetTitle("R");
             graph->SetMarkerStyle(20);
             graphOther->SetMarkerStyle(20);
             graphThird->SetMarkerStyle(20);
-            graph->GetYaxis()->SetRangeUser(0.0, 2.0); // Set Y axis range from 0.0 to 2.0
-            //graph->Draw("AP");
-            graphOther->SetMarkerColor(kGreen);
+            graph->GetYaxis()->SetRangeUser(0.0, 2.0);
 
             graph->SetMarkerColor(kOrange);
+            graphOther->SetMarkerColor(kGreen);
             graphThird->SetMarkerColor(kBlack);
-            //graphOther->Draw("P");
-            
 
-            //TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
-            TLegend *legend = new TLegend(0.15, 0.15, 0.35, 0.30); // Bottom-left corner
-            legend->SetTextSize(0.03);
-            legend->SetBorderSize(0);  // No border
-            legend->SetFillStyle(0);   // Transparent background
+            // Create individual canvas for PNG output
+            TCanvas pngCanvas("pngCanvas", "", 800, 600);
+            pngCanvas.cd();
 
-            legend->AddEntry(graph, "Sn", "lp");
-            legend->AddEntry(graphOther, "Cu", "lp");
-            legend->AddEntry(graphThird, "C", "lp");
-
-            TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
-            line->SetLineStyle(2); // Dotted line
-
+            TMultiGraph *mg = new TMultiGraph();
             mg->Add(graph);
             mg->Add(graphOther);
             mg->Add(graphThird);
-            mg->SetTitle((title).c_str() );
             mg->GetXaxis()->SetTitle("z");
             mg->GetYaxis()->SetTitle("R");
-            mg->GetYaxis()->SetRangeUser(0.0, 1.5); // 
-
+            mg->GetXaxis()->SetTitleSize(0.0535);  // Adjusts size of "z"
+            mg->GetYaxis()->SetTitleSize(0.0535);  // Adjusts size of "R"
+            mg->GetYaxis()->SetRangeUser(0.0, 1.5);
 
             mg->Draw("APE1");
+
+            // Adjusted legend position and size
+            TLegend *legend = new TLegend(0.15, 0.15, 0.35, 0.30);
+            legend->SetTextSize(0.04);
+            legend->SetBorderSize(0);
+            legend->SetFillStyle(0);
+            legend->SetTextFont(42);
+            legend->AddEntry(graph, "Sn", "lp");
+            legend->AddEntry(graphOther, "Cu", "lp");
+            legend->AddEntry(graphThird, "C", "lp");
             legend->Draw("same");
+
+            // Nu and Pt² values placed to the **right of the legend**
+            TLatex text;
+            text.SetTextSize(0.045);
+            text.DrawLatexNDC(0.40, 0.22, Form("#nu = %.2f", nuValue));  // Right of legend
+            text.DrawLatexNDC(0.40, 0.17, Form("p_{t}^{2} = %.2f GeV^{2}", pt2Value));  // Below nu
+
+            TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2);
             line->Draw("same");
-            
-            TLatex* prelimText = new TLatex();
-            prelimText->SetTextSize(0.08);  // Larger text size
-            prelimText->SetTextAngle(45);
-            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
-            prelimText->SetNDC();
-            prelimText->SetTextAlign(22);  // Centered alignment
-            prelimText->DrawLatex(0.5, 0.5, "very preliminary");
-            
-        
+
+            // Save PNG output for each individual plot
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << pt2Value;
+            std::string formattedPt2Value = ss.str();
+            std::string pngFileName = "tripleTargetR_nu" + std::to_string(nuValue) + "_pt2_" + formattedPt2Value + ".png";
+            pngCanvas.SaveAs(pngFileName.c_str());
+
+            // Now draw the same plot inside the PDF layout
+            canvas.cd(z + 1);
+            mg->Draw("APE1");
+            legend->Draw("same");
+            text.DrawLatexNDC(0.40, 0.22, Form("#nu = %.2f", nuValue));
+            text.DrawLatexNDC(0.40, 0.17, Form("p_{t}^{2} = %.2f GeV^{2}", pt2Value));
+            line->Draw("same");
         }
 
+        // Save the multi-plot PDF with 6 graphs
         canvas.SaveAs(pdfFileName.c_str());
     }
 }
+
 
 
 void Ratio::multiplotR( Ratio& ratioOther, Ratio& ratiothird, Ratio& ratiosimone,   Ratio& ratiosimtwo){

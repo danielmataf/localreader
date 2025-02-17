@@ -13,6 +13,8 @@
 #include "Monitoring.h"
 #include "CutSet.h"
 #include "constants.h"
+#include <TStyle.h>
+
 
     //int nubin = 100;  
 
@@ -511,8 +513,34 @@ void Monitoring::DrawR_Histograms(const std::string filename) {
     
 
 }
+void Monitoring::SaveKeyHistograms() {
+    // Disable the statistics box for these histograms only
+    gStyle->SetOptStat(0);
+
+    // Save the xB vs Q^2 histogram
+    TCanvas canvas_xQ2("canvas_xQ2", "", 800, 600);
+    h_xQ2->SetTitle("");  // Remove title
+    h_xQ2->GetXaxis()->SetTitle("x_{B}");
+    h_xQ2->GetYaxis()->SetTitle("Q^{2} (GeV^{2})");
+    h_xQ2->GetXaxis()->SetTitleSize(0.05);  // Set X-axis title size
+    h_xQ2->GetYaxis()->SetTitleSize(0.05);  // Set Y-axis title size
+    h_xQ2->Draw("COLZ");
+    canvas_xQ2.SaveAs("h_xQ2.png");  // Save PNG output
+
+    // Save the z vs pT^2 histogram
+    TCanvas canvas_pt2z("canvas_pt2z", "", 800, 600);
+    h_pt2z->SetTitle("");  // Remove title
+    h_pt2z->GetXaxis()->SetTitle("p_{t}^{2} (GeV^{2})");
+    h_pt2z->GetYaxis()->SetTitle("z");
+    h_pt2z->GetXaxis()->SetTitleSize(0.05);  // Set X-axis title size
+    h_pt2z->GetYaxis()->SetTitleSize(0.05);  // Set Y-axis title size
+    h_pt2z->Draw("COLZ");
+    canvas_pt2z.SaveAs("h_pt2z.png");  // Save PNG output
+}
+
 
 void Monitoring::DrawHistograms(const std::string filename) {
+    
     // Initialize the PDF file
     TCanvas canvas("canvas", "Monitoring Histograms", 800, 600);
     canvas.Divide(3, 3);
