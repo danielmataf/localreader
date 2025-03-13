@@ -148,6 +148,7 @@ void deltaptsq::FillHistograms(const Event& event) {
 
 void deltaptsq::calcDpt(){
     //using here X=nu, Y=z, Z=Q2
+    //these are shared variables for electron and hadron
     int numBinsX = h_wD_pt->GetNbinsX();    //same bins 4 Deut and A 
     int numBinsY = h_wD_pt->GetNbinsY(); 
     int numBinsZ = h_wD_pt->GetNbinsZ(); 

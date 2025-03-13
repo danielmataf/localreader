@@ -586,8 +586,9 @@ void Ratio::multiplotR(Ratio& ratioOther, Ratio& ratiothird) {
             // Nu and Pt² values placed to the **right of the legend**
             TLatex text;
             text.SetTextSize(0.045);
-            text.DrawLatexNDC(0.40, 0.22, Form("#nu = %.2f", nuValue));  // Right of legend
-            text.DrawLatexNDC(0.40, 0.17, Form("p_{t}^{2} = %.2f GeV^{2}", pt2Value));  // Below nu
+            text.DrawLatexNDC(0.40, 0.22, Form("%.2f < #nu < %.2f", nuValue - 0.8, nuValue + 0.8));
+text.DrawLatexNDC(0.40, 0.17, Form("%.2f < p_{t}^{2} < %.2f", pt2Value - 0.2, pt2Value + 0.2));
+
 
             TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
             line->SetLineStyle(2);

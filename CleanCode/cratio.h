@@ -1,5 +1,5 @@
 #ifndef CRATIO_H
-#define Cratio_H
+#define CRATIO_H
 
 #include <TFile.h>
 #include <TTree.h>
@@ -20,20 +20,49 @@ public:
     void FillHistograms(const Event& );
     void WriteHistos(const std::string );
     void calcCratio();
+    void calcCratioCarbon( cratio& ) ; //this fct for self carbon ratio. 
+    void multiplotCratioBis();  // this 4 plots self ratio CC
+
     //void PlotCratio(const std::string );
     void writeMatrixToFile(const std::string& );
     //void calculateCratio(int , TH1F* , TH1F* , int , TH1F* , TH1F* , int ,  TGraphErrors* , TGraphErrors* ); 
     void multiplotCratio();
     void multiplotCratio( cratio& , cratio&);
+
     
     void multiCratsimus( cratio&,  cratio& , cratio& );
     void multiCrattrue(  cratio&,  cratio& , cratio& );
     void multiCratall(   cratio&,  cratio& , cratio& , cratio&, cratio& , cratio&, cratio& );
     void multiCratall2 ( cratio& , cratio&, cratio& , cratio&,cratio& ); 
 
+    //histograms for selfRatio, for proof ig 
+
+    TH3F* getHwA() ;
+    TH3F* getHA3D() ;
+    TH3* getHwA2() ;
     //Debugging Ratio inspired, and also used in Dpt
     void ValidateHistograms();
     void LogBinContent();
+
+    //getters from Ratio for MAtrixes 
+        std::vector<std::vector<std::vector<double>>> getRatMatrix() const{
+        return CratioMatrix;
+    }
+    std::vector<std::vector<std::vector<double>>> getErrorMatrix() const{
+        return errorCratioMatrix;
+    }
+
+
+    //following elements are used for self ratio in CxC target
+    std::vector<std::vector<std::vector<double>>> getRatMatrixbis() const{
+        return CratioMatrixbis;
+    }
+    std::vector<std::vector<std::vector<double>>> getErrorMatrixbis() const{
+        return errorCratioMatrixbis;
+    }
+
+
+~cratio();         //maybe I should put the destructor in the .cpp 
 
 
 
@@ -45,12 +74,12 @@ private:
     //BINNING 4 MULTIBINNING
     int nubin = 100;
     int phibin= 10;
-    int Cratiobin = 5   ;
-    int Cratiobin_nu  = 5   ;
-    int Cratiobin_z   = 5   ;
-    int Cratiobin_Q = 5   ;
-    int Cratiobin_x = 5   ;
-    int Cratiobin_phih = 5   ;
+    int Cratiobin = 6   ;
+    int Cratiobin_nu  = 6   ;
+    int Cratiobin_z   = 6   ;
+    int Cratiobin_Q = 6   ;
+    int Cratiobin_x = 6   ;
+    int Cratiobin_phih = 6   ;
 
     
     int Qbin  ;    
@@ -131,6 +160,9 @@ private:
     //Storage of points (and errors)
     std::vector<std::vector<std::vector<double>>> CratioMatrix;    //three vectors for 3D matrix
     std::vector<std::vector<std::vector<double>>> errorCratioMatrix;
+        //bis are for  self Carbon
+    std::vector<std::vector<std::vector<double>>> CratioMatrixbis;    //three vectors for 3D matrix
+    std::vector<std::vector<std::vector<double>>> errorCratioMatrixbis;
 
     //TFile* outputFile;
     CutSet cutsD;

@@ -23,6 +23,8 @@ cratio::cratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
     targetName(targetName),
     CratioMatrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
     errorCratioMatrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
+    CratioMatrixbis(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
+    errorCratioMatrixbis(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
 
     hCratio_Q_nu_zD ( new TH3F(("Cratio:nu,z,pt2,D"+targetName).c_str(), ("Cratio:histo nu,z,pt2 for D"+targetName).c_str(),Constants::Cratiobin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Cratiobin_nu,Constants::numinCratio,numaxCratio,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
     hCratio_Q_nu_zA ( new TH3F(("Cratio:nu,z,pt2,A"+targetName).c_str(), ("Cratio:histo nu,z,pt2 for A"+targetName).c_str(),Constants::Cratiobin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Cratiobin_nu,Constants::numinCratio,numaxCratio,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
@@ -77,11 +79,13 @@ cratio::cratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
 
 
 void cratio::calcCratio(){
+    //Using here X=xb, Y=Q2, Z=z
     int numBinsX = h_wD_Cratio->GetNbinsX();    //same bins 4 Deut and A 
     int numBinsY = h_wD_Cratio->GetNbinsY(); 
     int numBinsZ = h_wD_Cratio->GetNbinsZ(); 
     for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {
         for (int Ybin=1; Ybin <= numBinsY; Ybin++) {
+            //as long as X and Y are not a variable from hadron we can get bin content at the end of the loops 
             for (int Zbin= 1; Zbin <= numBinsZ; Zbin++){
                 double valD = h_wD_Cratio->GetBinContent(Xbin,Ybin,Zbin);
                 double valA = h_wA_Cratio->GetBinContent(Xbin,Ybin,Zbin);
@@ -109,11 +113,140 @@ void cratio::calcCratio(){
             }
         }
     }  
-
-
-
 }
 
+
+    TH3F* cratio::getHwA(){
+        return h_wA_Cratio;
+        //h_wA2_Cratio
+    } 
+
+    TH3F* cratio::getHA3D(){
+        return h_A_Cratio3D;
+        //h_A2_Cratio3D
+    } 
+
+    TH3* cratio::getHwA2() {
+        return h_wA_sqCratio;
+        //h_wA2_sqCratio
+    }
+
+
+
+void cratio::calcCratioCarbon( cratio& cratioOther){
+    // Using here X=xb, Y=Q2, Z=z
+    TH3F* h_wA2_Cratio = cratioOther.getHwA(); 
+    TH3F* h_A2_Cratio3D = cratioOther.getHA3D();
+    TH3* h_wA2_sqCratio = cratioOther.getHwA2();
+
+    // Check if histograms are properly initialized
+    if (!h_wA2_Cratio || !h_A2_Cratio3D || !h_wA2_sqCratio) {
+        std::cerr << "ERROR: One or more histograms from cratioOther are not initialized!" << std::endl;
+        return;
+    }
+
+    int numBinsX = h_wA_Cratio->GetNbinsX();
+    int numBinsY = h_wA_Cratio->GetNbinsY();
+    int numBinsZ = h_wA_Cratio->GetNbinsZ();
+
+    // Ensure the matrix has correct dimensions
+    CratioMatrixbis.resize(numBinsX, std::vector<std::vector<double>>(numBinsY, std::vector<double>(numBinsZ, 0.0)));
+    errorCratioMatrixbis.resize(numBinsX, std::vector<std::vector<double>>(numBinsY, std::vector<double>(numBinsZ, 0.0)));
+
+    // Debugging Output
+    std::cout << "numBinsX: " << numBinsX << ", numBinsY: " << numBinsY << ", numBinsZ: " << numBinsZ << std::endl;
+    std::cout << "Matrix size: " << CratioMatrixbis.size() << " x " << CratioMatrixbis[0].size() << " x " << CratioMatrixbis[0][0].size() << std::endl;
+
+    for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {
+        for (int Ybin=1; Ybin <= numBinsY; Ybin++) {
+            for (int Zbin= 1; Zbin <= numBinsZ; Zbin++){
+                // Bounds check to prevent out-of-range access
+                if (Xbin-1 >= CratioMatrixbis.size() || 
+                    Ybin-1 >= CratioMatrixbis[0].size() || 
+                    Zbin-1 >= CratioMatrixbis[0][0].size()) {
+                    std::cerr << "ERROR: Out-of-bounds access! (" << Xbin-1 << ", " << Ybin-1 << ", " << Zbin-1 << ")" << std::endl;
+                    continue;
+                }
+
+                double valC1 = h_wA2_Cratio->GetBinContent(Xbin,Ybin,Zbin);
+                double valC2 = h_wA_Cratio->GetBinContent(Xbin,Ybin,Zbin);
+                double countC1 = h_A2_Cratio3D->GetBinContent(Xbin,Ybin,Zbin);
+                double countC2 = h_A_Cratio3D->GetBinContent(Xbin,Ybin,Zbin);
+                double sqvalC1 = h_wA2_sqCratio->GetBinContent(Xbin,Ybin,Zbin);
+                double sqvalC2 = h_wA_sqCratio->GetBinContent(Xbin,Ybin,Zbin);
+
+                double wavg_CratioC1 = (countC1 != 0) ? valC1/countC1 : 0.0;
+                double wavg_CratioC2 = (countC2 != 0) ? valC2/countC2 : 0.0;
+                double Cratio_point = (wavg_CratioC1 != 0) ? wavg_CratioC2 / wavg_CratioC1 : 0.0;
+
+                double varianceC1 = (countC1 != 0) ? sqvalC1/countC1 - wavg_CratioC1*wavg_CratioC1 : 0.0;
+                double varianceC2 = (countC2 != 0) ? sqvalC2/countC2 - wavg_CratioC2*wavg_CratioC2 : 0.0;
+                double Err_valC1 = (countC1 != 0) ? sqrt(varianceC1/countC1) : 0.0;
+                double Err_valC2 = (countC2 != 0) ? sqrt(varianceC2/countC2) : 0.0;
+                double Err_Cratio_point = (wavg_CratioC2 != 0 && wavg_CratioC1 != 0) 
+                    ? Cratio_point * sqrt(pow(Err_valC2 / wavg_CratioC2, 2) + pow(Err_valC1 / wavg_CratioC1, 2)) 
+                    : 0.0;
+
+                CratioMatrixbis[Xbin-1][Ybin-1][Zbin-1] = Cratio_point;
+                errorCratioMatrixbis[Xbin-1][Ybin-1][Zbin-1] = Err_Cratio_point;
+            }
+        }
+    }    
+}
+
+
+
+void cratio::multiplotCratioBis() {
+    std::cout << "starting Cratio plots for x bin..." << std::endl;
+    for (int x = 0; x < Cratiobin; ++x) {
+        double xValue = h_wA_Cratio->GetXaxis()->GetBinCenter(x + 1);
+        std::string pdfFileName = "sameTargetCratio_x" + std::to_string(xValue) + ".pdf";
+
+        TCanvas canvas("c", "Multiplot Cratio (C/C)", 1200, 800);
+        canvas.Divide(3, 2);
+
+        for (int y = 0; y < Cratiobin; ++y) {
+            double Q2Value = h_wA_Cratio->GetYaxis()->GetBinCenter(y + 1);
+            canvas.cd(y + 1);
+
+            TGraphErrors *graph = new TGraphErrors();
+            for (int z = 0; z < Cratiobin; ++z) {
+                double zValue = h_wA_Cratio->GetZaxis()->GetBinCenter(z + 1);
+                double value = CratioMatrixbis[x][y][z];
+                double error = errorCratioMatrixbis[x][y][z];
+
+                graph->SetPoint(z, zValue, value);
+                graph->SetPointError(z, 0.0, error);
+            }
+
+            // Graph appearance and labels
+            graph->SetTitle(("<cos #phi_{h}>_C1 / <cos #phi_{h}>_C2 vs z, Q^{2}=" + std::to_string(Q2Value)).c_str());
+            graph->GetXaxis()->SetTitle("z");
+            graph->GetYaxis()->SetTitle("<cos #phi_{h}>_C1 / <cos #phi_{h}>_C2");
+            graph->SetMarkerStyle(20);
+            graph->SetMarkerColor(kRed);
+            graph->GetYaxis()->SetRangeUser(0.0, 2.0);
+            graph->Draw("AP");
+
+            // Reference line at 1.0
+            TLine *line = new TLine(graph->GetXaxis()->GetXmin(), 1.0, graph->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2);
+            line->Draw("same");
+
+            // "Preliminary" label
+            TLatex* prelimText = new TLatex();
+            prelimText->SetTextSize(0.08);
+            prelimText->SetTextAngle(45);
+            prelimText->SetTextColorAlpha(kGray + 1, 0.3);
+            prelimText->SetNDC();
+            prelimText->SetTextAlign(22);
+            prelimText->DrawLatex(0.5, 0.5, "preliminary");
+        }
+
+        // Save the figure
+        canvas.SaveAs(pdfFileName.c_str());
+    }
+}
 
 
 
@@ -241,9 +374,9 @@ void cratio::multiplotCratio( cratio& cratioOther, cratio& cratioThird){
             mg->Add(graphCratio);
             mg->Add(graphCratioOther);
             mg->Add(graphCratioThird);
-            mg->SetTitle(("<cos #phi_{h}>_A / <cos #phi_{h}>_D vs z, Q^{2}=" + formattedQ2Value).c_str());
+            mg->SetTitle(("<cos #phi_{h}>_{A} / <cos #phi_{h}>_{LD2} vs z, Q^{2}=" + formattedQ2Value).c_str());
             mg->GetXaxis()->SetTitle("z");
-            mg->GetYaxis()->SetTitle("<cos #phi_{h}>_A / <cos #phi_{h}>_D");
+            mg->GetYaxis()->SetTitle("<cos #phi_{h}>_{A} / <cos #phi_{h}>_{LD2}");
             mg->Draw("APE1");
             legend->Draw("same");
             line->Draw("same");
@@ -610,4 +743,20 @@ void cratio::LogBinContent() {
 
     logHistogram(h_wD_Cratio, "h_wD_Cratio");
     logHistogram(h_wA_Cratio, "h_wA_Cratio");
+}
+
+cratio::~cratio() {
+    delete hCratio_Q_nu_zD;
+    delete hCratio_Q_nu_zA;
+    delete hCratio_nu_z_pt2A_onlye;
+    delete hCratio_nu_z_pt2D_onlye;
+    delete hCratio_nuA;
+    delete hCratio_nuD;
+    delete h_wD_Cratio;
+    delete h_wA_Cratio;
+    delete h_D_Cratio3D;
+    delete h_A_Cratio3D;
+    delete h_wD_sqCratio;
+    delete h_wA_sqCratio;
+    delete graph_crat;
 }

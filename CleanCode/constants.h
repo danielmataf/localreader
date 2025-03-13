@@ -125,14 +125,14 @@ namespace Constants {
     static const int Dptbin_x = 6;
 
     //binning & others 4 ratios 
-    static const int Cratiobin = 5;
-    static const int Cratiobin_nu = 5;
-    static const int Cratiobin_z = 5;
-    static const int Cratiobin_Q = 5;
-    static const int Cratiobin_x = 5;
-    static const int Cratiobin_phih = 5;
-    static const double numinCratio = 4;
-    static const double numaxCratio = 9;
+    static const int Cratiobin = 6;
+    static const int Cratiobin_nu = 6;
+    static const int Cratiobin_z = 6;
+    static const int Cratiobin_Q = 6;
+    static const int Cratiobin_x = 6;
+    static const int Cratiobin_phih = 6;
+    static const double numinCratio = 6;
+    static const double numaxCratio = 6;
     
     
     

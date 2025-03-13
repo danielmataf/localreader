@@ -27,7 +27,7 @@ public:
     void FillHistograms(const Event& );
     void WriteHistos(const std::string );
     void DrawHistos(Ratio& );
-    void calcR();
+    void calcR();   //has been pretty much unchanged for a while now 
     //void calcRcarbon() ;        //new
     void DrawSelfHistos(Ratio& ); //new
 
