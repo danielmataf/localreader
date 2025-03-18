@@ -6,6 +6,7 @@
 #include <TH1F.h>
 #include <TH3F.h>
 #include <TGraphErrors.h>
+#include "THnSparse.h"
 
 #include <vector>
 #include "Event.h"
@@ -28,6 +29,7 @@ public:
     void WriteHistos(const std::string );
     void DrawHistos(Ratio& );
     void calcR();   //has been pretty much unchanged for a while now 
+    void calcRin5D();   //Dont forget to make an output in txt ig 
     //void calcRcarbon() ;        //new
     void DrawSelfHistos(Ratio& ); //new
 
@@ -185,6 +187,17 @@ private:
     TH1F *h_pt2_D_had;
 
 
+    //histos for 5D calc 
+    private:
+    //3D histos for electron count
+    TH3F* h_3D_A_e;  // (Q2, xB, nu) 
+    TH3F* h_3D_D_e;  // (Q2, xB, nu) 
+
+    //5D histos for hadron count 
+    THnSparseD* h_5D_A_had;  // (Q2, xB, nu, z, pt2) 
+    THnSparseD* h_5D_D_had;  // (Q2, xB, nu, z, pt2) 
+
+
     //Graphs
     TGraphErrors* graph_rat= new TGraphErrors();
 
@@ -194,6 +207,18 @@ private:
     
     std::vector<std::vector<std::vector<double>>> ratMatrixbis;    //three vectors for 3D matrix
     std::vector<std::vector<std::vector<double>>> errorMatrixbis;
+
+    //storage for the 5D ratio points 
+    //(Q2, xb, nu, z, pt2)
+    //std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>> ratMatrix5D;
+    //std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>> errorMatrix5D;
+    //trying using arrays instead of vectors for fixed size matrixes. since they binning should be always the same eg: 5 or 6
+    double ratMatrix5D[Constants::Rbin_nu][Constants::Rbin_nu][Constants::Rbin_nu][Constants::Rbin_nu][Constants::Rbin_nu] = {{{{{0.0}}}}};
+    double errorMatrix5D[Constants::Rbin_nu][Constants::Rbin_nu][Constants::Rbin_nu][Constants::Rbin_nu][Constants::Rbin_nu] = {{{{{0.0}}}}};
+    //this to aavoid resizing
+
+
+
 
 
     CutSet cutsD;

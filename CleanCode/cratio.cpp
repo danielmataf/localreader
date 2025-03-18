@@ -23,8 +23,12 @@ cratio::cratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
     targetName(targetName),
     CratioMatrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
     errorCratioMatrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
+    CosPhiA_Matrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
+    CosPhiD_Matrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
     CratioMatrixbis(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
     errorCratioMatrixbis(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
+    errorCosPhiA_Matrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
+    errorCosPhiD_Matrix(Cratiobin, std::vector<std::vector<double>>(Cratiobin, std::vector<double>(Cratiobin, 0.0))),
 
     hCratio_Q_nu_zD ( new TH3F(("Cratio:nu,z,pt2,D"+targetName).c_str(), ("Cratio:histo nu,z,pt2 for D"+targetName).c_str(),Constants::Cratiobin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Cratiobin_nu,Constants::numinCratio,numaxCratio,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
     hCratio_Q_nu_zA ( new TH3F(("Cratio:nu,z,pt2,A"+targetName).c_str(), ("Cratio:histo nu,z,pt2 for A"+targetName).c_str(),Constants::Cratiobin_Q, Constants::RcutminQ, Constants::RcutmaxQ, Constants::Cratiobin_nu,Constants::numinCratio,numaxCratio,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
@@ -77,7 +81,8 @@ cratio::cratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
         }
     }
 
-
+//commenting below while adding intermediary steps in this function, this is a savestate
+/*
 void cratio::calcCratio(){
     //Using here X=xb, Y=Q2, Z=z
     int numBinsX = h_wD_Cratio->GetNbinsX();    //same bins 4 Deut and A 
@@ -114,6 +119,63 @@ void cratio::calcCratio(){
         }
     }  
 }
+*/
+
+
+
+void cratio::calcCratio() {
+    int numBinsX = h_wD_Cratio->GetNbinsX();
+    int numBinsY = h_wD_Cratio->GetNbinsY();
+    int numBinsZ = h_wD_Cratio->GetNbinsZ();
+
+    std::cout << "\n=== Calculating <cos(phih_h)> for A and D ===" << std::endl;
+    std::cout << "X_bin\tY_bin\tZ_bin\t<cos(phih_h)>_A\t<cos(phih_h)>_D\tRatio" << std::endl;
+    std::cout << "------------------------------------------------------------" << std::endl;
+
+    for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {
+        for (int Ybin = 1; Ybin <= numBinsY; Ybin++) {
+            for (int Zbin = 1; Zbin <= numBinsZ; Zbin++) {
+                double valD = h_wD_Cratio->GetBinContent(Xbin, Ybin, Zbin);
+                double valA = h_wA_Cratio->GetBinContent(Xbin, Ybin, Zbin);
+                double countD = h_D_Cratio3D->GetBinContent(Xbin, Ybin, Zbin);
+                double countA = h_A_Cratio3D->GetBinContent(Xbin, Ybin, Zbin);
+
+                //intermediary <cos(phh)> for A and D separately
+                double wavg_CosPhiD = (countD != 0) ? valD / countD : 0.0;
+                double wavg_CosPhiA = (countA != 0) ? valA / countA : 0.0;
+                CosPhiD_Matrix[Xbin - 1][Ybin - 1][Zbin - 1] = wavg_CosPhiD;
+                CosPhiA_Matrix[Xbin - 1][Ybin - 1][Zbin - 1] = wavg_CosPhiA;
+                //calc normal ratio 
+                double Cratio_point = (wavg_CosPhiD != 0) ? wavg_CosPhiA / wavg_CosPhiD : 0.0;
+                CratioMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = Cratio_point;
+                double varianceD = (countD != 0) ? h_wD_sqCratio->GetBinContent(Xbin, Ybin, Zbin) / countD - wavg_CosPhiD * wavg_CosPhiD : 0.0;
+                double varianceA = (countA != 0) ? h_wA_sqCratio->GetBinContent(Xbin, Ybin, Zbin) / countA - wavg_CosPhiA * wavg_CosPhiA : 0.0;
+                double Err_valD = (countD != 0) ? sqrt(varianceD / countD) : 0.0;
+                double Err_valA = (countA != 0) ? sqrt(varianceA / countA) : 0.0;
+                errorCosPhiD_Matrix[Xbin - 1][Ybin - 1][Zbin - 1] = Err_valD;
+                errorCosPhiA_Matrix[Xbin - 1][Ybin - 1][Zbin - 1] = Err_valA;
+
+
+                double Err_Cratio_point = (wavg_CosPhiA != 0 && wavg_CosPhiD != 0) ?
+                    Cratio_point * sqrt(pow(Err_valA / wavg_CosPhiA, 2) + pow(Err_valD / wavg_CosPhiD, 2)) : 0.0;
+
+                errorCratioMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = Err_Cratio_point;
+
+                // print in terminal
+                std::cout << Xbin << "\t" << Ybin << "\t" << Zbin << "\t"
+                          << std::fixed << std::setprecision(4) << wavg_CosPhiA << "\t"
+                          << std::fixed << std::setprecision(4) << Err_valA << "\t"
+                          << std::fixed << std::setprecision(4) << wavg_CosPhiD << "\t"
+                          << std::fixed << std::setprecision(4) << Err_valD << "\t"
+                          << std::fixed << std::setprecision(4) << Cratio_point << "\t"
+                          << std::fixed << std::setprecision(4) << Err_Cratio_point << std::endl;
+            }
+        }
+    }
+    std::cout << "=== Calculation Complete ===\n" << std::endl;
+}
+
+
 
 
     TH3F* cratio::getHwA(){
@@ -311,22 +373,27 @@ void cratio::multiplotCratio(){
 
 }
 
-
-void cratio::multiplotCratio( cratio& cratioOther, cratio& cratioThird){
-    for (int x = 0; x < Cratiobin; ++x){
+void cratio::multiplotCratio(cratio& cratioOther, cratio& cratioThird) {
+    for (int x = 0; x < Cratiobin; ++x) {
         double xValue = h_wD_Cratio->GetXaxis()->GetBinCenter(x + 1);
         std::string pdfFileName = "tripleTargetCratio_x" + std::to_string(xValue) + ".pdf";
+
+        // Open PDF file
         TCanvas canvasCratio("c", "Multiplot Cratio", 1200, 800);
-        canvasCratio.Divide(3, 2); 
-        for (int y=0; y < Cratiobin; ++y) {
+        canvasCratio.Divide(3, 2);
+        canvasCratio.Print((pdfFileName + "[").c_str());
+
+        //cos(phi_h)_A / cos(phi_h)_D
+        for (int y = 0; y < Cratiobin; ++y) {
+            canvasCratio.cd(y + 1);
             TMultiGraph *mg = new TMultiGraph();
 
             double Q2Value = h_wD_Cratio->GetYaxis()->GetBinCenter(y + 1);
-            canvasCratio.cd(y + 1);
             TGraphErrors *graphCratio = new TGraphErrors();
             TGraphErrors *graphCratioOther = new TGraphErrors();
             TGraphErrors *graphCratioThird = new TGraphErrors();
-            for (int z=0; z < Cratiobin; ++z) {
+
+            for (int z = 0; z < Cratiobin; ++z) {
                 double zValue = h_wD_Cratio->GetZaxis()->GetBinCenter(z + 1);
                 double value = CratioMatrix[x][y][z];
                 double error = errorCratioMatrix[x][y][z];
@@ -335,68 +402,122 @@ void cratio::multiplotCratio( cratio& cratioOther, cratio& cratioThird){
                 double valueThird = cratioThird.CratioMatrix[x][y][z];
                 double errorThird = cratioThird.errorCratioMatrix[x][y][z];
 
-
                 graphCratio->SetPoint(z, zValue, value);
                 graphCratio->SetPointError(z, 0.0, error);
-                graphCratioOther->SetPoint(z, zValue+0.01, valueOther);
-                graphCratioOther->SetPointError(z+0.01, 0.0, errorOther); 
-                graphCratioThird->SetPoint(z, zValue+0.02, valueThird);
-                graphCratioThird->SetPointError(z+0.02, 0.0, errorThird);
-
-                
+                graphCratioOther->SetPoint(z, zValue + 0.01, valueOther);
+                graphCratioOther->SetPointError(z + 0.01, 0.0, errorOther);
+                graphCratioThird->SetPoint(z, zValue + 0.02, valueThird);
+                graphCratioThird->SetPointError(z + 0.02, 0.0, errorThird);
             }
-            std::stringstream ss;
-            ss << std::fixed << std::setprecision(2) << Q2Value;
-            std::string formattedQ2Value = ss.str();
 
-            graphCratio->SetTitle(("<cos #phi_{h}>_A / <cos #phi_{h}>_D vs z, Q^{2}=" + std::to_string(Q2Value)).c_str());
-            graphCratio->GetXaxis()->SetTitle("z");
-            graphCratio->GetYaxis()->SetTitle("<cos #phi_{h}>_A / <cos #phi_{h}>_D");
             graphCratio->SetMarkerStyle(20);
-            graphCratio->GetYaxis()->SetRangeUser(-10.0, 10.0); // Set Y axis range from 0.0 to 2.0
-            graphCratio->Draw("AP");
+            graphCratio->SetMarkerColor(kRed);
+            graphCratio->SetMarkerSize(1.2);
             graphCratioOther->SetMarkerStyle(20);
             graphCratioOther->SetMarkerColor(kBlue);
-            //graphCratioOther->Draw("P");
-            graphCratio->SetMarkerColor(kRed);
+            graphCratioOther->SetMarkerSize(1.2);
             graphCratioThird->SetMarkerStyle(20);
             graphCratioThird->SetMarkerColor(kGreen);
-            //graphCratioThird->Draw("P");
-
-            TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
-            legend->AddEntry(graphCratio, "Sn", "lp");
-            legend->AddEntry(graphCratioOther, "Cu", "lp");
-            legend->AddEntry(graphCratioThird, "CxC", "lp");
-
-            TLine *line = new TLine(graphCratio->GetXaxis()->GetXmin(), 1.0, graphCratio->GetXaxis()->GetXmax(), 1.0);
-            line->SetLineStyle(2); // Dotted line
+            graphCratioThird->SetMarkerSize(1.2);
 
             mg->Add(graphCratio);
             mg->Add(graphCratioOther);
             mg->Add(graphCratioThird);
-            mg->SetTitle(("<cos #phi_{h}>_{A} / <cos #phi_{h}>_{LD2} vs z, Q^{2}=" + formattedQ2Value).c_str());
+            mg->SetTitle(("Ratio <cos #phi_{h}>_A / <cos #phi_{h}>_D vs z, Q^{2}=" + std::to_string(Q2Value)).c_str());
             mg->GetXaxis()->SetTitle("z");
-            mg->GetYaxis()->SetTitle("<cos #phi_{h}>_{A} / <cos #phi_{h}>_{LD2}");
+            mg->GetYaxis()->SetTitle("<cos #phi_{h}>_A / <cos #phi_{h}>_D");
+            mg->GetYaxis()->SetRangeUser(-10.0, 10.0);
             mg->Draw("APE1");
+
+            TLegend *legend = new TLegend(0.7, 0.7, 0.9, 0.9);
+            legend->AddEntry(graphCratio, "Sn", "lp");
+            legend->AddEntry(graphCratioOther, "Cu", "lp");
+            legend->AddEntry(graphCratioThird, "CxC", "lp");
             legend->Draw("same");
+
+            TLine *line = new TLine(graphCratio->GetXaxis()->GetXmin(), 1.0, graphCratio->GetXaxis()->GetXmax(), 1.0);
+            line->SetLineStyle(2);
             line->Draw("same");
-            TLatex* prelimText = new TLatex();
-            prelimText->SetTextSize(0.08);  // Larger text size
-            prelimText->SetTextAngle(45);
-            prelimText->SetTextColorAlpha(kGray + 1, 0.3);  // Gray color with transparency
-            prelimText->SetNDC();
-            prelimText->SetTextAlign(22);  // Centered alignment
-            prelimText->DrawLatex(0.5, 0.5, "preliminary");
-
-
-
-
         }
-        canvasCratio.SaveAs(pdfFileName.c_str());
- 
-    }
+        canvasCratio.Print(pdfFileName.c_str());
 
+        // cos(phi_h)_A
+        canvasCratio.Clear();
+        canvasCratio.Divide(3, 2);
+        for (int y = 0; y < Cratiobin; ++y) {
+            canvasCratio.cd(y + 1);
+            TMultiGraph *mgA = new TMultiGraph();
+            TGraphErrors *graphCosPhiA = new TGraphErrors();
+            TGraphErrors *graphCosPhiA_Other = new TGraphErrors();
+            TGraphErrors *graphCosPhiA_Third = new TGraphErrors();
+
+            for (int z = 0; z < Cratiobin; ++z) {
+                double zValue = h_wD_Cratio->GetZaxis()->GetBinCenter(z + 1);
+                double valueA = CosPhiA_Matrix[x][y][z];
+                double errorA = errorCosPhiA_Matrix[x][y][z];
+                double valueA_Other = cratioOther.CosPhiA_Matrix[x][y][z];
+                double errorA_Other = cratioOther.errorCosPhiA_Matrix[x][y][z];
+                double valueA_Third = cratioThird.CosPhiA_Matrix[x][y][z];
+                double errorA_Third = cratioThird.errorCosPhiA_Matrix[x][y][z];
+                graphCosPhiA->SetPoint(z, zValue, valueA);
+                graphCosPhiA->SetPointError(z, 0.0, errorA);
+                graphCosPhiA_Other->SetPoint(z, zValue + 0.01, valueA_Other);
+                //graphCosPhiA_Other->SetPointError(z, 0.0, errorA_Other);
+                graphCosPhiA_Third->SetPoint(z, zValue + 0.02, valueA_Third);
+                graphCosPhiA_Third->SetPointError(z, 0.0, errorA_Third);
+            }
+
+            graphCosPhiA->SetMarkerStyle(20);
+            graphCosPhiA->SetMarkerColor(kRed);
+            graphCosPhiA->SetMarkerSize(1.2);
+            graphCosPhiA_Other->SetMarkerStyle(20);
+            graphCosPhiA_Other->SetMarkerColor(kBlue);
+            graphCosPhiA_Other->SetMarkerSize(1.2);
+            graphCosPhiA_Third->SetMarkerStyle(20);
+            graphCosPhiA_Third->SetMarkerColor(kGreen);
+            graphCosPhiA_Third->SetMarkerSize(1.2);
+
+            mgA->Add(graphCosPhiA);
+            mgA->Add(graphCosPhiA_Other);
+            mgA->Add(graphCosPhiA_Third);
+            mgA->SetTitle("cos(phi_h)_A");
+            mgA->GetYaxis()->SetRangeUser(-1, 1);
+            mgA->Draw("APE1");
+
+            mgA->Draw("APE1");
+        }
+        canvasCratio.Print(pdfFileName.c_str());
+
+        // cos(phi_h)_D 
+        canvasCratio.Clear();
+        canvasCratio.Divide(3, 2);
+        for (int y = 0; y < Cratiobin; ++y) {
+            canvasCratio.cd(y + 1);
+            TMultiGraph *mgD = new TMultiGraph();
+            TGraphErrors *graphCosPhiD = new TGraphErrors();
+            TGraphErrors *graphCosPhiD_Other = new TGraphErrors();
+            TGraphErrors *graphCosPhiD_Third = new TGraphErrors();
+
+            for (int z = 0; z < Cratiobin; ++z) {
+                double zValue = h_wD_Cratio->GetZaxis()->GetBinCenter(z + 1);
+                double valueD = CosPhiD_Matrix[x][y][z];
+                double valueD_Other = cratioOther.CosPhiD_Matrix[x][y][z];
+                double valueD_Third = cratioThird.CosPhiD_Matrix[x][y][z];
+
+                graphCosPhiD->SetPoint(z, zValue, valueD);
+                graphCosPhiD_Other->SetPoint(z, zValue + 0.01, valueD_Other);
+                graphCosPhiD_Third->SetPoint(z, zValue + 0.02, valueD_Third);
+            }
+
+            mgD->Draw("APE1");
+        }
+        canvasCratio.Print(pdfFileName.c_str());
+
+        canvasCratio.Print((pdfFileName + "]").c_str());
+    }
 }
+
+
 
 void cratio::multiCratsimus( cratio& cratioCu,  cratio& cratioC1 , cratio& cratioC2 ){
     for (int x = 0; x < Cratiobin; ++x){

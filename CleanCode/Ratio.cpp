@@ -15,6 +15,8 @@
 #include "Event.h" 
 #include "Ratio.h"
 #include "CutSet.h"
+#include "THnSparse.h"
+
 #include <iomanip> // including <iomanip> for formatting digits for pt2 precision
 
 Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cutsD(cutsD), cutsSn(cutsSn) {
@@ -42,6 +44,8 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     h_nu_D_had(new TH1F(("nu_D_had"+targetName).c_str(), ("nu_D_had"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
     h_pt2_D_had(new TH1F(("pt2_D_had"+targetName).c_str(), ("pt2_D_had"+targetName).c_str(), Constants::Rbin_pt2 , Constants::RcutminPt2 , Constants::RcutmaxPt2)),
     h_pt2_A_had(new TH1F(("pt2_A_had"+targetName).c_str(), ("pt2_A_had"+targetName).c_str(), Constants::Rbin_pt2 , Constants::RcutminPt2 , Constants::RcutmaxPt2)),
+    //double binEdges[7];  // 6 bins means 7 edges
+    
     h_nuC1(new TH1F(("nu_C1"+targetName).c_str(), ("nu_C1"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)), 
     h_nuC2(new TH1F(("nu_C2"+targetName).c_str(), ("nu_C2"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu))
 
@@ -84,6 +88,7 @@ void Ratio::FillHistograms(const Event& event) {
         counter_elLD2 ++;
         //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
         h_nuD->Fill(event.Getnu());
+        //h_3D_D_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
         //std::cout << "nu = " << event.Getnu() << std::endl; /bump
         for (const Particle& hadron : event.GetHadrons()) {
             if (cutd.PassCutsHadrons(hadron)==true){
@@ -93,6 +98,7 @@ void Ratio::FillHistograms(const Event& event) {
                 h_nu_z_pt2D->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 h_nu_D_had->Fill(event.Getnu() );   //these  histos  added to to track binning switch
                 h_pt2_D_had->Fill(hadron.Getpt2()); //these  histos  added to to track binning switch
+                //h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
 
             //std::cout << "nimporte quoi" << event.Getnu()<< ";" << hadron.Getz()<<","<< hadron.Getpt2() <<std::endl;
                 //}
@@ -103,6 +109,7 @@ void Ratio::FillHistograms(const Event& event) {
         counter_elSn++; //counter for only electrons for z and pt
         //here change the else if to just else in order to have a generic target 
         h_nuA->Fill(event.Getnu()); //can be plotted just like this 
+        //h_3D_A_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
         //if (targetName == "C1"){
         //    h_nuC1->Fill(event.Getnu());
         //}
@@ -119,6 +126,7 @@ void Ratio::FillHistograms(const Event& event) {
                 h_z_A_had->Fill(hadron.Getz()); //these 3 histos were added to monitor CxC self Ratio
                 h_pt2_A_had->Fill(hadron.Getpt2()); //these 3 histos were added to monitor CxC self Ratio
                 h_z_A->Fill(hadron.Getz()); //debugging Ybins jan25
+                //h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
                 //if (targetName == "C1" ) {
                 //    h_nu_z_pt2C1->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 //}
@@ -281,6 +289,55 @@ void Ratio::calcR(){
     }   
     //std::cout << "total counter_3D = " << counter_3D << std::endl;
 }
+
+/*
+void calcBinEdges(double minVal, double maxVal, int nBins, double binEdges[]) {
+    //using cutlow and cut high of whatever variable then the binnbr and the edges desired (nbins+1 ? ) 2
+    double binWidth = (maxVal - minVal) / nBins;  //bin width
+    for (int i = 0; i <= nBins; i++) {
+        binEdges[i] = minVal + i * binWidth;  //min/max
+    }
+}
+
+void Ratio::calcRin5D() {
+    //loop on Q2, xB, and nu  for 
+    for (int xBin = 1; xBin <= Constants::Rbin_nu; xBin++) {
+        for (int q2Bin = 1; q2Bin <= Constants::Rbin_nu; q2Bin++) {
+            for (int nuBin = 1; nuBin <= Constants::Rbin_nu; nuBin++) {
+                //get electron counts from TH3F histograms
+                double NA_e = h_3D_A_e->GetBinContent(xBin, q2Bin, nuBin);
+                double ND_e = h_3D_D_e->GetBinContent(xBin, q2Bin, nuBin);
+
+                //ward
+                if (NA_e == 0 || ND_e == 0) continue;
+
+                //loop 
+                for (int zBin = 1; zBin <= Constants::Rbin_nu; zBin++) {
+                    for (int pt2Bin = 1; pt2Bin <= Constants::Rbin_nu; pt2Bin++) {
+                        double NA_had = h_5D_A_had->GetBinContent(xBin, q2Bin, nuBin, zBin, pt2Bin);
+                        double ND_had = h_5D_D_had->GetBinContent(xBin, q2Bin, nuBin, zBin, pt2Bin);
+                        //ward
+                        if (ND_had == 0) {
+                            ratMatrix5D[xBin - 1][q2Bin - 1][nuBin - 1][zBin - 1][pt2Bin - 1] = 0.0;
+                            errorMatrix5D[xBin - 1][q2Bin - 1][nuBin - 1][zBin - 1][pt2Bin - 1] = 0.0;
+                            continue;
+                        }
+
+                        double ratio = (NA_had / NA_e) / (ND_had / ND_e);
+                        ratMatrix5D[xBin - 1][q2Bin - 1][nuBin - 1][zBin - 1][pt2Bin - 1] = ratio;
+
+                        double error = ratio * sqrt(
+                            (1.0 / NA_had) + (1.0 / ND_had) + (1.0 / NA_e) + (1.0 / ND_e)
+                        );
+                        errorMatrix5D[xBin - 1][q2Bin - 1][nuBin - 1][zBin - 1][pt2Bin - 1] = error;
+                    }
+                }
+            }
+        }
+    }
+}
+*/
+
 
 TH1F* Ratio::getHNuA() {
     return h_nuA;

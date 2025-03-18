@@ -220,6 +220,10 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     dptC2.calcDpt();
     dptSn.calcDpt();
     dptCu.calcDpt();
+    cratC2.calcCratio();
+    cratSn.calcCratio();
+    cratCu.calcCratio();
+    
     //sratC2.calcSratio();
     
 

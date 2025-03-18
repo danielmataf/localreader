@@ -164,6 +164,12 @@ private:
     std::vector<std::vector<std::vector<double>>> CratioMatrixbis;    //three vectors for 3D matrix
     std::vector<std::vector<std::vector<double>>> errorCratioMatrixbis;
 
+    //this is for intermediary steps 
+    std::vector<std::vector<std::vector<double>>> CosPhiA_Matrix;
+    std::vector<std::vector<std::vector<double>>> CosPhiD_Matrix;
+    std::vector<std::vector<std::vector<double>>> errorCosPhiA_Matrix;
+    std::vector<std::vector<std::vector<double>>> errorCosPhiD_Matrix;
+
     //TFile* outputFile;
     CutSet cutsD;
     CutSet cutsSn;
