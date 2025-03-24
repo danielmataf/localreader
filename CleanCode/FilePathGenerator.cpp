@@ -251,25 +251,53 @@ void FilePathGenerator::SnDir2VectorThird(const std::string& parentDirectory, st
 
 
 // Function to display progress with a percentage and a loading bar
+//void FilePathGenerator::displayProgress(int current, int total) {
+//    int barWidth = 50;
+//    int progress = (current * barWidth) / total;
+//    int percentage = (current * 100) / total;
+//
+//    std::cout << "\r[";
+//    for (int i = 0; i < barWidth; ++i) {
+//        if (i < progress) {
+//            std::cout << "=";
+//        } else if (i == progress) {
+//            std::cout << ">";
+//        } else {
+//            std::cout << " ";
+//        }
+//    }
+//    std::cout << "] " << percentage << "%";
+//
+//    std::cout.flush();
+//}
+
 void FilePathGenerator::displayProgress(int current, int total) {
+    static int lastPercentage = -1; // Store the last displayed percentage
     int barWidth = 50;
-    int progress = (current * barWidth) / total;
     int percentage = (current * 100) / total;
 
-    std::cout << "\r[";
-    for (int i = 0; i < barWidth; ++i) {
-        if (i < progress) {
-            std::cout << "=";
-        } else if (i == progress) {
-            std::cout << ">";
-        } else {
-            std::cout << " ";
-        }
-    }
-    std::cout << "] " << percentage << "%";
+    // Only update the display if the percentage has changed
+    if (percentage > lastPercentage) {
+        lastPercentage = percentage;
 
-    std::cout.flush();
+        int progress = (percentage * barWidth) / 100;
+
+        std::cout << "\r[";
+        for (int i = 0; i < barWidth; ++i) {
+            if (i < progress) {
+                std::cout << "=";
+            } else if (i == progress) {
+                std::cout << ">";
+            } else {
+                std::cout << " ";
+            }
+        }
+        std::cout << "] " << percentage << "%";
+
+        std::cout.flush();
+    }
 }
+
 
 // New method to process events and show the progress
 void FilePathGenerator::progressEvents(int totalEvents) {

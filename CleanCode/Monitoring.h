@@ -46,6 +46,7 @@ public:
     void DrawHelicityHistograms(const std::string);
     void DrawCompRECMC(const std::string);
     void DrawMonSratio(const std::string);
+    
 
     void SaveHistRoot(const std::string& ) ;
 
@@ -229,6 +230,22 @@ private:
     TH1F *R_nu_had;
     TH1F *R_z;
     TH1F *R_pt2;
+
+    // histograms for monitoring resolution on theta and phi coordinates for at leats electron PER SECTOR only 6 sectors (check calo info en fait;) )
+    TH1F *h_theta_el_sec1;
+    TH1F *h_theta_el_sec2;
+    TH1F *h_theta_el_sec3;
+    TH1F *h_theta_el_sec4;
+    TH1F *h_theta_el_sec5;
+    TH1F *h_theta_el_sec6;
+    TH1F *h_phi_el_sec1;
+    TH1F *h_phi_el_sec2;
+    TH1F *h_phi_el_sec3;
+    TH1F *h_phi_el_sec4;
+    TH1F *h_phi_el_sec5;
+    TH1F *h_phi_el_sec6;
+
+
 
 
         //==default histograms (no cuts)==//

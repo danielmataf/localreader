@@ -374,7 +374,7 @@ void deltaptsq::multiplotDpt(deltaptsq& dptother, deltaptsq& dptthird){
             mg->SetTitle((title).c_str());
             mg->GetXaxis()->SetTitle("z");
             mg->GetYaxis()->SetTitle("#Delta <p_{t}^{2}>");
-            mg->GetYaxis()->SetRangeUser(-0.05, 1.6); // 
+            mg->GetYaxis()->SetRangeUser(-0.05, 0.2); // 
 
 
             mg->Draw("APE1");

@@ -154,7 +154,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             cratC2.FillHistograms(eventtestLD2);
             cratC1.FillHistograms(eventtestLD2);
             cratSn.FillHistograms(eventtestLD2);
-            cratCu  .FillHistograms(eventtestLD2);
+            cratCu .FillHistograms(eventtestLD2);
 
 
         }
@@ -223,7 +223,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     cratC2.calcCratio();
     cratSn.calcCratio();
     cratCu.calcCratio();
-    
+
     //sratC2.calcSratio();
     
 

@@ -103,6 +103,18 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_chi2_pid_pi(new TH2F(("chi2_pid_pi_" + targetName).c_str(), "chi2_pid_pi", 100, -15, 15, 100, 0, 1)),
     h_luthetael(new TH2F(("u_vs_thetael_" + targetName).c_str(), "u_vs_thetael", 100, 0, 400, 100, 0, 40)),
     h_sampl_el(new TH2F(("sampl_el_" + targetName).c_str(), "sampl_el", nubin, 0, 10, nubin, 0, 1)),
+    h_theta_el_sec1(new TH1F(("theta_el_sec1_" + targetName).c_str(), "theta_el_sec1", 100, 0, 40)),
+    h_theta_el_sec2(new TH1F(("theta_el_sec2_" + targetName).c_str(), "theta_el_sec2", 100, 0, 40)),
+    h_theta_el_sec3(new TH1F(("theta_el_sec3_" + targetName).c_str(), "theta_el_sec3", 100, 0, 40)),
+    h_theta_el_sec4(new TH1F(("theta_el_sec4_" + targetName).c_str(), "theta_el_sec4", 100, 0, 40)),
+    h_theta_el_sec5(new TH1F(("theta_el_sec5_" + targetName).c_str(), "theta_el_sec5", 100, 0, 40)),
+    h_theta_el_sec6(new TH1F(("theta_el_sec6_" + targetName).c_str(), "theta_el_sec6", 100, 0, 40)),
+    h_phi_el_sec1(new TH1F(("phi_el_sec1_" + targetName).c_str(), "phi_el_sec1", 100, 0, 360)),
+    h_phi_el_sec2(new TH1F(("phi_el_sec2_" + targetName).c_str(), "phi_el_sec2", 100, 0, 360)),
+    h_phi_el_sec3(new TH1F(("phi_el_sec3_" + targetName).c_str(), "phi_el_sec3", 100, 0, 360)),
+    h_phi_el_sec4(new TH1F(("phi_el_sec4_" + targetName).c_str(), "phi_el_sec4", 100, 0, 360)),
+    h_phi_el_sec5(new TH1F(("phi_el_sec5_" + targetName).c_str(), "phi_el_sec5", 100, 0, 360)),
+    h_phi_el_sec6(new TH1F(("phi_el_sec6_" + targetName).c_str(), "phi_el_sec6", 100, 0, 360)),    
       counterel_R(0) {
     // Add more histograms as needed
 }
@@ -141,6 +153,30 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
         h_Nphe15->Fill(event.electron.Getnphe15());
         h_Nphe16->Fill(event.electron.Getnphe16());
         h_calSector->Fill(event.electron.GetCalSector());
+        if (event.electron.GetCalSector()==1){
+            h_theta_el_sec1->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+            h_phi_el_sec1->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+        }
+        if (event.electron.GetCalSector()==2){
+            h_theta_el_sec2->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+            h_phi_el_sec2->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+        }
+        if (event.electron.GetCalSector()==3){
+            h_theta_el_sec3->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+            h_phi_el_sec3->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+        }
+        if (event.electron.GetCalSector()==4){
+            h_theta_el_sec4->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+            h_phi_el_sec4->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+        }
+        if (event.electron.GetCalSector()==5){
+            h_theta_el_sec5->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+            h_phi_el_sec5->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+        }
+        if (event.electron.GetCalSector()==6){
+            h_theta_el_sec6->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+            h_phi_el_sec6->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
+        }
         h_helicity->Fill(event.GetHel());
         h_helicity_raw->Fill(event.GetHelRaw());
         if (cut1.PassCutsElectrons(event)==true) {
@@ -1346,6 +1382,18 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     h_Nphe15->Write();
     h_Nphe16->Write();
     h_calSector->Write();
+    h_phi_el_sec1->Write();
+    h_phi_el_sec2->Write();
+    h_phi_el_sec3->Write();
+    h_phi_el_sec4->Write();
+    h_phi_el_sec5->Write();
+    h_phi_el_sec6->Write();
+    h_theta_el_sec1->Write();
+    h_theta_el_sec2->Write();
+    h_theta_el_sec3->Write();
+    h_theta_el_sec4->Write();
+    h_theta_el_sec5->Write();
+    h_theta_el_sec6->Write();
     h_helicity->Write();
     h_helicity_raw->Write();
     h_px_el->Write();
