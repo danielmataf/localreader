@@ -16,7 +16,8 @@ class cratio {
 public: 
     cratio(CutSet cutsD, CutSet cutsA, const std::string& targetName);  //cutsA is for the Nucleus considered 
                                             //correction (TBD)in ratio needs to be propagated here too
-
+    void FillDebug(const Event& event);
+    void WriteDebugHistos(const std::string& filename);
     void FillHistograms(const Event& );
     void WriteHistos(const std::string );
     void calcCratio();
@@ -152,6 +153,21 @@ private:
     TH3 *h_wD_sqCratio ; //= new TH3F("wD_sqCratio", "wD_sqCratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );//definition w/ 3 args
     TH3 *h_wA_sqCratio ; //= new TH3F("wA_sqCratio", "wA_sqCratio",Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,QminCratio,QmaxCratio,Cratiobin_z,zminCratio, zmaxCratio  );
 
+
+
+    TH3F *h_wD_CratioRE; 
+    TH3F *h_wD_sqCratioRE;
+    TH3 *h_D_Cratio3DRE; 
+
+    TH3F *h_wA_CratioRE; 
+    TH3F *h_wA_sqCratioRE;
+    TH3 *h_A_Cratio3DRE; 
+
+    //Debugging
+    TH1F* h_debug_xB;
+    std::vector<TH1F*> h_debug_Q2;
+    std::vector<std::vector<TH1F*>> h_debug_z;
+    bool debugInitialized = false;
 
 
     //Graphs

@@ -62,9 +62,12 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     EventReader RGD_CxC(filenamesCxC);
     EventReader RGD_LD2(filenamesLD2);   
     EventReader RGD_CuSn(filenamesCuSn);   
+    EventReader Sim_CxC(simufilesCxC);
 
 
 
+    std::optional<Event> simCxC;
+    std::optional<Event> simCxC_MC; //testing this if we can loop twice top read MC events//
     std::optional<Event> testCxC;
     std::optional<Event> testLD2;
     std::optional<Event> testCu;
@@ -74,6 +77,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
 
     CutSet testC1cuts;  //C1 RGD
     CutSet testC2cuts;  //C2 RGD  
+    CutSet simC2cuts;  
     CutSet testLD2cuts;
     CutSet testCucuts;
     CutSet testSncuts;
@@ -88,6 +92,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
 
     testC2cuts.SetCutVz(Constants::RcutminVzC2data, Constants::RcutmaxVzC2data);    //vz cut for C2 target
     testC2cuts.SetCutGen4Rat();
+    simC2cuts.SetCutVz(Constants::RcutminVzC2sim    , Constants::RcutmaxVzC2sim);     //vz cut for C2 target
+    simC2cuts.SetCutGen4Rat();
 
     testLD2cuts.SetCutVz(Constants::RcutminVzLD2,Constants::RcutmaxVzLD2);     //vz cut for LD2 target
     testLD2cuts.SetCutGen4Rat();
@@ -100,7 +106,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
 
     int sumevts = 0;
 
-
+    Monitoring monSimC2(simC2cuts, "C2_sim");     //This needs to be figured out ASAP
     Monitoring monTestC1(testC1cuts, "C1_RGD");  //This needs to be figured out ASAP
     Monitoring monTestC2(testC2cuts, "C2_RGD");  //This needs to be figured out ASAP
     Monitoring monTestLD2(testLD2cuts, "LD2_RGD");
@@ -174,7 +180,19 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             sratC2.FillHistograms(eventtestCxC);
             cratC1.FillHistograms(eventtestCxC);
             cratC2.FillHistograms(eventtestCxC);
+            cratC2.FillDebug(eventtestCxC);
 
+        }
+        if (simCxC_MC.has_value())                          {//CxC sim
+            Event eventsimCxC_MC = simCxC_MC.value();
+            eventsimCxC_MC.SetTargetType(1);
+            eventsimCxC_MC.calcMCAll();
+                if ( simCxC.has_value()) {
+                    Event eventsimCxC = simCxC.value();
+                    eventsimCxC.SetTargetType(1);
+                    eventsimCxC.calcAll();
+                    monSimC2.FillHistogramswCuts(eventsimCxC);
+                }
         }
 
         if (testSn.has_value()) {
@@ -212,6 +230,9 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     monTestSn.DrawHistograms("SnUrgent");
     monTestCu.SaveHistRoot("janCu_test");
     monTestCu.DrawHistograms("CuUrgent");
+    monSimC2.SaveHistRoot("marC2_sim");
+    monSimC2.DrawHistograms("monC2_sim");
+    cratC2.WriteDebugHistos("cosdebug.root");
     std::cout << "//========= Simulation C2 ==========//  \n";
 
     ratC2.calcR();  

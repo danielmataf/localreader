@@ -7,6 +7,7 @@
 #include <TGraphErrors.h>
 #include <TLine.h>
 #include <TLatex.h>  
+#include <TDirectory.h>
 
 #include <TPad.h>
 #include <fstream>
@@ -41,14 +42,107 @@ cratio::cratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
     h_D_Cratio3D ( new TH3F(("countCratio:D"+targetName).c_str(), ("count:wD_Cratio"+targetName).c_str(), Constants::Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
     h_A_Cratio3D ( new TH3F(("countCratio:A"+targetName).c_str(), ("count:wD_Cratio"+targetName).c_str(), Constants::Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
     h_wD_sqCratio ( new TH3F(("wD_sqCratio"+targetName).c_str(), ("wD_sqCratio"+targetName).c_str(),Constants::Cratiobin_x  , xminCratio, xmaxCratio,Constants::Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ ) ),//definition w/ 3 args
-    h_wA_sqCratio ( new TH3F(("wA_sqCratio"+targetName).c_str(), ("wA_sqCratio"+targetName).c_str(),Constants::Cratiobin_x  , xminCratio, xmaxCratio,Constants::Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ ) ){
+    h_wA_sqCratio ( new TH3F(("wA_sqCratio"+targetName).c_str(), ("wA_sqCratio"+targetName).c_str(),Constants::Cratiobin_x  , xminCratio, xmaxCratio,Constants::Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ ) ),
+    h_wD_CratioRE ( new TH3F(("wD_CratioRE"+targetName).c_str(), ("wD_CratioRE"+targetName).c_str(),Constants::Cratiobin_nu, Constants::numinCratio, Constants::numaxCratio, Constants::Cratiobin_z, Constants::RcutminZ, Constants::RcutmaxZ, Constants::Cratiobin_z, Constants::RcutminPt2, Constants::RcutmaxPt2)),
+    h_wD_sqCratioRE ( new TH3F(("wD_sqCratioRE"+targetName).c_str(), ("wD_sqCratioRE"+targetName).c_str(),Constants::Cratiobin_nu, Constants::numinCratio, Constants::numaxCratio, Constants::Cratiobin_z, Constants::RcutminZ, Constants::RcutmaxZ, Constants::Cratiobin_z, Constants::RcutminPt2, Constants::RcutmaxPt2)),
+    h_D_Cratio3DRE ( new TH3F(("countCratio:DRE"+targetName).c_str(), ("count:wD_CratioRE"+targetName).c_str(), Constants::Cratiobin_nu, Constants::numinCratio, Constants::numaxCratio, Constants::Cratiobin_z, Constants::RcutminZ, Constants::RcutmaxZ, Constants::Cratiobin_z, Constants::RcutminPt2, Constants::RcutmaxPt2)),
+    h_wA_CratioRE ( new TH3F(("wA_CratioRE"+targetName).c_str(), ("wA_CratioRE"+targetName).c_str(),Constants::Cratiobin_nu, Constants::numinCratio, Constants::numaxCratio, Constants::Cratiobin_z, Constants::RcutminZ, Constants::RcutmaxZ, Constants::Cratiobin_z, Constants::RcutminPt2, Constants::RcutmaxPt2)),
+    h_wA_sqCratioRE ( new TH3F(("wA_sqCratioRE"+targetName).c_str(), ("wA_sqCratioRE"+targetName).c_str(),Constants::Cratiobin_nu, Constants::numinCratio, Constants::numaxCratio, Constants::Cratiobin_z, Constants::RcutminZ, Constants::RcutmaxZ, Constants::Cratiobin_z, Constants::RcutminPt2, Constants::RcutmaxPt2)),
+    h_A_Cratio3DRE ( new TH3F(("countCratio:ARE"+targetName).c_str(), ("count:wA_CratioRE"+targetName).c_str(), Constants::Cratiobin_nu, Constants::numinCratio, Constants::numaxCratio, Constants::Cratiobin_z, Constants::RcutminZ, Constants::RcutmaxZ, Constants::Cratiobin_z, Constants::RcutminPt2, Constants::RcutmaxPt2)){
 
 
     cutd = cutsD;
     cuta = cutsA;
     }
+void cratio::FillDebug(const Event& event) {
+    if (!debugInitialized) {
+        h_debug_xB = new TH1F("h_debug_xB", "xB distribution", Cratiobin_x, xminCratio, xmaxCratio);
+
+        for (int i = 0; i < Cratiobin_x; ++i) {
+            double x_center = (xminCratio + (i + 0.5) * (xmaxCratio - xminCratio) / Cratiobin_x);  // bin center estimate
+            std::string hname = Form("h_debug_Q2_xBbin%d", i + 1);
+            std::string htitle = Form("Q^{2} for xB = %.3f", x_center);
+            h_debug_Q2.push_back(new TH1F(hname.c_str(), htitle.c_str(), Cratiobin_Q, QminCratio, QmaxCratio));
+
+            std::vector<TH1F*> zBins;
+            for (int j = 0; j < Cratiobin_Q; ++j) {
+                double x_center = h_debug_xB->GetXaxis()->GetBinCenter(i + 1);
+                double Q2_center = h_debug_Q2[i]->GetXaxis()->GetBinCenter(j + 1);
+
+                std::string hname = Form("h_debug_z_xB%d_Q2%d", i + 1, j + 1);
+                std::string htitle = Form("z for xB = %.3f, Q^{2} = %.3f", x_center, Q2_center);
+
+                zBins.push_back(new TH1F(hname.c_str(), htitle.c_str(),
+                                         Cratiobin_z, zminCratio, zmaxCratio));
+            }
+            h_debug_z.push_back(zBins);
+        }
+
+        debugInitialized = true;
+    }
+
+    int targetType = event.GetTargetType();
+    if ((targetType == 0 && cutd.PassCutsElectrons(event)) ||
+        (targetType == 1 && cuta.PassCutsElectrons(event))) {
+
+        h_debug_xB->Fill(event.Getxb());
+        int xb_bin = h_debug_xB->FindBin(event.Getxb()) - 1;
+
+        if (xb_bin >= 0 && xb_bin < Cratiobin_x) {
+            h_debug_Q2[xb_bin]->Fill(event.GetQ2());
+            int Q2_bin = h_debug_Q2[xb_bin]->FindBin(event.GetQ2()) - 1;
+
+            if (Q2_bin >= 0 && Q2_bin < Cratiobin_Q) {
+                for (const Particle& hadron : event.GetHadrons()) {
+                    if ((targetType == 0 && cutd.PassCutsHadrons(hadron)) ||
+                        (targetType == 1 && cuta.PassCutsHadrons(hadron))) {
+
+                        double z = hadron.Getz();
+                        h_debug_z[xb_bin][Q2_bin]->Fill(z);
+                    }
+                }
+            }
+        }
+    }
+}
 
 
+void cratio::WriteDebugHistos(const std::string& filename) {
+    TFile *outfile = new TFile(filename.c_str(), "RECREATE");
+    if (!outfile->IsOpen()) {
+        std::cerr << "Error: Couldn't open file " << filename << " for writing debug histograms.\n";
+        return;
+    }
+
+    h_debug_xB->Write("xB_debug");
+
+    for (size_t i = 0; i < h_debug_Q2.size(); ++i) {
+        std::string name = "Q2_debug_bin" + std::to_string(i);
+        h_debug_Q2[i]->Write(name.c_str());
+    }
+
+    for (size_t i = 0; i < h_debug_z.size(); ++i) {
+        for (size_t j = 0; j < h_debug_z[i].size(); ++j) {
+            std::string name = "z_debug_binx" + std::to_string(i) + "_binQ" + std::to_string(j);
+            h_debug_z[i][j]->Write(name.c_str());
+        }
+    }
+
+    outfile->Close();
+    std::cout << "Debug histograms written to " << filename << "\n";
+}
+
+//// Optional: function to write the debug histograms to file
+//void cratio::ValidateHistograms() {
+//    TFile* fout = new TFile("debug_cratio_bins.root", "RECREATE");
+//    h_debug_xB->Write();
+//    for (auto& hq2 : h_debug_Q2) hq2->Write();
+//    for (auto& row : h_debug_z)
+//        for (auto& hz : row)
+//            hz->Write();
+//    fout->Close();
+//    std::cout << "[DEBUG] Debug histograms written to debug_cratio_bins.root" << std::endl;
+//}
 
     void cratio::FillHistograms(const Event& event){
         int targetType = event.GetTargetType();
@@ -62,6 +156,11 @@ cratio::cratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
                     h_wD_Cratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), cos(phiD));    //3 arguments and the WEIGHT
                     h_wD_sqCratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), cos(phiD)*cos(phiD));    //3 arguments and the WEIGHT (pt2 squared) 4 variance
                     h_D_Cratio3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz());    //3 arguments only counts not weight (cphi)
+                    
+                    h_wD_CratioRE->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2(), cos(phiD));    //3 arguments and the WEIGHT
+                    h_wD_sqCratioRE->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2(), cos(phiD)*cos(phiD));    //3 arguments and the WEIGHT (pt2 squared) 4 variance
+                    h_D_Cratio3DRE->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());    //3 arguments only counts not weight (cphi)
+
                 }
             }
         }
@@ -75,6 +174,10 @@ cratio::cratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
                     h_wA_Cratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), cos(phiA));    //3 arguments and the WEIGHT
                     h_wA_sqCratio->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), cos(phiA)*cos(phiA));    //3 arguments and the WEIGHT (pt2 squared)
                     h_A_Cratio3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz());    //3 arguments only counts not weight
+
+                    h_wA_CratioRE->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2(), cos(phiA));    //3 arguments and the WEIGHT
+                    h_wA_sqCratioRE->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2(), cos(phiA)*cos(phiA));    //3 arguments and the WEIGHT (pt2 squared) 4 variance
+                    h_A_Cratio3DRE->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());    //3 arguments only counts not weight (cphi)
 
                 }
             }
@@ -432,7 +535,7 @@ void cratio::multiplotCratio(cratio& cratioOther, cratio& cratioThird) {
             TLegend *legend = new TLegend(0.7, 0.7, 0.9, 0.9);
             legend->AddEntry(graphCratio, "Sn", "lp");
             legend->AddEntry(graphCratioOther, "Cu", "lp");
-            legend->AddEntry(graphCratioThird, "CxC", "lp");
+            legend->AddEntry(graphCratioThird, "C", "lp");
             legend->Draw("same");
 
             TLine *line = new TLine(graphCratio->GetXaxis()->GetXmin(), 1.0, graphCratio->GetXaxis()->GetXmax(), 1.0);
@@ -508,6 +611,11 @@ void cratio::multiplotCratio(cratio& cratioOther, cratio& cratioThird) {
                 graphCosPhiD_Other->SetPoint(z, zValue + 0.01, valueD_Other);
                 graphCosPhiD_Third->SetPoint(z, zValue + 0.02, valueD_Third);
             }
+            mgD->Add(graphCosPhiD);
+            mgD->Add(graphCosPhiD_Other);
+            mgD->Add(graphCosPhiD_Third);
+            mgD->SetTitle("cos(phi_h)_D");
+            mgD->GetYaxis()->SetRangeUser(-1, 1);
 
             mgD->Draw("APE1");
         }
