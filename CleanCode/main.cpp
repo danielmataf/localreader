@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include <vector>
-
 #include "reader.h"
 #include "Event.h"
 #include "EventReader.h"
@@ -16,10 +15,11 @@
 #include "c2ratio.h"
 #include "FilePathGenerator.h"
 #include "constants.h"  
-
+#include "TCanvas.h"
 
 
 int main() {
+
     FilePathGenerator files;
     std::vector<std::string> filenamesLD2;
     std::vector<std::string> simufilesLD2;
@@ -32,10 +32,7 @@ int main() {
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/0v6/", filenamesLD2);
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/0v6/", filenamesCuSn);
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/C_v0/0v6/", filenamesCxC);
-    ////files.ParDir2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/", simufilesLD2);   //do not uncomment this line
-    
-    //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/LD2", simufilesLD2);  //uncomment for sim
-files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", simufilesLD2);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", simufilesLD2);  //uncomment for sim
     
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novC", simufilesCxC);  //uncomment for sim
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novCu", simufilesCu);  //uncomment for sim
@@ -133,131 +130,79 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     cratio cratCu(testLD2cuts, testCucuts, "Cu_RGD");
 
 
-    int totalevts = 19000;
-    // int totalevts =3500000;   //uncomment this on farm for fullT on C2 
+    const int totalevts = 19000;
 
-    for (int i=0; i<totalevts; i++){
-        testCxC = RGD_CxC.ProcessEventsInFile(); 
-        testLD2 = RGD_LD2.ProcessEventsInFile();
-        testSn = RGD_CuSn.ProcessEventsInFile();
-        testCu = RGD_CuSn.ProcessEventsInFile();
+    //6 vectors for phi one for each sector and 6 vectors for theta, same, then with another target
+    std::vector<float> theta_sn[6], phi_sn[6];
+    std::vector<float> theta_cxc[6], phi_cxc[6];
 
-        if (testLD2.has_value()) {
-            Event eventtestLD2 = testLD2.value();
-            eventtestLD2.SetTargetType(0);
-            eventtestLD2.calcAll();
-            monTestLD2.FillHistogramswCuts(eventtestLD2);
-            ratC1.FillHistograms(eventtestLD2);
-            ratC2.FillHistograms(eventtestLD2);
-            ratSn.FillHistograms(eventtestLD2);
-            ratCu.FillHistograms(eventtestLD2);
-            dptC1.FillHistograms(eventtestLD2);
-            dptC2.FillHistograms(eventtestLD2);
-            dptSn.FillHistograms(eventtestLD2);
-            dptCu.FillHistograms(eventtestLD2);
-            sratCu.FillHistograms(eventtestLD2);
-            sratC2.FillHistograms(eventtestLD2);
-            cratC2.FillHistograms(eventtestLD2);
-            cratC1.FillHistograms(eventtestLD2);
-            cratSn.FillHistograms(eventtestLD2);
-            cratCu .FillHistograms(eventtestLD2);
-
-
-        }
+    for (int i = 0; i < totalevts; ++i) {
+        auto testCxC = RGD_CxC.ProcessEventsInFile();
+        auto testSn = RGD_CuSn.ProcessEventsInFile();
 
         if (testCxC.has_value()) {
-            Event eventtestCxC = testCxC.value();
-            eventtestCxC.SetTargetType(1);
-            eventtestCxC.calcAll();
+            Event evtCxC = testCxC.value();
+            evtCxC.SetTargetType(1);
+            evtCxC.calcAll();
 
-            //munfTestC2.FillHistComp(eventtestCxC);
-            monTestC2.FillHistogramswCuts(eventtestCxC);
-            monTestC1.FillHistogramswCuts(eventtestCxC);
-            ratC2.FillHistograms(eventtestCxC);
-            ratC1.FillHistograms(eventtestCxC);
-            dptC1.FillHistograms(eventtestCxC);
-            dptC2.FillHistograms(eventtestCxC);
-            sratC2.FillHistograms(eventtestCxC);
-            cratC1.FillHistograms(eventtestCxC);
-            cratC2.FillHistograms(eventtestCxC);
-            cratC2.FillDebug(eventtestCxC);
+            monTestC2.FillHistogramswCuts(evtCxC);  //usual procedure
 
-        }
-        if (simCxC_MC.has_value())                          {//CxC sim
-            Event eventsimCxC_MC = simCxC_MC.value();
-            eventsimCxC_MC.SetTargetType(1);
-            eventsimCxC_MC.calcMCAll();
-                if ( simCxC.has_value()) {
-                    Event eventsimCxC = simCxC.value();
-                    eventsimCxC.SetTargetType(1);
-                    eventsimCxC.calcAll();
-                    monSimC2.FillHistogramswCuts(eventsimCxC);
-                }
+            int sec = evtCxC.electron.GetCalSector();   //sec is for sectors 
+            if (sec >= 1 && sec <= 6) {
+                int s = sec - 1;
+                theta_cxc[s].push_back(evtCxC.electron.GetMomentum().Theta() * 180 / Constants::PI);
+                phi_cxc[s].push_back(evtCxC.electron.GetMomentum().Phi() * 180 / Constants::PI + 180);
+            }
         }
 
         if (testSn.has_value()) {
-            Event eventtestSn = testSn.value();
-            eventtestSn.SetTargetType(1);
-            eventtestSn.calcAll();
+            Event evtSn = testSn.value();
+            evtSn.SetTargetType(1);
+            evtSn.calcAll();
 
-            monTestSn.FillHistogramswCuts(eventtestSn);
-            //monTestSn.FillHistogramsNoCuts(eventtestSn);
-            ratSn.FillHistograms(eventtestSn);
-            dptSn.FillHistograms(eventtestSn);
-            sratSn.FillHistograms(eventtestSn);
-            cratSn.FillHistograms(eventtestSn);
+            monTestSn.FillHistogramswCuts(evtSn);
 
+            int sec = evtSn.electron.GetCalSector();
+            if (sec >= 1 && sec <= 6) {
+                int s = sec - 1;
+                theta_sn[s].push_back(evtSn.electron.GetMomentum().Theta() * 180 / Constants::PI);
+                phi_sn[s].push_back(evtSn.electron.GetMomentum().Phi() * 180 / Constants::PI + 180);
+            }
         }
-        if (testCu.has_value()) {
-            Event eventtestCu = testCu.value();
-            eventtestCu.SetTargetType(1);
-            eventtestCu.calcAll();
-            monTestCu.FillHistogramswCuts(eventtestCu);
-            ratCu.FillHistograms(eventtestCu);
-            dptCu.FillHistograms(eventtestCu);
-            sratCu.FillHistograms(eventtestCu);
-            cratCu.FillHistograms(eventtestCu);
-        }
-            //else{ counter_restCxC++;}
+
         files.displayProgress(i + 1, totalevts);
     }
-    std::cout << "\nProcessing completed \n";
-    std::cout << "//========= RGD data CxC ==========//  \n";
+
+    //rescalc per sec
+    TH1F* h_phi_res[6];
+    TH1F* h_theta_res[6];
+    for (int s = 0; s < 6; ++s) {
+        h_phi_res[s] = new TH1F(Form("phi_res_s%d", s+1), Form("Phi Resolution Sector %d", s+1), 100, -5, 5);
+        h_theta_res[s] = new TH1F(Form("theta_res_s%d", s+1), Form("Theta Resolution Sector %d", s+1), 100, -5, 5);
+
+        size_t N = std::min(phi_cxc[s].size(), phi_sn[s].size());
+        for (size_t i = 0; i < N; ++i) {
+            float dphi = phi_cxc[s][i] - phi_sn[s][i];
+            float dtheta = theta_cxc[s][i] - theta_sn[s][i];
+            h_phi_res[s]->Fill(dphi);
+            h_theta_res[s]->Fill(dtheta);
+        }
+    }
+
+    //res histos
+    TCanvas c("res_canvas", "Angular Resolutions", 1200, 800);
+    c.Divide(3, 2);
+    for (int s = 0; s < 6; ++s) {
+        c.cd(s + 1);
+        h_phi_res[s]->GetXaxis()->SetRangeUser(-1, 1);
+        h_phi_res[s]->SetLineColor(kBlue);
+        h_phi_res[s]->Draw("hist");
+    }
+    c.SaveAs("phi_resolution_per_sector.pdf");
     monTestC2.SaveHistRoot("janC2_test");
     monTestC2.DrawHistograms("monC2_test");
-    monTestC2.SaveKeyHistograms();
     monTestSn.SaveHistRoot("janSn_test");
     monTestSn.DrawHistograms("SnUrgent");
-    monTestCu.SaveHistRoot("janCu_test");
-    monTestCu.DrawHistograms("CuUrgent");
-    monSimC2.SaveHistRoot("marC2_sim");
-    monSimC2.DrawHistograms("monC2_sim");
-    cratC2.WriteDebugHistos("cosdebug.root");
-    std::cout << "//========= Simulation C2 ==========//  \n";
-
-    ratC2.calcR();  
-    ratSn.calcR();
-    ratCu.calcR();
-    dptC2.calcDpt();
-    dptSn.calcDpt();
-    dptCu.calcDpt();
-    cratC2.calcCratio();
-    cratSn.calcCratio();
-    cratCu.calcCratio();
-
-    //sratC2.calcSratio();
-    
-
-    ratC2.multiplotR(ratSn);
-    ratSn.multiplotR(ratCu, ratC2);
-    dptSn.multiplotDpt(dptCu, dptC2);
-    cratSn.multiplotCratio(cratCu, cratC2);
-    cratC2.calcCratioCarbon(cratC1);
-    cratC2.multiplotCratioBis();
-    
-    std::cout << "//========= Validations ==========//  \n";
-    ratC2.ValidateHistograms();
-    ratC2.LogBinContent();
 
     return 0;
 }
