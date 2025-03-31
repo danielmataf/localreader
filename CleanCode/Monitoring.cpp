@@ -61,6 +61,10 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_xQ2(new TH2F(("xQ2_" + targetName).c_str(), "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
     h_xQ2pos(new TH2F(("xQ2pos_" + targetName).c_str(), "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
     h_pt2z(new TH2F(("pt2z_" + targetName).c_str(), "pt2z", nubin, pt2minX, pt2maxX, nubin, zminX, zmaxX)),
+    h_thetaP_el(new TH2F(("thetaP_el_" + targetName).c_str(), "thetaP_el",  nubin, 0, 10, nubin, 0, 30)),
+    h_phiP_el(new TH2F(("phiP_el_" + targetName).c_str(), "phiP_el", nubin,  0, 10,nubin, 0, 360)),
+    h_thetaP_had(new TH2F(("thetaP_had_" + targetName).c_str(), "thetaP_had", nubin, 0, 7,  nubin, 0, 100)),
+    h_phiP_had(new TH2F(("phiP_had_" + targetName).c_str(), "phiP_had", nubin, 0, 7, nubin, 0, 360)),
     h_px_el(new TH1F(("px_ele_" + targetName).c_str(), "px_ele", nubin, 0, 10)),
     h_py_el(new TH1F(("py_ele_" + targetName).c_str(), "py_ele", nubin, 0, 10)),
     h_pz_el(new TH1F(("pz_ele_" + targetName).c_str(), "pz_ele", nubin, 0, 10)),
@@ -117,6 +121,12 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_phi_el_sec6(new TH1F(("phi_el_sec6_" + targetName).c_str(), "phi_el_sec6", 100, 0, 360)),    
       counterel_R(0) {
     // Add more histograms as needed
+        for (int s = 0; s < 6; ++s) {
+        h_phi_res[s] = new TH1F(Form("phi_res_s%d_%s", s + 1, targetName.c_str()), 
+                                Form("Phi Resolution Sector %d", s + 1), 100, -5, 5);
+        h_theta_res[s] = new TH1F(Form("theta_res_s%d_%s", s + 1, targetName.c_str()), 
+                                  Form("Theta Resolution Sector %d", s + 1), 100, -5, 5);
+    }
 }
 
 
@@ -153,6 +163,7 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
         h_Nphe15->Fill(event.electron.Getnphe15());
         h_Nphe16->Fill(event.electron.Getnphe16());
         h_calSector->Fill(event.electron.GetCalSector());
+
         if (event.electron.GetCalSector()==1){
             h_theta_el_sec1->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
             h_phi_el_sec1->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180);
@@ -180,6 +191,13 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
         h_helicity->Fill(event.GetHel());
         h_helicity_raw->Fill(event.GetHelRaw());
         if (cut1.PassCutsElectrons(event)==true) {
+            int sec = event.electron.GetCalSector();
+            if (sec >= 1 && sec <= 6) {
+                int s = sec - 1;
+                theta_sector[s].push_back(event.electron.GetMomentum().Theta() * 180 / Constants::PI);
+                phi_sector[s].push_back(event.electron.GetMomentum().Phi() * 180 / Constants::PI + 180);
+            }
+
             // Fill Electron variable histograms after cuts on electron
             h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detected !!!!
                                                 //add Vz for the hadron too
@@ -208,7 +226,8 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
         h_lv->Fill(event.electron.Getlv());
         h_lw->Fill(event.electron.Getlw());
             h_luthetael->Fill(event.electron.Getlu(), event.electron.GetMomentum().Theta()*180/Constants::PI);
-
+            h_thetaP_el->Fill( event.electron.GetMomentum().P(), event.electron.GetMomentum().Theta()*180/Constants::PI);
+            h_phiP_el->Fill( event.electron.GetMomentum().P(), event.electron.GetMomentum().Phi()*180/Constants::PI +180);
             for (const Particle& hadron : event.GetHadrons()) {
                 if (cut1.PassCutsHadrons(hadron)==true){
 
@@ -237,6 +256,8 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
                         h_helicity->Fill(event.GetHel());
                         h_helicity_raw->Fill(event.GetHelRaw());
                         h_chi2_pid_pi->Fill(hadron.Getchi2(),  (event.electron.GetEpcal()/event.electron.GetMomentum().P()) );
+                        h_thetaP_had->Fill( hadron.GetMomentum().P(), hadron.GetMomentum().Theta()*180/Constants::PI);
+                        h_phiP_had->Fill( hadron.GetMomentum().P(), hadron.GetMomentum().Phi()*180/Constants::PI +180);
 
                     }
                 }
@@ -343,6 +364,17 @@ void Monitoring::FillHistogramsNoCutsMC(const Event& event) {
 
 }
 */
+void Monitoring::FillResolutionFrom(Monitoring& other) {
+    for (int s = 0; s < 6; ++s) {
+        size_t N = std::min(this->phi_sector[s].size(), other.phi_sector[s].size());
+        for (size_t i = 0; i < N; ++i) {
+            float dphi = this->phi_sector[s][i] - other.phi_sector[s][i];
+            float dtheta = this->theta_sector[s][i] - other.theta_sector[s][i];
+            h_phi_res[s]->Fill(dphi);
+            h_theta_res[s]->Fill(dtheta);
+        }
+    }
+}
 void Monitoring::FillHistogramsNoCuts(const Event& event) {
     // Fill histograms with no cuts
     h_calXY->Fill(event.electron.GetCalX(), event.electron.GetCalY());
@@ -668,45 +700,28 @@ void Monitoring::DrawHistograms(const std::string filename) {
     canvas.Divide(3, 3);
 
     canvas.cd(1);
-    h_Q2->SetTitle("Q^{2} Distribution");
-    h_Q2->GetXaxis()->SetTitle("Q^{2} (GeV^{2})");
-    h_Q2->GetXaxis()->SetRangeUser(0, 5);
-    h_Q2->SetMinimum(0);
-    h_Q2->Draw("hist");
-    TLine *line_Q2bis = new TLine(Constants::RcutminQ, h_Q2->GetMinimum(), Constants::RcutminQ, h_Q2->GetMaximum());
-    line_Q2bis->SetLineStyle(2);
-    line_Q2bis->Draw();
-
+    
+    h_thetaP_el->SetTitle("\\theta vs P_{el}");
+    h_thetaP_el->GetXaxis()->SetTitle("P_{el} (GeV)");
+    h_thetaP_el->GetYaxis()->SetTitle("\\theta (deg)");
+    h_thetaP_el->Draw("COLZ");
     canvas.cd(2);
-    h_xb->SetTitle("x_{B} Distribution");
-    h_xb->GetXaxis()->SetTitle("x_{B}");
-    h_xb->GetXaxis()->SetRangeUser(0, 0.6);
-    h_xb->SetMinimum(0);
-    h_xb->Draw("hist");
-
+    h_phiP_el->SetTitle("\\phi vs P_{el}");
+    h_phiP_el->GetXaxis()->SetTitle("P_{el} (GeV)");
+    h_phiP_el->GetYaxis()->SetTitle("\\phi (deg)");
+    h_phiP_el->Draw("COLZ");
     canvas.cd(3);
-    h_z->SetTitle("z Distribution");
-    h_z->GetXaxis()->SetTitle("z");
-    h_z->SetMinimum(0);
-    h_z->Draw("hist");
-    TLine *line_zbis = new TLine(Constants::RcutminZ, h_z->GetMinimum(), Constants::RcutminZ, h_z->GetMaximum());
-    TLine *line_zmaxbis = new TLine(Constants::RcutmaxZ, h_z->GetMinimum(), Constants::RcutmaxZ, h_z->GetMaximum());
-    line_zbis->SetLineStyle(2);
-    line_zmaxbis->SetLineStyle(2);
-    line_zbis->Draw();
-    line_zmaxbis->Draw();
-
+    h_thetaP_had->SetTitle("\\theta vs P_{\\pi^{+}}");
+    h_thetaP_had->GetXaxis()->SetTitle("P_{\\pi^{+}} (GeV)");
+    h_thetaP_had->GetYaxis()->SetTitle("\\theta (deg)");
+    h_thetaP_had->Draw("COLZ");
     canvas.cd(4);
-    h_pt2->SetTitle("p_{t}^{2} Distribution");
-    h_pt2->GetXaxis()->SetTitle("p_{t}^{2} (GeV^{2})");
-    h_pt2->SetMinimum(0);
-    h_pt2->Draw("hist");
-    TLine *line_pt2bis = new TLine(Constants::RcutminPt2, h_pt2->GetMinimum(), Constants::RcutminPt2, h_pt2->GetMaximum());
-    TLine *line_pt2maxbis = new TLine(Constants::RcutmaxPt2, h_pt2->GetMinimum(), Constants::RcutmaxPt2, h_pt2->GetMaximum());
-    line_pt2bis->SetLineStyle(2);
-    line_pt2maxbis->SetLineStyle(2);
-    line_pt2bis->Draw();
-    line_pt2maxbis->Draw();
+    h_phiP_had->SetTitle("\\phi vs P_{\\pi^{+}}");
+    h_phiP_had->GetXaxis()->SetTitle("P_{\\pi^{+}} (GeV)");
+    h_phiP_had->GetYaxis()->SetTitle("\\phi (deg)");    
+    h_phiP_had->Draw("COLZ");
+
+
 
     canvas.cd(5);
     h_xQ2->SetTitle("x_{B} vs Q^{2}");
@@ -719,6 +734,7 @@ void Monitoring::DrawHistograms(const std::string filename) {
     h_pt2z->GetXaxis()->SetTitle("p_{t}^{2} (GeV^{2})");
     h_pt2z->GetYaxis()->SetTitle("z");
     h_pt2z->Draw("COLZ");
+
 
 //    canvas.cd(7);
 //    h_thetaelectron->SetTitle("Theta Electron");
@@ -734,6 +750,24 @@ void Monitoring::DrawHistograms(const std::string filename) {
 
     // Save the second page and close the PDF
     canvas.Print((filename + ".pdf)").c_str()); // Close the PDF
+    TCanvas* cres = new TCanvas(("phi_res_canvas_" + targetName).c_str(), "Phi Res", 1200, 800);
+cres->Divide(3, 2);
+for (int s = 0; s < 6; ++s) {
+    cres->cd(s + 1);
+    h_phi_res[s]->SetLineColor(kBlue);
+    h_phi_res[s]->GetXaxis()->SetRangeUser(-1, 1);
+    h_phi_res[s]->Draw("hist");
+}
+cres->SaveAs(("phi_res_canvas_" + targetName + ".pdf").c_str());
+
+TCanvas* ctheta = new TCanvas(("theta_res_canvas_" + targetName).c_str(), "Theta Res", 1200, 800);
+ctheta->Divide(3, 2);
+for (int s = 0; s < 6; ++s) {
+    ctheta->cd(s + 1);
+    h_theta_res[s]->SetLineColor(kRed);
+    h_theta_res[s]->Draw("hist");
+}
+ctheta->SaveAs(("theta_res_canvas_" + targetName + ".pdf").c_str());
 }
 
 
@@ -1424,6 +1458,10 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     h_chi2_pid_pi->Write();
     h_luthetael->Write();
     h_sampl_el->Write();
+    h_thetaP_el->Write();
+    h_phiP_el->Write();
+    h_thetaP_had->Write();
+    h_phiP_had->Write();
 
 
     rootFile->Close();

@@ -195,10 +195,20 @@ int main() {
     for (int s = 0; s < 6; ++s) {
         c.cd(s + 1);
         h_phi_res[s]->GetXaxis()->SetRangeUser(-1, 1);
+        h_phi_res[s]->GetYaxis()->SetRangeUser(0, h_theta_res[s]->GetMaximum() * 1.1);
         h_phi_res[s]->SetLineColor(kBlue);
         h_phi_res[s]->Draw("hist");
     }
     c.SaveAs("phi_resolution_per_sector.pdf");
+    TCanvas c_theta("theta_res_canvas", "Theta Resolutions", 1200, 800);
+    c_theta.Divide(3, 2);
+    for (int s = 0; s < 6; ++s) {
+        c_theta.cd(s + 1);
+        h_theta_res[s]->SetLineColor(kRed);
+        h_theta_res[s]->GetYaxis()->SetRangeUser(0, h_theta_res[s]->GetMaximum() * 1.1);
+        h_theta_res[s]->Draw("hist");
+    }
+    c_theta.SaveAs("theta_resolution_per_sector.pdf");
     monTestC2.SaveHistRoot("janC2_test");
     monTestC2.DrawHistograms("monC2_test");
     monTestSn.SaveHistRoot("janSn_test");

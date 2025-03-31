@@ -23,6 +23,7 @@ public:
     void FillHistogramsNoCuts( const Event&);
     void FillHistogramswCuts(const Event& );
     void FillHistogramsNoCutsMC(const Event& ); 
+    void FillResolutionFrom(Monitoring& other);
 
 
     void FillMomentumHistograms(const Event& );
@@ -127,6 +128,12 @@ private:
 
     TH2F *h_pt2z; //= new TH2F("pt2z", "pt2z", nubin, pt2minX, pt2maxX, nubin, zminX, zmaxX) ;
     
+
+    //define 2D histogrrams that compare coordinates theta and phi versus electron and hadron momenta (in X axis)
+    TH2F *h_thetaP_el;
+    TH2F *h_phiP_el;
+    TH2F *h_thetaP_had;
+    TH2F *h_phiP_had;
 
     TH1F *h_thetaelectron;
     TH1F *h_rapport;
@@ -244,7 +251,11 @@ private:
     TH1F *h_phi_el_sec4;
     TH1F *h_phi_el_sec5;
     TH1F *h_phi_el_sec6;
+std::vector<float> theta_sector[6];
+std::vector<float> phi_sector[6];
 
+TH1F* h_phi_res[6];
+TH1F* h_theta_res[6];
 
 
 
