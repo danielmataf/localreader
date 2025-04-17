@@ -27,9 +27,13 @@ public:
     //void DrawHistograms(const std::string);
     void FillHistograms(const Event& );
     void WriteHistos(const std::string );
+    void FillDebug(const Event& ev, bool isDeuterium);
+    void WriteDebugHistos(const std::string& filename);
     void DrawHistos(Ratio& );
     void calcR();   //has been pretty much unchanged for a while now 
     void calcRin5D();   //Dont forget to make an output in txt ig 
+    void calcR_xB_Q2_z(); //RE variables for the ratio
+    void saveRhistos();
     //void calcRcarbon() ;        //new
     void DrawSelfHistos(Ratio& ); //new
 
@@ -87,9 +91,9 @@ private:
     int nubin = 100;
     int phibin= 10;
     int Rbin = Constants::Rbin_nu   ;
-    int Rbin_nu  = 5   ;
-    int Rbin_z   = 5   ;
-    int Rbin_pt2 = 5   ;
+    int Rbin_nu  = 6   ;
+    int Rbin_z   = 6   ;
+    int Rbin_pt2 = 6   ;
     
     int Qbin  ;  //=  
     int vbin  ;  //=  
@@ -186,6 +190,15 @@ private:
     TH1F *h_nu_D_had;
     TH1F *h_pt2_D_had;
 
+    //histos for new analysis with new variables 
+    TH2F *h_xB_Q2_D;
+    TH3F *h_xB_Q2_z_D;
+    TH2F *h_xB_Q2_A;
+    TH3F *h_xB_Q2_z_A;
+
+
+
+
 
     //histos for 5D calc 
     private:
@@ -207,6 +220,10 @@ private:
     
     std::vector<std::vector<std::vector<double>>> ratMatrixbis;    //three vectors for 3D matrix
     std::vector<std::vector<std::vector<double>>> errorMatrixbis;
+
+    //new matrixes for variables x,Q,z
+    std::vector<std::vector<std::vector<double>>> ratMatrix_xB;    //three vectors for 3D matrix
+    std::vector<std::vector<std::vector<double>>> errorMatrix_xB;
 
     //storage for the 5D ratio points 
     //(Q2, xb, nu, z, pt2)

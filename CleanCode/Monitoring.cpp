@@ -750,24 +750,26 @@ void Monitoring::DrawHistograms(const std::string filename) {
 
     // Save the second page and close the PDF
     canvas.Print((filename + ".pdf)").c_str()); // Close the PDF
-    TCanvas* cres = new TCanvas(("phi_res_canvas_" + targetName).c_str(), "Phi Res", 1200, 800);
-cres->Divide(3, 2);
-for (int s = 0; s < 6; ++s) {
-    cres->cd(s + 1);
-    h_phi_res[s]->SetLineColor(kBlue);
-    h_phi_res[s]->GetXaxis()->SetRangeUser(-1, 1);
-    h_phi_res[s]->Draw("hist");
-}
-cres->SaveAs(("phi_res_canvas_" + targetName + ".pdf").c_str());
 
-TCanvas* ctheta = new TCanvas(("theta_res_canvas_" + targetName).c_str(), "Theta Res", 1200, 800);
-ctheta->Divide(3, 2);
-for (int s = 0; s < 6; ++s) {
-    ctheta->cd(s + 1);
-    h_theta_res[s]->SetLineColor(kRed);
-    h_theta_res[s]->Draw("hist");
-}
-ctheta->SaveAs(("theta_res_canvas_" + targetName + ".pdf").c_str());
+
+///    TCanvas* cres = new TCanvas(("phi_res_canvas_" + targetName).c_str(), "Phi Res", 1200, 800);
+///cres->Divide(3, 2);
+///for (int s = 0; s < 6; ++s) {
+///    cres->cd(s + 1);
+///    h_phi_res[s]->SetLineColor(kBlue);
+///    h_phi_res[s]->GetXaxis()->SetRangeUser(-1, 1);
+///    h_phi_res[s]->Draw("hist");
+///}
+///cres->SaveAs(("phi_res_canvas_" + targetName + ".pdf").c_str());
+///
+///TCanvas* ctheta = new TCanvas(("theta_res_canvas_" + targetName).c_str(), "Theta Res", 1200, 800);
+///ctheta->Divide(3, 2);
+///for (int s = 0; s < 6; ++s) {
+///    ctheta->cd(s + 1);
+///    h_theta_res[s]->SetLineColor(kRed);
+///    h_theta_res[s]->Draw("hist");
+///}
+///ctheta->SaveAs(("theta_res_canvas_" + targetName + ".pdf").c_str());
 }
 
 

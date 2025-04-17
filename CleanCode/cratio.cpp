@@ -230,6 +230,21 @@ void cratio::calcCratio() {
     int numBinsX = h_wD_Cratio->GetNbinsX();
     int numBinsY = h_wD_Cratio->GetNbinsY();
     int numBinsZ = h_wD_Cratio->GetNbinsZ();
+    system("mkdir -p ../Cratiovalues");
+    std::ofstream valOut("../Cratiovalues/CratioVal_" + targetName + ".txt");
+    std::ofstream errOut("../Cratiovalues/CratioErr_" + targetName + ".txt");
+
+    TH3D* h_cratioMatrix = new TH3D(("h_cratioMatrix_" + targetName).c_str(),
+                                    ("Cratio Matrix " + targetName).c_str(),
+                                    numBinsX, h_wD_Cratio->GetXaxis()->GetXmin(), h_wD_Cratio->GetXaxis()->GetXmax(),
+                                    numBinsY, h_wD_Cratio->GetYaxis()->GetXmin(), h_wD_Cratio->GetYaxis()->GetXmax(),
+                                    numBinsZ, h_wD_Cratio->GetZaxis()->GetXmin(), h_wD_Cratio->GetZaxis()->GetXmax());
+
+    TH3D* h_cratioErrMatrix = new TH3D(("h_cratioErrMatrix_" + targetName).c_str(),
+                                       ("Cratio Error Matrix " + targetName).c_str(),
+                                       numBinsX, h_wD_Cratio->GetXaxis()->GetXmin(), h_wD_Cratio->GetXaxis()->GetXmax(),
+                                       numBinsY, h_wD_Cratio->GetYaxis()->GetXmin(), h_wD_Cratio->GetYaxis()->GetXmax(),
+                                       numBinsZ, h_wD_Cratio->GetZaxis()->GetXmin(), h_wD_Cratio->GetZaxis()->GetXmax());
 
     std::cout << "\n=== Calculating <cos(phih_h)> for A and D ===" << std::endl;
     std::cout << "X_bin\tY_bin\tZ_bin\t<cos(phih_h)>_A\t<cos(phih_h)>_D\tRatio" << std::endl;
@@ -263,7 +278,11 @@ void cratio::calcCratio() {
                     Cratio_point * sqrt(pow(Err_valA / wavg_CosPhiA, 2) + pow(Err_valD / wavg_CosPhiD, 2)) : 0.0;
 
                 errorCratioMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = Err_Cratio_point;
+                valOut << Xbin << " " << Ybin << " " << Zbin << " " << Cratio_point << "\n";
+                errOut << Xbin << " " << Ybin << " " << Zbin << " " << Err_Cratio_point << "\n";
 
+                h_cratioMatrix->SetBinContent(Xbin, Ybin, Zbin, Cratio_point);
+                h_cratioErrMatrix->SetBinContent(Xbin, Ybin, Zbin, Err_Cratio_point);
                 // print in terminal
                 std::cout << Xbin << "\t" << Ybin << "\t" << Zbin << "\t"
                           << std::fixed << std::setprecision(4) << wavg_CosPhiA << "\t"
@@ -275,10 +294,51 @@ void cratio::calcCratio() {
             }
         }
     }
+    TFile* fout = new TFile(("../Cratiovalues/Cratio_" + targetName + ".root").c_str(), "RECREATE");
+    h_cratioMatrix->Write();
+    h_cratioErrMatrix->Write();
+    fout->Close();
+
+    valOut.close();
+    errOut.close();
+
     std::cout << "=== Calculation Complete ===\n" << std::endl;
 }
 
 
+void cratio::saveCratioHistos() {
+    //Add here the histograms to be saved as we add them in the filling function. EVERYTHING needs to be here 
+    system("mkdir -p ../CratioInputFiles");
+    std::string outPath = "../CratioInputFiles/CratioHist_" + targetName + ".root";
+    TFile* fout = new TFile(outPath.c_str(), "RECREATE");
+
+    // Metadata
+    TNamed* tname = new TNamed("targetName", targetName.c_str());
+    tname->Write();
+
+    // Write standard 3D histograms (xB, Q², z)
+    if (h_wD_Cratio)        { h_wD_Cratio->SetName(("wCphi_D_" + targetName).c_str()); h_wD_Cratio->Write(); }
+    if (h_wA_Cratio)        { h_wA_Cratio->SetName(("wCphi_A_" + targetName).c_str()); h_wA_Cratio->Write(); }
+    if (h_wD_sqCratio)      { h_wD_sqCratio->SetName(("sqCphi_D_" + targetName).c_str()); h_wD_sqCratio->Write(); }
+    if (h_wA_sqCratio)      { h_wA_sqCratio->SetName(("sqCphi_A_" + targetName).c_str()); h_wA_sqCratio->Write(); }
+    if (h_D_Cratio3D)       { h_D_Cratio3D->SetName(("cphi_3D_D_" + targetName).c_str()); h_D_Cratio3D->Write(); }
+    if (h_A_Cratio3D)       { h_A_Cratio3D->SetName(("cphi_3D_A_" + targetName).c_str()); h_A_Cratio3D->Write(); }
+
+    // Write resolution-enhanced histograms (nu, z, pt²)
+    if (h_wD_CratioRE)      { h_wD_CratioRE->SetName(("wCphiRE_D_" + targetName).c_str()); h_wD_CratioRE->Write(); }
+    if (h_wA_CratioRE)      { h_wA_CratioRE->SetName(("wCphiRE_A_" + targetName).c_str()); h_wA_CratioRE->Write(); }
+    if (h_wD_sqCratioRE)    { h_wD_sqCratioRE->SetName(("sqCphiRE_D_" + targetName).c_str()); h_wD_sqCratioRE->Write(); }
+    if (h_wA_sqCratioRE)    { h_wA_sqCratioRE->SetName(("sqCphiRE_A_" + targetName).c_str()); h_wA_sqCratioRE->Write(); }
+    if (h_D_Cratio3DRE)     { h_D_Cratio3DRE->SetName(("cphi3DRE_D_" + targetName).c_str()); h_D_Cratio3DRE->Write(); }
+    if (h_A_Cratio3DRE)     { h_A_Cratio3DRE->SetName(("cphi3DRE_A_" + targetName).c_str()); h_A_Cratio3DRE->Write(); }
+
+    // Write nu distributions for normalization/debug
+    if (hCratio_nuD)        { hCratio_nuD->SetName(("nu_D_" + targetName).c_str()); hCratio_nuD->Write(); }
+    if (hCratio_nuA)        { hCratio_nuA->SetName(("nu_A_" + targetName).c_str()); hCratio_nuA->Write(); }
+
+    fout->Close();
+    std::cout << "[saveCratioHistos] Cratio histograms saved to " << outPath << std::endl;
+}
 
 
     TH3F* cratio::getHwA(){

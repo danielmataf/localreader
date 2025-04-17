@@ -23,6 +23,8 @@ public:
     void calcCratio();
     void calcCratioCarbon( cratio& ) ; //this fct for self carbon ratio. 
     void multiplotCratioBis();  // this 4 plots self ratio CC
+    void saveCratioHistos();
+
 
     //void PlotCratio(const std::string );
     void writeMatrixToFile(const std::string& );

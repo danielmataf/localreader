@@ -25,6 +25,8 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     errorMatrix(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
     ratMatrixbis(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
     errorMatrixbis(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
+    ratMatrix_xB(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
+    errorMatrix_xB(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
 
     //histos after passcuthadrons 
     //h_nu_z_pt2D(new TH3F("nu,z,pt2,D", "histo nu,z,pt2 for D", Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu , Constants::Rbin_z ,Constants::RcutminZ, Constants::RcutmaxZ, Constants::Rbin_pt2 , Constants::RcutminPt2, Constants::RcutmaxPt2  )),
@@ -45,7 +47,11 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     h_pt2_D_had(new TH1F(("pt2_D_had"+targetName).c_str(), ("pt2_D_had"+targetName).c_str(), Constants::Rbin_pt2 , Constants::RcutminPt2 , Constants::RcutmaxPt2)),
     h_pt2_A_had(new TH1F(("pt2_A_had"+targetName).c_str(), ("pt2_A_had"+targetName).c_str(), Constants::Rbin_pt2 , Constants::RcutminPt2 , Constants::RcutmaxPt2)),
     //double binEdges[7];  // 6 bins means 7 edges
-    
+    h_xB_Q2_D (new TH2F(("xB_Q2_D"+targetName).c_str(), ("xB_Q2_D"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminx , Constants::Rcutmaxx, Constants::Rbin_nu , Constants::RcutminQ , Constants::RcutmaxQ)),
+    h_xB_Q2_z_D (new TH3F(("xB_Q2_z_D"+targetName).c_str(), ("xB_Q2_z_D"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminx , Constants::Rcutmaxx, Constants::Rbin_nu , Constants::RcutminQ , Constants::RcutmaxQ, Constants::Rbin_z , Constants::RcutminZ , Constants::RcutmaxZ)),
+    h_xB_Q2_A (new TH2F(("xB_Q2_A"+targetName).c_str(), ("xB_Q2_A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminx , Constants::Rcutmaxx, Constants::Rbin_nu , Constants::RcutminQ , Constants::RcutmaxQ)),
+    h_xB_Q2_z_A (new TH3F(("xB_Q2_z_A"+targetName).c_str(), ("xB_Q2_z_A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminx , Constants::Rcutmaxx, Constants::Rbin_nu , Constants::RcutminQ , Constants::RcutmaxQ, Constants::Rbin_z , Constants::RcutminZ , Constants::RcutmaxZ)),
+
     h_nuC1(new TH1F(("nu_C1"+targetName).c_str(), ("nu_C1"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)), 
     h_nuC2(new TH1F(("nu_C2"+targetName).c_str(), ("nu_C2"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu))
 
@@ -88,6 +94,7 @@ void Ratio::FillHistograms(const Event& event) {
         counter_elLD2 ++;
         //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
         h_nuD->Fill(event.Getnu());
+        h_xB_Q2_D->Fill(event.GetQ2(), event.Getxb());
         //h_3D_D_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
         //std::cout << "nu = " << event.Getnu() << std::endl; /bump
         for (const Particle& hadron : event.GetHadrons()) {
@@ -100,6 +107,8 @@ void Ratio::FillHistograms(const Event& event) {
                 h_pt2_D_had->Fill(hadron.Getpt2()); //these  histos  added to to track binning switch
                 //h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
 
+                h_xB_Q2_z_D->Fill(event.GetQ2(), event.Getxb(), hadron.Getz());
+
             //std::cout << "nimporte quoi" << event.Getnu()<< ";" << hadron.Getz()<<","<< hadron.Getpt2() <<std::endl;
                 //}
             }
@@ -109,6 +118,7 @@ void Ratio::FillHistograms(const Event& event) {
         counter_elSn++; //counter for only electrons for z and pt
         //here change the else if to just else in order to have a generic target 
         h_nuA->Fill(event.Getnu()); //can be plotted just like this 
+        h_xB_Q2_A->Fill(event.GetQ2(), event.Getxb());
         //h_3D_A_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
         //if (targetName == "C1"){
         //    h_nuC1->Fill(event.Getnu());
@@ -135,6 +145,7 @@ void Ratio::FillHistograms(const Event& event) {
                 //}
             //std::cout << "nimporte quoi N" << event.Getnu()<< ";" << hadron.Getz()<<","<< hadron.Getpt2() <<std::endl;
                 //}
+                h_xB_Q2_z_A->Fill(event.GetQ2(), event.Getxb(), hadron.Getz());
             }
         }
         //Add Here Cu && change cut for Sn here. 1st cut is passelectrons 
@@ -149,6 +160,50 @@ void Ratio::FillHistograms(const Event& event) {
     //Add CxC
 
 }
+void Ratio::saveRhistos() {
+    system("mkdir -p ../RinputFiles");
+    std::string outPath = "../RinputFiles/Rhist_" + targetName + ".root";
+    TFile* fout = new TFile(outPath.c_str(), "RECREATE");
+
+    // Rename histograms with underscores for consistency
+    if (h_nu_z_pt2D) {
+        h_nu_z_pt2D->SetName(("nu_z_pt2_D_" + targetName).c_str());
+        h_nu_z_pt2D->Write();
+    }
+    if (h_nu_z_pt2A) {
+        h_nu_z_pt2A->SetName(("nu_z_pt2_A_" + targetName).c_str());
+        h_nu_z_pt2A->Write();
+    }
+    if (h_nuD) {
+        h_nuD->SetName(("nu_D_" + targetName).c_str());
+        h_nuD->Write();
+    }
+    if (h_nuA) {
+        h_nuA->SetName(("nu_A_" + targetName).c_str());
+        h_nuA->Write();
+    }
+
+    // These are optional extra monitoring histograms, keep them with renamed versions
+    if (h_nu_A_had)  { h_nu_A_had->SetName(("nu_A_had" + targetName).c_str()); h_nu_A_had->Write(); }
+    if (h_z_A_had)   { h_z_A_had->SetName(("z_A_had" + targetName).c_str()); h_z_A_had->Write(); }
+    if (h_pt2_A_had) { h_pt2_A_had->SetName(("pt2_A_had" + targetName).c_str()); h_pt2_A_had->Write(); }
+    if (h_nu_D_had)  { h_nu_D_had->SetName(("nu_D_had" + targetName).c_str()); h_nu_D_had->Write(); }
+    if (h_z_D)       { h_z_D->SetName(("z_D_" + targetName).c_str()); h_z_D->Write(); }
+    if (h_pt2_D_had) { h_pt2_D_had->SetName(("pt2_D_had" + targetName).c_str()); h_pt2_D_had->Write(); }
+    if (h_xB_Q2_D)   { h_xB_Q2_D->SetName(("xB_Q2_D" + targetName).c_str()); h_xB_Q2_D->Write(); }
+    if (h_xB_Q2_A)   { h_xB_Q2_A->SetName(("xB_Q2_A" + targetName).c_str()); h_xB_Q2_A->Write(); }
+    if (h_xB_Q2_z_D) { h_xB_Q2_z_D->SetName(("xB_Q2_z_D" + targetName).c_str()); h_xB_Q2_z_D->Write(); }
+    if (h_xB_Q2_z_A) { h_xB_Q2_z_A->SetName(("xB_Q2_z_A" + targetName).c_str()); h_xB_Q2_z_A->Write(); }
+
+    // Save the target name for metadata
+    TNamed* tname = new TNamed("targetName", targetName.c_str());
+    tname->Write();
+
+    fout->Close();
+    std::cout << "Saved input histograms for Ratio in file: " << outPath << std::endl;
+}
+
+
 
 void Ratio::DrawHistos(Ratio& ratioOther ){
     //this is only to monitor the nu histograms for self ratio 
@@ -249,6 +304,25 @@ void Ratio::calcR(){
     std::cout << "numBinsX = " << numBinsX << std::endl;
     std::cout << "numBinsY = " << numBinsY << std::endl;
     std::cout << "numBinsZ = " << numBinsZ << std::endl;
+
+    //if it does not exist create an output dir
+    system("mkdir -p ../Rvalues");
+
+    //creating output files
+    std::ofstream valOut("../Rvalues/Rval" + targetName + "_val.txt");
+    std::ofstream errOut("../Rvalues/Rval" + targetName + "_err.txt");
+
+    //root histos (?)
+    TH3D* h_ratMatrix = new TH3D(("h_ratMatrix_" + targetName).c_str(), ("Ratio Matrix " + targetName).c_str(),
+                                 numBinsX, h_nu_z_pt2D->GetXaxis()->GetXmin(), h_nu_z_pt2D->GetXaxis()->GetXmax(),
+                                 numBinsY, h_nu_z_pt2D->GetYaxis()->GetXmin(), h_nu_z_pt2D->GetYaxis()->GetXmax(),
+                                 numBinsZ, h_nu_z_pt2D->GetZaxis()->GetXmin(), h_nu_z_pt2D->GetZaxis()->GetXmax());
+
+    TH3D* h_errMatrix = new TH3D(("h_errMatrix_" + targetName).c_str(), ("Error Matrix " + targetName).c_str(),
+                                 numBinsX, h_nu_z_pt2D->GetXaxis()->GetXmin(), h_nu_z_pt2D->GetXaxis()->GetXmax(),
+                                 numBinsY, h_nu_z_pt2D->GetYaxis()->GetXmin(), h_nu_z_pt2D->GetYaxis()->GetXmax(),
+                                 numBinsZ, h_nu_z_pt2D->GetZaxis()->GetXmin(), h_nu_z_pt2D->GetZaxis()->GetXmax());
+
     for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {  
         double val_nuelD = h_nuD->GetBinContent(Xbin); 
         //std :: cout << "val_nuelD = " << val_nuelD << std::endl;  
@@ -280,6 +354,11 @@ void Ratio::calcR(){
 
                 errorMatrix[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
                 //std::cout << "raterr = " << raterr << std::endl;
+                valOut << Xbin << " " << Ybin << " " << Zbin << " " << ratvalue << "\n";
+                errOut << Xbin << " " << Ybin << " " << Zbin << " " << raterr << "\n";
+
+                h_ratMatrix->SetBinContent(Xbin, Ybin, Zbin, ratvalue);
+                h_errMatrix->SetBinContent(Xbin, Ybin, Zbin, raterr);
             }
         }
 
@@ -288,6 +367,16 @@ void Ratio::calcR(){
 	//	//	
     }   
     //std::cout << "total counter_3D = " << counter_3D << std::endl;
+    //root file close
+    TFile* fout = new TFile(("../Rvalues/Rval" + targetName + ".root").c_str(), "RECREATE");
+    h_ratMatrix->Write();
+    h_errMatrix->Write();
+    fout->Close();
+    //txt file close
+    valOut.close();
+    errOut.close();
+
+    std::cout << "Ratio matrices saved to Rvalues/Rval for tag = " << targetName << std::endl;
 }
 
 /*
@@ -337,6 +426,34 @@ void Ratio::calcRin5D() {
     }
 }
 */
+
+
+void Ratio::calcR_xB_Q2_z() {
+    //thisi is a new function with new variables to check behavior on mostly Q and x
+    int numBinsX = h_xB_Q2_z_D->GetNbinsX();
+    int numBinsY = h_xB_Q2_z_D->GetNbinsY();
+    int numBinsZ = h_xB_Q2_z_D->GetNbinsZ();
+
+    for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {
+        double val_xB_elD = h_xB_Q2_D->GetBinContent(Xbin);
+        double val_xB_elA = h_xB_Q2_A->GetBinContent(Xbin);
+
+        for (int Ybin = 1; Ybin <= numBinsY; Ybin++) {
+            for (int Zbin = 1; Zbin <= numBinsZ; Zbin++) {
+                double valD = h_xB_Q2_z_D->GetBinContent(Xbin, Ybin, Zbin);
+                double valA = h_xB_Q2_z_A->GetBinContent(Xbin, Ybin, Zbin);
+
+                double interm1xB = (val_xB_elA > 0) ? valA / val_xB_elA : 0.0;
+                double interm2xB = (val_xB_elD > 0) ? valD / val_xB_elD : 0.0;
+                double ratvalue = (interm2xB > 0) ? interm1xB / interm2xB : 0.0;
+                double raterr = ratvalue * sqrt(1 / valA + 1 / valD + 1 / val_xB_elA + 1 / val_xB_elD);
+
+                ratMatrix_xB[Xbin - 1][Ybin - 1][Zbin - 1] = ratvalue;
+                errorMatrix_xB[Xbin - 1][Ybin - 1][Zbin - 1] = raterr;
+            }
+        }
+    }
+}
 
 
 TH1F* Ratio::getHNuA() {

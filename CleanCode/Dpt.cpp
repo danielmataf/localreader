@@ -146,14 +146,53 @@ void deltaptsq::FillHistograms(const Event& event) {
     }
 }
 
+
+void deltaptsq::saveDptHistos()  {
+    //ADD here EVERY histo filled in the filling function. 
+    system("mkdir -p ../DptinputFiles");
+    std::string outPath = "../DptinputFiles/Dhist_" + targetName + ".root";
+    TFile* fout = new TFile(outPath.c_str(), "RECREATE");
+
+    if (hDpt_nuD) { hDpt_nuD->SetName(("nu_D_" + targetName).c_str()); hDpt_nuD->Write(); }
+    if (hDpt_nuA) { hDpt_nuA->SetName(("nu_A_" + targetName).c_str()); hDpt_nuA->Write(); }
+    if (h_D_onlypt2) { h_D_onlypt2->SetName(("pt2_D_only_" + targetName).c_str()); h_D_onlypt2->Write(); }
+    if (h_A_onlypt2) { h_A_onlypt2->SetName(("pt2_A_only_" + targetName).c_str()); h_A_onlypt2->Write(); }
+    if (h_wD_pt) { h_wD_pt->SetName(("wpt2_D_" + targetName).c_str()); h_wD_pt->Write(); }
+    if (h_wA_pt) { h_wA_pt->SetName(("wpt2_A_" + targetName).c_str()); h_wA_pt->Write(); }
+    if (h_wD_sqpt2) { h_wD_sqpt2->SetName(("sqpt2_D_" + targetName).c_str()); h_wD_sqpt2->Write(); }
+    if (h_wA_sqpt2) { h_wA_sqpt2->SetName(("sqpt2_A_" + targetName).c_str()); h_wA_sqpt2->Write(); }
+    if (h_D_pt3D) { h_D_pt3D->SetName(("pt2_3D_D_" + targetName).c_str()); h_D_pt3D->Write(); }
+    if (h_A_pt3D) { h_A_pt3D->SetName(("pt2_3D_A_" + targetName).c_str()); h_A_pt3D->Write(); }
+    if (hDpt_Q_nu_zD) { hDpt_Q_nu_zD->SetName(("Q_nu_z_D_" + targetName).c_str()); hDpt_Q_nu_zD->Write(); }
+    if (hDpt_Q_nu_zA) { hDpt_Q_nu_zA->SetName(("Q_nu_z_A_" + targetName).c_str()); hDpt_Q_nu_zA->Write(); }
+
+    TNamed* tname = new TNamed("targetName", targetName.c_str());
+    tname->Write();
+    fout->Close();
+    std::cout << "[saveDptHistos] Histograms saved to " << outPath << std::endl;
+}
 void deltaptsq::calcDpt(){
     //using here X=nu, Y=z, Z=Q2
-    //these are shared variables for electron and hadron
+    // ?????? TODO: ARE WE SURE about the binning in 3D ???
+     //these are shared variables for electron and hadron
     int numBinsX = h_wD_pt->GetNbinsX();    //same bins 4 Deut and A 
     int numBinsY = h_wD_pt->GetNbinsY(); 
     int numBinsZ = h_wD_pt->GetNbinsZ(); 
-    for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {
+    system("mkdir -p ../Dptvalues");
+    std::ofstream valOut("../Dptvalues/Dptval" + targetName + ".txt");
+    std::ofstream errOut("../Dptvalues/Dpterr" + targetName + ".txt");
+    TH3D* h_dptMatrix = new TH3D(("h_dptMatrix_" + targetName).c_str(),
+                                  ("Dpt Matrix " + targetName).c_str(),
+                                  numBinsX, h_wD_pt->GetXaxis()->GetXmin(), h_wD_pt->GetXaxis()->GetXmax(),
+                                  numBinsY, h_wD_pt->GetYaxis()->GetXmin(), h_wD_pt->GetYaxis()->GetXmax(),
+                                  numBinsZ, h_wD_pt->GetZaxis()->GetXmin(), h_wD_pt->GetZaxis()->GetXmax());
 
+    TH3D* h_errMatrix = new TH3D(("h_dptErrMatrix_" + targetName).c_str(),
+                                  ("Dpt Error Matrix " + targetName).c_str(),
+                                  numBinsX, h_wD_pt->GetXaxis()->GetXmin(), h_wD_pt->GetXaxis()->GetXmax(),
+                                  numBinsY, h_wD_pt->GetYaxis()->GetXmin(), h_wD_pt->GetYaxis()->GetXmax(),
+                                  numBinsZ, h_wD_pt->GetZaxis()->GetXmin(), h_wD_pt->GetZaxis()->GetXmax());
+    for (int Xbin = 1; Xbin <= numBinsX; Xbin++) {
         for (int Ybin=1; Ybin <= numBinsY; Ybin++) {
             for (int Zbin= 1; Zbin <= numBinsZ; Zbin++){
                 // loop with 125 values (still using 5 per axis-binning))
@@ -173,10 +212,23 @@ void deltaptsq::calcDpt(){
                 double Err_dpt_point = sqrt(Err_valD*Err_valD + Err_valA*Err_valA);
                 DptMatrix[Xbin-1][Ybin-1][Zbin-1] = dpt_point;
                 errorDptMatrix[Xbin-1][Ybin-1][Zbin-1] = Err_dpt_point;
+                valOut << Xbin << " " << Ybin << " " << Zbin << " " << dpt_point << "\n";
+                errOut << Xbin << " " << Ybin << " " << Zbin << " " << Err_dpt_point << "\n";
+
+                h_dptMatrix->SetBinContent(Xbin, Ybin, Zbin, dpt_point);
+                h_errMatrix->SetBinContent(Xbin, Ybin, Zbin, Err_dpt_point);
             } 
         }
     }
+    TFile* fout = new TFile(("../Dptvalues/Dpt_" + targetName + ".root").c_str(), "RECREATE");
+    h_dptMatrix->Write();
+    h_errMatrix->Write();
+    fout->Close();
 
+    valOut.close();
+    errOut.close();
+
+    std::cout << "Dpt matrices saved to ../Dptvalues/ for target = " << targetName << std::endl;
 }
         
 void deltaptsq::writeMatrixToFile(const std::string& filename){

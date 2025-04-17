@@ -20,6 +20,8 @@ public:
     //~deltaptsq();          
 
     void FillHistograms(const Event& );
+    void saveDptHistos(); 
+
     void WriteHistos(const std::string );
     void calcDpt();
     void calcDptCarbon(deltaptsq& ) ;      

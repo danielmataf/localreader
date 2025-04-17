@@ -7,6 +7,11 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
+#include <TStyle.h>
+
+// How to compile and run:
+// g++ compHistoJun34.cpp $(root-config --cflags --libs) -o compHistoJun34
+// ./compHistoJun34
 
 void CompareHistograms(const char* target) {
     std::string file1 = std::string("/home/matamoros/jan") + target + "_test.root";
@@ -33,26 +38,11 @@ void CompareHistograms(const char* target) {
         {"y_" + std::string(target) + "_RGD", "y_" + std::string(target) + "_sim", "y"},
         {"z_" + std::string(target) + "_RGD", "z_" + std::string(target) + "_sim", "z"},
         {"targetVz_" + std::string(target) + "_RGD", "targetVz_" + std::string(target) + "_sim", "Target V_{z} [cm]"},
-        {"pt2_" + std::string(target) + "_RGD", "pt2_" + std::string(target) + "_sim", "p_{T}^{2} [GeV^{2}]"},
-        {"ptot_ele_" + std::string(target) + "_RGD", "ptot_ele_" + std::string(target) + "_sim", "p_{tot} Electron [GeV]"},
-        {"px_ele_" + std::string(target) + "_RGD", "px_ele_" + std::string(target) + "_sim", "p_{x} Electron [GeV]"},
-        {"py_ele_" + std::string(target) + "_RGD", "py_ele_" + std::string(target) + "_sim", "p_{y} Electron [GeV]"},
-        {"pz_ele_" + std::string(target) + "_RGD", "pz_ele_" + std::string(target) + "_sim", "p_{z} Electron [GeV]"},
-        {"E_el" + std::string(target) + "_RGD", "E_el" + std::string(target) + "_sim", "E Electron [GeV]"},
-        {"E_pi" + std::string(target) + "_RGD", "E_pi" + std::string(target) + "_sim", "E Pion [GeV]"},
-        {"theta_el" + std::string(target) + "_RGD", "theta_el" + std::string(target) + "_sim", "#theta Electron [deg]"},
-        {"phi_el" + std::string(target) + "_RGD", "phi_el" + std::string(target) + "_sim", "#phi Electron [deg]"},
-        {"ptot_pro_" + std::string(target) + "_RGD", "ptot_pro_" + std::string(target) + "_sim", "p_{tot} Pion [GeV]"},
-        {"px_pi_" + std::string(target) + "_RGD", "px_pi_" + std::string(target) + "_sim", "p_{x} Pion [GeV]"},
-        {"py_pi_" + std::string(target) + "_RGD", "py_pi_" + std::string(target) + "_sim", "p_{y} Pion [GeV]"},
-        {"pz_pi_" + std::string(target) + "_RGD", "pz_pi_" + std::string(target) + "_sim", "p_{z} Pion [GeV]"},
-        {"theta_pi" + std::string(target) + "_RGD", "theta_pi" + std::string(target) + "_sim", "#theta Pion [deg]"},
-        {"phi_pi" + std::string(target) + "_RGD", "phi_pi_" + std::string(target) + "_sim", "#phi Pion [deg]"},
-        {"chi2_el_" + std::string(target) + "_RGD", "chi2_el_" + std::string(target) + "_sim", "#chi^{2} Electron"},
-        {"chi2_pi_" + std::string(target) + "_RGD", "chi2_pi_" + std::string(target) + "_sim", "#chi^{2} Pion"},
-        {"helicity_" + std::string(target) + "_RGD", "helicity_" + std::string(target) + "_sim", "Helicity"},
-        {"helicity_raw_" + std::string(target) + "_RGD", "helicity_raw_" + std::string(target) + "_sim", "Helicity (Raw)"}
+        {"pt2_" + std::string(target) + "_RGD", "pt2_" + std::string(target) + "_sim", "p_{T}^{2} [GeV^{2}]"}
     };
+
+    // Remove statistics box
+    gStyle->SetOptStat(0);
 
     TCanvas* pdfCanvas = new TCanvas("pdfCanvas", "Combined Histogram Comparison", 1000, 800);
     pdfCanvas->Divide(3, 3);
@@ -85,15 +75,21 @@ void CompareHistograms(const char* target) {
         h1->SetMaximum(max * 1.1);
         h1->SetMinimum(0);
 
+        h1->SetTitle("");
+        h2->SetTitle("");
+
         h1->GetXaxis()->SetTitle(xAxisTitle.c_str());
-        h2->GetXaxis()->SetTitle(xAxisTitle.c_str());
+        h1->GetXaxis()->SetTitleSize(0.045);
+        h1->GetXaxis()->SetLabelSize(0.04);  // Increase label size
+
 
         h1->Draw("hist");
         h2->Draw("hist same");
 
-        TLegend* legend = new TLegend(0.75, 0.75, 0.9, 0.69);
+        TLegend* legend = new TLegend(0.70, 0.75, 0.90, 0.85);
         legend->AddEntry(h1, "Data", "l");
         legend->AddEntry(h2, "Simulation", "l");
+        legend->SetTextSize(0.04);  // Increase legend text size
         legend->Draw();
 
         canvas->SaveAs(Form("Comparison_%s_vs_%s.png", hist1Name.c_str(), hist2Name.c_str()));

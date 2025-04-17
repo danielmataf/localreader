@@ -13,8 +13,8 @@
 
 void Compare3Histograms(const char* target) {
     std::string file1 = std::string("/home/matamoros/RGDv7") + target + "_test.root";
-    std::string file2 = std::string("/home/matamoros/febtor") + target + "_sim.root";
-    std::string file3 = std::string("/home/matamoros/febsymm") + target + "_sim.root";
+    std::string file2 = std::string("/home/matamoros/fullTfeb") + target + "_sim.root";
+    std::string file3 = std::string("/home/matamoros/symmfeb") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {
@@ -140,7 +140,7 @@ void Compare3Histograms(const char* target) {
 }
 
 int main() {
-    const char* target = "C2";
+    const char* target = "C1";
     Compare3Histograms(target);
     return 0;
 }
