@@ -221,10 +221,10 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
             h_polcoord_el->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().Phi()*180/Constants::PI +180);
             h_E_el_theta->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI, event.electron.GetMomentum().E());
             h_E_el_phi->Fill(event.electron.GetMomentum().Phi()*180/Constants::PI +180, event.electron.GetMomentum().E());
-        h_calXY->Fill(event.electron.GetCalX(), event.electron.GetCalY());
-        h_lu->Fill(event.electron.Getlu());
-        h_lv->Fill(event.electron.Getlv());
-        h_lw->Fill(event.electron.Getlw());
+            h_calXY->Fill(event.electron.GetCalX(), event.electron.GetCalY());
+            h_lu->Fill(event.electron.Getlu());
+            h_lv->Fill(event.electron.Getlv());
+            h_lw->Fill(event.electron.Getlw());
             h_luthetael->Fill(event.electron.Getlu(), event.electron.GetMomentum().Theta()*180/Constants::PI);
             h_thetaP_el->Fill( event.electron.GetMomentum().P(), event.electron.GetMomentum().Theta()*180/Constants::PI);
             h_phiP_el->Fill( event.electron.GetMomentum().P(), event.electron.GetMomentum().Phi()*180/Constants::PI +180);
@@ -525,7 +525,7 @@ void Monitoring::WriteHistogramsToFile(const std::string filename) {
     //this function recreates a new rootfile everytime is called 
     //useful to have different rootfiles if different cuts were implemented
     //useful since monitoring class is called with a cutset as an argument
-    //argument: title of the wanted output file 
+    //argument: title of the wanted output file  * Clas12-config update: Still pending until we conclude on the comparison of the two torus field maps, the symmetric map that Raffaella suggested using in the simulation, and the full map RG-D is using in the real data cooking. Await updates from Daniel M.!
     // save histograms to the specified ROOT file
     TFile file = TFile(filename.c_str(), "RECREATE");
     h_Q2->Write();

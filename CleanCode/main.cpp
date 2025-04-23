@@ -28,6 +28,8 @@ int main() {
     std::vector<std::string> filenamesCuSn;
     std::vector<std::string> filenamesCxC;
     std::vector<std::string> simufilesCxC;
+    std::vector<std::string> simufilesLD2full;
+    std::vector<std::string> simufilesLD2symm;
 
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/0v6/", filenamesLD2);
     files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/0v6/", filenamesCuSn);
@@ -50,6 +52,9 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     //files.SnDir2Vector("/volatile/clas12/dmat/test/fullTorus_aicv_newrgdCC/", simufilesCxC);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdCu/", simufilesCu);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdSn/", simufilesSn);  //uncomment for sim 
+    files.SnDir2Vector("/volatile/clas12/dmat/test/AprLD2/", simufilesLD2full);  //uncomment for sim 
+    files.SnDir2VectorBis("/volatile/clas12/dmat/test/AprLD2/", simufilesLD2symm);  //uncomment for sim 
+
 
     ////uncommment also below for sim BIS and/or THIRD on ifarm
     //files.SnDir2VectorBis("/volatile/clas12/dmat/test/fullTorus_aicv_newrgdCC/", simufilesCxC);  //uncomment for sim
@@ -63,7 +68,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     EventReader RGD_LD2(filenamesLD2);   
     EventReader RGD_CuSn(filenamesCuSn);   
     EventReader Sim_CxC(simufilesCxC);
-
+    EventReader Sim_LD2symm(simufilesLD2);
+    EventReader Sim_LD2full(simufilesLD2full);
 
 
     std::optional<Event> simCxC;
@@ -72,8 +78,10 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     std::optional<Event> testLD2;
     std::optional<Event> testCu;
     std::optional<Event> testSn;
-
-
+    std::optional<Event> testLD2symm;
+    std::optional<Event> testLD2full;
+    std::optional<Event> testLD2symmMC;
+    std::optional<Event> testLD2fullMC;
 
     CutSet testC1cuts;  //C1 RGD
     CutSet testC2cuts;  //C2 RGD  
@@ -114,6 +122,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     Monitoring monTestLD2(testLD2cuts, "LD2_RGD");
     Monitoring monTestCu(testCucuts, "Cu_RGD");
     Monitoring monTestSn(testSncuts, "Sn_RGD");
+    Monitoring monLD2symm(testLD2cuts, "LD2_RGD_symm");
+    Monitoring monLD2full(testLD2cuts, "LD2_RGD_full");
 
     Ratio ratC1(testLD2cuts, testC1cuts, "C1_RGD");
     Ratio ratC2(testLD2cuts, testC2cuts, "C2_RGD");
@@ -144,7 +154,11 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
         testSn = RGD_CuSn.ProcessEventsInFile();
         testCu = RGD_CuSn.ProcessEventsInFile();
         simCxC = Sim_CxC.ProcessEventsInFile();
-        simCxC_MC = Sim_CxC.ProcessEventsInFile(); //testing this if we can loop twice top read MC events//
+        simCxC_MC = Sim_CxC.ProcessEventsInFileMC(); //testing this if we can loop twice top read MC events//
+        testLD2symm = Sim_LD2symm.ProcessEventsInFile();
+        testLD2full = Sim_LD2full.ProcessEventsInFile();
+        testLD2symmMC = Sim_LD2symm.ProcessEventsInFileMC();
+        testLD2fullMC = Sim_LD2full.ProcessEventsInFileMC();
 
         if (testLD2.has_value()) {
             Event eventtestLD2 = testLD2.value();
@@ -199,6 +213,30 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
                     monSimC2.FillHistogramswCuts(eventsimCxC);
                 }
         }
+        if (testLD2symmMC.has_value()) { //LD2 sim
+            Event eventtestLD2symmMC = testLD2symmMC.value();
+            eventtestLD2symmMC.SetTargetType(0);
+            eventtestLD2symmMC.calcMCAll();
+            //monLD2symm.FillHistogramswCuts(eventtestLD2symmMC);
+                if (testLD2symm.has_value()) {
+                    Event eventtestLD2symm = testLD2symm.value();
+                    eventtestLD2symm.SetTargetType(0);
+                    eventtestLD2symm.calcAll();
+                    monLD2symm.FillHistogramswCuts(eventtestLD2symm);
+                }
+        }
+        if (testLD2fullMC.has_value()){
+            Event eventtestLD2fullMC = testLD2fullMC.value();
+            eventtestLD2fullMC.SetTargetType(0);
+            eventtestLD2fullMC.calcMCAll();
+                if (testLD2full.has_value()){
+                    Event eventtestLD2full = testLD2full.value();
+                    eventtestLD2full.SetTargetType(0);
+                    eventtestLD2full.calcAll();
+                    monLD2full.FillHistogramswCuts(eventtestLD2full);
+                }
+        }
+
 
         if (testSn.has_value()) {
             Event eventtestSn = testSn.value();
@@ -233,21 +271,28 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     monTestC2.SaveKeyHistograms();
     monTestSn.SaveHistRoot("janSn_test");
     monTestSn.DrawHistograms("SnUrgent");
-    monTestCu.SaveHistRoot("janCu_test");
-    monTestCu.DrawHistograms("CuUrgent");
-    monSimC2.SaveHistRoot("marC2_sim");
-    monSimC2.DrawHistograms("monC2_sim");
+    //monTestCu.SaveHistRoot("janCu_test");
+    //monTestCu.DrawHistograms("CuUrgent");
+    //monSimC2.SaveHistRoot("marC2_sim");
+    //monSimC2.DrawHistograms("monC2_sim");
     cratC2.WriteDebugHistos("cosdebug.root");
     std::cout << "//========= Simulation C2 ==========//  \n";
     ratC2.saveRhistos();
     ratSn.saveRhistos();
-    ratCu.saveRhistos();
-    dptC2.saveDptHistos();
-    dptSn.saveDptHistos();
-    dptCu.saveDptHistos();
-    cratC2.saveCratioHistos();
-    cratSn.saveCratioHistos();
-    cratCu.saveCratioHistos();
+    monLD2full.SaveHistRoot("AprLD2full_test");
+    monLD2symm.SaveHistRoot("AprLD2symm_test");
+    monTestLD2.SaveHistRoot("testLD2_test");
+    
+    monLD2full.DrawEnergyHistograms("nrg_angLD2full");
+    monLD2symm.DrawEnergyHistograms("nrg_angLD2symm");
+    monTestLD2.DrawEnergyHistograms("nrg_angLD2RGDd");
+    //ratCu.saveRhistos();
+    //dptC2.saveDptHistos();
+    //dptSn.saveDptHistos();
+    //dptCu.saveDptHistos();
+    //cratC2.saveCratioHistos();
+    //cratSn.saveCratioHistos();
+    //cratCu.saveCratioHistos();
 
     //ratC2.calcR();  
     //ratSn.calcR();
