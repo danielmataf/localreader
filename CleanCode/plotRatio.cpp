@@ -116,14 +116,14 @@ void drawRatioPdf(const RatioMatrix& A, const RatioMatrix& B, const RatioMatrix&
         canvas.Divide(3, 2);
         double nu = binref->GetXaxis()->GetBinCenter(x + 1);
 
-        for (int y = 0; y < NY; ++y) {
-            canvas.cd(y + 1);
+        for (int z = 0; z < NZ; ++z) {
+            canvas.cd(z + 1);
             auto* gC = new TGraphErrors();
             auto* gCu = new TGraphErrors();
             auto* gSn = new TGraphErrors();
 
-            for (int z = 0; z < NZ; ++z) {
-                double zVal = binref->GetYaxis()->GetBinCenter(z + 1);
+            for (int y = 0; y < NY; ++y) {
+                double zVal = binref->GetYaxis()->GetBinCenter(y + 1);
 
                 double valC = A.val[x][y][z];
                 double valCu = B.val[x][y][z];
@@ -138,18 +138,18 @@ void drawRatioPdf(const RatioMatrix& A, const RatioMatrix& B, const RatioMatrix&
                           << ", Cu= " << valCu << "±" << errCu
                           << ", Sn= " << valSn << "±" << errSn << std::endl;
 
-                gC->SetPoint(z, zVal, valC);
-                gC->SetPointError(z, 0.0, errC);
-                gCu->SetPoint(z, zVal + 0.01, valCu);
-                gCu->SetPointError(z, 0.0, errCu);
-                gSn->SetPoint(z, zVal + 0.02, valSn);
-                gSn->SetPointError(z, 0.0, errSn);
+                gSn->SetPoint(y, zVal , valSn);
+                gSn->SetPointError(y, 0.0, errSn);
+                gCu->SetPoint(y, zVal + 0.01, valCu);
+                gCu->SetPointError(y, 0.0, errCu);
+                gC->SetPoint(y, zVal+ 0.02, valC);
+                gC->SetPointError(y, 0.0, errC);
             }
 
             TMultiGraph* mg = new TMultiGraph();
-            gC->SetMarkerStyle(20); gC->SetMarkerColor(kOrange);
+            gC->SetMarkerStyle(20); gC->SetMarkerColor(kBlack);
             gCu->SetMarkerStyle(20); gCu->SetMarkerColor(kGreen);
-            gSn->SetMarkerStyle(20); gSn->SetMarkerColor(kBlack);
+            gSn->SetMarkerStyle(20); gSn->SetMarkerColor(kOrange);
             mg->Add(gC); mg->Add(gCu); mg->Add(gSn);
 
             mg->Draw("APE1");
@@ -172,7 +172,7 @@ void drawRatioPdf(const RatioMatrix& A, const RatioMatrix& B, const RatioMatrix&
             text.SetTextSize(0.045);
             //instead of of bin center we want ranges for variables, so lets do get bin edges 
             text.DrawLatexNDC(0.45, 0.22, Form( "%.2f < #nu < %.2f", binref->GetXaxis()->GetBinLowEdge(x + 1), binref->GetXaxis()->GetBinUpEdge(x + 1)));
-            text.DrawLatexNDC(0.45, 0.17, Form("%.2f < p_{T}^{2} < %.2f", binref->GetZaxis()->GetBinLowEdge(y + 1), binref->GetZaxis()->GetBinUpEdge(y + 1)));
+            text.DrawLatexNDC(0.45, 0.17, Form("%.2f < p_{T}^{2} < %.2f", binref->GetZaxis()->GetBinLowEdge(z + 1), binref->GetZaxis()->GetBinUpEdge(z + 1)));
 
             TLatex watermark;
             watermark.SetTextSize(0.08);
