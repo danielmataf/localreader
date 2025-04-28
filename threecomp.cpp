@@ -13,8 +13,8 @@
 
 void Compare3Histograms(const char* target) {
     std::string file1 = std::string("/home/matamoros/RGDv7") + target + "_test.root";
-    std::string file2 = std::string("/home/matamoros/fullTfeb") + target + "_sim.root";
-    std::string file3 = std::string("/home/matamoros/symmfeb") + target + "_sim.root";
+    std::string file2 = std::string("/home/matamoros/Aprfull") + target + "_sim.root";
+    std::string file3 = std::string("/home/matamoros/Aprsymm") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) {
@@ -61,8 +61,8 @@ void Compare3Histograms(const char* target) {
 
     for (size_t i = 0; i < histogramNames.size(); ++i) {
         std::string histName1 = histogramNames[i] + std::string(target) + "_RGD";
-        std::string histName2 = histogramNames[i] + std::string(target) + "_sim";
-        std::string histName3 = histogramNames[i] + std::string(target) + "_sim";
+        std::string histName2 = histogramNames[i] + std::string(target) + "_RGD_full";
+        std::string histName3 = histogramNames[i] + std::string(target) + "_RGD_symm";
 
         TH1F* h1 = dynamic_cast<TH1F*>(rootFile1->Get(histName1.c_str()));
         TH1F* h2 = dynamic_cast<TH1F*>(rootFile2->Get(histName2.c_str()));
@@ -140,7 +140,7 @@ void Compare3Histograms(const char* target) {
 }
 
 int main() {
-    const char* target = "C1";
+    const char* target = "LD2";
     Compare3Histograms(target);
     return 0;
 }

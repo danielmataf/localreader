@@ -52,8 +52,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     //files.SnDir2Vector("/volatile/clas12/dmat/test/fullTorus_aicv_newrgdCC/", simufilesCxC);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdCu/", simufilesCu);  //uncomment for sim 
     //files.SnDir2Vector("/volatile/clas12/dmat/test/cv_newrgdSn/", simufilesSn);  //uncomment for sim 
-    files.SnDir2Vector("/volatile/clas12/dmat/test/AprLD2/", simufilesLD2full);  //uncomment for sim 
-    files.SnDir2VectorBis("/volatile/clas12/dmat/test/AprLD2/", simufilesLD2symm);  //uncomment for sim 
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2/", simufilesLD2full);  //uncomment for sim 
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", simufilesLD2symm);  //uncomment for sim 
 
 
     ////uncommment also below for sim BIS and/or THIRD on ifarm
@@ -201,7 +201,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             cratC2.FillDebug(eventtestCxC);
 
         }
-        if (simCxC_MC.has_value())                          {//CxC sim
+        if (simCxC_MC.has_value() )                          {//CxC sim
             Event eventsimCxC_MC = simCxC_MC.value();
             eventsimCxC_MC.SetTargetType(1);
             eventsimCxC_MC.calcMCAll();

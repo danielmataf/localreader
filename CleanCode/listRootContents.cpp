@@ -23,6 +23,15 @@ void listRootContents(const std::string& filename) {
 }
 
 int main() {
-    listRootContents("RinputFiles/Rhist_C2_RGD.root");
+    //define target is "LD2" 
+    std::string target = "LD2"; // Change this to "CuSn" or "CxC" as needed
+    std::string file1 = std::string("/home/matamoros/RGDv7") + target + "_testlow.root";
+    std::string file2 = std::string("/home/matamoros/Aprfull") + target + "_simlow.root";
+    std::string file3 = std::string("/home/matamoros/Aprsymm") + target + "_simlow.root";
+
+    listRootContents(file1);
+    listRootContents(file2);
+    listRootContents(file3);
+
     return 0;
 }
