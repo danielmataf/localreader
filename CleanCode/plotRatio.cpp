@@ -22,19 +22,19 @@
 const int Rbin = Constants::Rbin_nu; //exporting value from csts
 const int FIXED_SIZE = Constants::Rbin_nu;
 
-struct RatioMatrix {
-    double val[50][50][50];
-    double err[50][50][50];
-    //ratMatrix(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
-    //errorMatrix(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
-};
 //struct RatioMatrix {
-//    std::vector<std::vector<std::vector<double>>> val;
-//    std::vector<std::vector<std::vector<double>>> err;
-//    RatioMatrix() :
-//        val(FIXED_SIZE, std::vector<std::vector<double>>(FIXED_SIZE, std::vector<double>(FIXED_SIZE, 0.0))),
-//        err(FIXED_SIZE, std::vector<std::vector<double>>(FIXED_SIZE, std::vector<double>(FIXED_SIZE, 0.0))) {}
+//    double val[50][50][50];
+//    double err[50][50][50];
+//    //ratMatrix(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
+//    //errorMatrix(Rbin, std::vector<std::vector<double>>(Rbin, std::vector<double>(Rbin, 0.0))),
 //};
+struct RatioMatrix {
+    std::vector<std::vector<std::vector<double>>> val;
+    std::vector<std::vector<std::vector<double>>> err;
+    RatioMatrix() :
+        val(FIXED_SIZE, std::vector<std::vector<double>>(FIXED_SIZE, std::vector<double>(FIXED_SIZE, 0.0))),
+        err(FIXED_SIZE, std::vector<std::vector<double>>(FIXED_SIZE, std::vector<double>(FIXED_SIZE, 0.0))) {}
+};
 
 void computeRatio(const std::string& fileName, const std::string& tag, RatioMatrix& outMatrix, TH3F*& refHisto) {
     std::cout << "[computeRatio] Attempting to open file: " << fileName << std::endl;

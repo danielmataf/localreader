@@ -52,6 +52,12 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     h_xB_Q2_A (new TH2F(("xB_Q2_A"+targetName).c_str(), ("xB_Q2_A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminx , Constants::Rcutmaxx, Constants::Rbin_nu , Constants::RcutminQ , Constants::RcutmaxQ)),
     h_xB_Q2_z_A (new TH3F(("xB_Q2_z_A"+targetName).c_str(), ("xB_Q2_z_A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminx , Constants::Rcutmaxx, Constants::Rbin_nu , Constants::RcutminQ , Constants::RcutmaxQ, Constants::Rbin_z , Constants::RcutminZ , Constants::RcutmaxZ)),
 
+    //5D
+    h_3D_A_e (new TH3F(("3D_A_e"+targetName).c_str(), ("3D_A_e"+targetName).c_str(),Constants::Rbin_nu , Constants::RcutminQ, Constants::RcutmaxQ, Constants::Rbin_nu ,Constants::Rcutminx, Constants::Rcutmaxx ,  Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu   )),
+    h_3D_D_e (new TH3F(("3D_D_e"+targetName).c_str(), ("3D_D_e"+targetName).c_str(),Constants::Rbin_nu , Constants::RcutminQ, Constants::RcutmaxQ, Constants::Rbin_nu ,Constants::Rcutminx, Constants::Rcutmaxx ,  Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu   )),
+    h_5D_D_had (new THnSparseD(("h_5D_D_had_" + targetName).c_str(), "5D hadron counts (D)", Rdim, bins, binMins, binMaxs)),
+    h_5D_A_had (new THnSparseD(("h_5D_A_had_" + targetName).c_str(), "5D hadron counts (A)", Rdim, bins, binMins, binMaxs)), // using default chuinksize ? idk the implications of this 
+
     h_nuC1(new TH1F(("nu_C1"+targetName).c_str(), ("nu_C1"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)), 
     h_nuC2(new TH1F(("nu_C2"+targetName).c_str(), ("nu_C2"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu))
 
@@ -65,6 +71,16 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     
     //class takes a set of cuts anyway 
     //in order to determine Ratio from the histos with these cuts 
+    //adding methods for 5dim ThnSparseD (loop for dim and edges) - this should calc the edges easily
+    for (int dim = 0; dim < Rdim; ++dim) {
+        binEdges[dim] = new double[bins[dim] + 1];
+        double step = (binMaxs[dim] - binMins[dim]) / bins[dim];
+        for (int i = 0; i <= bins[dim]; ++i) {
+            binEdges[dim][i] = binMins[dim] + i * step;
+        }
+    }
+
+
 }
 //~ add deletes complete
 Ratio::~Ratio() {
@@ -95,8 +111,9 @@ void Ratio::FillHistograms(const Event& event) {
         //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
         h_nuD->Fill(event.Getnu());
         h_xB_Q2_D->Fill(event.GetQ2(), event.Getxb());
-        //h_3D_D_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
+        h_3D_D_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
         //std::cout << "nu = " << event.Getnu() << std::endl; /bump
+
         for (const Particle& hadron : event.GetHadrons()) {
             if (cutd.PassCutsHadrons(hadron)==true){
                 //if (hadron.GetPID() == Constants::PION_PLUS_PID  ){
@@ -108,6 +125,7 @@ void Ratio::FillHistograms(const Event& event) {
                 //h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
 
                 h_xB_Q2_z_D->Fill(event.GetQ2(), event.Getxb(), hadron.Getz());
+                h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
 
             //std::cout << "nimporte quoi" << event.Getnu()<< ";" << hadron.Getz()<<","<< hadron.Getpt2() <<std::endl;
                 //}
@@ -119,7 +137,7 @@ void Ratio::FillHistograms(const Event& event) {
         //here change the else if to just else in order to have a generic target 
         h_nuA->Fill(event.Getnu()); //can be plotted just like this 
         h_xB_Q2_A->Fill(event.GetQ2(), event.Getxb());
-        //h_3D_A_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
+        h_3D_A_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
         //if (targetName == "C1"){
         //    h_nuC1->Fill(event.Getnu());
         //}
@@ -136,7 +154,7 @@ void Ratio::FillHistograms(const Event& event) {
                 h_z_A_had->Fill(hadron.Getz()); //these 3 histos were added to monitor CxC self Ratio
                 h_pt2_A_had->Fill(hadron.Getpt2()); //these 3 histos were added to monitor CxC self Ratio
                 h_z_A->Fill(hadron.Getz()); //debugging Ybins jan25
-                //h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
+                h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
                 //if (targetName == "C1" ) {
                 //    h_nu_z_pt2C1->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 //}
@@ -194,6 +212,10 @@ void Ratio::saveRhistos() {
     if (h_xB_Q2_A)   { h_xB_Q2_A->SetName(("xB_Q2_A" + targetName).c_str()); h_xB_Q2_A->Write(); }
     if (h_xB_Q2_z_D) { h_xB_Q2_z_D->SetName(("xB_Q2_z_D" + targetName).c_str()); h_xB_Q2_z_D->Write(); }
     if (h_xB_Q2_z_A) { h_xB_Q2_z_A->SetName(("xB_Q2_z_A" + targetName).c_str()); h_xB_Q2_z_A->Write(); }
+    if (h_3D_D_e)    {h_3D_D_e->SetName(("Q2_xB_nu_D_" + targetName).c_str()); h_3D_D_e->Write(); }
+    if (h_3D_A_e)    {h_3D_A_e->SetName(("Q2_xB_nu_A_" + targetName).c_str());h_3D_A_e->Write();}
+    if (h_5D_D_had)  {h_5D_D_had->SetName(("Q2_xB_nu_pt2_z_D_" + targetName).c_str());h_5D_D_had->Write();}
+    if (h_5D_A_had) {h_5D_A_had->SetName(("Q2_xB_nu_pt2_z_A_" + targetName).c_str());h_5D_A_had->Write();}
 
     // Save the target name for metadata
     TNamed* tname = new TNamed("targetName", targetName.c_str());
@@ -618,17 +640,18 @@ void Ratio::multiplotR(Ratio& ratioSecond) {
         std::string pdfFileName = "doubleTargetR_nu" + std::to_string(nuValue) + ".pdf";
         TCanvas canvas("c", "Multiplot R", 1200, 800);
         canvas.Divide(3, 2);
-
+        //getting nu value here from X axis implies nu is X in histo (?) creating nbr of pages. 
         for (int z = 0; z < Rbin; ++z) {
             TMultiGraph *mg = new TMultiGraph();
             double pt2Value = h_nu_z_pt2D->GetZaxis()->GetBinCenter(z + 1);
             canvas.cd(z + 1);
-            
+            //getting pt2 value here implies pt2 is Z in histo (?), creating nbr of plots
             TGraphErrors *graphC = new TGraphErrors(); // Carbon (C)
             TGraphErrors *graphSn = new TGraphErrors(); // Tin (Sn)
             
             for (int y = 0; y < Rbin; ++y) {
                 double zValue = h_nu_z_pt2D->GetYaxis()->GetBinCenter(y + 1);
+                //getting velue here within X and Z axis and getting value from Y z is Y in histo (?), creating nbr of points
                 double valueC = ratMatrix[x][y][z];
                 double errorC = errorMatrix[x][y][z];
                 double valueSn = ratioSecond.getRatMatrix()[x][y][z];
