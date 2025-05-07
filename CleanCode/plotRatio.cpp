@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <sstream>
 #include "constants.h"
+#include <THnSparse.h>
 
 
 //compile and run: 
@@ -104,6 +105,48 @@ void computeRatio(const std::string& fileName, const std::string& tag, RatioMatr
     }
     f->Close();
 }
+
+const int Rdim = 5;  // assuming your THnSparseD has 5 dimensions
+
+void checkTHnSparseContents(const std::string& filePath, const std::string& histoName) {
+    TFile* file = TFile::Open(filePath.c_str(), "READ");
+    if (!file || file->IsZombie()) {
+        std::cerr << "[checkTHnSparseContents] Failed to open file: " << filePath << std::endl;
+        return;
+    }
+
+    auto* h = dynamic_cast<THnSparseD*>(file->Get(histoName.c_str()));
+    if (!h) {
+        std::cerr << "[checkTHnSparseContents] Histogram " << histoName << " not found in " << filePath << std::endl;
+        file->Close();
+        return;
+    }
+
+    std::cout << "[checkTHnSparseContents] Contents of histogram: " << histoName << std::endl;
+    Long64_t nbins = h->GetNbins();
+    int ndim = h->GetNdimensions();
+    std::vector<Int_t> indices(ndim);
+
+    for (Long64_t i = 0; i < nbins; ++i) {
+        double content = h->GetBinContent(i);
+        if (content == 0) continue;
+
+        Long64_t local = i;
+        for (int d = ndim - 1; d >= 0; --d) {
+            Int_t nb = h->GetAxis(d)->GetNbins() + 2; // include under/overflow
+            indices[d] = local % nb;
+            local /= nb;
+        }
+
+        std::cout << "Bin " << i << " | Content = " << content << " | Indices = [ ";
+        for (int d = 0; d < ndim; ++d)
+            std::cout << indices[d] << " ";
+        std::cout << "]" << std::endl;
+    }
+
+    file->Close();
+}
+
 
 void drawRatioPdf(const RatioMatrix& A, const RatioMatrix& B, const RatioMatrix& C, TH3F* binref) {
     if (!binref) {
@@ -213,6 +256,9 @@ int main() {
     } else {
         std::cerr << "[plotRatio] Aborting plot: no valid reference histogram loaded.\n";
     }
+    checkTHnSparseContents("RinputFiles/Rhist_C2_RGD.root", "Q2_xB_nu_pt2_z_D_C2_RGD");
+    checkTHnSparseContents("RinputFiles/Rhist_Cu_RGD.root", "Q2_xB_nu_pt2_z_D_Cu_RGD");
+    checkTHnSparseContents("RinputFiles/Rhist_Sn_RGD.root", "Q2_xB_nu_pt2_z_D_Sn_RGD");
 
     return 0;
 }

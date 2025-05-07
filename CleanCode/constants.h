@@ -120,6 +120,8 @@ namespace Constants {
     static const double Rcutminnu = 4.0 ;
     static const double Rcutmaxnu = 9.0 ;
     static const int Rbin = 100;
+    static const int Rbin_Q = 6;
+    static const int Rbin_x = 6;
     static const int Rbin_nu = 6;
     static const int Rbin_z  = 6;
     static const int Rbin_pt2= 6;

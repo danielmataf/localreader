@@ -68,19 +68,42 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     //cut1 = a;
     cutd = cutsD;
     cuta = cutsA;
-    
-    //class takes a set of cuts anyway 
-    //in order to determine Ratio from the histos with these cuts 
-    //adding methods for 5dim ThnSparseD (loop for dim and edges) - this should calc the edges easily
-    for (int dim = 0; dim < Rdim; ++dim) {
-        binEdges[dim] = new double[bins[dim] + 1];
-        double step = (binMaxs[dim] - binMins[dim]) / bins[dim];
-        for (int i = 0; i <= bins[dim]; ++i) {
-            binEdges[dim][i] = binMins[dim] + i * step;
-        }
+        // Manually initialize binMins and binMaxs to ensure they are correct
+    binMins[0] = Constants::RcutminQ;
+    binMins[1] = Constants::Rcutminx;
+    binMins[2] = Constants::Rcutminnu;
+    binMins[3] = Constants::RcutminZ;
+    binMins[4] = Constants::RcutminPt2;
+
+    binMaxs[0] = Constants::RcutmaxQ;
+    binMaxs[1] = Constants::Rcutmaxx;
+    binMaxs[2] = Constants::Rcutmaxnu;
+    binMaxs[3] = Constants::RcutmaxZ;
+    binMaxs[4] = Constants::RcutmaxPt2;
+
+    // Initialize the 5D histograms with the fixed ranges
+    h_5D_D_had = new THnSparseD(("h_5D_D_had_" + targetName).c_str(), 
+                                "5D hadron counts (D)", 
+                                Rdim, bins, binMins, binMaxs);
+    h_5D_A_had = new THnSparseD(("h_5D_A_had_" + targetName).c_str(), 
+                                "5D hadron counts (A)", 
+                                Rdim, bins, binMins, binMaxs);
+
+    // Debugging the axis ranges immediately after creating the histograms
+    std::cout << "=== Debug: 5D Histogram Axis Ranges for " << targetName << " ===" << std::endl;
+    std::cout << "5D Histogram Axis Ranges (D):" << std::endl;
+    for (int i = 0; i < Rdim; ++i) {
+        std::cout << "Axis " << i << " range: [" 
+                  << h_5D_D_had->GetAxis(i)->GetXmin() << ", "
+                  << h_5D_D_had->GetAxis(i)->GetXmax() << "]" << std::endl;
     }
 
-
+    std::cout << "5D Histogram Axis Ranges (A):" << std::endl;
+    for (int i = 0; i < Rdim; ++i) {
+        std::cout << "Axis " << i << " range: [" 
+                  << h_5D_A_had->GetAxis(i)->GetXmin() << ", "
+                  << h_5D_A_had->GetAxis(i)->GetXmax() << "]" << std::endl;
+    }
 }
 //~ add deletes complete
 Ratio::~Ratio() {
@@ -107,6 +130,7 @@ void Ratio::FillHistograms(const Event& event) {
                                                 //using a flag for targets 
     //forget condition on taarget, that should directly be a cut !!!! TBD 
     if (targetType == 0 && cutd.PassCutsElectrons(event)==true && cutd.PassCutsDetectors(event)==true ) { 
+        
         counter_elLD2 ++;
         //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
         h_nuD->Fill(event.Getnu());
@@ -123,6 +147,17 @@ void Ratio::FillHistograms(const Event& event) {
                 h_nu_D_had->Fill(event.Getnu() );   //these  histos  added to to track binning switch
                 h_pt2_D_had->Fill(hadron.Getpt2()); //these  histos  added to to track binning switch
                 //h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
+if (event.GetQ2()< binMins[0] || event.GetQ2() > binMaxs[0] ||
+    event.Getxb() < binMins[1] ||event.Getxb() > binMaxs[1] ||
+    event.Getnu() < binMins[2] || event.Getnu() > binMaxs[2] ||
+    hadron.Getpt2() < binMins[3] || hadron.Getpt2() > binMaxs[3] ||
+    hadron.Getz() < binMins[4] || hadron.Getz() > binMaxs[4]) {
+    //std::cout << "[DEBUG] Value outside range: "
+    //          << " Q2=" << event.GetQ2() << ", xB=" << event.Getxb() 
+    //          << ", nu=" << event.Getnu() << ", pt2=" << hadron.Getpt2()
+    //          << ", z=" << hadron.Getz() << std::endl;
+}
+      //          std::cout << "[Fill5D] Q2=" << event.GetQ2() << ", xB=" << event.Getxb() << ", nu=" <<event.Getnu() << ", pt2=" << hadron.Getpt2()  << ", z=" << hadron.Getz()  << std::endl;
 
                 h_xB_Q2_z_D->Fill(event.GetQ2(), event.Getxb(), hadron.Getz());
                 h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
@@ -155,6 +190,7 @@ void Ratio::FillHistograms(const Event& event) {
                 h_pt2_A_had->Fill(hadron.Getpt2()); //these 3 histos were added to monitor CxC self Ratio
                 h_z_A->Fill(hadron.Getz()); //debugging Ybins jan25
                 h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
+
                 //if (targetName == "C1" ) {
                 //    h_nu_z_pt2C1->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 //}
@@ -309,6 +345,14 @@ void Ratio::DrawSelfHistos(Ratio& ratioOther ){
 
 
 }
+
+
+//create a fct with just one line that gets bins. it should give only filled bins, that should porove youre doing thing riught 
+void Ratio::checkTHn(){
+    std::cout<< " h_ bins: "<<h_5D_D_had->GetNbins() <<std::endl;
+    std::cout<< " h_ bins: "<<h_5D_A_had->GetNbins() <<std::endl;
+}
+
 
 
 void Ratio::calcR(){

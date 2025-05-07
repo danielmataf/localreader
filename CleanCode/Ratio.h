@@ -28,6 +28,8 @@ public:
     //void WriteHistogramsToFile(const std::string ); 
     //void DrawHistograms(const std::string);
     void FillHistograms(const Event& );
+    void checkTHn();
+
     void WriteHistos(const std::string );
     void FillDebug(const Event& ev, bool isDeuterium);
     void WriteDebugHistos(const std::string& filename);
