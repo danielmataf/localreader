@@ -200,6 +200,11 @@ private:
     TH2F *h_xB_Q2_A;
     TH3F *h_xB_Q2_z_A;
 
+    //Lamiaa wants a 1D plot for R with z as Xaxis
+    TH1F *h_newz_D;
+    TH1F *h_newz_A;
+    int elcountD;
+    int elcountA;
 
 
 

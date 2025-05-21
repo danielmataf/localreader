@@ -78,6 +78,17 @@ namespace Constants {
     static const double Vymax_default = 10.0;
     static const double Vzmin_default = -40.0;
     static const double Vzmax_default = 40.0;
+    //NewVertexValues passv11
+    static const double v11cutminVzLD2data = -8.5 ;   
+    static const double v11cutmaxVzLD2data = -4.5 ;   
+    static const double v11cutminVzSndata = -4.5 ;
+    static const double v11cutmaxVzSndata = -2 ;
+    static const double v11cutminVzCudata = -8.5 ;    //arbitrary +-.5
+    static const double v11cutmaxVzCudata = -7 ;    //arbitrary +-.5
+    static const double v11cutminVzC1data = -4.5 ;    
+    static const double v11cutmaxVzC1data = -2.5 ;
+    static const double v11cutminVzC2data = -9.5 ;
+    static const double v11cutmaxVzC2data = -7.5 ;    
 
 
     //Calo Values 

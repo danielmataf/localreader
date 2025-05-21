@@ -16,6 +16,7 @@
 #include <iomanip> // including <iomanip> for formatting digits for pt2 precision
 #include <TMultiGraph.h>
 #include <TLegend.h>
+#include <THnSparse.h>
 
 
 deltaptsq::deltaptsq(CutSet cutsD, CutSet cutsA, const std::string& targetName) //: cutsD(cutsD), cutsSn(cutsSn) {
@@ -46,6 +47,7 @@ deltaptsq::deltaptsq(CutSet cutsD, CutSet cutsA, const std::string& targetName) 
     
     h_wD_sqpt2(new TH3F (("wD_sqpt2_"+targetName).c_str(), ("h_wD_sqpt2_"+targetName).c_str(),Constants::Dptbin_x,Constants::xminDpt, Constants::xmaxDpt,Constants::Dptbin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
     h_wA_sqpt2(new TH3F (("wA_sqpt2_"+targetName).c_str(), ("h_wA_sqpt2_"+targetName).c_str(),Constants::Dptbin_x,Constants::xminDpt, Constants::xmaxDpt,Constants::Dptbin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
+
 
     h_z_A_had(new TH1F (("zMonDpt_A_"+targetName).c_str(), ("h_zMonDpt_A_"+targetName).c_str() , 50, 0 , 1)),
     h_z_D_had(new TH1F (("zMonDpt_D_"+targetName).c_str(), ("h_zMonDpt_D_"+targetName).c_str() , 50, 0 , 1)),

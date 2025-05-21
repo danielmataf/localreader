@@ -16,11 +16,22 @@
 #include "constants.h"
 
 const int Rbin = Constants::Rbin_nu; // xB-based binning for Cratio
+const int FIXED_SIZE = Constants::Rbin_nu;
+
 
 struct CratioMatrixStruct {
     double val[50][50][50];
     double err[50][50][50];
 };
+
+struct RatioMatrix {
+    std::vector<std::vector<std::vector<double>>> valbis;
+    std::vector<std::vector<std::vector<double>>> errbis;
+    CratioMatrix() :
+        valbis(FIXED_SIZE, std::vector<std::vector<double>>(FIXED_SIZE, std::vector<double>(FIXED_SIZE, 0.0))),
+        errbis(FIXED_SIZE, std::vector<std::vector<double>>(FIXED_SIZE, std::vector<double>(FIXED_SIZE, 0.0))) {}
+};
+
 void computeCratio(const std::string& fileName, const std::string& tag, CratioMatrixStruct& matrix, TH3F*& refHisto) {
     std::cout << "[computeCratio] Opening file: " << fileName << std::endl;
     TFile* f = new TFile(fileName.c_str());
@@ -28,13 +39,13 @@ void computeCratio(const std::string& fileName, const std::string& tag, CratioMa
         std::cerr << "[computeCratio] Failed to open file: " << fileName << std::endl;
         return;
     }
-
-    std::string nameD = "wCphi_D_" + tag;
-    std::string nameA = "wCphi_A_" + tag;
-    std::string nameSqD = "sqCphi_D_" + tag;
-    std::string nameSqA = "sqCphi_A_" + tag;
-    std::string name3dD = "cphi_3D_D_" + tag;
-    std::string name3dA = "cphi_3D_A_" + tag;
+    //starting sanity checks
+    std::string nameD = "wCphi_D_" + tag;   //weighted   
+    std::string nameA = "wCphi_A_" + tag;   //weighted
+    std::string nameSqD = "sqCphi_D_" + tag;    //weighted square
+    std::string nameSqA = "sqCphi_A_" + tag;    //weighted square
+    std::string name3dD = "cphi_3D_D_" + tag;   //count
+    std::string name3dA = "cphi_3D_A_" + tag;   //count
 
     std::cout << "[computeCratio] Looking for histograms:\n  "
               << nameD << "\n  " << nameA << "\n  "
@@ -62,9 +73,9 @@ void computeCratio(const std::string& fileName, const std::string& tag, CratioMa
 
     if (!refHisto) {
         refHisto = hD;
-        refHisto->SetDirectory(nullptr);
+        refHisto->SetDirectory(nullptr); //acquired from R
     }
-
+    // ok as usual
     int NX = hD->GetNbinsX();
     int NY = hD->GetNbinsY();
     int NZ = hD->GetNbinsZ();
@@ -79,9 +90,9 @@ void computeCratio(const std::string& fileName, const std::string& tag, CratioMa
                 double sqD = hSqD->GetBinContent(x, y, z);
                 double sqA = hSqA->GetBinContent(x, y, z);
 
-                double avgD = (countD > 0) ? valD / countD : 0.0;
-                double avgA = (countA > 0) ? valA / countA : 0.0;
-                double Cratio = (avgD != 0.0) ? avgA / avgD : 0.0;
+                double avgD = (countD > 0) ? valD / countD : 0.0;   //weighted average
+                double avgA = (countA > 0) ? valA / countA : 0.0;   //weighted average
+                double Cratio = (avgD != 0.0) ? avgA / avgD : 0.0;  //ratio of two weighted avgs
 
                 double varD = (countD > 0) ? sqD / countD - avgD * avgD : 0.0;
                 double varA = (countA > 0) ? sqA / countA - avgA * avgA : 0.0;

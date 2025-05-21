@@ -11,6 +11,8 @@
 #include <TLegend.h>
 #include <TPad.h>
 #include <fstream>
+#include "TParameter.h"
+
 #include <TPDF.h>
 #include "Event.h" 
 #include "Ratio.h"
@@ -52,6 +54,10 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     h_xB_Q2_A (new TH2F(("xB_Q2_A"+targetName).c_str(), ("xB_Q2_A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminx , Constants::Rcutmaxx, Constants::Rbin_nu , Constants::RcutminQ , Constants::RcutmaxQ)),
     h_xB_Q2_z_A (new TH3F(("xB_Q2_z_A"+targetName).c_str(), ("xB_Q2_z_A"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminx , Constants::Rcutmaxx, Constants::Rbin_nu , Constants::RcutminQ , Constants::RcutmaxQ, Constants::Rbin_z , Constants::RcutminZ , Constants::RcutmaxZ)),
 
+    //1D on z only
+    h_newz_D (new TH1F(("z_D_new"+targetName).c_str(), ("z_D_new"+targetName).c_str(), 10 , Constants::RcutminZ , Constants::RcutmaxZ)),   //setting 10 bins so we can have a 10 point plot
+    h_newz_A (new TH1F(("z_A_new"+targetName).c_str(), ("z_A_new"+targetName).c_str(), 10 , Constants::RcutminZ , Constants::RcutmaxZ)),   //setting 10 bins so we can have a 10 point plot
+
     //5D
     h_3D_A_e (new TH3F(("3D_A_e"+targetName).c_str(), ("3D_A_e"+targetName).c_str(),Constants::Rbin_nu , Constants::RcutminQ, Constants::RcutmaxQ, Constants::Rbin_nu ,Constants::Rcutminx, Constants::Rcutmaxx ,  Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu   )),
     h_3D_D_e (new TH3F(("3D_D_e"+targetName).c_str(), ("3D_D_e"+targetName).c_str(),Constants::Rbin_nu , Constants::RcutminQ, Constants::RcutmaxQ, Constants::Rbin_nu ,Constants::Rcutminx, Constants::Rcutmaxx ,  Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu   )),
@@ -81,7 +87,7 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     binMaxs[3] = Constants::RcutmaxZ;
     binMaxs[4] = Constants::RcutmaxPt2;
 
-    // Initialize the 5D histograms with the fixed ranges
+    //5D histo w/ the fixed ranges
     h_5D_D_had = new THnSparseD(("h_5D_D_had_" + targetName).c_str(), 
                                 "5D hadron counts (D)", 
                                 Rdim, bins, binMins, binMaxs);
@@ -89,7 +95,7 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
                                 "5D hadron counts (A)", 
                                 Rdim, bins, binMins, binMaxs);
 
-    // Debugging the axis ranges immediately after creating the histograms
+    //debug axis ranges 
     std::cout << "=== Debug: 5D Histogram Axis Ranges for " << targetName << " ===" << std::endl;
     std::cout << "5D Histogram Axis Ranges (D):" << std::endl;
     for (int i = 0; i < Rdim; ++i) {
@@ -161,6 +167,7 @@ if (event.GetQ2()< binMins[0] || event.GetQ2() > binMaxs[0] ||
 
                 h_xB_Q2_z_D->Fill(event.GetQ2(), event.Getxb(), hadron.Getz());
                 h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
+                h_newz_D->Fill(hadron.Getz()); // Lamiaa 1D 10 point plot
 
             //std::cout << "nimporte quoi" << event.Getnu()<< ";" << hadron.Getz()<<","<< hadron.Getpt2() <<std::endl;
                 //}
@@ -191,6 +198,7 @@ if (event.GetQ2()< binMins[0] || event.GetQ2() > binMaxs[0] ||
                 h_z_A->Fill(hadron.Getz()); //debugging Ybins jan25
                 h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
 
+                h_newz_A->Fill(hadron.Getz()); // Lamiaa 1D 10 point plot
                 //if (targetName == "C1" ) {
                 //    h_nu_z_pt2C1->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 //}
@@ -219,7 +227,6 @@ void Ratio::saveRhistos() {
     std::string outPath = "../RinputFiles/Rhist_" + targetName + ".root";
     TFile* fout = new TFile(outPath.c_str(), "RECREATE");
 
-    // Rename histograms with underscores for consistency
     if (h_nu_z_pt2D) {
         h_nu_z_pt2D->SetName(("nu_z_pt2_D_" + targetName).c_str());
         h_nu_z_pt2D->Write();
@@ -236,8 +243,17 @@ void Ratio::saveRhistos() {
         h_nuA->SetName(("nu_A_" + targetName).c_str());
         h_nuA->Write();
     }
+    // == 1D histos for R(z) ==
+    if (h_newz_D) {
+        h_newz_D->SetName(("z_D_new" + targetName).c_str());
+        h_newz_D->Write();
+    }
+    if (h_newz_A) {
+        h_newz_A->SetName(("z_A_new" + targetName).c_str());
+        h_newz_A->Write();
+    }
 
-    // These are optional extra monitoring histograms, keep them with renamed versions
+    //extra monitoring histograms, safety renaming,  keep them with renamed versions
     if (h_nu_A_had)  { h_nu_A_had->SetName(("nu_A_had" + targetName).c_str()); h_nu_A_had->Write(); }
     if (h_z_A_had)   { h_z_A_had->SetName(("z_A_had" + targetName).c_str()); h_z_A_had->Write(); }
     if (h_pt2_A_had) { h_pt2_A_had->SetName(("pt2_A_had" + targetName).c_str()); h_pt2_A_had->Write(); }
@@ -253,7 +269,12 @@ void Ratio::saveRhistos() {
     if (h_5D_D_had)  {h_5D_D_had->SetName(("Q2_xB_nu_pt2_z_D_" + targetName).c_str());h_5D_D_had->Write();}
     if (h_5D_A_had) {h_5D_A_had->SetName(("Q2_xB_nu_pt2_z_A_" + targetName).c_str());h_5D_A_had->Write();}
 
-    // Save the target name for metadata
+    //electron counters for 1D plots
+    TParameter<int>* elD_count = new TParameter<int>("N_electrons_D", counter_elLD2);
+    TParameter<int>* elA_count = new TParameter<int>("N_electrons_A", counter_elSn); // always store both
+    elD_count->Write();
+    elA_count->Write();
+    //save to target
     TNamed* tname = new TNamed("targetName", targetName.c_str());
     tname->Write();
 

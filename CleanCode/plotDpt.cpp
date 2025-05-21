@@ -14,16 +14,30 @@
 #include <iomanip>
 #include <sstream>
 #include "constants.h"
+#include <THnSparse.h>
 //How to copile and run 
 //g++ plotDpt.cpp -o plotDpt `root-config --cflags --libs`
 //./plotDpt   -- (default) uses root input
 //./plotDpt 1 -- force txt input (not good, herited from R)
 
 const int Rbin = Constants::Rbin_nu; // xB-based binning for Dpt
+const int FIXED_SIZE = Constants::Rbin_nu; //acquired from R 
+
+// == REMEMBER ==
+// 1. variables in 3D are xb, Q2, z (no hadron or electron specific restricitions)
+// 2. variables in 5D are xb, Q2, nu, z, phih? (no need for electron restriction counts)
 
 struct DptMatrixStruct {
     double val[50][50][50];
     double err[50][50][50];
+};
+
+struct DptMatrix {
+    std::vector<std::vector<std::vector<double>>> valbis;  //logic remains as result and calced err
+    std::vector<std::vector<std::vector<double>>> errbis;  //logic remains as result and calced err
+    DptMatrix() :
+        valbis(FIXED_SIZE, std::vector<std::vector<double>>(FIXED_SIZE, std::vector<double>(FIXED_SIZE, 0.0))),
+        errbis(FIXED_SIZE, std::vector<std::vector<double>>(FIXED_SIZE, std::vector<double>(FIXED_SIZE, 0.0))) {}
 };
 
 
@@ -34,7 +48,7 @@ void computeDpt(const std::string& fileName, const std::string& tag, DptMatrixSt
         std::cerr << "[computeDpt] Failed to open file: " << fileName << std::endl;
         return;
     }
-
+    //sanity checks
     std::string name_ptD   = "wpt2_D_" + tag;
     std::string name_ptA   = "wpt2_A_" + tag;
     std::string name_sqD   = "sqpt2_D_" + tag;
@@ -68,23 +82,24 @@ void computeDpt(const std::string& fileName, const std::string& tag, DptMatrixSt
 
     if (!refHisto) {
         refHisto = h_ptD;
-        refHisto->SetDirectory(nullptr);
+        refHisto->SetDirectory(nullptr); //acquired from R 
     }
 
     int NX = h_ptD->GetNbinsX();
     int NY = h_ptD->GetNbinsY();
-    int NZ = h_ptD->GetNbinsZ();
+    int NZ = h_ptD->GetNbinsZ();    //ok
 
     for (int x = 1; x <= NX; ++x) {
         for (int y = 1; y <= NY; ++y) {
             for (int z = 1; z <= NZ; ++z) {
+                //proceeding straight to third loop since we dont have strict electron counts here as in R 
                 double valD = h_ptD->GetBinContent(x, y, z);
                 double valA = h_ptA->GetBinContent(x, y, z);
                 double countD = h_countD->GetBinContent(x, y, z);
                 double countA = h_countA->GetBinContent(x, y, z);
                 double sqD = h_sqptD->GetBinContent(x, y, z);
                 double sqA = h_sqptA->GetBinContent(x, y, z);
-
+                //lgtm
                 double avgD = (countD > 0) ? valD / countD : 0.0;
                 double avgA = (countA > 0) ? valA / countA : 0.0;
                 double dpt = avgA - avgD;
@@ -145,21 +160,21 @@ void drawDptPdf(const DptMatrixStruct& A, const DptMatrixStruct& B, const DptMat
                 double errC = A.err[x][y][z];
                 double errCu = B.err[x][y][z];
                 double errSn = C.err[x][y][z];
-                gC->SetPoint(z, zVal, valC); gC->SetPointError(z, 0, errC);
+                gSn->SetPoint(z, zVal , valSn); gSn->SetPointError(z, 0, errSn);
                 gCu->SetPoint(z, zVal + 0.01, valCu); gCu->SetPointError(z, 0, errCu);
-                gSn->SetPoint(z, zVal + 0.02, valSn); gSn->SetPointError(z, 0, errSn);
+                gC->SetPoint(z, zVal + 0.02, valC); gC->SetPointError(z, 0, errC);
             }
 
             TMultiGraph* mg = new TMultiGraph();
-            gC->SetMarkerStyle(20); gC->SetMarkerColor(kOrange);
+            gC->SetMarkerStyle(20); gC->SetMarkerColor(kBlack);
             gCu->SetMarkerStyle(20); gCu->SetMarkerColor(kGreen);
-            gSn->SetMarkerStyle(20); gSn->SetMarkerColor(kBlack);
+            gSn->SetMarkerStyle(20); gSn->SetMarkerColor(kOrange);
             mg->Add(gC); mg->Add(gCu); mg->Add(gSn);
 
             mg->Draw("APE1");
             mg->GetXaxis()->SetTitle("z");
             mg->GetYaxis()->SetTitle("#Delta<p_{T}^{2}>");
-            mg->GetYaxis()->SetRangeUser(-0.4, 0.4);
+            mg->GetYaxis()->SetRangeUser(-0.05, 0.15  );
 
             TLegend* legend = new TLegend(0.15, 0.15, 0.35, 0.30);
             legend->SetTextSize(0.035);
@@ -174,7 +189,7 @@ void drawDptPdf(const DptMatrixStruct& A, const DptMatrixStruct& B, const DptMat
 
             TLatex text;
             text.SetTextSize(0.045);
-            text.DrawLatexNDC(0.45, 0.22, Form("%.2f < x < %.2f", binref->GetXaxis()->GetBinLowEdge(x + 1), binref->GetXaxis()->GetBinUpEdge(x + 1)));
+            text.DrawLatexNDC(0.45, 0.22, Form("%.2f < x_{B} < %.2f", binref->GetXaxis()->GetBinLowEdge(x + 1), binref->GetXaxis()->GetBinUpEdge(x + 1)));
             text.DrawLatexNDC(0.45, 0.17, Form("%.2f < Q^{2} < %.2f", binref->GetYaxis()->GetBinLowEdge(y + 1), binref->GetYaxis()->GetBinUpEdge(y + 1)));
 
             TLatex watermark;

@@ -6,6 +6,8 @@
 #include <TH1F.h>
 #include <TH3F.h>
 #include <TGraphErrors.h>
+#include "THnSparse.h"
+
 
 #include <vector>
 #include "Event.h"
@@ -65,6 +67,24 @@ public:
 
 
 private:
+    //COPYING FOLLOWING LINES FROM R FOR 5DIM STUDY
+    //3D histos for electron count
+    TH3F* h_3D_A_e;  // (Q2, xB, nu) 
+    TH3F* h_3D_D_e;  // (Q2, xB, nu) 
+
+    //5D histos for hadron count 
+    THnSparseD* h_5D_A_had;  // (Q2, xB, nu, z, pt2) 
+    THnSparseD* h_5D_D_had;  // (Q2, xB, nu, z, pt2) 
+    //edges for THn
+    static const int Rdim = 5;  //using 5 dimensions 
+    double* binEdges[Rdim]; //need to make 5  arrays one per dimension
+
+    // Optionally, store number of bins and ranges if reused
+    int bins[Rdim] = {Constants::Rbin_nu, Constants::Rbin_nu, Constants::Rbin_nu, Constants::Rbin_nu, Constants::Rbin_nu}; //kinda useless but should work all bins are always 6 
+    double binMins[Rdim] = {Constants::RcutminQ, Constants::Rcutminx, Constants::Rcutminnu, Constants::RcutminZ, Constants::RcutminPt2};
+    double binMaxs[Rdim] = {Constants::RcutmaxQ, Constants::Rcutmaxx, Constants::Rcutmaxnu, Constants::RcutmaxZ, Constants::RcutmaxPt2};    //using cut lows and highs per variable (should work) but we may be exagerating some of the cuts. If issue come here for fixing
+    //if need to edit cuts, look at tendencies on graphs and either replace here for values or directly in constants.h
+
     CutSet cut1;
     CutSet cut2;
     std::string targetName;

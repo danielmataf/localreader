@@ -95,21 +95,21 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     //Defining cuts here. Vz cuts for SIM and RGD may differ -> check Mon Vz
     //simC1cuts.SetCutVz(Constants::RcutminVzC1sim,Constants::RcutminVzC1sim);     //vz cut for C1 target
     //testC1cuts.SetCutVz(Constants::RcutminVzC1data,Constants::RcutmaxVzC1data);     //previous cut, b4jan2025. We change for uncalib data (?) peaks shifted of -1cm
-    testC1cuts.SetCutVz(Constants::RcutminVzC1data,Constants::RcutmaxVzC1data);     //Changing values in constants, also widening the cut
+    testC1cuts.SetCutVz(Constants::v11cutminVzC1data,Constants::v11cutmaxVzC1data);     //Changing values in constants, also widening the cut
     testC1cuts.SetCutGen4Rat();
 
-    testC2cuts.SetCutVz(Constants::RcutminVzC2data, Constants::RcutmaxVzC2data);    //vz cut for C2 target
+    testC2cuts.SetCutVz(Constants::v11cutminVzC2data, Constants::v11cutmaxVzC2data);    //vz cut for C2 target
     testC2cuts.SetCutGen4Rat();
     simC2cuts.SetCutVz(Constants::RcutminVzC2sim    , Constants::RcutmaxVzC2sim);     //vz cut for C2 target
-    simC2cuts.SetCutGen4Rat();
+    simC2cuts.SetCutGen4Rat();  
 
-    testLD2cuts.SetCutVz(Constants::RcutminVzLD2,Constants::RcutmaxVzLD2);     //vz cut for LD2 target
+    testLD2cuts.SetCutVz(Constants::v11cutminVzLD2data,Constants::v11cutmaxVzLD2data);     //vz cut for LD2 target
     testLD2cuts.SetCutGen4Rat();
 
-    testCucuts.SetCutVz(Constants::RcutminVzCu,Constants::RcutmaxVzCu);     //vz cut for Cu target
+    testCucuts.SetCutVz(Constants::v11cutminVzCudata,Constants::v11cutmaxVzCudata);     //vz cut for Cu target
     testCucuts.SetCutGen4Rat();
     
-    testSncuts.SetCutVz(Constants::RcutminVzSndata,Constants::RcutmaxVzSndata);     //vz cut for Sn target
+    testSncuts.SetCutVz(Constants::v11cutminVzSndata,Constants::v11cutmaxVzSndata);     //vz cut for Sn target
     testSncuts.SetCutGen4Rat();
 
     int sumevts = 0;
