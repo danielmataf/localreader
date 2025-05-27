@@ -130,6 +130,12 @@ namespace Constants {
     static const double RcutmaxPt2 = 1.2 ;   
     static const double Rcutminnu = 4.0 ;
     static const double Rcutmaxnu = 9.0 ;
+    //adding phih cuts
+    static const double Rcutminphih = 0.0 ;
+    static const double Rcutmaxphih = 360.0 ;
+
+
+
     static const int Rbin = 100;
     static const int Rbin_Q = 6;
     static const int Rbin_x = 6;

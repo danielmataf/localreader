@@ -61,6 +61,8 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     //5D
     h_3D_A_e (new TH3F(("3D_A_e"+targetName).c_str(), ("3D_A_e"+targetName).c_str(),Constants::Rbin_nu , Constants::RcutminQ, Constants::RcutmaxQ, Constants::Rbin_nu ,Constants::Rcutminx, Constants::Rcutmaxx ,  Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu   )),
     h_3D_D_e (new TH3F(("3D_D_e"+targetName).c_str(), ("3D_D_e"+targetName).c_str(),Constants::Rbin_nu , Constants::RcutminQ, Constants::RcutmaxQ, Constants::Rbin_nu ,Constants::Rcutminx, Constants::Rcutmaxx ,  Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu   )),
+    h_2D_A_e (new TH2F(("2D_A_e"+targetName).c_str(), ("2D_A_e"+targetName).c_str(),Constants::Rbin_nu , Constants::RcutminQ, Constants::RcutmaxQ, Constants::Rbin_nu ,Constants::Rcutminx, Constants::Rcutmaxx )),
+    h_2D_D_e (new TH2F(("2D_D_e"+targetName).c_str(), ("2D_D_e"+targetName).c_str(),Constants::Rbin_nu , Constants::RcutminQ, Constants::RcutmaxQ, Constants::Rbin_nu ,Constants::Rcutminx, Constants::Rcutmaxx )),
     h_5D_D_had (new THnSparseD(("h_5D_D_had_" + targetName).c_str(), "5D hadron counts (D)", Rdim, bins, binMins, binMaxs)),
     h_5D_A_had (new THnSparseD(("h_5D_A_had_" + targetName).c_str(), "5D hadron counts (A)", Rdim, bins, binMins, binMaxs)), // using default chuinksize ? idk the implications of this 
 
@@ -77,13 +79,13 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
         // Manually initialize binMins and binMaxs to ensure they are correct
     binMins[0] = Constants::RcutminQ;
     binMins[1] = Constants::Rcutminx;
-    binMins[2] = Constants::Rcutminnu;
+    binMins[2] = Constants::Rcutminphih;  //replace this cutr to low phih and high phih 
     binMins[3] = Constants::RcutminZ;
     binMins[4] = Constants::RcutminPt2;
 
     binMaxs[0] = Constants::RcutmaxQ;
     binMaxs[1] = Constants::Rcutmaxx;
-    binMaxs[2] = Constants::Rcutmaxnu;
+    binMaxs[2] = Constants::Rcutmaxphih;  //repalce this cut with high phih
     binMaxs[3] = Constants::RcutmaxZ;
     binMaxs[4] = Constants::RcutmaxPt2;
 
@@ -140,8 +142,9 @@ void Ratio::FillHistograms(const Event& event) {
         counter_elLD2 ++;
         //set a counter that increases when electroncuts = passed; in order for it to be called when R is  computed in had variables (?) TBD
         h_nuD->Fill(event.Getnu());
-        h_xB_Q2_D->Fill(event.GetQ2(), event.Getxb());
+        h_xB_Q2_D->Fill(event.Getxb(), event.GetQ2() );
         h_3D_D_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
+        h_2D_D_e->Fill(event.GetQ2(), event.Getxb());   //restricting electron vaiables to Q2, xB only for 5D analysis
         //std::cout << "nu = " << event.Getnu() << std::endl; /bump
 
         for (const Particle& hadron : event.GetHadrons()) {
@@ -153,20 +156,22 @@ void Ratio::FillHistograms(const Event& event) {
                 h_nu_D_had->Fill(event.Getnu() );   //these  histos  added to to track binning switch
                 h_pt2_D_had->Fill(hadron.Getpt2()); //these  histos  added to to track binning switch
                 //h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
-if (event.GetQ2()< binMins[0] || event.GetQ2() > binMaxs[0] ||
-    event.Getxb() < binMins[1] ||event.Getxb() > binMaxs[1] ||
-    event.Getnu() < binMins[2] || event.Getnu() > binMaxs[2] ||
-    hadron.Getpt2() < binMins[3] || hadron.Getpt2() > binMaxs[3] ||
-    hadron.Getz() < binMins[4] || hadron.Getz() > binMaxs[4]) {
-    //std::cout << "[DEBUG] Value outside range: "
-    //          << " Q2=" << event.GetQ2() << ", xB=" << event.Getxb() 
-    //          << ", nu=" << event.Getnu() << ", pt2=" << hadron.Getpt2()
-    //          << ", z=" << hadron.Getz() << std::endl;
-}
+                //below a debug porcedure
+                if (event.GetQ2()< binMins[0] || event.GetQ2() > binMaxs[0] ||
+                    event.Getxb() < binMins[1] ||event.Getxb() > binMaxs[1] ||
+                    event.Getnu() < binMins[2] || event.Getnu() > binMaxs[2] ||
+                    hadron.Getpt2() < binMins[3] || hadron.Getpt2() > binMaxs[3] ||
+                    hadron.Getz() < binMins[4] || hadron.Getz() > binMaxs[4]) {
+                    //std::cout << "[DEBUG] Value outside range: "
+                    //          << " Q2=" << event.GetQ2() << ", xB=" << event.Getxb() 
+                    //          << ", nu=" << event.Getnu() << ", pt2=" << hadron.Getpt2()
+                    //          << ", z=" << hadron.Getz() << std::endl;
+                }
       //          std::cout << "[Fill5D] Q2=" << event.GetQ2() << ", xB=" << event.Getxb() << ", nu=" <<event.Getnu() << ", pt2=" << hadron.Getpt2()  << ", z=" << hadron.Getz()  << std::endl;
 
                 h_xB_Q2_z_D->Fill(event.GetQ2(), event.Getxb(), hadron.Getz());
-                h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
+                //h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
+                h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), hadron.Getphih(), hadron.Getz(), hadron.Getpt2());    //replacing h5 adding phih
                 h_newz_D->Fill(hadron.Getz()); // Lamiaa 1D 10 point plot
 
             //std::cout << "nimporte quoi" << event.Getnu()<< ";" << hadron.Getz()<<","<< hadron.Getpt2() <<std::endl;
@@ -178,8 +183,10 @@ if (event.GetQ2()< binMins[0] || event.GetQ2() > binMaxs[0] ||
         counter_elSn++; //counter for only electrons for z and pt
         //here change the else if to just else in order to have a generic target 
         h_nuA->Fill(event.Getnu()); //can be plotted just like this 
-        h_xB_Q2_A->Fill(event.GetQ2(), event.Getxb());
+        h_xB_Q2_A->Fill(event.Getxb(), event.GetQ2() );
+        std::cout<< "[FillHistograms] Q2=" << event.GetQ2() << ", xB=" << event.Getxb() <<  std::endl;
         h_3D_A_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
+        h_2D_A_e->Fill(event.GetQ2(), event.Getxb());   //restricting electron vaiables to Q2, xB only for 5D analysis
         //if (targetName == "C1"){
         //    h_nuC1->Fill(event.Getnu());
         //}
@@ -196,7 +203,9 @@ if (event.GetQ2()< binMins[0] || event.GetQ2() > binMaxs[0] ||
                 h_z_A_had->Fill(hadron.Getz()); //these 3 histos were added to monitor CxC self Ratio
                 h_pt2_A_had->Fill(hadron.Getpt2()); //these 3 histos were added to monitor CxC self Ratio
                 h_z_A->Fill(hadron.Getz()); //debugging Ybins jan25
-                h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
+                //h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
+                h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), hadron.Getphih(), hadron.Getz(), hadron.Getpt2());    //TODO uncomment this to add phih variable replace 
+
 
                 h_newz_A->Fill(hadron.Getz()); // Lamiaa 1D 10 point plot
                 //if (targetName == "C1" ) {
@@ -266,6 +275,8 @@ void Ratio::saveRhistos() {
     if (h_xB_Q2_z_A) { h_xB_Q2_z_A->SetName(("xB_Q2_z_A" + targetName).c_str()); h_xB_Q2_z_A->Write(); }
     if (h_3D_D_e)    {h_3D_D_e->SetName(("Q2_xB_nu_D_" + targetName).c_str()); h_3D_D_e->Write(); }
     if (h_3D_A_e)    {h_3D_A_e->SetName(("Q2_xB_nu_A_" + targetName).c_str());h_3D_A_e->Write();}
+    if (h_2D_D_e)    {h_2D_D_e->SetName(("Q2_xB_D_" + targetName).c_str()); h_2D_D_e->Write(); }  //this histos are repetition, redundant 
+    if (h_2D_A_e)    {h_2D_A_e->SetName(("Q2_xB_A_" + targetName).c_str()); h_2D_A_e->Write(); }  //this histos are repetition, redundant 
     if (h_5D_D_had)  {h_5D_D_had->SetName(("Q2_xB_nu_pt2_z_D_" + targetName).c_str());h_5D_D_had->Write();}
     if (h_5D_A_had) {h_5D_A_had->SetName(("Q2_xB_nu_pt2_z_A_" + targetName).c_str());h_5D_A_had->Write();}
 

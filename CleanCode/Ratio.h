@@ -214,6 +214,9 @@ private:
     //3D histos for electron count
     TH3F* h_3D_A_e;  // (Q2, xB, nu) 
     TH3F* h_3D_D_e;  // (Q2, xB, nu) 
+    //restricting electron vaiables to Q2, xB only for 5D analysis 
+    TH2F* h_2D_A_e;  // (Q2, xB)
+    TH2F* h_2D_D_e;  // (Q2, xB)
 
     //5D histos for hadron count 
     THnSparseD* h_5D_A_had;  // (Q2, xB, nu, z, pt2) 

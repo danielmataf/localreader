@@ -1,5 +1,6 @@
 #include <TFile.h>
 #include <TH3D.h>
+#include <TH2D.h>
 #include <TH1D.h>
 #include <TCanvas.h>
 #include <TGraphErrors.h>
@@ -101,7 +102,9 @@ RzData calcRz(const std::string& filePath, const std::string& tag) {
     f->Close();
     return data;
 }
-void plotRzComparison(const RzData& rC, const RzData& rSn, const RzData& rCu, const std::string& outName) {
+
+
+void plotRzComparison(const RzData& rC, const RzData& rSn, const RzData& rCu, const std::string& outNameBase) {
     TCanvas* c = new TCanvas("cRz", "R(z) Comparison", 800, 600);
 
     TGraphErrors* gC  = new TGraphErrors(rC.bins.size());
@@ -136,15 +139,18 @@ void plotRzComparison(const RzData& rC, const RzData& rSn, const RzData& rCu, co
     mg->GetYaxis()->SetRangeUser(0, 2.0);
     mg->Draw("APE1");
 
+    // Proper dotted line
+    double xmin = mg->GetXaxis()->GetXmin();
+    double xmax = mg->GetXaxis()->GetXmax();
+    TLine* line = new TLine(xmin, 1.0, xmax, 1.0);
+    line->SetLineStyle(2);
+    line->Draw("same");
+
     TLegend* legend = new TLegend(0.7, 0.7, 0.88, 0.88);
     legend->AddEntry(gC, "C", "lp");
     legend->AddEntry(gSn, "Sn", "lp");
     legend->AddEntry(gCu, "Cu", "lp");
     legend->Draw("same");
-
-    TLine* line = new TLine(rC.bins.front(), 1.0, rC.bins.back(), 1.0);
-    line->SetLineStyle(2);
-    line->Draw("same");
 
     TLatex watermark;
     watermark.SetTextSize(0.08);
@@ -152,9 +158,19 @@ void plotRzComparison(const RzData& rC, const RzData& rSn, const RzData& rCu, co
     watermark.SetTextColorAlpha(kGray + 1, 0.3);
     watermark.SetNDC();
     watermark.SetTextAlign(22);
-    watermark.DrawLatex(0.5, 0.5, "very preliminary");
+    watermark.DrawLatex(0.5, 0.5, "preliminary pass0v11");
 
-    c->SaveAs(outName.c_str());
+    //TLatex tag;
+    //tag.SetTextSize(0.06);
+    //tag.SetTextAngle(45);
+    //tag.SetTextColorAlpha(kGray + 2, 0.3);
+    //tag.SetNDC();
+    //tag.SetTextAlign(22);
+    //tag.DrawLatex(0.5, 0.4, "preliminary pass0v11");
+
+    c->SaveAs((outNameBase + ".pdf").c_str());
+    c->SaveAs((outNameBase + ".png").c_str());
+
     delete c;
 }
 
@@ -227,6 +243,68 @@ void computeRatio(const std::string& fileName, const std::string& tag, RatioMatr
     f->Close();
 }
 
+
+void computeSelfRatio3D(const std::string& fileC1, const std::string& fileC2, const std::string& tagC1, const std::string& tagC2, RatioMatrix& outMatrix, TH3F*& refHisto) {
+    std::cout << "[computeSelfRatio3D] opening files..." << std::endl;
+
+    TFile* f1 = TFile::Open(fileC1.c_str(), "READ");
+    TFile* f2 = TFile::Open(fileC2.c_str(), "READ");
+
+    if (!f1 || f1->IsZombie() || !f2 || f2->IsZombie()) {
+        std::cerr << "[computeSelfRatio3D] failed to open input files." << std::endl;
+        return;
+    }
+
+    std::string nameH1 = "nu_z_pt2_A_" + tagC1;
+    std::string nameH2 = "nu_z_pt2_A_" + tagC2;
+    std::string nameNu1 = "nu_A_" + tagC1;
+    std::string nameNu2 = "nu_A_" + tagC2;
+
+    auto* hC1 = dynamic_cast<TH3F*>(f1->Get(nameH1.c_str()));
+    auto* hC2 = dynamic_cast<TH3F*>(f2->Get(nameH2.c_str()));
+    auto* hNuC1 = dynamic_cast<TH1F*>(f1->Get(nameNu1.c_str()));
+    auto* hNuC2 = dynamic_cast<TH1F*>(f2->Get(nameNu2.c_str()));
+
+    if (!hC1 || !hC2 || !hNuC1 || !hNuC2) {
+        std::cerr << "[computeSelfRatio3D] histograms missing!" << std::endl;
+        f1->Close(); f2->Close();
+        return;
+    }
+
+    if (!refHisto) {
+        refHisto = hC1;
+        refHisto->SetDirectory(nullptr);
+    }
+
+    int NX = hC1->GetNbinsX();
+    int NY = hC1->GetNbinsY();
+    int NZ = hC1->GetNbinsZ();
+
+    for (int x = 1; x <= NX; ++x) {
+        double nuC1 = hNuC1->GetBinContent(x);
+        double nuC2 = hNuC2->GetBinContent(x);
+        for (int y = 1; y <= NY; ++y) {
+            for (int z = 1; z <= NZ; ++z) {
+                double valC1 = hC1->GetBinContent(x, y, z);
+                double valC2 = hC2->GetBinContent(x, y, z);
+
+                double normedC1 = (nuC1 > 0) ? valC1 / nuC1 : 0.0;
+                double normedC2 = (nuC2 > 0) ? valC2 / nuC2 : 0.0;
+                double R = (normedC2 > 0) ? normedC1 / normedC2 : 0.0;
+                double err = (valC1 > 0 && valC2 > 0 && nuC1 > 0 && nuC2 > 0) ? R * std::sqrt(1.0 / valC1 + 1.0 / valC2 + 1.0 / nuC1 + 1.0 / nuC2) : 0.0;
+                //std::cout << "[computeSelfRatio3D] R=" << R << ", err=" << err << std::endl;
+                outMatrix.val[x - 1][y - 1][z - 1] = R;
+                outMatrix.err[x - 1][y - 1][z - 1] = err;
+            }
+        }
+    }
+
+    f1->Close();
+    f2->Close();
+    std::cout << "[computeSelfRatio3D] Completed self-ratio computation.\n";
+}
+
+
 const int Rdim = 5;  //setting THnSparseD 5 dim
 
 
@@ -263,8 +341,8 @@ void compute5DRatio_withLoops(const std::string& fileName, const std::string& ta
     const int nbinsQ2  = hD_5D->GetAxis(0)->GetNbins();
     const int nbinsxB  = hD_5D->GetAxis(1)->GetNbins();
     const int nbinsNu  = hD_5D->GetAxis(2)->GetNbins();
-    const int nbinsZ   = hD_5D->GetAxis(3)->GetNbins();
     const int nbinsPt2 = hD_5D->GetAxis(4)->GetNbins();
+    const int nbinsZ   = hD_5D->GetAxis(3)->GetNbins();
 
     Int_t indices[5];  //indexing in 5dim   I guess prefered used is long64
     int Riszero = 0;
@@ -311,6 +389,94 @@ void compute5DRatio_withLoops(const std::string& fileName, const std::string& ta
     f->Close();
 
     std::cout << "[compute5DRatio_withLoops] Ratio histogram written to: ratio_loop_" << tag << ".root" << std::endl;
+}
+
+
+void compute5D_LoopsPhih(const std::string& fileName, const std::string& tag) {
+    std::cout << "[compute5D_LoopsPhih] Attempting to open file: " << fileName << std::endl;
+    TFile* f = new TFile(fileName.c_str(), "READ");
+    
+    if (!f || f->IsZombie()) {
+        std::cerr << "[compute5D_LoopsPhih] Failed to open file: " << fileName << std::endl;
+        return;
+    }
+
+    // Histogram names
+    std::string nameD5D = "Q2_xB_phih_z_pt2_D_" + tag;
+    std::string nameA5D = "Q2_xB_phih_z_pt2_A_" + tag;
+    std::string nameD2D = "xB_Q2_D" + tag;
+    std::string nameA2D = "xB_Q2_A" + tag;
+
+    // Load histograms
+    auto* hD_5D = dynamic_cast<THnSparseD*>(f->Get(nameD5D.c_str()));
+    auto* hA_5D = dynamic_cast<THnSparseD*>(f->Get(nameA5D.c_str()));
+    auto* hD_2D = dynamic_cast<TH2F*>(f->Get(nameD2D.c_str()));
+    auto* hA_2D = dynamic_cast<TH2F*>(f->Get(nameA2D.c_str()));
+
+    if (!hD_5D || !hA_5D || !hD_2D || !hA_2D) {
+        std::cerr << "[compute5D_LoopsPhih] One or more histograms missing. Exiting." << std::endl;
+        f->Close();
+        return;
+    }
+
+    // Prepare output ratio histogram
+    auto* hRatio = static_cast<THnSparseD*>(hD_5D->Clone(("h_5D_RatioLoop_" + tag).c_str()));
+    hRatio->Reset();
+
+    // Get bin numbers
+    const int nbinsQ2   = hD_5D->GetAxis(0)->GetNbins();
+    const int nbinsxB   = hD_5D->GetAxis(1)->GetNbins();
+    const int nbinsPhih = hD_5D->GetAxis(2)->GetNbins();
+    const int nbinsZ    = hD_5D->GetAxis(3)->GetNbins();
+    const int nbinsPt2  = hD_5D->GetAxis(4)->GetNbins();
+
+    Int_t indices[5];
+    int Riszero = 0;
+    int nbofvalues = 0;
+
+    for (int iQ2 = 1; iQ2 <= nbinsQ2; ++iQ2) {
+        for (int ixB = 1; ixB <= nbinsxB; ++ixB) {
+            double normD = hD_2D->GetBinContent(ixB, iQ2);  // TH2F: x = xB, y = Q²
+            double normA = hA_2D->GetBinContent(ixB, iQ2);
+
+            for (int iPhih = 1; iPhih <= nbinsPhih; ++iPhih) {
+                for (int iZ = 1; iZ <= nbinsZ; ++iZ) {
+                    for (int iPt2 = 1; iPt2 <= nbinsPt2; ++iPt2) {
+                        nbofvalues++;
+                        indices[0] = iQ2   - 1;
+                        indices[1] = ixB   - 1;
+                        indices[2] = iPhih - 1;
+                        indices[3] = iZ    - 1;
+                        indices[4] = iPt2  - 1;
+
+                        double valD = hD_5D->GetBinContent(indices);
+                        double valA = hA_5D->GetBinContent(indices);
+
+                        double rD = (normD > 0) ? valD / normD : 0.0;
+                        double rA = (normA > 0) ? valA / normA : 0.0;
+                        double R  = (rD > 0) ? rA / rD : 0.0;
+                        double err = (valD > 0 && valA > 0 && normD > 0 && normA > 0)
+                            ? R * std::sqrt(1.0 / valA + 1.0 / valD + 1.0 / normA + 1.0 / normD)
+                            : 0.0;
+
+                        if (R == 0.0) ++Riszero;
+
+                        hRatio->SetBinContent(indices, R);
+                        hRatio->SetBinError(indices, err);
+                    }
+                }
+            }
+        }
+    }
+
+    std::cout << "[compute5D_LoopsPhih] Number of zero ratios: " << Riszero << " out of " << nbofvalues << std::endl;
+
+    TFile* outFile = new TFile(("ratio_loop_" + tag + ".root").c_str(), "RECREATE");
+    hRatio->Write();
+    outFile->Close();
+    f->Close();
+
+    std::cout << "[compute5D_LoopsPhih] Ratio histogram written to: ratio_loop_" << tag << ".root" << std::endl;
 }
 
 
@@ -575,7 +741,7 @@ void drawRatio5DfromTHnSparse(std::vector<THnSparseD*> ratios, const std::string
 
     for (int iQ2 = 1; iQ2 <= nQ2; ++iQ2) {
         std::string outPdf = outDir + "/Ratio_Q2bin" + std::to_string(iQ2) + ".pdf";
-
+        std::cout << "[drawRatio5DfromTHnSparse] Processing Q2 bin " << iQ2 << " with output PDF: " << outPdf << std::endl;
         for (int ixB = 1; ixB <= nxB; ++ixB) {
             for (int iNu = 1; iNu <= nNu; ++iNu) {
                 TCanvas* canvas = new TCanvas("canvas", "5D Ratio Plots", 1200, 800);
@@ -590,16 +756,28 @@ void drawRatio5DfromTHnSparse(std::vector<THnSparseD*> ratios, const std::string
                     TGraphErrors* gSn = new TGraphErrors();
 
                     for (int iZ = 1; iZ <= nZ; ++iZ) {
-                        Int_t idx[5] = {iQ2 - 1, ixB - 1, iNu - 1, iPt2 - 1, iZ - 1};
 
-                        double zVal = hC->GetAxis(4)->GetBinCenter(iZ);
+                        Int_t idx[5] = {iQ2 - 1, ixB - 1, iNu - 1,  iZ-1 , iPt2-1 };
+                    std::cout << "[drawRatio5DfromTHnSparse] : z bin value =" << hC->GetAxis(3)->GetBinCenter(iZ) << std::endl;
 
+                        double zVal = hC->GetAxis(3)->GetBinCenter(iZ);
                         double valC  = hC->GetBinContent(idx);
                         double errC  = hC->GetBinError(idx);
                         double valCu = hCu->GetBinContent(idx);
                         double errCu = hCu->GetBinError(idx);
                         double valSn = hSn->GetBinContent(idx);
                         double errSn = hSn->GetBinError(idx);
+                        std::cout << "[drawRatio5DfromTHnSparse] Bin (Q2=" << iQ2
+                        << ", xB=" << ixB
+                        << ", Nu=" << iNu
+                        << ", pt2=" << iPt2
+                        << ", z=" << iZ
+                        << ") | C= " << valC << " ± " << errC
+                        << ", Cu= " << valCu << " ± " << errCu
+                        << ", Sn= " << valSn << " ± " << errSn << std::endl;
+
+                        //ward for skipping empty points (useful? ) commented
+                        //if (valC == 0 && valCu == 0 && valSn == 0) continue;    //ward
 
                         int point = iZ - 1;
                         gC->SetPoint(point, zVal, valC);
@@ -622,17 +800,13 @@ void drawRatio5DfromTHnSparse(std::vector<THnSparseD*> ratios, const std::string
                     // Annotate bin ranges
                     TLatex label;
                     label.SetTextSize(0.03);
-                    label.DrawLatexNDC(0.12, 0.88, Form("%.2f < Q^{2} < %.2f", 
-                        hC->GetAxis(0)->GetBinLowEdge(iQ2), hC->GetAxis(0)->GetBinUpEdge(iQ2)));
-                    label.DrawLatexNDC(0.12, 0.83, Form("%.2f < x_{B} < %.2f", 
-                        hC->GetAxis(1)->GetBinLowEdge(ixB), hC->GetAxis(1)->GetBinUpEdge(ixB)));
-                    label.DrawLatexNDC(0.12, 0.78, Form("%.2f < #nu < %.2f", 
-                        hC->GetAxis(2)->GetBinLowEdge(iNu), hC->GetAxis(2)->GetBinUpEdge(iNu)));
-                    label.DrawLatexNDC(0.12, 0.73, Form("%.2f < p_{T}^{2} < %.2f", 
-                        hC->GetAxis(3)->GetBinLowEdge(iPt2), hC->GetAxis(3)->GetBinUpEdge(iPt2)));
+                    label.DrawLatexNDC(0.12, 0.88, Form("%.2f < Q^{2} < %.2f", hC->GetAxis(0)->GetBinLowEdge(iQ2), hC->GetAxis(0)->GetBinUpEdge(iQ2)));
+                    label.DrawLatexNDC(0.12, 0.83, Form("%.2f < x_{B} < %.2f", hC->GetAxis(1)->GetBinLowEdge(ixB), hC->GetAxis(1)->GetBinUpEdge(ixB)));
+                    label.DrawLatexNDC(0.12, 0.78, Form("%.2f < #nu < %.2f", hC->GetAxis(2)->GetBinLowEdge(iNu), hC->GetAxis(2)->GetBinUpEdge(iNu)));
+                    label.DrawLatexNDC(0.12, 0.73, Form("%.2f < p_{T}^{2} < %.2f", hC->GetAxis(4)->GetBinLowEdge(iPt2), hC->GetAxis(4)->GetBinUpEdge(iPt2)));
 
                     // Reference line
-                    TLine* refLine = new TLine(hC->GetAxis(4)->GetXmin(), 1.0, hC->GetAxis(4)->GetXmax(), 1.0);
+                    TLine* refLine = new TLine(hC->GetAxis(3)->GetXmin(), 1.0, hC->GetAxis(3)->GetXmax(), 1.0);
                     refLine->SetLineStyle(2);
                     refLine->SetLineColor(kGray + 2);
                     refLine->Draw("same");
@@ -677,11 +851,11 @@ int main() {
     RzData rzSn = calcRz("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD");
     RzData rzCu = calcRz("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD");
 
-    plotRzComparison(rzC, rzSn, rzCu, "Rvalues/Rz_comparison.pdf");
+    plotRzComparison(rzC, rzSn, rzCu, "Rvalues/Rz_comparison");
 
     RatioMatrix rC, rCu, rSn;
     TH3F *refHist = nullptr;
-
+    computeSelfRatio3D("RinputFiles/Rhist_C1_RGD.root", "RinputFiles/Rhist_C2_RGD.root", "C1_RGD", "C2_RGD", rC, refHist); //change this to C1 once you have C1 file 
     computeRatio("RinputFiles/Rhist_C2_RGD.root", "C2_RGD", rC, refHist);
     computeRatio("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD", rCu, refHist);
     computeRatio("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD", rSn, refHist);
@@ -691,32 +865,38 @@ int main() {
     } else {
         std::cerr << "[plotRatio] Aborting plot: no valid reference histogram loaded.\n";
     }
-    checkTHnSparseContents("RinputFiles/Rhist_C2_RGD.root", "Q2_xB_nu_pt2_z_D_C2_RGD");
-    checkTHnSparseContents("RinputFiles/Rhist_Cu_RGD.root", "Q2_xB_nu_pt2_z_D_Cu_RGD");
-    checkTHnSparseContents("RinputFiles/Rhist_Sn_RGD.root", "Q2_xB_nu_pt2_z_D_Sn_RGD");
-    inspectTHnSparseAxes("RinputFiles/Rhist_C2_RGD.root", "Q2_xB_nu_pt2_z_D_C2_RGD");
+//    checkTHnSparseContents("RinputFiles/Rhist_C2_RGD.root", "Q2_xB_nu_pt2_z_D_C2_RGD");
+//    checkTHnSparseContents("RinputFiles/Rhist_Cu_RGD.root", "Q2_xB_nu_pt2_z_D_Cu_RGD");
+//    checkTHnSparseContents("RinputFiles/Rhist_Sn_RGD.root", "Q2_xB_nu_pt2_z_D_Sn_RGD");
+//    inspectTHnSparseAxes("RinputFiles/Rhist_C2_RGD.root", "Q2_xB_nu_pt2_z_D_C2_RGD");
     //compute5DRatio("RinputFiles/Rhist_C2_RGD.root", "C2_RGD");
     //compute5DRatio("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD");
     //compute5DRatio("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD");
-    compute5DRatio_withLoops("RinputFiles/Rhist_C2_RGD.root", "C2_RGD");
-    compute5DRatio_withLoops("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD");
-    compute5DRatio_withLoops("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD");
-    TFile* fC  = TFile::Open("ratio_loop_C2_RGD.root");
-    TFile* fCu = TFile::Open("ratio_loop_Cu_RGD.root");
-    TFile* fSn = TFile::Open("ratio_loop_Sn_RGD.root");
+    
+    
+    //compute5DRatio_withLoops("RinputFiles/Rhist_C2_RGD.root", "C2_RGD");
+    //compute5DRatio_withLoops("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD");
+    //compute5DRatio_withLoops("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD");
+    compute5D_LoopsPhih("RinputFiles/Rhist_C2_RGD.root", "C2_RGD");
+    compute5D_LoopsPhih("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD");
+    compute5D_LoopsPhih("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD");
 
-    auto* hC  = (THnSparseD*)fC->Get("h_5D_RatioLoop_C2_RGD");
-    auto* hCu = (THnSparseD*)fCu->Get("h_5D_RatioLoop_Cu_RGD");
-    auto* hSn = (THnSparseD*)fSn->Get("h_5D_RatioLoop_Sn_RGD");
-
-    if (!hC || !hCu || !hSn) {
-        std::cerr << "ERROR: One or more THnSparse histograms could not be loaded. Check names!" << std::endl;
-        return 1;
-    }
-
-    std::vector<THnSparseD*> ratios = {hC, hCu, hSn};
-    drawRatio5DfromTHnSparse(ratios, "Rvalues");
-
+    //TFile* fC  = TFile::Open("ratio_loop_C2_RGD.root");
+    //TFile* fCu = TFile::Open("ratio_loop_Cu_RGD.root");
+    //TFile* fSn = TFile::Open("ratio_loop_Sn_RGD.root");
+//
+    //auto* hC  = (THnSparseD*)fC->Get("h_5D_RatioLoop_C2_RGD");
+    //auto* hCu = (THnSparseD*)fCu->Get("h_5D_RatioLoop_Cu_RGD");
+    //auto* hSn = (THnSparseD*)fSn->Get("h_5D_RatioLoop_Sn_RGD");
+//
+    //if (!hC || !hCu || !hSn) {
+    //    std::cerr << "ERROR: One or more THnSparse histograms could not be loaded. Check names!" << std::endl;
+    //    return 1;
+    //}
+//
+    //std::vector<THnSparseD*> ratios = {hC, hCu, hSn};
+    //drawRatio5DfromTHnSparse(ratios, "Rvalues");
+//
 
 
 
