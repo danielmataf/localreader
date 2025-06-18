@@ -127,6 +127,110 @@ void computeDpt(const std::string& fileName, const std::string& tag, DptMatrixSt
     std::cout << "[computeDpt] Successfully loaded and computed from " << fileName << std::endl;
 }
 
+// -----------------------------------------------------------------------------
+//  D⟨pT2⟩ in 4D  :  Q2 -> xB -> phih ->  z
+//  counts  :  Q_x_phih_z_D_(tag)      , Q_x_phih_z_A_(tag) // this is for average calc 
+//  weight (pt2) = val   :  Q_x_phih_z_wD_(tag)     , Q_x_phih_z_wA_(tag)   //this is actal value collected
+//  weighted sq (pt2 *pt2)   :  Q_x_phih_z_w2D_(tag)    , Q_x_phih_z_w2A_(tag) /this is for error calculation ( variance )
+// -----------------------------------------------------------------------------
+void computeDpt4D_LoopsPhih(const std::string& fileName,
+                            const std::string& tag)
+{
+    std::cout << "[computeDpt4D] Opening file " << fileName << std::endl;
+    TFile* f = TFile::Open(fileName.c_str(), "READ");
+    if (!f || f->IsZombie()) {
+        std::cerr << "[computeDpt4D] Cannot open file – abort\n";
+        return;
+    }
+    //hitos attribution 
+    const std::string hCntD_name  = "Q_x_phih_z_D_"  + tag;
+    const std::string hCntA_name  = "Q_x_phih_z_A_"  + tag;
+    const std::string hWPtD_name  = "Q_x_phih_z_wD_" + tag;   // w
+    const std::string hWPtA_name  = "Q_x_phih_z_wA_" + tag;
+    const std::string hW2PtD_name = "Q_x_phih_z_w2D_" + tag;  // w sq
+    const std::string hW2PtA_name = "Q_x_phih_z_w2A_" + tag;
+
+    auto* hCntD  = dynamic_cast<THnSparseD*>(f->Get(hCntD_name .c_str()));
+    auto* hCntA  = dynamic_cast<THnSparseD*>(f->Get(hCntA_name .c_str()));
+    auto* hWPtD  = dynamic_cast<THnSparseD*>(f->Get(hWPtD_name .c_str()));
+    auto* hWPtA  = dynamic_cast<THnSparseD*>(f->Get(hWPtA_name .c_str()));
+    auto* hW2PtD = dynamic_cast<THnSparseD*>(f->Get(hW2PtD_name.c_str()));
+    auto* hW2PtA = dynamic_cast<THnSparseD*>(f->Get(hW2PtA_name.c_str()));
+    //sanity check
+    if (!hCntD || !hCntA || !hWPtD || !hWPtA || !hW2PtD || !hW2PtA) {
+        std::cerr << "[computeDpt4D] One or more 4-D histograms missing\n";
+        f->ls();
+        f->Close();
+        return;
+    }
+
+    // create empty output container (same binning as counts-D all same binnign) 
+    // this for results values output 
+    auto* hDpt = static_cast<THnSparseD*>(hCntD->Clone(("dpt4D_" + tag).c_str()));
+    hDpt->Reset();
+
+    // axis extents
+    const int nQ   = hCntD->GetAxis(0)->GetNbins();
+    const int nxB  = hCntD->GetAxis(1)->GetNbins();
+    const int nPhi = hCntD->GetAxis(2)->GetNbins();
+    const int nZ   = hCntD->GetAxis(3)->GetNbins();
+
+    Int_t idx[4];
+    Long64_t zeroCounter = 0, totCounter = 0;
+
+    // main loop  (Q² → xB → φh → z)
+    for (int iQ = 1;  iQ <= nQ;   ++iQ){
+        for (int ix = 1;  ix <= nxB;  ++ix){
+            for (int ip = 1;  ip <= nPhi; ++ip){
+                for (int iz = 1;  iz <= nZ;   ++iz) {
+                    idx[0] = iQ-1;  idx[1] = ix-1;  idx[2] = ip-1;  idx[3] = iz-1;
+                    ++totCounter;
+
+                    // -- D target --------------------------------------------------
+                    const double cD   = hCntD ->GetBinContent(idx);
+                    const double sD   = hWPtD ->GetBinContent(idx);
+                    //std::cout << "[computeDpt4D] idx: " << idx[0] << ", " << idx[1] << ", " << idx[2] << ", " << idx[3] << std::endl;
+                    //std::cout << "[computeDpt4D] cD: " << cD << ", sD: " << sD << std::endl;
+                    const double s2D  = hW2PtD->GetBinContent(idx);
+                    const double avgD = (cD>0) ? sD/cD : 0.0;
+                    const double varD = (cD>0) ? s2D/cD - avgD*avgD : 0.0;
+                    const double errD = (cD>0) ? std::sqrt(varD/cD) : 0.0;
+
+                    // -- A target --------------------------------------------------
+                    const double cA   = hCntA ->GetBinContent(idx);
+                    const double sA   = hWPtA ->GetBinContent(idx);
+                    //std::cout << "[computeDpt4D] cA: " << cA << ", sA: " << sA << std::endl;
+                    const double s2A  = hW2PtA->GetBinContent(idx);
+                    const double avgA = (cA>0) ? sA/cA : 0.0;
+                    const double varA = (cA>0) ? s2A/cA - avgA*avgA : 0.0;
+                    const double errA = (cA>0) ? std::sqrt(varA/cA) : 0.0;
+
+                    // -- delta⟨pt2⟩ and uncertainty --------------------------------
+                    const double dpt   = avgA - avgD;
+                    const double err   = std::sqrt(errA*errA + errD*errD);
+
+                    if (dpt==0.0) ++zeroCounter;
+
+                    hDpt->SetBinContent(idx, dpt);
+                    hDpt->SetBinError  (idx, err);
+                }
+            }
+        }
+    }
+
+    std::cout << "[computeDpt4D] Zero-valued bins: "
+              << zeroCounter << " / " << totCounter << '\n';
+
+    //output 
+    TFile* fout = new TFile(("dpt4D_"+tag+".root").c_str(),"RECREATE");
+    hDpt->Write();
+    fout->Close();
+    f->Close();
+
+    std::cout << "[computeDpt4D] Saved D⟨pt2⟩ histogram to dpt4D_" << tag << ".root\n";
+}
+
+
 
 void drawDptPdf(const DptMatrixStruct& A, const DptMatrixStruct& B, const DptMatrixStruct& C, TH3F* binref) {
     if (!binref) {
@@ -209,6 +313,81 @@ void drawDptPdf(const DptMatrixStruct& A, const DptMatrixStruct& B, const DptMat
     }
 }
 
+///basic axis info (bins, range, titles)
+void inspectTHnSparseAxes(const THnSparseD* h, const std::string& label)
+{
+    if (!h) { std::cerr << "[inspectTHnSparse] null pointer for " << label << '\n'; return; }
+
+    std::cout << "\n[inspectTHnSparse]  " << label << '\n';
+    const Int_t ndim = h->GetNdimensions();
+    for (Int_t ax = 0; ax < ndim; ++ax) {
+        auto* axis = h->GetAxis(ax);
+        std::cout << "  axis " << ax          << "  (\"" << axis->GetTitle() << "\") : "
+                  << axis->GetNbins()         << " bins  |  "
+                  << "[" << axis->GetXmin()
+                  << ", " << axis->GetXmax()   << "]\n";
+    }
+    std::cout << "  total sparse bins   : " << h->GetNbins()   << '\n'
+          << "  filled entries      : " << h->GetEntries() << '\n';
+
+    Double_t sumW = 0.0;
+    Long64_t totalBins = h->GetNbins();
+    for (Long64_t i = 0; i < totalBins; ++i) {
+        double val = h->GetBinContent(i);
+        if (std::isfinite(val)) sumW += val;
+    }
+    std::cout << "  sum of weights      : " << sumW << "\n" << std::endl;
+
+}
+
+void checkTHnSparseContents(const std::string& filePath,
+                            const std::string& histoName,
+                            bool printPerBin = true)
+{
+    TFile* file = TFile::Open(filePath.c_str(), "READ");
+    if (!file || file->IsZombie()) {
+        std::cerr << "[checkTHnSparseContents] Failed to open file: " << filePath << std::endl;
+        return;
+    }
+
+    auto* h = dynamic_cast<THnSparseD*>(file->Get(histoName.c_str()));
+    if (!h) {
+        std::cerr << "[checkTHnSparseContents] Histogram " << histoName << " not found in " << filePath << std::endl;
+        file->Close();
+        return;
+    }
+
+    std::cout << "[checkTHnSparseContents] Contents of histogram: " << histoName << std::endl;
+
+    Long64_t nbins = h->GetNbins();
+    int ndim = h->GetNdimensions();
+    std::vector<Int_t> coords(ndim);
+
+    for (Long64_t g = 0; g < nbins; ++g) {
+        double content = h->GetBinContent(g);
+        if (content == 0.0) continue;
+
+        // Decode global bin index to per-dimension indices manually
+        Long64_t local = g;
+        for (int d = ndim - 1; d >= 0; --d) {
+            Int_t nb = h->GetAxis(d)->GetNbins() + 2;
+            coords[d] = local % nb;
+            local /= nb;
+        }
+
+        std::cout << "Bin " << g
+                  << " | Content = " << content
+                  << " | Indices = [ ";
+        for (int i = 0; i < ndim; ++i)
+            std::cout << coords[i] << " ";
+        std::cout << "]" << std::endl;
+    }
+
+    file->Close();
+}
+
+
+
 int main() {
     DptMatrixStruct dptC, dptCu, dptSn;
     TH3F* refHist = nullptr;
@@ -216,6 +395,30 @@ int main() {
     computeDpt("DptinputFiles/Dhist_C2_RGD.root", "C2_RGD", dptC, refHist);
     computeDpt("DptinputFiles/Dhist_Cu_RGD.root", "Cu_RGD", dptCu, refHist);
     computeDpt("DptinputFiles/Dhist_Sn_RGD.root", "Sn_RGD", dptSn, refHist);
+    TFile* f = TFile::Open("DptinputFiles/Dhist_Cu_RGD.root");
+if (!f || f->IsZombie()) { std::cerr << "cannot open file\n"; return 1; }
+
+THnSparseD *hCntD{nullptr}, *hCntA{nullptr};
+f->GetObject("Q_x_phih_z_D_Cu_RGD",  hCntD);   // counts (D)
+f->GetObject("Q_x_phih_z_A_Cu_RGD",  hCntA);   // counts (A)
+
+inspectTHnSparseAxes(hCntD, "Counts-D  (Cu)");
+
+inspectTHnSparseAxes(hCntA, "Counts-A  (Cu)");
+
+checkTHnSparseContents("DptinputFiles/Dhist_Cu_RGD.root",
+                       "Q_x_phih_z_D_Cu_RGD");
+
+checkTHnSparseContents("DptinputFiles/Dhist_Cu_RGD.root",
+                       "Q_x_phih_z_A_Cu_RGD");
+
+//if (!okD || !okA) {
+//    std::cerr << "Histogram sanity check failed — aborting analysis\n";
+//    return 1;
+//}
+    computeDpt4D_LoopsPhih("DptinputFiles/Dhist_C2_RGD.root", "C2_RGD");
+    computeDpt4D_LoopsPhih("DptinputFiles/Dhist_Cu_RGD.root", "Cu_RGD");
+    computeDpt4D_LoopsPhih("DptinputFiles/Dhist_Sn_RGD.root", "Sn_RGD");
 
     if (refHist) {
         drawDptPdf(dptC, dptCu, dptSn, refHist);

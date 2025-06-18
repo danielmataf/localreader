@@ -49,15 +49,59 @@ deltaptsq::deltaptsq(CutSet cutsD, CutSet cutsA, const std::string& targetName) 
     h_wA_sqpt2(new TH3F (("wA_sqpt2_"+targetName).c_str(), ("h_wA_sqpt2_"+targetName).c_str(),Constants::Dptbin_x,Constants::xminDpt, Constants::xmaxDpt,Constants::Dptbin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Dptbin_z,Constants::RcutminZ, Constants::RcutmaxZ)),
 
 
+    //4Dim histos
+    h_4D_D_had(new THnSparseD (("h_4D_D_had_"+targetName).c_str(), "4DHadronCountsD", Dptdim, Dptbins, DptbinMins, DptbinMaxs)),
+    h_4D_A_had(new THnSparseD (("h_4D_A_had_"+targetName).c_str(), "4DHadronCountsA", Dptdim, Dptbins, DptbinMins, DptbinMaxs)),
+    //  weighted histos also in 4D 
+    h_4D_D_whad(new THnSparseD (("h_4D_D_whad_"+targetName).c_str(), "4DweightedD", Dptdim, Dptbins, DptbinMins, DptbinMaxs)),//same config as 4D histo 
+    h_4D_A_whad(new THnSparseD (("h_4D_A_whad_"+targetName).c_str(), "4DweightedA", Dptdim, Dptbins, DptbinMins, DptbinMaxs)),//same config as 4D histo
+    h_4D_D_w2had(new THnSparseD (("h_4D_D_w2had_"+targetName).c_str(), "4DweightedsqD", Dptdim, Dptbins, DptbinMins, DptbinMaxs)),//same config as 4D histo 
+    h_4D_A_w2had(new THnSparseD (("h_4D_A_w2had_"+targetName).c_str(), "4DweightedsqA", Dptdim, Dptbins, DptbinMins, DptbinMaxs)),//same config as 4D histo
+
+
+
     h_z_A_had(new TH1F (("zMonDpt_A_"+targetName).c_str(), ("h_zMonDpt_A_"+targetName).c_str() , 50, 0 , 1)),
     h_z_D_had(new TH1F (("zMonDpt_D_"+targetName).c_str(), ("h_zMonDpt_D_"+targetName).c_str() , 50, 0 , 1)),
     h_pt2_A_had(new TH1F (("ptMonDpt_A_"+targetName).c_str(), ("h_ptMonDpt_A_"+targetName).c_str() , 50, 0 , 3)),
-    h_pt2_D_had(new TH1F (("ptMonDpt_D_"+targetName).c_str(), ("h_ptMonDpt_D_"+targetName).c_str() , 50, 0 , 3)) {
+    h_pt2_D_had(new TH1F (("ptMonDpt_D_"+targetName).c_str(), ("h_ptMonDpt_D_"+targetName).c_str() , 50, 0 , 3))
+     {
 
     
     //cutd(cutsD),
     //cuta(cutsA);
+    //manually set the binning for 4D histograms
+    DptbinMins[0] = Constants::RcutminQ;
+    DptbinMins[1] = Constants::Rcutminx;
+    DptbinMins[2] = Constants::Rcutminphih;   
+    DptbinMins[3] = Constants::RcutminZ;
+
+    DptbinMaxs[0] = Constants::RcutmaxQ;
+    DptbinMaxs[1] = Constants::Rcutmaxx;
+    DptbinMaxs[2] = Constants::Rcutmaxphih;  
+    DptbinMaxs[3] = Constants::RcutmaxZ;
+
+    h_4D_D_had = new THnSparseD(("h_4D_D_had_" + targetName).c_str(), "4DHadronCountsD", Dptdim, Dptbins, DptbinMins, DptbinMaxs);
+    h_4D_A_had = new THnSparseD(("h_4D_A_had_" + targetName).c_str(), "4DHadronCountsA", Dptdim, Dptbins, DptbinMins, DptbinMaxs);
+    //debug axis ranges 
+    std::cout << "=== Debug: 4D Histogram Axis Ranges for " << targetName << " ===" << std::endl;
+    std::cout << "4D Histogram Axis Ranges (D):" << std::endl;
+    for (int i = 0; i < Dptdim; ++i) {
+        std::cout << "Axis " << i << " range: [" 
+                  << h_4D_D_had->GetAxis(i)->GetXmin() << ", "
+                  << h_4D_D_had->GetAxis(i)->GetXmax() << "]" << std::endl;
     }
+
+    std::cout << "5D Histogram Axis Ranges (A):" << std::endl;
+    for (int i = 0; i < Dptdim; ++i) {
+        std::cout << "Axis " << i << " range: [" 
+                  << h_4D_A_had->GetAxis(i)->GetXmin() << ", "
+                  << h_4D_A_had->GetAxis(i)->GetXmax() << "]" << std::endl;
+    }
+
+    }
+
+//Add deletion process here !!
+
 
 // ONLY NEED 3 VARIABLES Q,  Z and nu
 // Dont use pt nor pt2 as a variable 
@@ -121,7 +165,11 @@ void deltaptsq::FillHistograms(const Event& event) {
                 h_wD_pt->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), hadron.Getpt2());    //3 arguments and the WEIGHT
                 h_wD_sqpt2->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), hadron.Getpt2()*hadron.Getpt2());    //3 arguments and the WEIGHT (pt2 squared)
                 h_D_pt3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz());    //3 arguments only counts not weight
-                hDpt_Q_nu_zD->Fill(event.GetQ2(), event.Getnu(), hadron.Getz()); // uselesss ? 
+                hDpt_Q_nu_zD->Fill(event.GetQ2(), event.Getnu(), hadron.Getz()); // uselesss ?
+                h_4D_D_had->Fill(event.GetQ2(), event.Getxb(), hadron.Getphih(), hadron.Getz());    //filling a 5D histo for 5D calc inside hadron loop
+                double fourvaluesD[4] = {event.GetQ2(), event.Getxb(), hadron.Getphih(), hadron.Getz()};
+                h_4D_D_whad->Fill(fourvaluesD, hadron.Getpt2()); //filling a 5D histo for 5D calc inside hadron loop
+                h_4D_D_w2had->Fill(fourvaluesD, hadron.Getpt2() * hadron.Getpt2()); //filling a 5D histo for 5D calc inside hadron loop (pt2 squared)
                 //h_z_A_had->Fill(hadron.Getz());
                 //h_pt2_A_had->Fill(hadron.Getpt2());
                 }
@@ -140,6 +188,10 @@ void deltaptsq::FillHistograms(const Event& event) {
                 h_wA_sqpt2->Fill(event.Getxb(), event.GetQ2(), hadron.Getz(), hadron.Getpt2()*hadron.Getpt2());    //3 arguments and the WEIGHT (pt2 squared)
                 h_A_pt3D->Fill(event.Getxb(), event.GetQ2(), hadron.Getz());    //3 arguments only counts not weight
                 hDpt_Q_nu_zA->Fill(event.GetQ2(), event.Getnu(), hadron.Getz());    //useless I guess
+                h_4D_A_had->Fill(event.GetQ2(), event.Getxb(), hadron.Getphih(), hadron.Getz());    //filling a 5D histo for 5D calc inside hadron loop
+                double fourvaluesA[4] = {event.GetQ2(), event.Getxb(), hadron.Getphih(), hadron.Getz()};
+                h_4D_A_whad->Fill(fourvaluesA, hadron.Getpt2()); //filling a 5D histo for 5D calc inside hadron loop
+                h_4D_A_w2had->Fill(fourvaluesA, hadron.Getpt2() * hadron.Getpt2()); //filling a 5D histo for 5D calc inside hadron loop (pt2 squared)
                 //h_z_D_had->Fill(hadron.Getz());
                 //h_pt2_D_had->Fill(hadron.Getpt2()); 
                 }
@@ -167,6 +219,12 @@ void deltaptsq::saveDptHistos()  {
     if (h_A_pt3D) { h_A_pt3D->SetName(("pt2_3D_A_" + targetName).c_str()); h_A_pt3D->Write(); }
     if (hDpt_Q_nu_zD) { hDpt_Q_nu_zD->SetName(("Q_nu_z_D_" + targetName).c_str()); hDpt_Q_nu_zD->Write(); }
     if (hDpt_Q_nu_zA) { hDpt_Q_nu_zA->SetName(("Q_nu_z_A_" + targetName).c_str()); hDpt_Q_nu_zA->Write(); }
+    if (h_4D_D_had) { h_4D_D_had->SetName(("Q_x_phih_z_D_" + targetName).c_str()); h_4D_D_had->Write(); }
+    if (h_4D_A_had) { h_4D_A_had->SetName(("Q_x_phih_z_A_" + targetName).c_str()); h_4D_A_had->Write(); }
+    if (h_4D_D_whad) { h_4D_D_whad->SetName(("Q_x_phih_z_wD_" + targetName).c_str()); h_4D_D_whad->Write(); }
+    if (h_4D_A_whad) { h_4D_A_whad->SetName(("Q_x_phih_z_wA_" + targetName).c_str()); h_4D_A_whad->Write(); }
+    if (h_4D_D_w2had) { h_4D_D_w2had->SetName(("Q_x_phih_z_w2D_" + targetName).c_str()); h_4D_D_w2had->Write(); }
+    if (h_4D_A_w2had) { h_4D_A_w2had->SetName(("Q_x_phih_z_w2A_" + targetName).c_str()); h_4D_A_w2had->Write(); }
 
     TNamed* tname = new TNamed("targetName", targetName.c_str());
     tname->Write();

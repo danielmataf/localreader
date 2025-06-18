@@ -76,13 +76,13 @@ private:
     THnSparseD* h_5D_A_had;  // (Q2, xB, nu, z, pt2) 
     THnSparseD* h_5D_D_had;  // (Q2, xB, nu, z, pt2) 
     //edges for THn
-    static const int Rdim = 5;  //using 5 dimensions 
-    double* binEdges[Rdim]; //need to make 5  arrays one per dimension
+    //static const int Dptdim = 4;  //using 5 dimensions 
+    //double* binEdges[Dptdim]; //need to make 5  arrays one per dimension
 
     // Optionally, store number of bins and ranges if reused
-    int bins[Rdim] = {Constants::Rbin_nu, Constants::Rbin_nu, Constants::Rbin_nu, Constants::Rbin_nu, Constants::Rbin_nu}; //kinda useless but should work all bins are always 6 
-    double binMins[Rdim] = {Constants::RcutminQ, Constants::Rcutminx, Constants::Rcutminnu, Constants::RcutminZ, Constants::RcutminPt2};
-    double binMaxs[Rdim] = {Constants::RcutmaxQ, Constants::Rcutmaxx, Constants::Rcutmaxnu, Constants::RcutmaxZ, Constants::RcutmaxPt2};    //using cut lows and highs per variable (should work) but we may be exagerating some of the cuts. If issue come here for fixing
+    //int bins[Dptdim] = {Constants::Rbin_nu, Constants::Rbin_nu, Constants::Rbin_nu, Constants::Rbin_nu, Constants::Rbin_nu}; //kinda useless but should work all bins are always 6 
+    //double binMins[Dptdim] = {Constants::RcutminQ, Constants::Rcutminx, Constants::Rcutminnu, Constants::RcutminZ, Constants::RcutminPt2};
+    //double binMaxs[Dptdim] = {Constants::RcutmaxQ, Constants::Rcutmaxx, Constants::Rcutmaxnu, Constants::RcutmaxZ, Constants::RcutmaxPt2};    //using cut lows and highs per variable (should work) but we may be exagerating some of the cuts. If issue come here for fixing
     //if need to edit cuts, look at tendencies on graphs and either replace here for values or directly in constants.h
 
     CutSet cut1;
@@ -178,6 +178,21 @@ private:
     TH1F *h_pt2_A_had;
     TH1F *h_pt2_D_had;
 
+    //Histos for 4 dimensionnal analysis. be careful, we also need histograms with weighted values
+    THnSparseD* h_4D_D_had;  // (Q2, xB, phih, z, pt2)
+    THnSparseD* h_4D_A_had;  // (Q2, xB, phih, z, pt2)
+    THnSparseD* h_4D_D_whad;
+    THnSparseD* h_4D_A_whad;
+    THnSparseD* h_4D_D_w2had;
+    THnSparseD* h_4D_A_w2had;
+
+    //edges for THn 
+    static const int Dptdim = 4;  //using 4 dimensions
+    double* Dptbinedges[Dptdim]; //need to make 4 arrays one per dimension
+
+    int Dptbins[Dptdim] = {Constants::Rbin_Q, Constants::Rbin_x, Constants::Rbin_nu, Constants::Rbin_z}; //kinda useless but should work all bins are always 6
+    double DptbinMins[Dptdim] = {Constants::RcutminQ, Constants::Rcutminx, Constants::Rcutminphih, Constants::RcutminZ};
+    double DptbinMaxs[Dptdim] = {Constants::RcutmaxQ, Constants::Rcutmaxx, Constants::Rcutmaxphih, Constants::RcutmaxZ}; //using cut lows and highs per variable (should work) but we may be exagerating some of the cuts. If issue come here for fixing
 
 
 
