@@ -207,6 +207,33 @@ private:
     int elcountA;
 
 
+    //3D hadron histos (phih, pt2,z) for theta binning (four regions = 4 histos)
+    TH3F *h_3D_D_had_regionA; // (phih, pt2, z) for D
+    TH3F *h_3D_D_had_regionB; // (phih, pt2, z) for D
+    TH3F *h_3D_D_had_regionC; // (phih, pt2, z) for D
+    TH3F *h_3D_D_had_regionD; // (phih, pt2, z) for D
+    TH3F *h_3D_A_had_regionA; // (phih, pt2, z) for A
+    TH3F *h_3D_A_had_regionB; // (phih, pt2, z) for A
+    TH3F *h_3D_A_had_regionC; // (phih, pt2, z) for A
+    TH3F *h_3D_A_had_regionD; // (phih, pt2, z) for A
+    // region edges (determined from appart calculation in theta binning)
+    double Q2lowA = 1.0; // lower edge for region A
+    double Q2highA = 2.56; // upper edge for region A
+    double Q2lowB = 2.56; // lower edge for region B
+    double Q2highB = 5.0; // upper edge for region B
+    double Q2lowC = 1.0; // lower edge for region C
+    double Q2highC = 1.22; // upper edge for region C
+    double Q2lowD = 1.22; // lower edge for region D
+    double Q2highD = 3.21; // upper edge for region D
+
+    double xblowA = 0.076; // lower edge for xB in region A
+    double xbhighA = 0.2; // upper edge for xB in region A
+    double xblowB = 0.2; // lower edge for xB in region B
+    double xbhighB = 0.5; // upper edge for xB in region B
+    double xblowC = 0.13; // lower edge for xB in region C
+    double xbhighC = 0.2; // upper edge for xB in region C
+    double xblowD = 0.2; // lower edge for xB in region D
+    double xbhighD = 0.5; // upper edge for xB in region D
 
 
     //histos for 5D calc 

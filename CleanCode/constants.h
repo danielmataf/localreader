@@ -91,6 +91,34 @@ namespace Constants {
     static const double v11cutmaxVzC2data = -7.5 ;    
 
 
+    //Pass1 Vz mean values electron
+    static const double meanC1ibel = -7.38522; 
+    static const double meanC1obel = -3.66242;
+    static const double meanC2ibel = -2.49464;
+    static const double meanC2obel = -8.53079;
+    static const double meanLD2ibel = -5.0;
+    static const double meanLD2obel = -5.0;
+    static const double meanSnibel = -2.0;
+    static const double meanSnobel = -2.0;
+    static const double meanCuibel = -8.49862;
+    static const double meanCuobel = -3.63868;
+
+    //Pass1 Vz mean values hadron pi+
+    static const double meanC1ibhad = -3.36609;
+    static const double meanC1obhad = -2.59425;
+    static const double meanC2ibhad = -8.28039;
+    static const double meanC2obhad = -7.53125;
+    static const double meanLD2ibhad = -5.0;
+    static const double meanLD2obhad = -5.0;
+    static const double meanSnibhad = -2.0;
+    static const double meanSnobhad = -2.0;
+    static const double meanCuibhad = -8.0;
+    static const double meanCuobhad = -8.0;
+
+
+
+
+
     //Calo Values 
     static const double cal_xmin = -400.0;
     static const double cal_xmax = 400.0;      //values assigned from RGA

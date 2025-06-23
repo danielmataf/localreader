@@ -57,6 +57,15 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     //1D on z only
     h_newz_D (new TH1F(("z_D_new"+targetName).c_str(), ("z_D_new"+targetName).c_str(), 10 , Constants::RcutminZ , Constants::RcutmaxZ)),   //setting 10 bins so we can have a 10 point plot
     h_newz_A (new TH1F(("z_A_new"+targetName).c_str(), ("z_A_new"+targetName).c_str(), 10 , Constants::RcutminZ , Constants::RcutmaxZ)),   //setting 10 bins so we can have a 10 point plot
+    //3D hadrons for regions (avoids 5D) (has pnly phih, pt2 and z)
+    h_3D_A_had_regionA (new TH3F(("3D_A_had_regionA"+targetName).c_str(), ("3D_A_had_regionA"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_D_had_regionA (new TH3F(("3D_D_had_regionA"+targetName).c_str(), ("3D_D_had_regionA"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_A_had_regionB (new TH3F(("3D_A_had_regionB"+targetName).c_str(), ("3D_A_had_regionB"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_D_had_regionB (new TH3F(("3D_D_had_regionB"+targetName).c_str(), ("3D_D_had_regionB"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_A_had_regionC (new TH3F(("3D_A_had_regionC"+targetName).c_str(), ("3D_A_had_regionC"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_D_had_regionC (new TH3F(("3D_D_had_regionC"+targetName).c_str(), ("3D_D_had_regionC"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_A_had_regionD (new TH3F(("3D_A_had_regionD"+targetName).c_str(), ("3D_A_had_regionD"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_D_had_regionD (new TH3F(("3D_D_had_regionD"+targetName).c_str(), ("3D_D_had_regionD"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
 
     //5D
     h_3D_A_e (new TH3F(("3D_A_e"+targetName).c_str(), ("3D_A_e"+targetName).c_str(),Constants::Rbin_nu , Constants::RcutminQ, Constants::RcutmaxQ, Constants::Rbin_nu ,Constants::Rcutminx, Constants::Rcutmaxx ,  Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu   )),
@@ -157,6 +166,19 @@ void Ratio::FillHistograms(const Event& event) {
                 h_pt2_D_had->Fill(hadron.Getpt2()); //these  histos  added to to track binning switch
                 //h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
                 //below a debug porcedure
+                if (event.GetQ2()>Q2lowA && event.GetQ2()<Q2highA && event.Getxb()>xblowA && event.Getxb()<xbhighA ) { //REGION A
+                    h_3D_D_had_regionA->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                }
+                if (event.GetQ2()>Q2lowB && event.GetQ2()<Q2highB && event.Getxb()>xblowB && event.Getxb()<xbhighB ) { //REGION B
+                    h_3D_D_had_regionB->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                }
+                if (event.GetQ2()>Q2lowC && event.GetQ2()<Q2highC && event.Getxb()>xblowC && event.Getxb()<xbhighC ) { //REGION C
+                    h_3D_D_had_regionC->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                }
+                if (event.GetQ2()>Q2lowD && event.GetQ2()<Q2highD && event.Getxb()>xblowD && event.Getxb()<xbhighD ) { //REGION D
+                    h_3D_D_had_regionD->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                }
+
                 if (event.GetQ2()< binMins[0] || event.GetQ2() > binMaxs[0] ||
                     event.Getxb() < binMins[1] ||event.Getxb() > binMaxs[1] ||
                     event.Getnu() < binMins[2] || event.Getnu() > binMaxs[2] ||
@@ -166,6 +188,7 @@ void Ratio::FillHistograms(const Event& event) {
                     //          << " Q2=" << event.GetQ2() << ", xB=" << event.Getxb() 
                     //          << ", nu=" << event.Getnu() << ", pt2=" << hadron.Getpt2()
                     //          << ", z=" << hadron.Getz() << std::endl;
+
                 }
       //          std::cout << "[Fill5D] Q2=" << event.GetQ2() << ", xB=" << event.Getxb() << ", nu=" <<event.Getnu() << ", pt2=" << hadron.Getpt2()  << ", z=" << hadron.Getz()  << std::endl;
 
@@ -184,7 +207,7 @@ void Ratio::FillHistograms(const Event& event) {
         //here change the else if to just else in order to have a generic target 
         h_nuA->Fill(event.Getnu()); //can be plotted just like this 
         h_xB_Q2_A->Fill(event.Getxb(), event.GetQ2() );
-        std::cout<< "[FillHistograms] Q2=" << event.GetQ2() << ", xB=" << event.Getxb() <<  std::endl;
+        //std::cout<< "[FillHistograms] Q2=" << event.GetQ2() << ", xB=" << event.Getxb() <<  std::endl;
         h_3D_A_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
         h_2D_A_e->Fill(event.GetQ2(), event.Getxb());   //restricting electron vaiables to Q2, xB only for 5D analysis
         //if (targetName == "C1"){
@@ -206,6 +229,18 @@ void Ratio::FillHistograms(const Event& event) {
                 //h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
                 h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), hadron.Getphih(), hadron.Getz(), hadron.Getpt2());    //TODO uncomment this to add phih variable replace 
 
+                if (event.GetQ2()>Q2lowA && event.GetQ2()<Q2highA && event.Getxb()>xblowA && event.Getxb()<xbhighA ) { //REGION A
+                    h_3D_A_had_regionA->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                }
+                if (event.GetQ2()>Q2lowB && event.GetQ2()<Q2highB && event.Getxb()>xblowB && event.Getxb()<xbhighB ) { //REGION B
+                    h_3D_A_had_regionB->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                }
+                if (event.GetQ2()>Q2lowC && event.GetQ2()<Q2highC && event.Getxb()>xblowC && event.Getxb()<xbhighC ) { //REGION C
+                    h_3D_A_had_regionC->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                }
+                if (event.GetQ2()>Q2lowD && event.GetQ2()<Q2highD && event.Getxb()>xblowD && event.Getxb()<xbhighD ) { //REGION D
+                    h_3D_A_had_regionD->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                }
 
                 h_newz_A->Fill(hadron.Getz()); // Lamiaa 1D 10 point plot
                 //if (targetName == "C1" ) {
@@ -279,6 +314,16 @@ void Ratio::saveRhistos() {
     if (h_2D_A_e)    {h_2D_A_e->SetName(("Q2_xB_A_" + targetName).c_str()); h_2D_A_e->Write(); }  //this histos are repetition, redundant 
     if (h_5D_D_had)  {h_5D_D_had->SetName(("Q2_xB_nu_pt2_z_D_" + targetName).c_str());h_5D_D_had->Write();}
     if (h_5D_A_had) {h_5D_A_had->SetName(("Q2_xB_nu_pt2_z_A_" + targetName).c_str());h_5D_A_had->Write();}
+    //3D hadrons for regions
+    if (h_3D_A_had_regionA) { h_3D_A_had_regionA->SetName(("3D_A_had_regionA_" + targetName).c_str()); h_3D_A_had_regionA->Write(); }   
+    if (h_3D_D_had_regionA) { h_3D_D_had_regionA->SetName(("3D_D_had_regionA_" + targetName).c_str()); h_3D_D_had_regionA->Write(); }
+    if (h_3D_A_had_regionB) { h_3D_A_had_regionB->SetName(("3D_A_had_regionB_" + targetName).c_str()); h_3D_A_had_regionB->Write(); }
+    if (h_3D_D_had_regionB) { h_3D_D_had_regionB->SetName(("3D_D_had_regionB_" + targetName).c_str()); h_3D_D_had_regionB->Write(); }
+    if (h_3D_A_had_regionC) { h_3D_A_had_regionC->SetName(("3D_A_had_regionC_" + targetName).c_str()); h_3D_A_had_regionC->Write(); }
+    if (h_3D_D_had_regionC) { h_3D_D_had_regionC->SetName(("3D_D_had_regionC_" + targetName).c_str()); h_3D_D_had_regionC->Write(); }
+    if (h_3D_A_had_regionD) { h_3D_A_had_regionD->SetName(("3D_A_had_regionD_" + targetName).c_str()); h_3D_A_had_regionD->Write(); }
+    if (h_3D_D_had_regionD) { h_3D_D_had_regionD->SetName(("3D_D_had_regionD_" + targetName).c_str()); h_3D_D_had_regionD->Write(); }
+
 
     //electron counters for 1D plots
     TParameter<int>* elD_count = new TParameter<int>("N_electrons_D", counter_elLD2);
