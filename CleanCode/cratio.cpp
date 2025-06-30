@@ -43,6 +43,37 @@ cratio::cratio(CutSet cutsD, CutSet cutsA, const std::string& targetName): //: c
     h_A_Cratio3D ( new TH3F(("countCratio:A"+targetName).c_str(), ("count:wD_Cratio"+targetName).c_str(), Constants::Cratiobin_x  , xminCratio, xmaxCratio,Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ  )),
     h_wD_sqCratio ( new TH3F(("wD_sqCratio"+targetName).c_str(), ("wD_sqCratio"+targetName).c_str(),Constants::Cratiobin_x  , xminCratio, xmaxCratio,Constants::Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ ) ),//definition w/ 3 args
     h_wA_sqCratio ( new TH3F(("wA_sqCratio"+targetName).c_str(), ("wA_sqCratio"+targetName).c_str(),Constants::Cratiobin_x  , xminCratio, xmaxCratio,Constants::Cratiobin_Q,Constants::RcutminQ,Constants::RcutmaxQ,Constants::Cratiobin_z,Constants::RcutminZ, Constants::RcutmaxZ ) ),
+    
+
+    
+    //2D histos pr region for hadrons (pt2, z) weight in phih avoids 5D
+    
+    h_2D_D_had_regionA(new TH2F (("h_2D_D_had_regionA"+targetName).c_str(), "2Dweighted_D_regionA", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ )),
+    h_2D_A_had_regionA(new TH2F (("h_2D_A_had_regionA"+targetName).c_str(), "2Dweighted_A_regionA", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionB(new TH2F (("h_2D_D_had_regionB"+targetName).c_str(), "2Dweighted_D_regionB", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionB(new TH2F (("h_2D_A_had_regionB"+targetName).c_str(), "2Dweighted_A_regionB", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionC(new TH2F (("h_2D_D_had_regionC"+targetName).c_str(), "2Dweighted_D_regionC", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionC(new TH2F (("h_2D_A_had_regionC"+targetName).c_str(), "2Dweighted_A_regionC", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionD(new TH2F (("h_2D_D_had_regionD"+targetName).c_str(), "2Dweighted_D_regionD", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionD(new TH2F (("h_2D_A_had_regionD"+targetName).c_str(), "2Dweighted_A_regionD", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionAw2(new TH2F (("h_2D_D_had_regionAw2"+targetName).c_str(), "2Dweighted_D_regionAw2", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_2D_A_had_regionAw2(new TH2F (("h_2D_A_had_regionAw2"+targetName).c_str(), "2Dweighted_A_regionAw2", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_D_had_regionBw2(new TH2F (("h_2D_D_had_regionBw2"+targetName).c_str(), "2Dweighted_D_regionBw2", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_A_had_regionBw2(new TH2F (("h_2D_A_had_regionBw2"+targetName).c_str(), "2Dweighted_A_regionBw2", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_D_had_regionCw2(new TH2F (("h_2D_D_had_regionCw2"+targetName).c_str(), "2Dweighted_D_regionCw2", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_A_had_regionCw2(new TH2F (("h_2D_A_had_regionCw2"+targetName).c_str(), "2Dweighted_A_regionCw2", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_D_had_regionDw2(new TH2F (("h_2D_D_had_regionDw2"+targetName).c_str(), "2Dweighted_D_regionDw2", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_A_had_regionDw2(new TH2F (("h_2D_A_had_regionDw2"+targetName).c_str(), "2Dweighted_A_regionDw2", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_D_had_regionA_count(new TH2F (("h_2D_D_had_regionA_count"+targetName).c_str(), "2Dcount_D_regionA", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ )),
+    h_2D_D_had_regionB_count(new TH2F (("h_2D_D_had_regionB_count"+targetName).c_str(), "2Dcount_D_regionB", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionC_count(new TH2F (("h_2D_D_had_regionC_count"+targetName).c_str(), "2Dcount_D_regionC", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionD_count(new TH2F (("h_2D_D_had_regionD_count"+targetName).c_str(), "2Dcount_D_regionD", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionA_count(new TH2F (("h_2D_A_had_regionA_count"+targetName).c_str(), "2Dcount_A_regionA", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionB_count(new TH2F (("h_2D_A_had_regionB_count"+targetName).c_str(), "2Dcount_A_regionB", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionC_count(new TH2F (("h_2D_A_had_regionC_count"+targetName).c_str(), "2Dcount_A_regionC", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionD_count(new TH2F (("h_2D_A_had_regionD_count"+targetName).c_str(), "2Dcount_A_regionD", 4 , Constants::RcutminPt2, Constants::RcutmaxPt2, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+
+
     h_wD_CratioRE ( new TH3F(("wD_CratioRE"+targetName).c_str(), ("wD_CratioRE"+targetName).c_str(),Constants::Cratiobin_nu, Constants::numinCratio, Constants::numaxCratio, Constants::Cratiobin_z, Constants::RcutminZ, Constants::RcutmaxZ, Constants::Cratiobin_z, Constants::RcutminPt2, Constants::RcutmaxPt2)),
     h_wD_sqCratioRE ( new TH3F(("wD_sqCratioRE"+targetName).c_str(), ("wD_sqCratioRE"+targetName).c_str(),Constants::Cratiobin_nu, Constants::numinCratio, Constants::numaxCratio, Constants::Cratiobin_z, Constants::RcutminZ, Constants::RcutmaxZ, Constants::Cratiobin_z, Constants::RcutminPt2, Constants::RcutmaxPt2)),
     h_D_Cratio3DRE ( new TH3F(("countCratio:DRE"+targetName).c_str(), ("count:wD_CratioRE"+targetName).c_str(), Constants::Cratiobin_nu, Constants::numinCratio, Constants::numaxCratio, Constants::Cratiobin_z, Constants::RcutminZ, Constants::RcutmaxZ, Constants::Cratiobin_z, Constants::RcutminPt2, Constants::RcutmaxPt2)),
@@ -161,6 +192,28 @@ void cratio::WriteDebugHistos(const std::string& filename) {
                     h_wD_sqCratioRE->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2(), cos(phiD)*cos(phiD));    //3 arguments and the WEIGHT (pt2 squared) 4 variance
                     h_D_Cratio3DRE->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());    //3 arguments only counts not weight (cphi)
 
+                    if (event.GetQ2()>Q2lowA && event.GetQ2()<Q2highA && event.Getxb()>xblowA && event.Getxb()<xbhighA ) { //REGION A
+                        h_2D_D_had_regionA->Fill(hadron.Getpt2(),  hadron.Getz(),cos(phiD));
+                        h_2D_D_had_regionAw2->Fill(hadron.Getpt2(),  hadron.Getz(),cos(phiD)*cos(phiD));
+                        h_2D_D_had_regionA_count->Fill(hadron.Getpt2(),  hadron.Getz()); //counting
+                    }
+                    if (event.GetQ2()>Q2lowB && event.GetQ2()<Q2highB && event.Getxb()>xblowB && event.Getxb()<xbhighB ) { //REGION B
+                        h_2D_D_had_regionB->Fill(hadron.Getpt2(), hadron.Getz(), cos(phiD));   
+                        h_2D_D_had_regionBw2->Fill(hadron.Getpt2(), hadron.Getz(), cos(phiD)*cos(phiD));
+                        h_2D_D_had_regionB_count->Fill(hadron.Getpt2(), hadron.Getz()); //counting
+                    }
+                    if (event.GetQ2()>Q2lowC && event.GetQ2()<Q2highC && event.Getxb()>xblowC && event.Getxb()<xbhighC ) { //REGION C
+                        h_2D_D_had_regionC->Fill(hadron.Getpt2(), hadron.Getz(),  cos(phiD));   
+                        h_2D_D_had_regionCw2->Fill(hadron.Getpt2(), hadron.Getz(), cos(phiD)*cos(phiD));
+                        h_2D_D_had_regionC_count->Fill(hadron.Getpt2(), hadron.Getz()); //counting
+                    }
+                    if (event.GetQ2()>Q2lowD && event.GetQ2()<Q2highD && event.Getxb()>xblowD && event.Getxb()<xbhighD ) { //REGION D
+                        h_2D_D_had_regionD->Fill(hadron.Getpt2(), hadron.Getz(), cos(phiD));   
+                        h_2D_D_had_regionDw2->Fill(hadron.Getpt2(), hadron.Getz(), cos(phiD)*cos(phiD));
+                        h_2D_D_had_regionD_count->Fill(hadron.Getpt2(), hadron.Getz()); //counting
+                    }
+
+
                 }
             }
         }
@@ -178,6 +231,26 @@ void cratio::WriteDebugHistos(const std::string& filename) {
                     h_wA_CratioRE->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2(), cos(phiA));    //3 arguments and the WEIGHT
                     h_wA_sqCratioRE->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2(), cos(phiA)*cos(phiA));    //3 arguments and the WEIGHT (pt2 squared) 4 variance
                     h_A_Cratio3DRE->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());    //3 arguments only counts not weight (cphi)
+                    if (event.GetQ2()>Q2lowA && event.GetQ2()<Q2highA && event.Getxb()>xblowA && event.Getxb()<xbhighA ) { //REGION A
+                        h_2D_A_had_regionA->Fill(hadron.Getpt2(),  hadron.Getz(),cos(phiA));
+                        h_2D_A_had_regionAw2->Fill(hadron.Getpt2(),  hadron.Getz(),cos(phiA)*cos(phiA));
+                        h_2D_A_had_regionA_count->Fill(hadron.Getpt2(),  hadron.Getz()); //counting
+                    }
+                    if (event.GetQ2()>Q2lowB && event.GetQ2()<Q2highB && event.Getxb()>xblowB && event.Getxb()<xbhighB ) { //REGION B
+                        h_2D_A_had_regionB->Fill(hadron.Getpt2(), hadron.Getz(), cos(phiA));   
+                        h_2D_A_had_regionBw2->Fill(hadron.Getpt2(), hadron.Getz(), cos(phiA)*cos(phiA));
+                        h_2D_A_had_regionB_count->Fill(hadron.Getpt2(), hadron.Getz()); //counting
+                    }
+                    if (event.GetQ2()>Q2lowC && event.GetQ2()<Q2highC && event.Getxb()>xblowC && event.Getxb()<xbhighC ) { //REGION C
+                        h_2D_A_had_regionC->Fill(hadron.Getpt2(), hadron.Getz(),  cos(phiA));   
+                        h_2D_A_had_regionCw2->Fill(hadron.Getpt2(), hadron.Getz(), cos(phiA)*cos(phiA));
+                        h_2D_A_had_regionC_count->Fill(hadron.Getpt2(), hadron.Getz()); //counting
+                    }
+                    if (event.GetQ2()>Q2lowD && event.GetQ2()<Q2highD && event.Getxb()>xblowD && event.Getxb()<xbhighD ) { //REGION D
+                        h_2D_A_had_regionD->Fill(hadron.Getpt2(), hadron.Getz(), cos(phiA));   
+                        h_2D_A_had_regionDw2->Fill(hadron.Getpt2(), hadron.Getz(), cos(phiA)*cos(phiA));
+                        h_2D_A_had_regionD_count->Fill(hadron.Getpt2(), hadron.Getz()); //counting
+                    }
 
                 }
             }
@@ -335,6 +408,31 @@ void cratio::saveCratioHistos() {
     // Write nu distributions for normalization/debug
     if (hCratio_nuD)        { hCratio_nuD->SetName(("nu_D_" + targetName).c_str()); hCratio_nuD->Write(); }
     if (hCratio_nuA)        { hCratio_nuA->SetName(("nu_A_" + targetName).c_str()); hCratio_nuA->Write(); }
+    // belos are histos per region with theta bin correction 
+    if (h_2D_D_had_regionA) { h_2D_D_had_regionA->SetName(("regionA_D_" + targetName).c_str()); h_2D_D_had_regionA->Write(); }
+    if (h_2D_A_had_regionA) { h_2D_A_had_regionA->SetName(("regionA_A_" + targetName).c_str()); h_2D_A_had_regionA->Write(); }
+    if (h_2D_D_had_regionB) { h_2D_D_had_regionB->SetName(("regionB_D_" + targetName).c_str()); h_2D_D_had_regionB->Write(); }
+    if (h_2D_A_had_regionB) { h_2D_A_had_regionB->SetName(("regionB_A_" + targetName).c_str()); h_2D_A_had_regionB->Write(); }
+    if (h_2D_D_had_regionC) { h_2D_D_had_regionC->SetName(("regionC_D_" + targetName).c_str()); h_2D_D_had_regionC->Write(); }
+    if (h_2D_A_had_regionC) { h_2D_A_had_regionC->SetName(("regionC_A_" + targetName).c_str()); h_2D_A_had_regionC->Write(); }
+    if (h_2D_D_had_regionD) { h_2D_D_had_regionD->SetName(("regionD_D_" + targetName).c_str()); h_2D_D_had_regionD->Write(); }
+    if (h_2D_A_had_regionD) { h_2D_A_had_regionD->SetName(("regionD_A_" + targetName).c_str()); h_2D_A_had_regionD->Write(); }
+    if (h_2D_D_had_regionAw2) { h_2D_D_had_regionAw2->SetName(("regionA_w2D_" + targetName).c_str()); h_2D_D_had_regionAw2->Write(); }
+    if (h_2D_A_had_regionAw2) { h_2D_A_had_regionAw2->SetName(("regionA_w2A_" + targetName).c_str()); h_2D_A_had_regionAw2->Write(); }
+    if (h_2D_D_had_regionBw2) { h_2D_D_had_regionBw2->SetName(("regionB_w2D_" + targetName).c_str()); h_2D_D_had_regionBw2->Write(); }
+    if (h_2D_A_had_regionBw2) { h_2D_A_had_regionBw2->SetName(("regionB_w2A_" + targetName).c_str()); h_2D_A_had_regionBw2->Write(); }
+    if (h_2D_D_had_regionCw2) { h_2D_D_had_regionCw2->SetName(("regionC_w2D_" + targetName).c_str()); h_2D_D_had_regionCw2->Write(); }
+    if (h_2D_A_had_regionCw2) { h_2D_A_had_regionCw2->SetName(("regionC_w2A_" + targetName).c_str()); h_2D_A_had_regionCw2->Write(); }
+    if (h_2D_D_had_regionDw2) { h_2D_D_had_regionDw2->SetName(("regionD_w2D_" + targetName).c_str()); h_2D_D_had_regionDw2->Write(); }
+    if (h_2D_A_had_regionDw2) { h_2D_A_had_regionDw2->SetName(("regionD_w2A_" + targetName).c_str()); h_2D_A_had_regionDw2->Write(); }
+    if (h_2D_D_had_regionA_count) { h_2D_D_had_regionA_count->SetName(("regionA_count_D_" + targetName).c_str()); h_2D_D_had_regionA_count->Write(); }
+    if (h_2D_A_had_regionA_count) { h_2D_A_had_regionA_count->SetName(("regionA_count_A_" + targetName).c_str()); h_2D_A_had_regionA_count->Write(); }
+    if (h_2D_D_had_regionB_count) { h_2D_D_had_regionB_count->SetName(("regionB_count_D_" + targetName).c_str()); h_2D_D_had_regionB_count->Write(); }
+    if (h_2D_A_had_regionB_count) { h_2D_A_had_regionB_count->SetName(("regionB_count_A_" + targetName).c_str()); h_2D_A_had_regionB_count->Write(); }
+    if (h_2D_D_had_regionC_count) { h_2D_D_had_regionC_count->SetName(("regionC_count_D_" + targetName).c_str()); h_2D_D_had_regionC_count->Write(); }
+    if (h_2D_A_had_regionC_count) { h_2D_A_had_regionC_count->SetName(("regionC_count_A_" + targetName).c_str()); h_2D_A_had_regionC_count->Write(); }
+    if (h_2D_D_had_regionD_count) { h_2D_D_had_regionD_count->SetName(("regionD_count_D_" + targetName).c_str()); h_2D_D_had_regionD_count->Write(); }
+    if (h_2D_A_had_regionD_count) { h_2D_A_had_regionD_count->SetName(("regionD_count_A_" + targetName).c_str()); h_2D_A_had_regionD_count->Write(); }
 
     fout->Close();
     std::cout << "[saveCratioHistos] Cratio histograms saved to " << outPath << std::endl;

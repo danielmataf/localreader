@@ -186,6 +186,63 @@ private:
     THnSparseD* h_4D_D_w2had;
     THnSparseD* h_4D_A_w2had;
 
+
+
+
+//==Histos for theta binning, consider theta bining gets rid of x,Q so just phi and z left (TH2), weights on z
+
+    //2D hadron histos (phih,z) for theta binning (four regions = 4 histos)
+    TH2F *h_2D_D_had_regionA; // (phih, z) for D
+    TH2F *h_2D_D_had_regionB; // (phih, z) for D
+    TH2F *h_2D_D_had_regionC; // (phih, z) for D
+    TH2F *h_2D_D_had_regionD; // (phih, z) for D
+    TH2F *h_2D_A_had_regionA; // (phih, z) for A
+    TH2F *h_2D_A_had_regionB; // (phih, z) for A
+    TH2F *h_2D_A_had_regionC; // (phih, z) for A
+    TH2F *h_2D_A_had_regionD; // (phih, z) for A
+    //repeating 2D histos for weighted with pt2*pt2 (for error calc)
+    TH2F *h_2D_D_had_regionAw2; // (phih, z) for D
+    TH2F *h_2D_D_had_regionBw2; // (phih, z) for D
+    TH2F *h_2D_D_had_regionCw2; // (phih, z) for D
+    TH2F *h_2D_D_had_regionDw2; // (phih, z) for D
+    TH2F *h_2D_A_had_regionAw2; // (phih, z) for A
+    TH2F *h_2D_A_had_regionBw2; // (phih, z) for A
+    TH2F *h_2D_A_had_regionCw2; // (phih, z) for A
+    TH2F *h_2D_A_had_regionDw2; // (phih, z) for A
+    //repeating 2D histos NO WEIGHT for counts
+    TH2F *h_2D_D_had_regionA_count; // (phih, z) for D
+    TH2F *h_2D_D_had_regionB_count; // (phih, z) for D
+    TH2F *h_2D_D_had_regionC_count; // (phih, z) for D
+    TH2F *h_2D_D_had_regionD_count; // (phih, z) for D
+    TH2F *h_2D_A_had_regionA_count; // (phih, z) for A
+    TH2F *h_2D_A_had_regionB_count; // (phih, z) for A
+    TH2F *h_2D_A_had_regionC_count; // (phih, z) for A
+    TH2F *h_2D_A_had_regionD_count; // (phih, z) for A
+    
+
+
+
+    // region edges (determined from appart calculation in theta binning)
+    double Q2lowA = 1.0; // lower edge for region A
+    double Q2highA = 2.56; // upper edge for region A
+    double Q2lowB = 2.56; // lower edge for region B
+    double Q2highB = 5.0; // upper edge for region B
+    double Q2lowC = 1.0; // lower edge for region C
+    double Q2highC = 1.22; // upper edge for region C
+    double Q2lowD = 1.22; // lower edge for region D
+    double Q2highD = 3.21; // upper edge for region D
+
+    double xblowA = 0.076; // lower edge for xB in region A
+    double xbhighA = 0.2; // upper edge for xB in region A
+    double xblowB = 0.2; // lower edge for xB in region B
+    double xbhighB = 0.5; // upper edge for xB in region B
+    double xblowC = 0.13; // lower edge for xB in region C
+    double xbhighC = 0.2; // upper edge for xB in region C
+    double xblowD = 0.2; // lower edge for xB in region D
+    double xbhighD = 0.5; // upper edge for xB in region D
+
+
+
     //edges for THn 
     static const int Dptdim = 4;  //using 4 dimensions
     double* Dptbinedges[Dptdim]; //need to make 4 arrays one per dimension

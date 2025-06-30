@@ -58,7 +58,32 @@ deltaptsq::deltaptsq(CutSet cutsD, CutSet cutsA, const std::string& targetName) 
     h_4D_D_w2had(new THnSparseD (("h_4D_D_w2had_"+targetName).c_str(), "4DweightedsqD", Dptdim, Dptbins, DptbinMins, DptbinMaxs)),//same config as 4D histo 
     h_4D_A_w2had(new THnSparseD (("h_4D_A_w2had_"+targetName).c_str(), "4DweightedsqA", Dptdim, Dptbins, DptbinMins, DptbinMaxs)),//same config as 4D histo
 
-
+    //2D histos pr region for hadrons (phih, z) weight in pt2 avoids 5D
+    
+    h_2D_D_had_regionA(new TH2F (("h_2D_D_had_regionA"+targetName).c_str(), "2Dweighted_D_regionA", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ )),
+    h_2D_A_had_regionA(new TH2F (("h_2D_A_had_regionA"+targetName).c_str(), "2Dweighted_A_regionA", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionB(new TH2F (("h_2D_D_had_regionB"+targetName).c_str(), "2Dweighted_D_regionB", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionB(new TH2F (("h_2D_A_had_regionB"+targetName).c_str(), "2Dweighted_A_regionB", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionC(new TH2F (("h_2D_D_had_regionC"+targetName).c_str(), "2Dweighted_D_regionC", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionC(new TH2F (("h_2D_A_had_regionC"+targetName).c_str(), "2Dweighted_A_regionC", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionD(new TH2F (("h_2D_D_had_regionD"+targetName).c_str(), "2Dweighted_D_regionD", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionD(new TH2F (("h_2D_A_had_regionD"+targetName).c_str(), "2Dweighted_A_regionD", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionAw2(new TH2F (("h_2D_D_had_regionAw2"+targetName).c_str(), "2Dweighted_D_regionAw2", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_2D_A_had_regionAw2(new TH2F (("h_2D_A_had_regionAw2"+targetName).c_str(), "2Dweighted_A_regionAw2", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_D_had_regionBw2(new TH2F (("h_2D_D_had_regionBw2"+targetName).c_str(), "2Dweighted_D_regionBw2", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_A_had_regionBw2(new TH2F (("h_2D_A_had_regionBw2"+targetName).c_str(), "2Dweighted_A_regionBw2", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_D_had_regionCw2(new TH2F (("h_2D_D_had_regionCw2"+targetName).c_str(), "2Dweighted_D_regionCw2", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_A_had_regionCw2(new TH2F (("h_2D_A_had_regionCw2"+targetName).c_str(), "2Dweighted_A_regionCw2", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_D_had_regionDw2(new TH2F (("h_2D_D_had_regionDw2"+targetName).c_str(), "2Dweighted_D_regionDw2", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_A_had_regionDw2(new TH2F (("h_2D_A_had_regionDw2"+targetName).c_str(), "2Dweighted_A_regionDw2", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ)),  
+    h_2D_D_had_regionA_count(new TH2F (("h_2D_D_had_regionA_count"+targetName).c_str(), "2Dcount_D_regionA", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ )),
+    h_2D_D_had_regionB_count(new TH2F (("h_2D_D_had_regionB_count"+targetName).c_str(), "2Dcount_D_regionB", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionC_count(new TH2F (("h_2D_D_had_regionC_count"+targetName).c_str(), "2Dcount_D_regionC", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_D_had_regionD_count(new TH2F (("h_2D_D_had_regionD_count"+targetName).c_str(), "2Dcount_D_regionD", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionA_count(new TH2F (("h_2D_A_had_regionA_count"+targetName).c_str(), "2Dcount_A_regionA", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionB_count(new TH2F (("h_2D_A_had_regionB_count"+targetName).c_str(), "2Dcount_A_regionB", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionC_count(new TH2F (("h_2D_A_had_regionC_count"+targetName).c_str(), "2Dcount_A_regionC", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
+    h_2D_A_had_regionD_count(new TH2F (("h_2D_A_had_regionD_count"+targetName).c_str(), "2Dcount_A_regionD", 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4,  Constants::RcutminZ, Constants::RcutmaxZ  )),
 
     h_z_A_had(new TH1F (("zMonDpt_A_"+targetName).c_str(), ("h_zMonDpt_A_"+targetName).c_str() , 50, 0 , 1)),
     h_z_D_had(new TH1F (("zMonDpt_D_"+targetName).c_str(), ("h_zMonDpt_D_"+targetName).c_str() , 50, 0 , 1)),
@@ -170,6 +195,28 @@ void deltaptsq::FillHistograms(const Event& event) {
                 double fourvaluesD[4] = {event.GetQ2(), event.Getxb(), hadron.Getphih(), hadron.Getz()};
                 h_4D_D_whad->Fill(fourvaluesD, hadron.Getpt2()); //filling a 5D histo for 5D calc inside hadron loop
                 h_4D_D_w2had->Fill(fourvaluesD, hadron.Getpt2() * hadron.Getpt2()); //filling a 5D histo for 5D calc inside hadron loop (pt2 squared)
+                if (event.GetQ2()>Q2lowA && event.GetQ2()<Q2highA && event.Getxb()>xblowA && event.Getxb()<xbhighA ) { //REGION A
+                    h_2D_D_had_regionA->Fill(hadron.Getphih(),  hadron.Getz(),hadron.Getpt2());
+                    h_2D_D_had_regionAw2->Fill(hadron.Getphih(),  hadron.Getz(),hadron.Getpt2()*hadron.Getpt2());
+                    h_2D_D_had_regionA_count->Fill(hadron.Getphih(),  hadron.Getz()); //counting
+
+                }
+                if (event.GetQ2()>Q2lowB && event.GetQ2()<Q2highB && event.Getxb()>xblowB && event.Getxb()<xbhighB ) { //REGION B
+                    h_2D_D_had_regionB->Fill(hadron.Getphih(), hadron.Getz(), hadron.Getpt2());   
+                    h_2D_D_had_regionBw2->Fill(hadron.Getphih(), hadron.Getz(), hadron.Getpt2()*hadron.Getpt2());
+                    h_2D_D_had_regionB_count->Fill(hadron.Getphih(), hadron.Getz()); //counting
+                }
+                if (event.GetQ2()>Q2lowC && event.GetQ2()<Q2highC && event.Getxb()>xblowC && event.Getxb()<xbhighC ) { //REGION C
+                    h_2D_D_had_regionC->Fill(hadron.Getphih(), hadron.Getz(),  hadron.Getpt2());   
+                    h_2D_D_had_regionCw2->Fill(hadron.Getphih(), hadron.Getz(), hadron.Getpt2()*hadron.Getpt2());
+                    h_2D_D_had_regionC_count->Fill(hadron.Getphih(), hadron.Getz()); //counting
+                }
+                if (event.GetQ2()>Q2lowD && event.GetQ2()<Q2highD && event.Getxb()>xblowD && event.Getxb()<xbhighD ) { //REGION D
+                    h_2D_D_had_regionD->Fill(hadron.Getphih(), hadron.Getz(), hadron.Getpt2() );   
+                    h_2D_D_had_regionDw2->Fill(hadron.Getphih(), hadron.Getz(), hadron.Getpt2()*hadron.Getpt2());
+                    h_2D_D_had_regionD_count->Fill(hadron.Getphih(), hadron.Getz()); //counting
+                }
+
                 //h_z_A_had->Fill(hadron.Getz());
                 //h_pt2_A_had->Fill(hadron.Getpt2());
                 }
@@ -192,6 +239,29 @@ void deltaptsq::FillHistograms(const Event& event) {
                 double fourvaluesA[4] = {event.GetQ2(), event.Getxb(), hadron.Getphih(), hadron.Getz()};
                 h_4D_A_whad->Fill(fourvaluesA, hadron.Getpt2()); //filling a 5D histo for 5D calc inside hadron loop
                 h_4D_A_w2had->Fill(fourvaluesA, hadron.Getpt2() * hadron.Getpt2()); //filling a 5D histo for 5D calc inside hadron loop (pt2 squared)
+                if (event.GetQ2()>Q2lowA && event.GetQ2()<Q2highA && event.Getxb()>xblowA && event.Getxb()<xbhighA ) { //REGION A
+                    h_2D_A_had_regionA->Fill(hadron.Getphih(),  hadron.Getz(),hadron.Getpt2());
+                    h_2D_A_had_regionAw2->Fill(hadron.Getphih(),  hadron.Getz(),hadron.Getpt2()*hadron.Getpt2());
+                    h_2D_A_had_regionA_count->Fill(hadron.Getphih(),  hadron.Getz()); //counting
+
+                }
+                if (event.GetQ2()>Q2lowB && event.GetQ2()<Q2highB && event.Getxb()>xblowB && event.Getxb()<xbhighB ) { //REGION B
+                    h_2D_A_had_regionB->Fill(hadron.Getphih(), hadron.Getz(), hadron.Getpt2());   
+                    h_2D_A_had_regionBw2->Fill(hadron.Getphih(), hadron.Getz(), hadron.Getpt2()*hadron.Getpt2());
+                    h_2D_A_had_regionB_count->Fill(hadron.Getphih(), hadron.Getz()); //counting
+                }
+                if (event.GetQ2()>Q2lowC && event.GetQ2()<Q2highC && event.Getxb()>xblowC && event.Getxb()<xbhighC ) { //REGION C
+                    h_2D_A_had_regionC->Fill(hadron.Getphih(), hadron.Getz(),  hadron.Getpt2());   
+                    h_2D_A_had_regionCw2->Fill(hadron.Getphih(), hadron.Getz(), hadron.Getpt2()*hadron.Getpt2());
+                    h_2D_A_had_regionC_count->Fill(hadron.Getphih(), hadron.Getz()); //counting
+                }
+                if (event.GetQ2()>Q2lowD && event.GetQ2()<Q2highD && event.Getxb()>xblowD && event.Getxb()<xbhighD ) { //REGION D
+                    h_2D_A_had_regionD->Fill(hadron.Getphih(), hadron.Getz(), hadron.Getpt2() );   
+                    h_2D_A_had_regionDw2->Fill(hadron.Getphih(), hadron.Getz(), hadron.Getpt2()*hadron.Getpt2());
+                    h_2D_A_had_regionD_count->Fill(hadron.Getphih(), hadron.Getz()); //counting
+                }
+
+
                 //h_z_D_had->Fill(hadron.Getz());
                 //h_pt2_D_had->Fill(hadron.Getpt2()); 
                 }
@@ -225,6 +295,31 @@ void deltaptsq::saveDptHistos()  {
     if (h_4D_A_whad) { h_4D_A_whad->SetName(("Q_x_phih_z_wA_" + targetName).c_str()); h_4D_A_whad->Write(); }
     if (h_4D_D_w2had) { h_4D_D_w2had->SetName(("Q_x_phih_z_w2D_" + targetName).c_str()); h_4D_D_w2had->Write(); }
     if (h_4D_A_w2had) { h_4D_A_w2had->SetName(("Q_x_phih_z_w2A_" + targetName).c_str()); h_4D_A_w2had->Write(); }
+    if (h_2D_D_had_regionA) { h_2D_D_had_regionA->SetName(("regionA_D_" + targetName).c_str()); h_2D_D_had_regionA->Write(); }
+    if (h_2D_A_had_regionA) { h_2D_A_had_regionA->SetName(("regionA_A_" + targetName).c_str()); h_2D_A_had_regionA->Write(); }
+    if (h_2D_D_had_regionB) { h_2D_D_had_regionB->SetName(("regionB_D_" + targetName).c_str()); h_2D_D_had_regionB->Write(); }
+    if (h_2D_A_had_regionB) { h_2D_A_had_regionB->SetName(("regionB_A_" + targetName).c_str()); h_2D_A_had_regionB->Write(); }
+    if (h_2D_D_had_regionC) { h_2D_D_had_regionC->SetName(("regionC_D_" + targetName).c_str()); h_2D_D_had_regionC->Write(); }
+    if (h_2D_A_had_regionC) { h_2D_A_had_regionC->SetName(("regionC_A_" + targetName).c_str()); h_2D_A_had_regionC->Write(); }
+    if (h_2D_D_had_regionD) { h_2D_D_had_regionD->SetName(("regionD_D_" + targetName).c_str()); h_2D_D_had_regionD->Write(); }
+    if (h_2D_A_had_regionD) { h_2D_A_had_regionD->SetName(("regionD_A_" + targetName).c_str()); h_2D_A_had_regionD->Write(); }
+    if (h_2D_D_had_regionAw2) { h_2D_D_had_regionAw2->SetName(("regionA_w2D_" + targetName).c_str()); h_2D_D_had_regionAw2->Write(); }
+    if (h_2D_A_had_regionAw2) { h_2D_A_had_regionAw2->SetName(("regionA_w2A_" + targetName).c_str()); h_2D_A_had_regionAw2->Write(); }
+    if (h_2D_D_had_regionBw2) { h_2D_D_had_regionBw2->SetName(("regionB_w2D_" + targetName).c_str()); h_2D_D_had_regionBw2->Write(); }
+    if (h_2D_A_had_regionBw2) { h_2D_A_had_regionBw2->SetName(("regionB_w2A_" + targetName).c_str()); h_2D_A_had_regionBw2->Write(); }
+    if (h_2D_D_had_regionCw2) { h_2D_D_had_regionCw2->SetName(("regionC_w2D_" + targetName).c_str()); h_2D_D_had_regionCw2->Write(); }
+    if (h_2D_A_had_regionCw2) { h_2D_A_had_regionCw2->SetName(("regionC_w2A_" + targetName).c_str()); h_2D_A_had_regionCw2->Write(); }
+    if (h_2D_D_had_regionDw2) { h_2D_D_had_regionDw2->SetName(("regionD_w2D_" + targetName).c_str()); h_2D_D_had_regionDw2->Write(); }
+    if (h_2D_A_had_regionDw2) { h_2D_A_had_regionDw2->SetName(("regionD_w2A_" + targetName).c_str()); h_2D_A_had_regionDw2->Write(); }
+    if (h_2D_D_had_regionA_count) { h_2D_D_had_regionA_count->SetName(("regionA_count_D_" + targetName).c_str()); h_2D_D_had_regionA_count->Write(); }
+    if (h_2D_A_had_regionA_count) { h_2D_A_had_regionA_count->SetName(("regionA_count_A_" + targetName).c_str()); h_2D_A_had_regionA_count->Write(); }
+    if (h_2D_D_had_regionB_count) { h_2D_D_had_regionB_count->SetName(("regionB_count_D_" + targetName).c_str()); h_2D_D_had_regionB_count->Write(); }
+    if (h_2D_A_had_regionB_count) { h_2D_A_had_regionB_count->SetName(("regionB_count_A_" + targetName).c_str()); h_2D_A_had_regionB_count->Write(); }
+    if (h_2D_D_had_regionC_count) { h_2D_D_had_regionC_count->SetName(("regionC_count_D_" + targetName).c_str()); h_2D_D_had_regionC_count->Write(); }
+    if (h_2D_A_had_regionC_count) { h_2D_A_had_regionC_count->SetName(("regionC_count_A_" + targetName).c_str()); h_2D_A_had_regionC_count->Write(); }
+    if (h_2D_D_had_regionD_count) { h_2D_D_had_regionD_count->SetName(("regionD_count_D_" + targetName).c_str()); h_2D_D_had_regionD_count->Write(); }
+    if (h_2D_A_had_regionD_count) { h_2D_A_had_regionD_count->SetName(("regionD_count_A_" + targetName).c_str()); h_2D_A_had_regionD_count->Write(); }
+
 
     TNamed* tname = new TNamed("targetName", targetName.c_str());
     tname->Write();
