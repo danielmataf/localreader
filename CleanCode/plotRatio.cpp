@@ -426,6 +426,94 @@ if (histoMissing) {
     std::cout << "[computeSelfRatio5D] Output written to self_ratio_loop_" << tagC1 << "_over_" << tagC2 << ".root\n";
 }
 
+
+
+// == REGIONS == //
+int LoadRegionCounter(TFile* f, const std::string& counterName) {
+    TParameter<int>* counter = (TParameter<int>*) f->Get(counterName.c_str());
+    if (!counter) {
+        std::cerr << "   Missing counter: " << counterName << " — will use 0.\n";
+        return 0;
+    }
+    return counter->GetVal();
+}
+
+void computeRatioRegion3D(const std::string& fileName,const std::string& targetTag,char region,RatioMatrix& outMatrix, TH3F*&  refHisto){
+    // Determine the counter names dynamically
+    std::string regStr(1, region); // region is a char, like 'A', 'B', etc.
+    std::string counterNameD = "counterD_reg" + regStr;
+    std::string counterNameA = "counterA_reg" + regStr;
+
+    // Load counters from ROOT file
+    int kNuD_int = LoadRegionCounter(f, counterNameD);
+    int kNuA_int = LoadRegionCounter(f, counterNameA);
+
+    // Convert to double
+    double kNuD = static_cast<double>(kNuD_int);
+    double kNuA = static_cast<double>(kNuA_int);
+
+   std::cout << "[computeRatioRegion3D] Opening file " << fileName << '\n';
+   auto* f = TFile::Open(fileName.c_str());
+   if (!f || f->IsZombie()) {
+      std::cerr << "   Cannot open file – skipped.\n";
+      return;
+   }
+
+   std::ostringstream dName, aName;
+   dName << "3D_D_had_region" << region << "_" << targetTag;
+   aName << "3D_A_had_region" << region << "_" << targetTag;
+
+   auto* hD = dynamic_cast<TH3F*>(f->Get(dName.str().c_str()));
+   auto* hA = dynamic_cast<TH3F*>(f->Get(aName.str().c_str()));
+
+   if (!hD) std::cerr << "  Histogram not found: " << dName.str() << '\n';
+   if (!hA) std::cerr << "  Histogram not found: " << aName.str() << '\n';
+   if (!hD || !hA) { f->Close(); return; }
+
+   // keep a reference histogram around (first call only)
+   if (!refHisto) {
+      refHisto = hD;
+      refHisto->SetDirectory(nullptr);
+   }
+
+   const int Nphih  = hD->GetNbinsX();   // φ_h  (should be 5)
+   const int Npt = hD->GetNbinsY();   // pT²  (should be 5)
+   const int Nz  = hD->GetNbinsZ();   // z    (should be 5)
+
+   if (Nphih!=5 || Npt!=5 || Nz!=5) {
+      std::cerr << "    binning mismatch – will still proceed.\n";
+   }
+
+   for (int iphih = 1; iphih <= Nphih; ++iphih) {
+      for (int ipt = 1; ipt <= Npt; ++ipt) {
+         for (int iz = 1; iz <= Nz; ++iz) {
+
+            const double valD = hD->GetBinContent(iphih, ipt, iz);
+            const double valA = hA->GetBinContent(iphih, ipt, iz);
+
+            const double rD  = (kNuD > 0.) ? valD / kNuD : 0.;
+            const double rA  = (kNuA > 0.) ? valA / kNuA : 0.;
+            const double R   = (rD  > 0.) ? rA  / rD     : 0.;
+            const double err = (valA>0 && valD>0)? R * std::sqrt( 1./valA + 1./valD + 1./kNuA + 1./kNuD ): 0.;
+            //std::cout << "[computeRatioRegion3D] R = " << R<< "+- "<< err << std::endl;
+
+            if (!std::isfinite(R) || !std::isfinite(err)) {
+               std::cout << "[NaN] R=" << R << " err=" << err
+                         << "  valA=" << valA << " valD=" << valD
+                         << "  bin(phih,pT²,z)=(" << iphih << ',' << ipt << ',' << iz << ")\n";
+            }
+
+            // store (0-based) into the user-supplied container
+            outMatrix.val[iphih-1][ipt-1][iz-1] = R;
+            outMatrix.err[iphih-1][ipt-1][iz-1] = err;
+         }
+      }
+   }
+
+   f->Close();
+}
+
+
 const int Rdim = 5;  //setting THnSparseD 5 dim
 
 
@@ -1264,6 +1352,115 @@ void drawSelfRatio5D(THnSparseD* hRatio, const std::string& outName) {
 }
 
 
+
+// == REGIONs == //
+
+
+void drawRatioRegionPdf(const RatioMatrix& C2, const RatioMatrix& Cu,const RatioMatrix& Sn,TH3F* binref,const std::string& regionTag)       
+{
+   if (!binref) {
+      std::cerr << "[drawRatioRegionPdf] No reference histogram supplied.\n";
+      return;
+   }
+
+   const int Nphi = binref->GetNbinsX();   //phih
+   const int Npt  = binref->GetNbinsY();   //pT2
+   const int Nz   = binref->GetNbinsZ();   //z
+   if (Nphi!=5 || Npt!=5 || Nz!=5)
+      std::cerr << "[drawRatioRegionPdf] mismacth binning .\n";
+
+   std::string outPdf =
+      "Rvalues/RatioTripleTarget_" + regionTag + "_fromRoot.pdf";
+
+   TCanvas canvas("c", "Ratio triple-target", 1200, 800);
+
+   for (int iphi = 0; iphi < Nphi; ++iphi) {
+    
+
+      canvas.Clear();
+      canvas.Divide(3, 2);
+      for (int ipt = 0; ipt < Npt; ++ipt) {
+
+         const int pad = ipt + 1;       //
+         canvas.cd(pad);
+
+         auto* gC2 = new TGraphErrors();
+         auto* gCu = new TGraphErrors();
+         auto* gSn = new TGraphErrors();
+
+         for (int iz = 0; iz < Nz; ++iz) {
+
+            const double zVal = binref->GetZaxis()->GetBinCenter(iz + 1);
+            std::cout << "[drawRatioRegionPdf] "<< "phih bin " << iphi + 1<< ", pt2 bin " << ipt + 1 << ", z bin " << iz + 1<< " | z = " << zVal << std::endl;
+            const double  valC2 =  C2.val[iphi][ipt][iz];
+            const double  valCu =  Cu.val[iphi][ipt][iz];
+            const double  valSn =  Sn.val[iphi][ipt][iz];
+            const double  errC2 =  C2.err[iphi][ipt][iz];
+            const double  errCu =  Cu.err[iphi][ipt][iz];
+            const double  errSn =  Sn.err[iphi][ipt][iz];
+            std::cout << "[drawRatioRegionPdf] " << " | C2 = " << valC2 << " ± " << errC2
+                      << ", Cu = " << valCu << " ± " << errCu
+                      << ", Sn = " << valSn << " ± " << errSn
+                      << std::endl;
+            gSn->SetPoint(iz, zVal, valSn);
+            gSn->SetPointError(iz, 0.0 , errSn);
+            gCu->SetPoint(iz, zVal + 0.01   , valCu);
+            gCu->SetPointError(iz, 0.0 , errCu);
+            gC2->SetPoint(iz, zVal + 0.02, valC2);
+            gC2->SetPointError(iz, 0.0, errC2);
+         }
+
+         // style
+         gC2->SetMarkerStyle(20); gC2->SetMarkerColor(kBlack);
+         gCu->SetMarkerStyle(20); gCu->SetMarkerColor(kGreen);
+         gSn->SetMarkerStyle(20); gSn->SetMarkerColor(kOrange);
+
+        TMultiGraph* mg = new TMultiGraph();
+
+         
+         mg->Add(gC2); mg->Add(gCu); mg->Add(gSn);
+         mg->Draw("APE1");
+         mg->GetXaxis()->SetTitle("z");
+         mg->GetYaxis()->SetTitle("R");
+         mg->GetYaxis()->SetRangeUser(0., 1.5);
+
+         TLegend* legend = new TLegend(0.15, 0.15, 0.35, 0.30);
+            legend->SetTextSize(0.035);
+            legend->AddEntry(gC2, "C", "lp");
+            legend->AddEntry(gCu, "Cu", "lp");
+            legend->AddEntry(gSn, "Sn", "lp");
+            legend->Draw("same");
+
+            TLine* line = new TLine(0.0, 1.0, 1.0, 1.0);
+            line->SetLineStyle(2);
+            line->Draw("same");
+
+
+          TLatex text;
+            text.SetTextSize(0.045);
+            //instead of of bin center we want ranges for variables, so lets do get bin edges 
+            text.DrawLatexNDC(0.45, 0.22, Form( "%.2f < #phi < %.2f", binref->GetXaxis()->GetBinLowEdge(iphi + 1), binref->GetXaxis()->GetBinUpEdge(iphi + 1)));
+            text.DrawLatexNDC(0.45, 0.17, Form("%.2f < p_{T}^{2} < %.2f", binref->GetZaxis()->GetBinLowEdge(ipt + 1), binref->GetZaxis()->GetBinUpEdge(ipt + 1)));
+
+            TLatex watermark;
+            watermark.SetTextSize(0.08);
+            watermark.SetTextAngle(45);
+            watermark.SetTextColorAlpha(kGray + 1, 0.3);
+            watermark.SetNDC();
+            watermark.SetTextAlign(22);
+            watermark.DrawLatex(0.5, 0.5, "not precise");
+      } // --  end pt2
+
+      if (iphi == 0)
+         canvas.Print((outPdf + "(").c_str());
+      else if (iphi == Nphi-1)
+         canvas.Print((outPdf + ")").c_str());
+      else
+         canvas.Print(outPdf.c_str());
+   } // phih
+}
+
+
 int main() {
     RzData rzC  = calcRz("RinputFiles/Rhist_C2_RGD.root", "C2_RGD");
     RzData rzSn = calcRz("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD");
@@ -1290,7 +1487,33 @@ int main() {
     //compute5DRatio("RinputFiles/Rhist_C2_RGD.root", "C2_RGD");
     //compute5DRatio("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD");
     //compute5DRatio("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD");
-    
+    RatioMatrix  rCu_A, rCu_B, rCu_C, rCu_D;
+    RatioMatrix  rC2_A, rC2_B, rC2_C, rC2_D;
+    RatioMatrix  rSn_A, rSn_B, rSn_C, rSn_D;
+    TH3F*        refregionHist = nullptr;
+
+    computeRatioRegion3D("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD", 'A', rCu_A, refregionHist);
+    computeRatioRegion3D("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD", 'B', rCu_B, refregionHist);
+    computeRatioRegion3D("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD", 'C', rCu_C, refregionHist);
+    computeRatioRegion3D("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD", 'D', rCu_D, refregionHist);
+    computeRatioRegion3D("RinputFiles/Rhist_C2_RGD.root", "C2_RGD", 'A', rC2_A, refregionHist);
+    computeRatioRegion3D("RinputFiles/Rhist_C2_RGD.root", "C2_RGD", 'B', rC2_B, refregionHist);
+    computeRatioRegion3D("RinputFiles/Rhist_C2_RGD.root", "C2_RGD", 'C', rC2_C, refregionHist);
+    computeRatioRegion3D("RinputFiles/Rhist_C2_RGD.root", "C2_RGD", 'D', rC2_D, refregionHist);
+    computeRatioRegion3D("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD", 'A', rSn_A, refregionHist);
+    computeRatioRegion3D("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD", 'B', rSn_B, refregionHist);
+    computeRatioRegion3D("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD", 'C', rSn_C, refregionHist);
+    computeRatioRegion3D("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD", 'D', rSn_D, refregionHist);
+    // region A
+drawRatioRegionPdf(rC2_A, rCu_A, rSn_A, refregionHist, "regionA");
+// region B
+drawRatioRegionPdf(rC2_B, rCu_B, rSn_B, refregionHist, "regionB");
+// region C
+drawRatioRegionPdf(rC2_C, rCu_C, rSn_C, refregionHist, "regionC");
+// region D
+drawRatioRegionPdf(rC2_D, rCu_D, rSn_D, refregionHist, "regionD");
+
+
     
     //compute5DRatio_withLoops("RinputFiles/Rhist_C2_RGD.root", "C2_RGD");
     //compute5DRatio_withLoops("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD");
@@ -1331,7 +1554,9 @@ int main() {
 
     std::vector<THnSparseD*> ratios_phiH = {hC, hCu, hSn};
     drawRatio5Dphih_TripleTarget(ratios_phiH, "Rvalues");
-computeSelfRatio5D("RinputFiles/Rhist_C1_RGD.root", "RinputFiles/Rhist_C2_RGD.root", "C1_RGD", "C2_RGD");
+    /*
+    //self procedures
+    computeSelfRatio5D("RinputFiles/Rhist_C1_RGD.root", "RinputFiles/Rhist_C2_RGD.root", "C1_RGD", "C2_RGD");
 
     //3D  selfplot
     drawSelfRatio3D(rC, refHist, "Rvalues/selfRatio3D_C1_over_C2");
@@ -1351,7 +1576,7 @@ computeSelfRatio5D("RinputFiles/Rhist_C1_RGD.root", "RinputFiles/Rhist_C2_RGD.ro
 
     drawSelfRatio5D(hSelf, "Rvalues/selfRatio5D_C1_over_C2");
     fSelf->Close();
-
+*/
 
 
 

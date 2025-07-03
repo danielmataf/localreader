@@ -145,7 +145,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     cratio cratCu(testLD2cuts, testCucuts, "Cu_RGD");
 
 
-    int totalevts = 1000;
+    int totalevts = 10000;
     // int totalevts =3500000;   //uncomment this on farm for fullT on C2 
 
     for (int i=0; i<totalevts; i++){
@@ -190,6 +190,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
 
             //munfTestC2.FillHistComp(eventtestCxC);
             monTestC2.FillHistogramswCuts(eventtestCxC);
+            monTestC2.thetabinning(eventtestCxC);    //for theta pending
             monTestC1.FillHistogramswCuts(eventtestCxC);
             ratC2.FillHistograms(eventtestCxC);
             ratC1.FillHistograms(eventtestCxC);
@@ -205,12 +206,15 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             Event eventsimCxC_MC = simCxC_MC.value();
             eventsimCxC_MC.SetTargetType(1);
             eventsimCxC_MC.calcMCAll();
+            munftrueC2.FillHistogramswCutsMC(eventsimCxC_MC);
 
                 if ( simCxC.has_value()) {
                     Event eventsimCxC = simCxC.value();
                     eventsimCxC.SetTargetType(1);
                     eventsimCxC.calcAll();
                     monSimC2.FillHistogramswCuts(eventsimCxC);
+                    munftrueC2.FillHistogramswCuts(eventsimCxC);
+                    //munftrueC2.FillHistogramswCutsMC(eventsimCxC_MC);
                 }
         }
         if (testLD2symmMC.has_value()) { //LD2 sim
@@ -280,9 +284,17 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     std::cout << "//========= Simulation C2 ==========//  \n";
     ratC2.saveRhistos();
     ratSn.saveRhistos();
+    dptC2.saveDptHistos();
+    dptSn.saveDptHistos();
+    dptCu.saveDptHistos();
+    cratC2.saveCratioHistos();
+    cratSn.saveCratioHistos();
+    cratCu.saveCratioHistos();
     monLD2full.SaveHistRoot("AprLD2full_test");
     monLD2symm.SaveHistRoot("AprLD2symm_test");
     monTestLD2.SaveHistRoot("testLD2_test");
+    munftrueC2.SaveHistRoot("junC2_truef_test");
+    munftrueC2.SaveHistMCRoot("junC2_truef_testMC");
     
     monLD2full.DrawEnergyHistograms("nrg_angLD2full");
     monLD2symm.DrawEnergyHistograms("nrg_angLD2symm");

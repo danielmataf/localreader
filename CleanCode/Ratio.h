@@ -235,6 +235,17 @@ private:
     double xblowD = 0.2; // lower edge for xB in region D
     double xbhighD = 0.5; // upper edge for xB in region D
 
+    //counter for REGION A, B, C, D
+    int counterD_regA = 0;
+    int counterD_regB = 0;
+    int counterD_regC = 0;
+    int counterD_regD = 0;
+    
+    int counterA_regA = 0;
+    int counterA_regB = 0;
+    int counterA_regC = 0;
+    int counterA_regD = 0;
+
 
     //histos for 5D calc 
     private:

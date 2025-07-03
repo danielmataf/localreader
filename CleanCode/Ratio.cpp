@@ -58,14 +58,14 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     h_newz_D (new TH1F(("z_D_new"+targetName).c_str(), ("z_D_new"+targetName).c_str(), 10 , Constants::RcutminZ , Constants::RcutmaxZ)),   //setting 10 bins so we can have a 10 point plot
     h_newz_A (new TH1F(("z_A_new"+targetName).c_str(), ("z_A_new"+targetName).c_str(), 10 , Constants::RcutminZ , Constants::RcutmaxZ)),   //setting 10 bins so we can have a 10 point plot
     //3D hadrons for regions (avoids 5D) (has pnly phih, pt2 and z)
-    h_3D_A_had_regionA (new TH3F(("3D_A_had_regionA"+targetName).c_str(), ("3D_A_had_regionA"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
-    h_3D_D_had_regionA (new TH3F(("3D_D_had_regionA"+targetName).c_str(), ("3D_D_had_regionA"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
-    h_3D_A_had_regionB (new TH3F(("3D_A_had_regionB"+targetName).c_str(), ("3D_A_had_regionB"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
-    h_3D_D_had_regionB (new TH3F(("3D_D_had_regionB"+targetName).c_str(), ("3D_D_had_regionB"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
-    h_3D_A_had_regionC (new TH3F(("3D_A_had_regionC"+targetName).c_str(), ("3D_A_had_regionC"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
-    h_3D_D_had_regionC (new TH3F(("3D_D_had_regionC"+targetName).c_str(), ("3D_D_had_regionC"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
-    h_3D_A_had_regionD (new TH3F(("3D_A_had_regionD"+targetName).c_str(), ("3D_A_had_regionD"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
-    h_3D_D_had_regionD (new TH3F(("3D_D_had_regionD"+targetName).c_str(), ("3D_D_had_regionD"+targetName).c_str(), 5 , Constants::Rcutminphih, Constants::Rcutmaxphih, 5, Constants::RcutminPt2, Constants::RcutmaxPt2, 5 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_A_had_regionA (new TH3F(("3D_A_had_regionA"+targetName).c_str(), ("3D_A_had_regionA"+targetName).c_str(), 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4, Constants::RcutminPt2, Constants::RcutmaxPt2, 4 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_D_had_regionA (new TH3F(("3D_D_had_regionA"+targetName).c_str(), ("3D_D_had_regionA"+targetName).c_str(), 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4, Constants::RcutminPt2, Constants::RcutmaxPt2, 4 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_A_had_regionB (new TH3F(("3D_A_had_regionB"+targetName).c_str(), ("3D_A_had_regionB"+targetName).c_str(), 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4, Constants::RcutminPt2, Constants::RcutmaxPt2, 4 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_D_had_regionB (new TH3F(("3D_D_had_regionB"+targetName).c_str(), ("3D_D_had_regionB"+targetName).c_str(), 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4, Constants::RcutminPt2, Constants::RcutmaxPt2, 4 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_A_had_regionC (new TH3F(("3D_A_had_regionC"+targetName).c_str(), ("3D_A_had_regionC"+targetName).c_str(), 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4, Constants::RcutminPt2, Constants::RcutmaxPt2, 4 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_D_had_regionC (new TH3F(("3D_D_had_regionC"+targetName).c_str(), ("3D_D_had_regionC"+targetName).c_str(), 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4, Constants::RcutminPt2, Constants::RcutmaxPt2, 4 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_A_had_regionD (new TH3F(("3D_A_had_regionD"+targetName).c_str(), ("3D_A_had_regionD"+targetName).c_str(), 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4, Constants::RcutminPt2, Constants::RcutmaxPt2, 4 , Constants::RcutminZ, Constants::RcutmaxZ)),
+    h_3D_D_had_regionD (new TH3F(("3D_D_had_regionD"+targetName).c_str(), ("3D_D_had_regionD"+targetName).c_str(), 4 , Constants::Rcutminphih, Constants::Rcutmaxphih, 4, Constants::RcutminPt2, Constants::RcutmaxPt2, 4 , Constants::RcutminZ, Constants::RcutmaxZ)),
 
     //5D
     h_3D_A_e (new TH3F(("3D_A_e"+targetName).c_str(), ("3D_A_e"+targetName).c_str(),Constants::Rbin_nu , Constants::RcutminQ, Constants::RcutmaxQ, Constants::Rbin_nu ,Constants::Rcutminx, Constants::Rcutmaxx ,  Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu   )),
@@ -168,15 +168,19 @@ void Ratio::FillHistograms(const Event& event) {
                 //below a debug porcedure
                 if (event.GetQ2()>Q2lowA && event.GetQ2()<Q2highA && event.Getxb()>xblowA && event.Getxb()<xbhighA ) { //REGION A
                     h_3D_D_had_regionA->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                    counterD_regA++;
                 }
                 if (event.GetQ2()>Q2lowB && event.GetQ2()<Q2highB && event.Getxb()>xblowB && event.Getxb()<xbhighB ) { //REGION B
-                    h_3D_D_had_regionB->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                    h_3D_D_had_regionB->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());
+                    counterD_regB++;   
                 }
                 if (event.GetQ2()>Q2lowC && event.GetQ2()<Q2highC && event.Getxb()>xblowC && event.Getxb()<xbhighC ) { //REGION C
-                    h_3D_D_had_regionC->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                    h_3D_D_had_regionC->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());
+                    counterD_regC++;   
                 }
                 if (event.GetQ2()>Q2lowD && event.GetQ2()<Q2highD && event.Getxb()>xblowD && event.Getxb()<xbhighD ) { //REGION D
-                    h_3D_D_had_regionD->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                    h_3D_D_had_regionD->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());
+                    counterD_regD++;   
                 }
 
                 if (event.GetQ2()< binMins[0] || event.GetQ2() > binMaxs[0] ||
@@ -231,15 +235,19 @@ void Ratio::FillHistograms(const Event& event) {
 
                 if (event.GetQ2()>Q2lowA && event.GetQ2()<Q2highA && event.Getxb()>xblowA && event.Getxb()<xbhighA ) { //REGION A
                     h_3D_A_had_regionA->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                    counterA_regA++;
                 }
                 if (event.GetQ2()>Q2lowB && event.GetQ2()<Q2highB && event.Getxb()>xblowB && event.Getxb()<xbhighB ) { //REGION B
                     h_3D_A_had_regionB->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                    counterA_regB++;
                 }
                 if (event.GetQ2()>Q2lowC && event.GetQ2()<Q2highC && event.Getxb()>xblowC && event.Getxb()<xbhighC ) { //REGION C
-                    h_3D_A_had_regionC->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                    h_3D_A_had_regionC->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());
+                    counterA_regC++;   
                 }
                 if (event.GetQ2()>Q2lowD && event.GetQ2()<Q2highD && event.Getxb()>xblowD && event.Getxb()<xbhighD ) { //REGION D
-                    h_3D_A_had_regionD->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());   
+                    h_3D_A_had_regionD->Fill(hadron.Getphih(), hadron.Getpt2(), hadron.Getz());
+                    counterA_regD++;   
                 }
 
                 h_newz_A->Fill(hadron.Getz()); // Lamiaa 1D 10 point plot
@@ -330,6 +338,24 @@ void Ratio::saveRhistos() {
     TParameter<int>* elA_count = new TParameter<int>("N_electrons_A", counter_elSn); // always store both
     elD_count->Write();
     elA_count->Write();
+    TParameter<int>* cD_regA = new TParameter<int>("counterD_regA", counterD_regA);
+    TParameter<int>* cD_regB = new TParameter<int>("counterD_regB", counterD_regB);
+    TParameter<int>* cD_regC = new TParameter<int>("counterD_regC", counterD_regC);
+    TParameter<int>* cD_regD = new TParameter<int>("counterD_regD", counterD_regD);
+
+    TParameter<int>* cA_regA = new TParameter<int>("counterA_regA", counterA_regA);
+    TParameter<int>* cA_regB = new TParameter<int>("counterA_regB", counterA_regB);
+    TParameter<int>* cA_regC = new TParameter<int>("counterA_regC", counterA_regC);
+    TParameter<int>* cA_regD = new TParameter<int>("counterA_regD", counterA_regD);
+
+    cD_regA->Write();
+    cD_regB->Write();
+    cD_regC->Write();
+    cD_regD->Write();
+    cA_regA->Write();
+    cA_regB->Write();
+    cA_regC->Write();
+    cA_regD->Write();
     //save to target
     TNamed* tname = new TNamed("targetName", targetName.c_str());
     tname->Write();

@@ -1,5 +1,6 @@
 #include <TFile.h>
 #include <TH3D.h>
+#include <TH2D.h>
 #include <TH1D.h>
 #include <TCanvas.h>
 #include <TGraphErrors.h>
@@ -210,7 +211,12 @@ void computeDpt4D_LoopsPhih(const std::string& fileName,
                     const double err   = std::sqrt(errA*errA + errD*errD);
 
                     if (dpt==0.0) ++zeroCounter;
-
+                    //std::cout << "Bin ["
+                    //          << idx[0] << " " << idx[1] << " " << idx[2] << " " << idx[3] << "] | "
+                    //          << "sD = " << sD << " | cD = " << cD << " || "
+                    //          << "sA = " << sA << " | cA = " << cA << " -> Dpt2 = " << dpt
+                    //          << std::endl;
+//
                     hDpt->SetBinContent(idx, dpt);
                     hDpt->SetBinError  (idx, err);
                 }
@@ -218,8 +224,7 @@ void computeDpt4D_LoopsPhih(const std::string& fileName,
         }
     }
 
-    std::cout << "[computeDpt4D] Zero-valued bins: "
-              << zeroCounter << " / " << totCounter << '\n';
+    std::cout << "[computeDpt4D] Zero-valued bins: "  << zeroCounter << " / " << totCounter << '\n';
 
     //output 
     TFile* fout = new TFile(("dpt4D_"+tag+".root").c_str(),"RECREATE");
@@ -386,6 +391,186 @@ void checkTHnSparseContents(const std::string& filePath,
     file->Close();
 }
 
+// REGIONS //
+//annoying but temp, modify when we want to change to 6 points!!
+struct DptMatrixSimple {
+    double val[4][4];  //phih, z
+    double err[4][4];
+};
+void computeDptRegion4x4(const std::string& fileName, const std::string& tag, char region, DptMatrixSimple& matrix) {
+    std::cout << "[computeDptRegion4x4] Opening file: " << fileName << std::endl;
+    TFile* f = TFile::Open(fileName.c_str());
+    if (!f || f->IsZombie()) {
+        std::cerr << "   Cannot open file – skipped.\n";
+        return;
+    }
+    
+// Build histogram names
+std::ostringstream name_ptD, name_ptA, name_sqD, name_sqA, name_countD, name_countA;
+name_ptD    << "region" << region << "_D_" << tag <<"_RGD";
+name_ptA    << "region" << region << "_A_" << tag <<"_RGD";
+name_sqD    << "region" << region << "_w2D_" << tag<<"_RGD";
+name_sqA    << "region" << region << "_w2A_" << tag<<"_RGD";
+name_countD << "region" << region << "_count_D_" << tag<<"_RGD";
+name_countA << "region" << region << "_count_A_" << tag<<"_RGD";
+
+std::cout << "[computeDptRegion4x4] Looking for histograms:\n";
+std::cout << "   " << name_ptD.str()    << '\n';
+std::cout << "   " << name_ptA.str()    << '\n';
+std::cout << "   " << name_sqD.str()    << '\n';
+std::cout << "   " << name_sqA.str()    << '\n';
+std::cout << "   " << name_countD.str() << '\n';
+std::cout << "   " << name_countA.str() << '\n';
+
+// Try to retrieve histograms (use TH2 instead of TH2F to be safe)
+TH2* h_ptD    = (TH2*) f->Get(name_ptD.str().c_str());
+TH2* h_ptA    = (TH2*) f->Get(name_ptA.str().c_str());
+TH2* h_sqptD  = (TH2*) f->Get(name_sqD.str().c_str());
+TH2* h_sqptA  = (TH2*) f->Get(name_sqA.str().c_str());
+TH2* h_countD = (TH2*) f->Get(name_countD.str().c_str());
+TH2* h_countA = (TH2*) f->Get(name_countA.str().c_str());
+
+// Print existence check for each histogram
+if (!h_ptD)    std::cerr << "   Missing: " << name_ptD.str()    << '\n';
+if (!h_ptA)    std::cerr << "   Missing: " << name_ptA.str()    << '\n';
+if (!h_sqptD)  std::cerr << "   Missing: " << name_sqD.str()    << '\n';
+if (!h_sqptA)  std::cerr << "   Missing: " << name_sqA.str()    << '\n';
+if (!h_countD) std::cerr << "   Missing: " << name_countD.str() << '\n';
+if (!h_countA) std::cerr << "   Missing: " << name_countA.str() << '\n';
+
+// Global missing check
+if (!h_ptD || !h_ptA || !h_sqptD || !h_sqptA || !h_countD || !h_countA) {
+    std::cerr << "[computeDptRegion4x4] Missing one or more histograms for region " << region << " and tag " << tag << '\n';
+    f->Close();
+    return;
+}
+
+
+
+
+    int Nphih = h_ptD->GetNbinsX();  // φh
+    int Nz = h_ptD->GetNbinsY();    // z
+
+    if (Nphih != 4 || Nz != 4) {
+        std::cerr << "[computeDptRegion4x4] Unexpected binning: φh=" << Nphih << ", z=" << Nz << '\n';
+    }
+
+    for (int iphih = 1; iphih <= std::min(Nphih, 4); ++iphih) {
+        for (int iz = 1; iz <= std::min(Nz, 4); ++iz) {
+            double valD    = h_ptD->GetBinContent(iphih, iz);
+            double valA    = h_ptA->GetBinContent(iphih, iz);
+            double countD  = h_countD->GetBinContent(iphih, iz);
+            double countA  = h_countA->GetBinContent(iphih, iz);
+            double sqD     = h_sqptD->GetBinContent(iphih, iz);
+            double sqA     = h_sqptA->GetBinContent(iphih, iz);
+
+            double avgD = (countD > 0) ? valD / countD : 0.0;
+            double avgA = (countA > 0) ? valA / countA : 0.0;
+            double dpt = avgA - avgD;
+
+            double varD = (countD > 0) ? sqD / countD - avgD * avgD : 0.0;
+            double varA = (countA > 0) ? sqA / countA - avgA * avgA : 0.0;
+            double errD = (countD > 0) ? std::sqrt(varD / countD) : 0.0;
+            double errA = (countA > 0) ? std::sqrt(varA / countA) : 0.0;
+            double errDpt = std::sqrt(errD * errD + errA * errA);
+            matrix.val[iphih - 1][iz - 1] = dpt;
+            matrix.err[iphih - 1][iz - 1] = errDpt;
+        }
+    }
+
+    f->Close();
+}
+
+//drawing REGIONS//
+void drawDptRegionPdf(const DptMatrixSimple& C2, const DptMatrixSimple& Cu, const DptMatrixSimple& Sn, const std::string& regionTag) {    const std::string refTag = "C2";  // ← pick any reliable target
+    const std::string refFilePath = "DptinputFiles/Dhist_" + refTag + "_RGD.root";
+
+    TFile* f = TFile::Open(refFilePath.c_str());
+    if (!f || f->IsZombie()) {
+        std::cerr << "[drawDptRegionPdf] Failed to open reference ROOT file: " << refFilePath << std::endl;
+        return;
+    }
+
+    std::string refHistName = "region" + regionTag + "_D_" + refTag + "_RGD";
+    TH2F* binref = (TH2F*) f->Get(refHistName.c_str());
+
+    if (!binref) {
+        std::cerr << "[drawDptRegionPdf] Reference histogram not found: " << refHistName << std::endl;
+        f->Close();
+        return;
+    }
+
+    std::cout << "[drawDptRegionPdf] Loaded reference histogram: " << refHistName << " from " << refFilePath << std::endl;
+
+
+    std::string outPdf = "Dptvalues/DptRegion_" + regionTag + ".pdf";
+    TCanvas canvas("c", "Dpt2triple-target", 1200, 800);
+    canvas.Divide(2, 2);  // 4 phih bins per page
+
+    const int Nphih = 4;  // fixed structure
+    const int Nz = 4;
+
+    for (int iphih = 0; iphih < Nphih; ++iphih) {
+        canvas.cd(iphih + 1);
+
+        auto* gC2 = new TGraphErrors();
+        auto* gCu = new TGraphErrors();
+        auto* gSn = new TGraphErrors();
+
+        for (int iz = 0; iz < Nz; ++iz) {
+            const double zVal = binref->GetYaxis()->GetBinCenter(iz + 1);  // Y axis = z
+
+            double valC2 = C2.val[iphih][iz];
+            double valCu = Cu.val[iphih][iz];
+            double valSn = Sn.val[iphih][iz];
+            double errC2 = C2.err[iphih][iz];
+            double errCu = Cu.err[iphih][iz];
+            double errSn = Sn.err[iphih][iz];
+
+            gSn->SetPoint(iz, zVal, valSn);        gSn->SetPointError(iz, 0.0, errSn);
+            gCu->SetPoint(iz, zVal + 0.01, valCu); gCu->SetPointError(iz, 0.0, errCu);
+            gC2->SetPoint(iz, zVal + 0.02, valC2); gC2->SetPointError(iz, 0.0, errC2);
+        }
+
+        gC2->SetMarkerStyle(20); gC2->SetMarkerColor(kBlack);
+        gCu->SetMarkerStyle(20); gCu->SetMarkerColor(kGreen);
+        gSn->SetMarkerStyle(20); gSn->SetMarkerColor(kOrange);
+
+        TMultiGraph* mg = new TMultiGraph();
+        mg->Add(gC2); mg->Add(gCu); mg->Add(gSn);
+        mg->Draw("APE1");
+        mg->GetXaxis()->SetTitle("z");
+        mg->GetYaxis()->SetTitle("#Delta#LTp_{T}^{2}#GT");
+        mg->GetYaxis()->SetRangeUser(-0.05, 0.15);
+
+        TLegend* legend = new TLegend(0.15, 0.15, 0.35, 0.30);
+        legend->SetTextSize(0.035);
+        legend->AddEntry(gC2, "C", "lp");
+        legend->AddEntry(gCu, "Cu", "lp");
+        legend->AddEntry(gSn, "Sn", "lp");
+        legend->Draw("same");
+
+        TLine* line = new TLine(0.0, 0.0, 1.0, 0.0);  // horizontal 0-line
+        line->SetLineStyle(2);
+        line->Draw("same");
+
+        TLatex text;
+        text.SetTextSize(0.045);
+        text.DrawLatexNDC(0.45, 0.22, Form("%.2f < #phi < %.2f",
+            binref->GetXaxis()->GetBinLowEdge(iphih + 1),
+            binref->GetXaxis()->GetBinUpEdge(iphih + 1)));
+
+        TLatex watermark;
+        watermark.SetTextSize(0.08);
+        watermark.SetTextAngle(45);
+        watermark.SetTextColorAlpha(kGray + 1, 0.3);
+        watermark.SetNDC();
+        watermark.SetTextAlign(22);
+        watermark.DrawLatex(0.5, 0.5, "very preliminary");
+    }
+
+    canvas.Print((outPdf).c_str());
+}
 
 
 int main() {
@@ -406,25 +591,54 @@ inspectTHnSparseAxes(hCntD, "Counts-D  (Cu)");
 
 inspectTHnSparseAxes(hCntA, "Counts-A  (Cu)");
 
-checkTHnSparseContents("DptinputFiles/Dhist_Cu_RGD.root",
-                       "Q_x_phih_z_D_Cu_RGD");
+checkTHnSparseContents("DptinputFiles/Dhist_Cu_RGD.root","Q_x_phih_z_D_Cu_RGD");
 
-checkTHnSparseContents("DptinputFiles/Dhist_Cu_RGD.root",
-                       "Q_x_phih_z_A_Cu_RGD");
+checkTHnSparseContents("DptinputFiles/Dhist_C2_RGD.root","Q_x_phih_z_A_C2_RGD");
+checkTHnSparseContents("DptinputFiles/Dhist_Sn_RGD.root","Q_x_phih_z_A_Sn_RGD");
 
 //if (!okD || !okA) {
 //    std::cerr << "Histogram sanity check failed — aborting analysis\n";
 //    return 1;
 //}
-    computeDpt4D_LoopsPhih("DptinputFiles/Dhist_C2_RGD.root", "C2_RGD");
-    computeDpt4D_LoopsPhih("DptinputFiles/Dhist_Cu_RGD.root", "Cu_RGD");
-    computeDpt4D_LoopsPhih("DptinputFiles/Dhist_Sn_RGD.root", "Sn_RGD");
+
+
+//==REGIONS==//
+DptMatrixSimple mat_C2_A, mat_Cu_A, mat_Sn_A;  // for region A
+DptMatrixSimple mat_C2_B, mat_Cu_B, mat_Sn_B;  // for region B
+DptMatrixSimple mat_C2_C, mat_Cu_C, mat_Sn_C;  // for region C
+DptMatrixSimple mat_C2_D, mat_Cu_D, mat_Sn_D;  // for region D
+
+computeDptRegion4x4("DptinputFiles/Dhist_C2_RGD.root", "C2", 'A', mat_C2_A);
+computeDptRegion4x4("DptinputFiles/Dhist_Cu_RGD.root", "Cu", 'A', mat_Cu_A);
+computeDptRegion4x4("DptinputFiles/Dhist_Sn_RGD.root", "Sn", 'A', mat_Sn_A);
+computeDptRegion4x4("DptinputFiles/Dhist_C2_RGD.root", "C2", 'B', mat_C2_B);
+computeDptRegion4x4("DptinputFiles/Dhist_Cu_RGD.root", "Cu", 'B', mat_Cu_B);
+computeDptRegion4x4("DptinputFiles/Dhist_Sn_RGD.root", "Sn", 'B', mat_Sn_B);
+computeDptRegion4x4("DptinputFiles/Dhist_C2_RGD.root", "C2", 'C', mat_C2_C);
+computeDptRegion4x4("DptinputFiles/Dhist_Cu_RGD.root", "Cu", 'C', mat_Cu_C);
+computeDptRegion4x4("DptinputFiles/Dhist_Sn_RGD.root", "Sn", 'C', mat_Sn_C);
+computeDptRegion4x4("DptinputFiles/Dhist_C2_RGD.root", "C2", 'D', mat_C2_D);
+computeDptRegion4x4("DptinputFiles/Dhist_Cu_RGD.root", "Cu", 'D', mat_Cu_D);
+computeDptRegion4x4("DptinputFiles/Dhist_Sn_RGD.root", "Sn", 'D', mat_Sn_D);
+    // Draw regions
+drawDptRegionPdf(mat_C2_A, mat_Cu_A, mat_Sn_A, "A");
+drawDptRegionPdf(mat_C2_B, mat_Cu_B, mat_Sn_B, "B");
+drawDptRegionPdf(mat_C2_C, mat_Cu_C, mat_Sn_C, "C");
+drawDptRegionPdf(mat_C2_D, mat_Cu_D, mat_Sn_D, "D");
+
+
+// END REGIONS //
+
+
+    //computeDpt4D_LoopsPhih("DptinputFiles/Dhist_C2_RGD.root", "C2_RGD");
+    //computeDpt4D_LoopsPhih("DptinputFiles/Dhist_Cu_RGD.root", "Cu_RGD");
+    //computeDpt4D_LoopsPhih("DptinputFiles/Dhist_Sn_RGD.root", "Sn_RGD");
 
     if (refHist) {
         drawDptPdf(dptC, dptCu, dptSn, refHist);
-        std::cout << "[plotDpt] Dpt PDF generated in ../Dptvalues/" << std::endl;
+        //std::cout << "[plotDpt] Dpt PDF generated in ../Dptvalues/" << std::endl;
     } else {
-        std::cerr << "[plotDpt] No valid reference histogram.\n";
+        //std::cerr << "[plotDpt] No valid reference histogram.\n";
     }
     return 0;
 }
