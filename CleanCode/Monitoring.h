@@ -25,6 +25,9 @@ public:
     void FillHistogramsNoCutsMC(const Event& ); 
     void FillResolutionFrom(Monitoring& other);
 
+    void initThetaBinning();            // called once in ctor
+    void thetabinning(const Event& ev); // call from main event loop
+
 
     void FillMomentumHistograms(const Event& );
 
@@ -105,6 +108,17 @@ private:
     int zmaxR = 0.7;    
     int pt2minR = 0;
     int pt2maxR = 2;
+
+
+    //Bininng with theta 
+    TH2F* h_theta_xB;  // 
+    TH2D* h_xB_Q2_quant; // histo with theta bin 
+    //TH2D* h_xB_Q2_quant = nullptr;      // new histogram
+    //Re binning using y and W for some reason 
+    TH2D* h_y_W2_quant; // 
+
+  std::vector<double> xB_edges;       // variable edges
+  std::vector<double> Q2_edges;
 
 
 
@@ -214,6 +228,9 @@ private:
     //pion chi2 fixing
     TH2F * h_luthetael; // = new TH2F("luthetapi", "luthetapi", 100, 0, 400, 100, 0, 80) ; 
 
+
+    //plot for theta binning 
+    TH2F *h_xQ2poscuts;
 
 
     //sampling fraction 

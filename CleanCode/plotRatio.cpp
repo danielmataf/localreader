@@ -16,7 +16,7 @@
 #include "constants.h"
 #include <THnSparse.h>
 #include <TStyle.h>
-
+#include "TParameter.h"
 
 //compile and run: 
 //g++ plotRatio.cpp -o plotRatio `root-config --cflags --libs`
@@ -439,6 +439,13 @@ int LoadRegionCounter(TFile* f, const std::string& counterName) {
 }
 
 void computeRatioRegion3D(const std::string& fileName,const std::string& targetTag,char region,RatioMatrix& outMatrix, TH3F*&  refHisto){
+    std::cout << "[computeRatioRegion3D] Opening file " << fileName << '\n';
+       auto* f = TFile::Open(fileName.c_str());
+       if (!f || f->IsZombie()) {
+          std::cerr << "   Cannot open file – skipped.\n";
+          return;
+       }
+
     // Determine the counter names dynamically
     std::string regStr(1, region); // region is a char, like 'A', 'B', etc.
     std::string counterNameD = "counterD_reg" + regStr;
@@ -452,13 +459,7 @@ void computeRatioRegion3D(const std::string& fileName,const std::string& targetT
     double kNuD = static_cast<double>(kNuD_int);
     double kNuA = static_cast<double>(kNuA_int);
 
-   std::cout << "[computeRatioRegion3D] Opening file " << fileName << '\n';
-   auto* f = TFile::Open(fileName.c_str());
-   if (!f || f->IsZombie()) {
-      std::cerr << "   Cannot open file – skipped.\n";
-      return;
-   }
-
+   
    std::ostringstream dName, aName;
    dName << "3D_D_had_region" << region << "_" << targetTag;
    aName << "3D_A_had_region" << region << "_" << targetTag;
@@ -476,11 +477,11 @@ void computeRatioRegion3D(const std::string& fileName,const std::string& targetT
       refHisto->SetDirectory(nullptr);
    }
 
-   const int Nphih  = hD->GetNbinsX();   // φ_h  (should be 5)
-   const int Npt = hD->GetNbinsY();   // pT²  (should be 5)
+   const int Nphih  = hD->GetNbinsX();   // phih  (should be 5)
+   const int Npt = hD->GetNbinsY();   // pT2  (should be 5)
    const int Nz  = hD->GetNbinsZ();   // z    (should be 5)
-
-   if (Nphih!=5 || Npt!=5 || Nz!=5) {
+    std::cout << "[computeRatioRegion3D]    Binning: phih=" << Nphih << ", pT2=" << Npt << ", z=" << Nz << '\n';
+   if (Nphih!=4 || Npt!=4 || Nz!=4) {
       std::cerr << "    binning mismatch – will still proceed.\n";
    }
 
@@ -1366,7 +1367,10 @@ void drawRatioRegionPdf(const RatioMatrix& C2, const RatioMatrix& Cu,const Ratio
    const int Nphi = binref->GetNbinsX();   //phih
    const int Npt  = binref->GetNbinsY();   //pT2
    const int Nz   = binref->GetNbinsZ();   //z
-   if (Nphi!=5 || Npt!=5 || Nz!=5)
+   std::cout<< "[drawRatioRegionPdf] Binning: Nphi = " << Nphi
+            << ", Npt = " << Npt
+            << ", Nz = " << Nz << std::endl;
+   if (Nphi!=4 || Npt!=4 || Nz!=4)
       std::cerr << "[drawRatioRegionPdf] mismacth binning .\n";
 
    std::string outPdf =
@@ -1374,11 +1378,30 @@ void drawRatioRegionPdf(const RatioMatrix& C2, const RatioMatrix& Cu,const Ratio
 
    TCanvas canvas("c", "Ratio triple-target", 1200, 800);
 
+
+std::string xbLabel, Q2Label;
+
+if (regionTag == "regionA") {
+    xbLabel = "0.06 < x_{B} < 0.2";
+    Q2Label = "1 < Q^{2} < 2.56";
+} else if (regionTag == "regionB") {
+    xbLabel = "0.2 < x_{B} < 0.5";
+    Q2Label = "2.56 < Q^{2} < 5";
+} else if (regionTag == "regionC") {
+    xbLabel = "0.06 < x_{B} < 0.2";
+    Q2Label = "1 < Q^{2} < 1.22";
+} else if (regionTag == "regionD") {
+    xbLabel = "0.2 < x_{B} < 0.5";
+    Q2Label = "1.22 < Q^{2} < 3.21";
+} else {
+    xbLabel = "x_{B} unknown";
+    Q2Label = "Q^{2} unknown";
+}
    for (int iphi = 0; iphi < Nphi; ++iphi) {
     
 
       canvas.Clear();
-      canvas.Divide(3, 2);
+      canvas.Divide(2, 2);
       for (int ipt = 0; ipt < Npt; ++ipt) {
 
          const int pad = ipt + 1;       //
@@ -1422,7 +1445,7 @@ void drawRatioRegionPdf(const RatioMatrix& C2, const RatioMatrix& Cu,const Ratio
          mg->Draw("APE1");
          mg->GetXaxis()->SetTitle("z");
          mg->GetYaxis()->SetTitle("R");
-         mg->GetYaxis()->SetRangeUser(0., 1.5);
+         mg->GetYaxis()->SetRangeUser(0., 2.0);
 
          TLegend* legend = new TLegend(0.15, 0.15, 0.35, 0.30);
             legend->SetTextSize(0.035);
@@ -1439,8 +1462,10 @@ void drawRatioRegionPdf(const RatioMatrix& C2, const RatioMatrix& Cu,const Ratio
           TLatex text;
             text.SetTextSize(0.045);
             //instead of of bin center we want ranges for variables, so lets do get bin edges 
-            text.DrawLatexNDC(0.45, 0.22, Form( "%.2f < #phi < %.2f", binref->GetXaxis()->GetBinLowEdge(iphi + 1), binref->GetXaxis()->GetBinUpEdge(iphi + 1)));
-            text.DrawLatexNDC(0.45, 0.17, Form("%.2f < p_{T}^{2} < %.2f", binref->GetZaxis()->GetBinLowEdge(ipt + 1), binref->GetZaxis()->GetBinUpEdge(ipt + 1)));
+            text.DrawLatexNDC(0.45, 0.30, xbLabel.c_str());
+            text.DrawLatexNDC(0.45, 0.25, Q2Label.c_str());
+            text.DrawLatexNDC(0.45, 0.20, Form( "%.2f < #phi_{h} < %.2f", binref->GetXaxis()->GetBinLowEdge(iphi + 1), binref->GetXaxis()->GetBinUpEdge(iphi + 1)));
+            text.DrawLatexNDC(0.45, 0.13, Form("%.2f < p_{T}^{2} < %.2f", binref->GetZaxis()->GetBinLowEdge(ipt + 1), binref->GetZaxis()->GetBinUpEdge(ipt + 1)));
 
             TLatex watermark;
             watermark.SetTextSize(0.08);
@@ -1448,7 +1473,7 @@ void drawRatioRegionPdf(const RatioMatrix& C2, const RatioMatrix& Cu,const Ratio
             watermark.SetTextColorAlpha(kGray + 1, 0.3);
             watermark.SetNDC();
             watermark.SetTextAlign(22);
-            watermark.DrawLatex(0.5, 0.5, "not precise");
+            watermark.DrawLatex(0.5, 0.5, "preliminary");
       } // --  end pt2
 
       if (iphi == 0)
@@ -1517,10 +1542,10 @@ drawRatioRegionPdf(rC2_D, rCu_D, rSn_D, refregionHist, "regionD");
     
     //compute5DRatio_withLoops("RinputFiles/Rhist_C2_RGD.root", "C2_RGD");
     //compute5DRatio_withLoops("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD");
-    //compute5DRatio_withLoops("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD");
-    compute5D_LoopsPhih("RinputFiles/Rhist_C2_RGD.root", "C2_RGD");
-    compute5D_LoopsPhih("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD");
-    compute5D_LoopsPhih("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD");
+//    //compute5DRatio_withLoops("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD");
+//    compute5D_LoopsPhih("RinputFiles/Rhist_C2_RGD.root", "C2_RGD");
+//    compute5D_LoopsPhih("RinputFiles/Rhist_Cu_RGD.root", "Cu_RGD");
+//    compute5D_LoopsPhih("RinputFiles/Rhist_Sn_RGD.root", "Sn_RGD");
 
     //TFile* fC  = TFile::Open("ratio_loop_C2_RGD.root");
     //TFile* fCu = TFile::Open("ratio_loop_Cu_RGD.root");
@@ -1539,21 +1564,21 @@ drawRatioRegionPdf(rC2_D, rCu_D, rSn_D, refregionHist, "regionD");
     //drawRatio5DfromTHnSparse(ratios, "Rvalues");
 //
     //following procedure to draw with phih. Method above is for nu 
-    TFile* fC  = TFile::Open("ratio_loop_C2_RGD.root");
-    TFile* fCu = TFile::Open("ratio_loop_Cu_RGD.root");
-    TFile* fSn = TFile::Open("ratio_loop_Sn_RGD.root");
+    //TFile* fC  = TFile::Open("ratio_loop_C2_RGD.root");
+    //TFile* fCu = TFile::Open("ratio_loop_Cu_RGD.root");
+    //TFile* fSn = TFile::Open("ratio_loop_Sn_RGD.root");
+//
+    //THnSparseD* hC  = (THnSparseD*)fC->Get("h_5D_RatioLoop_C2_RGD");
+    //THnSparseD* hCu = (THnSparseD*)fCu->Get("h_5D_RatioLoop_Cu_RGD");
+    //THnSparseD* hSn = (THnSparseD*)fSn->Get("h_5D_RatioLoop_Sn_RGD");
 
-    THnSparseD* hC  = (THnSparseD*)fC->Get("h_5D_RatioLoop_C2_RGD");
-    THnSparseD* hCu = (THnSparseD*)fCu->Get("h_5D_RatioLoop_Cu_RGD");
-    THnSparseD* hSn = (THnSparseD*)fSn->Get("h_5D_RatioLoop_Sn_RGD");
+    //if (!hC || !hCu || !hSn) {
+    //    std::cerr << "ERROR: One or more THnSparseD histograms not found.\n";
+    //    return 1;
+    //}
 
-    if (!hC || !hCu || !hSn) {
-        std::cerr << "ERROR: One or more THnSparseD histograms not found.\n";
-        return 1;
-    }
-
-    std::vector<THnSparseD*> ratios_phiH = {hC, hCu, hSn};
-    drawRatio5Dphih_TripleTarget(ratios_phiH, "Rvalues");
+    //std::vector<THnSparseD*> ratios_phiH = {hC, hCu, hSn};
+    //drawRatio5Dphih_TripleTarget(ratios_phiH, "Rvalues");
     /*
     //self procedures
     computeSelfRatio5D("RinputFiles/Rhist_C1_RGD.root", "RinputFiles/Rhist_C2_RGD.root", "C1_RGD", "C2_RGD");

@@ -78,7 +78,7 @@ namespace Constants {
     static const double Vymax_default = 10.0;
     static const double Vzmin_default = -40.0;
     static const double Vzmax_default = 40.0;
-    //NewVertexValues passv11
+    //NewVertexValues passv11   (OB ?)  
     static const double v11cutminVzLD2data = -8.5 ;   
     static const double v11cutmaxVzLD2data = -4.5 ;   
     static const double v11cutminVzSndata = -4.5 ;
@@ -89,7 +89,59 @@ namespace Constants {
     static const double v11cutmaxVzC1data = -2.5 ;
     static const double v11cutminVzC2data = -9.5 ;
     static const double v11cutmaxVzC2data = -7.5 ;    
+    //NewVertexValues pass1   HADRONS!! (OB)  MAthieu values in pass1 
+//C1    -9.67505	-5.38745
+//C2    -4.50786	-0.68064
+//Cu    -11.03832	-5.85492
+//Sn    -4.74283	-0.42643
+    
+    static const double v11cutminVzLD2datahadron = -15 ;   //keeping these as the same...email below
+    static const double v11cutmaxVzLD2datahadron = -5 ;   //keeping these as the same...email below
+    static const double v11cutminVzSndatahadron = -4.74283 ;
+    static const double v11cutmaxVzSndatahadron = -0.42643 ;
+    static const double v11cutminVzCudatahadron = -11.03832 ;    //arbitrary +-.5
+    static const double v11cutmaxVzCudatahadron = -5.85492 ;    //arbitrary +-.5
+    static const double v11cutminVzC1datahadron = -4.50786 ;    
+    static const double v11cutmaxVzC1datahadron = -0.68064 ;
+    static const double v11cutminVzC2datahadron = -9.67505 ;
+    static const double v11cutmaxVzC2datahadron = -5.38745 ;    
 
+    //NewVertexValues pass1   ELECTRONS!! (OB)  MAthieu values in email
+    static const double v11cutminVzLD2dataelectron = -15 ;   //keeping these as the same...
+    static const double v11cutmaxVzLD2dataelectron = -5 ;   //keeping these as the same...
+    static const double v11cutminVzSndataelectron = -6.21 ;
+    static const double v11cutmaxVzSndataelectron = -5 ;
+    static const double v11cutminVzCudataelectron = -10.55 ;    
+    static const double v11cutmaxVzCudataelectron = -6.62 ;    
+    static const double v11cutminVzC2dataelectron = -10.56 ;//merging both carbons, no separation.!!
+    static const double v11cutmaxVzC2dataelectron = -5 ;    //merging both carbons, no separation.!!    
+
+
+
+        //==NewBinings 
+    //bining xb,Q with theta assist (and W)
+    static const double lowA =  1.017;    
+    static const double highA = 3.122;
+    static const double lowB =  1;
+    static const double highB = 2.38;
+    static const double lowC =  1;
+    static const double highC = 1.759;
+    static const double lowD =  2.38;
+    static const double highD = 5.073;
+    static const double lowE =  1.759;
+    static const double highE = 3.368;
+    static const double lowF =  1;
+    static const double highF = 2.246;
+    static const double lowG =  3.368;
+    static const double highG = 5;
+    static const double lowH =  2.246;
+    static const double highH = 3.941;
+    static const double lowI =  1.467;
+    static const double highI = 2.487;
+    static const double lowJ =  3.941;
+    static const double highJ = 5;
+    static const double lowK =  2.449;
+    static const double highK = 4.168;
 
     //Pass1 Vz mean values electron
     static const double meanC1ibel = -7.38522; 
@@ -162,7 +214,10 @@ namespace Constants {
     static const double Rcutminphih = 0.0 ;
     static const double Rcutmaxphih = 360.0 ;
 
-
+    //Adding below cut for nu to avoid acceptance corrections
+    static const double RcutnuMin = 0.0; // avoid acceptance corrections 
+    static const double RcutnuMax = 7.0; // avoid acceptance corrections
+        //for the name I added the R to keep consistency with the other cuts used in general .  
 
     static const int Rbin = 100;
     static const int Rbin_Q = 6;

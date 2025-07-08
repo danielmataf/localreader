@@ -131,6 +131,71 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     // Add more histograms as needed
 }
 
+
+//void Monunfold::SetResponseIndex(const Event& event){
+//    int indexsetter = 0;
+//    if (cut1.PassCutsDetectors(event)) {
+//        if (cut1.PassCutsElectrons(event)==true) {
+//            int Q2evt = event.GetQ2();
+//            int xbevt = event.Getxb();
+//            
+//            for (const Particle& hadron : event.GetHadrons()) {
+//                if (cut1.PassCutsHadrons(hadron)) {
+//                    if (hadron.GetPID() == Constants::PION_PLUS_PID) {
+//                    int zevt = hadron.Getz();
+//                    int pt2evt = hadron.Getpt2();
+//                    int phihevt = hadron.Getphih();
+//                    //if (check values of Q2, xb,phih, pt2, z in that order to check their window. depending on the window you will assign an index ) {
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
+//
+
+int Monunfold::SetResponseIndex(const Event& event) {
+    int indexsetter = 0;
+
+    if (!cut1.PassCutsDetectors(event)) return 0;
+    if (!cut1.PassCutsElectrons(event)) return 0;
+    //how to handle if return is 0. Do not add int matrx
+
+    double Q2evt = event.GetQ2();
+    double xbevt = event.Getxb();
+
+    int regionID = -1;
+    if (Q2evt > 1 && Q2evt <= 2.56 && xbevt > 0.06 && xbevt <= 0.2) regionID = 0; //regA  //regionID acts like a counter useful when building the idx using regs 
+    else if (Q2evt > 2.56 && Q2evt <= 5 && xbevt > 0.2 && xbevt <= 0.5) regionID = 1; //regB
+    else if (Q2evt > 1 && Q2evt <= 1.22 && xbevt > 0.06 && xbevt <= 0.2) regionID = 2; //regC
+    else if (Q2evt > 1.22 && Q2evt <= 3.21 && xbevt > 0.2 && xbevt <= 0.5) regionID = 3; //regD
+    else return 0;
+
+    for (const Particle& hadron : event.GetHadrons()) {
+        if (!cut1.PassCutsHadrons(hadron)) continue;
+        if (hadron.GetPID() != Constants::PION_PLUS_PID) continue;
+
+        double zevt = hadron.Getz();
+        double pt2evt = hadron.Getpt2();
+        double phihevt = hadron.Getphih();
+
+        int zbin = int((zevt - 0.3) / 0.1);
+        if (zbin < 0 || zbin >= 4) continue;
+
+        int pt2bin = int(pt2evt / 0.3);
+        if (pt2bin < 0 || pt2bin >= 4) continue;
+
+        int phibin = int(phihevt / 90.0);
+        if (phibin < 0 || phibin >= 4) continue;
+
+        indexsetter = zbin + 4 * pt2bin + 16 * phibin + 64 * regionID + 1;
+        break;  // We found the index for the first valid pion, return it
+    }
+
+    return indexsetter;
+}
+
+
 void Monunfold::FillOnlyVz(const Event& event) {
     //Temporary function to fill only vertexZ histograms
     //this used to check on vz for both (only true) True Carbon Targets
@@ -303,6 +368,7 @@ void Monunfold::FillHistogramswCuts(const Event& event) {
 
 
 void Monunfold::FillHistogramswCutsMC(const Event& event) {
+    //std::cout<< "bump MC starts"<<std::endl;
     if (cut1.PassCutsDetectors(event)) {
         // Fill histograms after passing detector cuts for MC data
         h_vertexZMC->Fill(event.GetVz()); // Fill MC vertex Z histogram
@@ -313,7 +379,7 @@ void Monunfold::FillHistogramswCutsMC(const Event& event) {
         h_yMC->Fill(event.GetyMC());
         h_nuMC->Fill(event.GetnuMC());
         h_W2MC->Fill(event.GetW2MC());
-
+        //std::cout<< "bump MC el cuts"<<std::endl;
         // Fill MC electron momentum histograms
         Particle electron = event.GetElectron();
         //h_px_el->Fill(electron.GetMomentum().X()); // Assuming the same histogram as in real data
@@ -331,6 +397,7 @@ void Monunfold::FillHistogramswCutsMC(const Event& event) {
         for (const Particle& hadron : event.GetMCHadrons()) {
             if (cut1.PassCutsHadrons(hadron)) {
                 if (hadron.GetPID() == Constants::PION_PLUS_PID) {
+                    std::cout<< "bump MC hadron cuts"<<std::endl;
                     h_zMC->Fill(hadron.GetzMC());
                     h_pt2MC->Fill(hadron.Getpt2MC());
                     h_phihMC->Fill(hadron.GetphihMC());

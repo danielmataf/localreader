@@ -55,7 +55,9 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_thetaelectronMC (new TH1F(( "thetaelectron_MC" + targetName).c_str(), "thetaelectronMC", 500, 0, 1)),
     h_rapportMC (new TH1F(( " rapport_beam_elMC" + targetName).c_str(), "rapport_beam_elMC", 500, 0, 1)),
 
-
+    h_theta_xB (new TH2F("theta_xB", "Scattering Angle vs xB", nubin, 0,1, nubin, xminX, xmaxX)),
+    h_y_W2_quant (new TH2D("y_W2_quant", "y vs W2", nubin, yminX, ymaxX, nubin, WminX, WmaxX)),
+    h_xQ2poscuts (new TH2F(("xQ2poscuts_" + targetName).c_str(), "xQ2poscuts", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
 
     h_pid(new TH1F(("pid_" + targetName).c_str(), "pid", 100, -250, 250)),
     h_xQ2(new TH2F(("xQ2_" + targetName).c_str(), "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
@@ -127,6 +129,8 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
         h_theta_res[s] = new TH1F(Form("theta_res_s%d_%s", s + 1, targetName.c_str()), 
                                   Form("Theta Resolution Sector %d", s + 1), 100, -5, 5);
     }
+    initThetaBinning();
+    
 }
 
 
@@ -202,12 +206,15 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
             h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detected !!!!
                                                 //add Vz for the hadron too
             h_Q2->Fill(event.electron.GetQ2());
-
+            h_theta_xB->Fill(event.GetThetaElectron() * TMath::RadToDeg(), event.Getxb());
+            //std::cout   << "theta electron = " << event.GetThetaElectron() * TMath::RadToDeg() << std::endl;
             h_xb->Fill(event.Getxb());
             h_xQ2->Fill(event.Getxb(), event.electron.GetQ2());
+            h_xQ2poscuts->Fill(event.Getxb(), event.electron.GetQ2());
             h_y->Fill(event.Gety());    
             h_nu->Fill(event.Getnu());
             h_W2->Fill(event.GetW2());
+            h_y_W2_quant->Fill(event.Gety(), event.GetW2());
             h_chi2_el->Fill(event.electron.Getchi2());
 
             h_px_el->Fill(event.electron.GetMomentum().X());
@@ -268,6 +275,120 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
     //}
 }
 
+void Monitoring::initThetaBinning()
+{
+    // ---------------------------------------------------------------
+    // 1.  Open the existing histogram from the ROOT file
+    // ---------------------------------------------------------------
+    TFile f("../Dptinputfiles/REcutC2_test.root","READ");
+    if (f.IsZombie()) {
+        std::cerr << "[initThetaBinning] Cannot open REcutC2_test.root\n";
+        return;
+    }
+    TH2* hThetaXB = dynamic_cast<TH2*>(f.Get("theta_xB"));
+    if (!hThetaXB) {
+        std::cerr << "[initThetaBinning] Histogram theta_xB not found\n";
+        return;
+    }
+
+    // ---------------------------------------------------------------
+    // 2.  Unroll the histogram into vectors (weighted by bin content)
+    // ---------------------------------------------------------------
+    const double M  = 0.938272;   // GeV
+    const double E0 = 10.604;     // GeV – change if your beam energy differs
+
+    std::vector<double> xbVec, q2Vec;
+
+    for (int ix = 1; ix <= hThetaXB->GetNbinsX(); ++ix) {
+        for (int iy = 1; iy <= hThetaXB->GetNbinsY(); ++iy) {
+            int    entries = hThetaXB->GetBinContent(ix,iy);
+            if (entries == 0) continue;
+
+            double xb      = hThetaXB->GetYaxis()->GetBinCenter(iy);   // y-axis is xB
+            double theta   = hThetaXB->GetXaxis()->GetBinCenter(ix);   // x-axis is θ in deg
+            double thRad   = theta*TMath::DegToRad();
+            double Q2      = 4.*M*E0*E0 * xb * std::pow(std::sin(thRad/2.),2)
+                           / ( M*xb + 2.*E0*std::pow(std::sin(thRad/2.),2) );
+
+            // replicate by the number of entries in that bin
+            xbVec .insert(xbVec .end(), entries, xb);
+            q2Vec .insert(q2Vec .end(), entries, Q2);
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // 3.  Build variable edges so every bin has ≃ equal stats
+    //     4 xB bins × 3 Q2 bins = 12
+    // ---------------------------------------------------------------
+    const int NX  = 4;
+    const int NQ2 = 3;
+
+    xB_edges.resize(NX+1);
+    Q2_edges.resize(NQ2+1);
+
+    // xB edges
+   std::vector<double> probX(NX-1);
+std::vector<double> qX(NX-1);  // output quantiles
+
+for (int i = 1; i < NX; ++i)
+    probX[i-1] = static_cast<double>(i) / NX;
+
+TMath::Quantiles(xbVec.size(), NX-1,
+                 xbVec.data(),           // input data array
+                 qX.data(),              // output quantiles
+                 probX.data(),           // quantile positions
+                 kFALSE);                // data is not sorted
+
+// Now build full xB_edges
+xB_edges.front() = *std::min_element(xbVec.begin(), xbVec.end());
+xB_edges.back()  = *std::max_element(xbVec.begin(), xbVec.end());
+for (int i = 1; i < NX; ++i)
+    xB_edges[i] = qX[i-1];
+
+
+    // Q2 edges
+std::vector<double> probQ(NQ2-1);
+std::vector<double> qQ(NQ2-1);
+
+for (int i = 1; i < NQ2; ++i)
+    probQ[i-1] = static_cast<double>(i) / NQ2;
+
+TMath::Quantiles(q2Vec.size(), NQ2-1,
+                 q2Vec.data(),
+                 qQ.data(),
+                 probQ.data(),
+                 kFALSE);
+
+Q2_edges.front() = *std::min_element(q2Vec.begin(), q2Vec.end());
+Q2_edges.back()  = *std::max_element(q2Vec.begin(), q2Vec.end());
+for (int i = 1; i < NQ2; ++i)
+    Q2_edges[i] = qQ[i-1];
+
+    // ---------------------------------------------------------------
+    // 4.  Create the target histogram
+    // ---------------------------------------------------------------
+    h_xB_Q2_quant = new TH2D("h_xB_Q2_quant",
+                             "Equal-occupancy x_{B} vs Q^{2};x_{B};Q^{2} [GeV^{2}]",
+                             NX, xB_edges.data(),
+                             NQ2, Q2_edges.data());
+
+    std::cout << "[initThetaBinning] variable-bin histogram ready (" 
+              << NX << " xB bins × " << NQ2 << " Q2 bins)\n";
+}
+void Monitoring::thetabinning(const Event& ev)
+{
+    if (!h_xB_Q2_quant) return;  // safety
+
+    const double M  = 0.938272;
+    const double E0 = 10.604;
+
+    double xb    = ev.Getxb();
+    double thRad = ev.GetThetaElectron();
+    double Q2    = 4.*M*E0*E0 * xb * std::pow(std::sin(thRad/2.),2)
+                 / ( M*xb + 2.*E0*std::pow(std::sin(thRad/2.),2) );
+
+    h_xB_Q2_quant->Fill(xb, Q2);
+}
 /*
 void Monitoring::FillHistograms(const Event& event) {
     //if (cut1.PassCutLD2Target(event)==false) return;
@@ -1402,6 +1523,9 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     h_vertexZ->Write();
     h_Q2->Write();
     h_xb->Write();
+    h_theta_xB->Write();
+    h_y_W2_quant->Write();
+    //h_xB_Q2_quant->Write();
     h_y->Write();
     h_nu->Write();
     h_W2->Write();
@@ -1409,7 +1533,8 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     h_pt2->Write();
     h_phih->Write();
     h_pt2z->Write();
-
+    h_xQ2->Write();
+    h_xQ2pos->Write();
     h_calXY->Write();
     h_lu->Write();
     h_lv->Write();

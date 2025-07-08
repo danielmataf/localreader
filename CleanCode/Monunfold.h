@@ -24,6 +24,8 @@ public:
     void FillOnlyVz(const Event& ) ;
     void DrawOnlyVz(Monunfold& , const std::string ) ;
 
+    int SetResponseIndex(const Event&); //returns int index for constructing response matrix per evt.
+
     void Fill(const Event& );
     void FillHistograms(const Event& );
     void FillHistogramsNoCuts( const Event&);

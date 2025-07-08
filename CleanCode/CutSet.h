@@ -23,7 +23,7 @@ public:
     void SetCutW(double minW, double maxW);
     void SetCutZ(double minZ, double maxZ);
     void SetCutPt2(double minPt2, double maxPt2);
-
+    void SetCutnu(double minnu, double maxnu);
 
 
     //==Detector cuts==// 
@@ -61,6 +61,8 @@ public:
     bool PassCutsVariables(const Event& );
     bool PassCutVzselection(const Event& );
 
+    
+
     bool PassCuts4R(const Event& , const Particle& );
     bool PassCutOnlyVz(const Event& );
     bool PassCutsCalo(const Event& );
@@ -91,9 +93,13 @@ private:
     double cutZMin, cutZMax;
     double cutPt2Min, cutPt2Max;
 
+    double cutnuMin, cutnuMax; // adding this values to avoid acceptance corrections . 
+
     double cutVxMin,cutVxMax;
     double cutVyMin,cutVyMax;
     double cutVzMin,cutVzMax;
+
+
 
     //for target cuts (specific)
     double VzminSn, VzmaxSn;

@@ -32,6 +32,8 @@ CutSet::CutSet() {
     cutPt2Min= 0.0;
     cutPt2Max=3.0 ;
 
+    cutnuMin = 0.0;
+    cutnuMax = 10.0;
 
 
     //PID defaults
@@ -127,9 +129,11 @@ void CutSet::SetCutGen4Rat(){
 
     SetCutQ(Constants::RcutminQ,Constants::RcutmaxQ );
     SetCutY(Constants::RcutminY,Constants::RcutmaxY );
+    SetCutnu(Constants::Rcutminnu,Constants::Rcutmaxnu );
     SetCutW(Constants::RcutminW,Constants::RcutmaxW );
     SetCutZ(Constants::RcutminZ,Constants::RcutmaxZ );
-    SetCutPt2(Constants::RcutminPt2,Constants::RcutmaxPt2 );    
+    SetCutPt2(Constants::RcutminPt2,Constants::RcutmaxPt2 );  
+    SetCutnu(Constants::RcutnuMin,Constants::RcutnuMax); //avoid acceptance corrections defined with R to keep coherence  
     //cut in vertex should be fixed here (?)
 }
 
@@ -198,7 +202,10 @@ void CutSet::SetCutNphe16(double minNphe_16){
     cutNphe16 = minNphe_16;
 }
 
-
+void CutSet::SetCutnu(double minnu, double maxnu){
+    cutnuMin = minnu;
+    cutnuMax = maxnu;
+}
 
 
 
@@ -237,6 +244,7 @@ bool CutSet::PassCutOnlyVz(const Event& event){     //assimilate to cutset class
     return false;
 }
 
+
 bool CutSet::PassCutsElectrons(const Event& event)  {
     // recover kinematic variables from the event
     // Pass cut electrons also filters Vz initially!! (cool)
@@ -251,8 +259,10 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
         //std::cout << "Vz passed" << std::endl;
         if (Q2 >= Constants::RcutminQ && Q2 <= Constants::RcutmaxQ ){
             if (y >= Constants::RcutminY && y <= Constants::RcutmaxY){
-                if (v >= cutVMin && v <= cutVMax ){             //not specified... is broad enough not to be considered
+                if (v >= Constants::Rcutminnu && v <= Constants::RcutnuMax ){             //not specified... is broad enough not to be considered
                     if (w >= Constants::RcutminW && w <= Constants::RcutmaxW ){
+                        //std::cout << "nu value " << event.Getnu()<< std::endl;
+                        //std::cout << "y max " << Constants::RcutmaxY<< std::endl;
                         return true;
                     }
                 }
@@ -278,9 +288,11 @@ bool CutSet::PassCutsHadrons( const Particle& hadron)  {
     double pt2 = hadron.Getpt2();
     double phih = hadron.Getphih();
     double h_pid= hadron.GetPID();
+    double hadVz = hadron.GetParticleVertexZ();
     //PID is not being included !!!
     if (z >= cutZMin && z <= cutZMax) {
         if (pt2 >= Constants::RcutminPt2 && pt2 <= Constants::RcutmaxPt2) {
+            //std::cout << "vz value =" << hadVz <<  std::endl;
             return true;
         }
     }

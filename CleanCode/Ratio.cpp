@@ -12,7 +12,7 @@
 #include <TPad.h>
 #include <fstream>
 #include "TParameter.h"
-
+#include "TParameter.h"
 #include <TPDF.h>
 #include "Event.h" 
 #include "Ratio.h"
@@ -155,7 +155,6 @@ void Ratio::FillHistograms(const Event& event) {
         h_3D_D_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
         h_2D_D_e->Fill(event.GetQ2(), event.Getxb());   //restricting electron vaiables to Q2, xB only for 5D analysis
         //std::cout << "nu = " << event.Getnu() << std::endl; /bump
-
         for (const Particle& hadron : event.GetHadrons()) {
             if (cutd.PassCutsHadrons(hadron)==true){
                 //if (hadron.GetPID() == Constants::PION_PLUS_PID  ){
@@ -207,6 +206,8 @@ void Ratio::FillHistograms(const Event& event) {
         }
     }
     else if (targetType == 1 && cuta.PassCutsElectrons(event)==true && cuta.PassCutsDetectors(event)==true) {
+        //std::cout << "vertex for target " << targetType << ", vz= " << event.GetVz() << std::endl;
+
         counter_elSn++; //counter for only electrons for z and pt
         //here change the else if to just else in order to have a generic target 
         h_nuA->Fill(event.Getnu()); //can be plotted just like this 
