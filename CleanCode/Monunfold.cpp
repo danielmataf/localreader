@@ -154,6 +154,107 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
 //}
 //
 
+
+void Monunfold::CheckLargeBins(const Event& event){
+    int targetType = event.GetTargetType();
+    if (targetType == 0 && cut1.PassCutsElectrons(event)==true && cut1.PassCutsDetectors(event)==true ) { 
+        if (event.Getxb()>Constants::LargexblowAB && event.Getxb()<Constants::LargexbhighAB){   //for regions A and B 
+            if (event.GetQ2()>Constants::LARGEQlowA && event.GetQ2()<Constants::LARGEQhighA) {      //REGION A
+                counterLargeD_regA ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowB && event.GetQ2()<Constants::LARGEQhighB) {      //REGION B
+                counterLargeD_regB ++;
+            }
+        }
+        else if (event.Getxb()>Constants::LARGEQhighB && event.Getxb()<Constants::LargexbhighCDE ){ //for regions C D and E
+            if (event.GetQ2()>Constants::LARGEQlowC && event.GetQ2()<Constants::LARGEQhighC) {      //REGION C
+                counterLargeD_regC ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowD && event.GetQ2()<Constants::LARGEQhighD) {      //REGION D
+                counterLargeD_regD ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowE && event.GetQ2()<Constants::LARGEQhighE) {      //REGION E
+                counterLargeD_regE ++;
+            }
+        }    
+        else if (event.Getxb()>Constants::LargexbhighCDE && event.Getxb()<Constants::LargexbhighFGH){    //for region F G and H
+            if (event.GetQ2()>Constants::LARGEQlowF && event.GetQ2()<Constants::LARGEQhighF) {      //REGION F
+                counterLargeD_regF ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowG && event.GetQ2()<Constants::LARGEQhighG) {      //REGION G
+                counterLargeD_regG ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowH && event.GetQ2()<Constants::LARGEQhighH) {      //REGION H
+                counterLargeD_regH ++;
+            }
+        } 
+        else if (event.Getxb()>Constants::LargexbhighFGH && event.Getxb()<Constants::LargexbhighIJK){    // for regions I J and K 
+            if (event.GetQ2()>Constants::LARGEQlowI && event.GetQ2()<Constants::LARGEQhighI) {      //REGION I
+                counterLargeD_regI ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowJ && event.GetQ2()<Constants::LARGEQhighJ) {      //REGION J
+                counterLargeD_regJ ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowK && event.GetQ2()<Constants::LARGEQhighK) {      //REGION K
+                counterLargeD_regK ++;
+            }
+        }   
+        else if (event.Getxb()>Constants::LargexbhighIJK && event.Getxb()<Constants::LargexbhighLMN){    //for regions L M and N
+            if (event.GetQ2()>Constants::LARGEQlowL && event.GetQ2()<Constants::LARGEQhighL) {      //REGION L
+                counterLargeD_regL ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowM && event.GetQ2()<Constants::LARGEQhighM) {      //REGION M
+                counterLargeD_regM ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowN && event.GetQ2()<Constants::LARGEQhighN) {      //REGION N
+                counterLargeD_regN ++;
+            }
+        } 
+        else if (event.Getxb()>Constants::LargexbhighLMN && event.Getxb()<Constants::LargexbhighOPQ){    //for regions O P and Q
+            if (event.GetQ2()>Constants::LARGEQlowO && event.GetQ2()<Constants::LARGEQhighO) {      //REGION O
+                counterLargeD_regO ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowP && event.GetQ2()<Constants::LARGEQhighP) {      //REGION P
+                counterLargeD_regP ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowQ && event.GetQ2()<Constants::LARGEQhighQ) {      //REGION Q
+                counterLargeD_regQ ++;
+            }
+        } 
+        else if (event.Getxb()>Constants::LargexbhighOPQ && event.Getxb()<Constants::LargexbhighRS){    //for region R S
+            if (event.GetQ2()>Constants::LARGEQlowR && event.GetQ2()<Constants::LARGEQhighR) {      //REGION R
+                counterLargeD_regR ++;
+            }
+            if (event.GetQ2()>Constants::LARGEQlowS && event.GetQ2()<Constants::LARGEQhighS) {      //REGION S
+                counterLargeD_regS ++;
+            }
+        }
+    }     
+}
+
+void Monunfold::PrintRegionCounters( ){
+    std::cout << "RegA nb = " << counterLargeD_regA << std::endl;
+    std::cout << "RegB nb = " << counterLargeD_regB << std::endl;
+    std::cout << "RegC nb = " << counterLargeD_regC << std::endl;
+    std::cout << "RegD nb = " << counterLargeD_regD << std::endl;
+    std::cout << "RegE nb = " << counterLargeD_regE << std::endl;
+    std::cout << "RegF nb = " << counterLargeD_regF << std::endl;
+    std::cout << "RegG nb = " << counterLargeD_regG << std::endl;
+    std::cout << "RegH nb = " << counterLargeD_regH << std::endl;
+    std::cout << "RegI nb = " << counterLargeD_regI << std::endl;
+    std::cout << "RegJ nb = " << counterLargeD_regJ << std::endl;
+    std::cout << "RegK nb = " << counterLargeD_regK << std::endl;
+    std::cout << "RegL nb = " << counterLargeD_regL << std::endl;
+    std::cout << "RegM nb = " << counterLargeD_regM << std::endl;
+    std::cout << "RegN nb = " << counterLargeD_regN << std::endl;
+    std::cout << "RegO nb = " << counterLargeD_regO << std::endl;
+    std::cout << "RegP nb = " << counterLargeD_regP << std::endl;
+    std::cout << "RegQ nb = " << counterLargeD_regQ << std::endl;
+    std::cout << "RegR nb = " << counterLargeD_regR << std::endl;
+    std::cout << "RegS nb = " << counterLargeD_regS << std::endl;
+}
+
+
 int Monunfold::SetResponseIndex(const Event& event) {
     int indexsetter = 0;
 

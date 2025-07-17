@@ -24,6 +24,9 @@ public:
     void FillOnlyVz(const Event& ) ;
     void DrawOnlyVz(Monunfold& , const std::string ) ;
 
+    void CheckLargeBins(const Event& ); //check large bins in order to fill them with the correct values
+    void PrintRegionCounters(); //print large all bin event number in all regions
+
     int SetResponseIndex(const Event&); //returns int index for constructing response matrix per evt.
 
     void Fill(const Event& );
@@ -94,6 +97,47 @@ private:
     int zmaxR = 0.7;    
     int pt2minR = 0;
     int pt2maxR = 2;
+
+    //counters for large regions 
+    int counterLargeD_regA = 0;
+    int counterLargeD_regB = 0;
+    int counterLargeD_regC = 0;
+    int counterLargeD_regD = 0;
+    int counterLargeD_regE = 0;
+    int counterLargeD_regF = 0;
+    int counterLargeD_regG = 0;
+    int counterLargeD_regH = 0;
+    int counterLargeD_regI = 0;
+    int counterLargeD_regJ = 0;
+    int counterLargeD_regK = 0;
+    int counterLargeD_regL = 0;
+    int counterLargeD_regM = 0;
+    int counterLargeD_regN = 0;
+    int counterLargeD_regO = 0;
+    int counterLargeD_regP = 0;
+    int counterLargeD_regQ = 0;
+    int counterLargeD_regR = 0;
+    int counterLargeD_regS = 0;
+    
+    int counterLargeA_regA = 0;
+    int counterLargeA_regB = 0;
+    int counterLargeA_regC = 0;
+    int counterLargeA_regD = 0;
+    int counterLargeA_regE = 0;
+    int counterLargeA_regF = 0;
+    int counterLargeA_regG = 0;
+    int counterLargeA_regH = 0;
+    int counterLargeA_regI = 0;
+    int counterLargeA_regJ = 0;
+    int counterLargeA_regK = 0;
+    int counterLargeA_regL = 0;
+    int counterLargeA_regM = 0;
+    int counterLargeA_regN = 0;
+    int counterLargeA_regO = 0;
+    int counterLargeA_regP = 0;
+    int counterLargeA_regQ = 0;
+    int counterLargeA_regR = 0; 
+    int counterLargeA_regS = 0;
 
 
 

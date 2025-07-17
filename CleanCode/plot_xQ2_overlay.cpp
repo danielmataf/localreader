@@ -17,7 +17,7 @@
 constexpr double M = 0.9396;
 constexpr double E = 10.5;
 
-constexpr double THETA_HI  = 28.0;
+constexpr double THETA_HI  = 27.0;
 constexpr double THETA_MID = 14.7;
 constexpr double THETA_LOW = 10.2;
 
@@ -53,7 +53,8 @@ int main() {
     }
 
     // Final xB lines (user defined + two chosen): total 4
-    std::vector<double> xBins = {0.18, 0.32, 0.44, 0.50};  // → 5 xB regions
+    //std::vector<double> xBins = {0.18, 0.32, 0.44, 0.50};  // → 5 xB regions
+    std::vector<double> xBins = {0.10, 0.15, 0.20, 0.25, 0.31, 0.44};  // 6 bin edges → 5 xB regions
         std::vector<double> Q2LinesToDraw = {1.0, 5.0};        // keep only Q² = 1 and Q² = 5
 
     gStyle->SetOptStat(0);

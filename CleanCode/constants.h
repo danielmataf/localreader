@@ -143,6 +143,58 @@ namespace Constants {
     static const double lowK =  2.449;
     static const double highK = 4.168;
 
+
+        //LARGER    bining xb,Q with theta assist (and W)
+    static const double LARGEQlowA = 1.128313968;
+    static const double LARGEQhighA = 1.259832756;
+    static const double LARGEQlowB = 1;
+    static const double LARGEQhighB = 1.259832756;
+    static const double LARGEQlowC = 1.549536766;
+    static const double LARGEQhighC = 2.635206776;
+    static const double LARGEQlowD = 1.259832756;
+    static const double LARGEQhighD = 2.098986509;
+    static const double LARGEQlowE = 1;
+    static const double LARGEQhighE = 1.600454801;
+    static const double LARGEQlowF = 2.098986509;
+    static const double LARGEQhighF = 3.389715788;
+    static const double LARGEQlowG = 1.600454801;
+    static const double LARGEQhighG = 2.551322891;
+    static const double LARGEQlowH = 1;
+    static const double LARGEQhighH = 1.850633467;
+    static const double LARGEQlowI = 2.551322891;
+    static const double LARGEQhighI = 4.09282768;
+    static const double LARGEQlowJ = 1.850633467;
+    static const double LARGEQhighJ = 2.930202024;
+    static const double LARGEQlowK = 1;
+    static const double LARGEQhighK = 2.042169211;
+    static const double LARGEQlowL = 2.930202024;
+    static const double LARGEQhighL = 4.875821862;
+    static const double LARGEQlowM = 2.042169211;
+    static const double LARGEQhighM = 3.310850781;
+    static const double LARGEQlowN = 1.039050613;
+    static const double LARGEQhighN = 2.220055645;
+    static const double LARGEQlowO = 3.310850781;
+    static const double LARGEQhighO = 5;
+    static const double LARGEQlowP = 2.220055645;
+    static const double LARGEQhighP = 3.941119738;
+    static const double LARGEQlowQ = 1.400459522;
+    static const double LARGEQhighQ = 2.486714814;
+    static const double LARGEQlowR = 3.941119738;
+    static const double LARGEQhighR = 5;
+    static const double LARGEQlowS = 2.449190731;
+    static const double LARGEQhighS = 4.483907471;
+
+    //large limits for xb 
+    static const double LargexblowAB = 0.06;
+    static const double LargexbhighAB = 0.1;
+    static const double LargexbhighCDE = 0.15;
+    static const double LargexbhighFGH = 0.2;
+    static const double LargexbhighIJK = 0.25;
+    static const double LargexbhighLMN = 0.31;
+    static const double LargexbhighOPQ = 0.44;
+    static const double LargexbhighRS = 0.6;
+    
+
     //Pass1 Vz mean values electron
     static const double meanC1ibel = -7.38522; 
     static const double meanC1obel = -3.66242;
@@ -208,7 +260,7 @@ namespace Constants {
     static const double RcutmaxW = 30.0 ;
     static const double RcutmaxZ = 0.7 ;
     static const double RcutmaxPt2 = 1.2 ;   
-    static const double Rcutminnu = 4.0 ;
+    static const double Rcutminnu = 2.5 ;
     static const double Rcutmaxnu = 9.0 ;
     //adding phih cuts
     static const double Rcutminphih = 0.0 ;

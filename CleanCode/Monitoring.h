@@ -72,7 +72,7 @@ private:
     int phibin= 10;
     int Rbin = 5;
     int xminX = 0;
-    int xmaxX = 0.4;
+    int xmaxX = 0.65;
     int yminX = 0;
     int ymaxX = 1;
     int numinX = 0;
