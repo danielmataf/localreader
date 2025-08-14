@@ -37,11 +37,17 @@ int main() {
     ////files.ParDir2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/", simufilesLD2);   //do not uncomment this line
     
     //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/LD2", simufilesLD2);  //uncomment for sim
-files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", simufilesLD2);  //uncomment for sim
-    
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", simufilesLD2);  //uncomment for sim
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novC", simufilesCxC);  //uncomment for sim
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novCu", simufilesCu);  //uncomment for sim
     files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novSn", simufilesSn);  //uncomment for sim
+
+    //clean maybe //uncomment for test on ifarm
+    //files.SnDir2Vector("/volatile/clas12/dmat/clean/LD2fullob/", simufilesLD2);  //uncomment for sim
+    //files.SnDir2Vector("/volatile/clas12/dmat/clean/CCfullob/", simufilesCxC);  //uncomment for sim
+    //files.SnDir2Vector("/volatile/clas12/dmat/clean/Cufullob/", simufilesCu);  //uncomment for sim
+    //files.SnDir2Vector("/volatile/clas12/dmat/clean/Snfullob/", simufilesSn);  //uncomment for sim
+
 
     //Uncomment 4 test on ifarm, comment all above
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v7/LD2/", filenamesLD2);
@@ -120,6 +126,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
     Monitoring monTestC1(testC1cuts, "C1_RGD");  //This needs to be figured out ASAP
     Monitoring monTestC2(testC2cuts, "C2_RGD");  //This needs to be figured out ASAP
     Monitoring monTestLD2(testLD2cuts, "LD2_RGD");
+    Monunfold munfTestC2(testC2cuts, "C2_RGD");
     Monitoring monTestCu(testCucuts, "Cu_RGD");
     Monitoring monTestSn(testSncuts, "Sn_RGD");
     Monitoring monLD2symm(testLD2cuts, "LD2_RGD_symm");
@@ -192,6 +199,7 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             monTestC2.FillHistogramswCuts(eventtestCxC);
             monTestC2.thetabinning(eventtestCxC);    //for theta pending
             monTestC1.FillHistogramswCuts(eventtestCxC);
+            munfTestC2.CheckLargeBins(eventtestCxC); //check large bins in order to fill them with the correct values
             ratC2.FillHistograms(eventtestCxC);
             ratC1.FillHistograms(eventtestCxC);
             dptC1.FillHistograms(eventtestCxC);
@@ -214,6 +222,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
                     eventsimCxC.calcAll();
                     monSimC2.FillHistogramswCuts(eventsimCxC);
                     munftrueC2.FillHistogramswCuts(eventsimCxC);
+                    munftrueC2.CheckLargeBins(eventsimCxC); //check large bins in order to fill them with the correct values
+
                     //munftrueC2.FillHistogramswCutsMC(eventsimCxC_MC);
                 }
         }
@@ -269,6 +279,8 @@ files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", s
             //else{ counter_restCxC++;}
         files.displayProgress(i + 1, totalevts);
     }
+                    munftrueC2.PrintRegionCounters(); //check large bins in order to fill them with the correct values
+
     std::cout << "\nProcessing completed \n";
     std::cout << "//========= RGD data CxC ==========//  \n";
     monTestC2.SaveHistRoot("janC2_test");

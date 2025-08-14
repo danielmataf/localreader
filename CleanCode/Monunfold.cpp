@@ -157,10 +157,11 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
 
 void Monunfold::CheckLargeBins(const Event& event){
     int targetType = event.GetTargetType();
-    if (targetType == 0 && cut1.PassCutsElectrons(event)==true && cut1.PassCutsDetectors(event)==true ) { 
+    if ( cut1.PassCutsElectrons(event)==true && cut1.PassCutsDetectors(event)==true ) { 
         if (event.Getxb()>Constants::LargexblowAB && event.Getxb()<Constants::LargexbhighAB){   //for regions A and B 
             if (event.GetQ2()>Constants::LARGEQlowA && event.GetQ2()<Constants::LARGEQhighA) {      //REGION A
                 counterLargeD_regA ++;
+                std::cout << "bump REGION A" << std::endl;
             }
             if (event.GetQ2()>Constants::LARGEQlowB && event.GetQ2()<Constants::LARGEQhighB) {      //REGION B
                 counterLargeD_regB ++;
