@@ -48,6 +48,11 @@ int main() {
     //files.SnDir2Vector("/volatile/clas12/dmat/clean/Cufullob/", simufilesCu);  //uncomment for sim
     //files.SnDir2Vector("/volatile/clas12/dmat/clean/Snfullob/", simufilesSn);  //uncomment for sim
 
+    //check this for pass1
+    //files.pass1search("/cache/clas12/rg-d/production/pass1/recon/LD2/", filenamesLD2);
+    //files.pass1search("/cache/clas12/rg-d/production/pass1/recon/CuSn/", filenamesCuSn);
+    //files.pass1search("/cache/clas12/rg-d/production/pass1/recon/CxC/", filenamesCxC);
+
 
     //Uncomment 4 test on ifarm, comment all above
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v7/LD2/", filenamesLD2);
@@ -76,10 +81,13 @@ int main() {
     EventReader Sim_CxC(simufilesCxC);
     EventReader Sim_LD2symm(simufilesLD2);
     EventReader Sim_LD2full(simufilesLD2full);
+    EventReader Sim_Cu(simufilesCu);
 
 
     std::optional<Event> simCxC;
     std::optional<Event> simCxC_MC; //testing this if we can loop twice top read MC events//
+    std::optional<Event> simCu;
+    std::optional<Event> simCu_MC;
     std::optional<Event> testCxC;
     std::optional<Event> testLD2;
     std::optional<Event> testCu;
@@ -92,6 +100,8 @@ int main() {
     CutSet testC1cuts;  //C1 RGD
     CutSet testC2cuts;  //C2 RGD  
     CutSet simC2cuts;  
+    CutSet simCucuts;  //Cu SIM
+
     CutSet testLD2cuts;
     CutSet testCucuts;
     CutSet testSncuts;
@@ -106,8 +116,11 @@ int main() {
 
     testC2cuts.SetCutVz(Constants::v11cutminVzC2data, Constants::v11cutmaxVzC2data);    //vz cut for C2 target
     testC2cuts.SetCutGen4Rat();
+
     simC2cuts.SetCutVz(Constants::RcutminVzC2sim    , Constants::RcutmaxVzC2sim);     //vz cut for C2 target
     simC2cuts.SetCutGen4Rat();  
+    simCucuts.SetCutVz(Constants::RcutminVzC2sim, Constants::RcutmaxVzC2sim);     //vz cut for Cu target
+    simCucuts.SetCutGen4Rat();  //Cu target
 
     testLD2cuts.SetCutVz(Constants::v11cutminVzLD2data,Constants::v11cutmaxVzLD2data);     //vz cut for LD2 target
     testLD2cuts.SetCutGen4Rat();
@@ -122,11 +135,15 @@ int main() {
 
     Monitoring monSimC2(simC2cuts, "C2_sim");     //This needs to be figured out ASAP
     Monitoring monMCC2(simC2cuts, "C2_MC");
-    Monunfold munftrueC2(simC2cuts, "C2_truef");     
+    Monitoring monSimCu(simCucuts, "Cu_sim");     //This needs to be figured out ASAP
+    Monitoring monMCCu(simCucuts, "Cu_MC");
+    Monunfold munftrueC2(simC2cuts, "C2_truef");    
+    Monunfold munftrueCu(testCucuts, "Cu_truef"); 
     Monitoring monTestC1(testC1cuts, "C1_RGD");  //This needs to be figured out ASAP
     Monitoring monTestC2(testC2cuts, "C2_RGD");  //This needs to be figured out ASAP
     Monitoring monTestLD2(testLD2cuts, "LD2_RGD");
     Monunfold munfTestC2(testC2cuts, "C2_RGD");
+    Monunfold munfTestCu(simCucuts, "C1_RGD");
     Monitoring monTestCu(testCucuts, "Cu_RGD");
     Monitoring monTestSn(testSncuts, "Sn_RGD");
     Monitoring monLD2symm(testLD2cuts, "LD2_RGD_symm");
@@ -162,6 +179,8 @@ int main() {
         testCu = RGD_CuSn.ProcessEventsInFile();
         simCxC = Sim_CxC.ProcessEventsInFile();
         simCxC_MC = Sim_CxC.ProcessEventsInFileMC(); //testing this if we can loop twice top read MC events//
+        simCu = Sim_Cu.ProcessEventsInFile();
+        simCu_MC = Sim_Cu.ProcessEventsInFileMC(); //testing this if we can loop twice top read MC events//
         testLD2symm = Sim_LD2symm.ProcessEventsInFile();
         testLD2full = Sim_LD2full.ProcessEventsInFile();
         testLD2symmMC = Sim_LD2symm.ProcessEventsInFileMC();
@@ -226,6 +245,21 @@ int main() {
                     munftrueC2.CheckLargeBins(eventsimCxC); //check large bins in order to fill them with the correct values
 
                     //munftrueC2.FillHistogramswCutsMC(eventsimCxC_MC);
+                }
+        }
+        if (simCu_MC.has_value()) { //Cu sim
+            Event eventsimCu_MC = simCu_MC.value();
+            eventsimCu_MC.SetTargetType(1);
+            eventsimCu_MC.calcMCAll();
+            munftrueCu.FillHistogramswCutsMC(eventsimCu_MC);
+
+                if (simCu.has_value()) {
+                    Event eventsimCu = simCu.value();
+                    eventsimCu.SetTargetType(1);
+                    eventsimCu.calcAll();
+                    monSimCu.FillHistogramswCuts(eventsimCu);
+                    munftrueCu.FillHistogramswCuts(eventsimCu);
+                    munftrueCu.CheckLargeBins(eventsimCu); //check large bins in order to fill them with the correct values
                 }
         }
         if (testLD2symmMC.has_value()) { //LD2 sim

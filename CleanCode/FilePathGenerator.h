@@ -28,6 +28,7 @@ public:
     //this is the same function only it is made to read a second file with a diff name in the same directory. RIDICULOUS? yes. needs to be fixed
     void SnDir2VectorThird(const std::string& parentDirectory, std::vector<std::string>& filepaths);
     //the same function again to read a third file....
+    void pass1search(const std::string& baseTargetDir, std::vector<std::string>& filepaths); //new function to search in pass1
     void progressEvents(int totalEvents);
     void displayProgress(int current, int total);
 

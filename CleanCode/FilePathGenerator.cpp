@@ -8,6 +8,9 @@
 #include "FilePathGenerator.h"
 #include <stdexcept>
 
+#include <unordered_set>
+#include <algorithm>
+
 // Default constructor definition
 FilePathGenerator::FilePathGenerator() {
 }
@@ -248,6 +251,78 @@ void FilePathGenerator::SnDir2VectorThird(const std::string& parentDirectory, st
     }
 }
 
+
+
+void FilePathGenerator::pass1search(const std::string& baseTargetDir, std::vector<std::string>& filepaths)
+{
+    try {
+        //checks
+        if (!fs::exists(baseTargetDir)) {
+            std::cerr << "Error: Directory does not exist: " << baseTargetDir << std::endl;
+            return;
+        }
+        if (!fs::is_directory(baseTargetDir)) {
+            std::cerr << "Error: Path is not a directory: " << baseTargetDir << std::endl;
+            return;
+        }
+
+        filepaths.clear();
+
+        //find "dst/recon" dir
+        std::unordered_set<std::string> reconDirs;
+        for (const auto& entry : fs::recursive_directory_iterator(baseTargetDir,
+                                                                  fs::directory_options::skip_permission_denied)) {
+            if (!entry.is_directory()) continue;
+
+            const fs::path& p = entry.path();
+            if (p.filename() == "recon") {
+                fs::path parent = p.parent_path();
+                if (parent.filename() == "dst") {
+                    reconDirs.insert(p.string());
+                }
+            }
+        }
+
+        if (reconDirs.empty()) {
+            std::cerr << "No 'dst/recon' folders found under: " << baseTargetDir << std::endl;
+            return;
+        }
+
+        // 3) each recon dir, add .hipo files in it
+        std::size_t fileCount = 0;
+        for (const auto& reconDirStr : reconDirs) {
+            fs::path reconDir(reconDirStr);
+            try {
+                for (const auto& f : fs::directory_iterator(reconDir,
+                        fs::directory_options::skip_permission_denied)) {
+                    if (f.is_regular_file() && f.path().extension() == ".hipo") {
+                        filepaths.push_back(f.path().string());
+                        ++fileCount;
+                    }
+                }
+            } catch (const std::exception& e) {
+                std::cerr << "Warning: Could not iterate " << reconDir << " (" << e.what() << ")\n";
+            }
+        }
+
+        // 4) random numbers ->for run nbs 
+        std::sort(filepaths.begin(), filepaths.end());
+
+        if (filepaths.empty()) {
+            std::cerr << "No .hipo files found inside any 'dst/recon' under: " << baseTargetDir << std::endl;
+        } else {
+            std::cout << "Found " << fileCount << " .hipo files in "
+                      << reconDirs.size() << " 'dst/recon' directories under:\n  "
+                      << baseTargetDir << std::endl;
+        }
+    }
+    catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+    }
+}
 
 
 // Function to display progress with a percentage and a loading bar
