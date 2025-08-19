@@ -161,7 +161,7 @@ void Monunfold::CheckLargeBins(const Event& event){
         if (event.Getxb()>Constants::LargexblowAB && event.Getxb()<Constants::LargexbhighAB){   //for regions A and B 
             if (event.GetQ2()>Constants::LARGEQlowA && event.GetQ2()<Constants::LARGEQhighA) {      //REGION A
                 counterLargeD_regA ++;
-                std::cout << "bump REGION A" << std::endl;
+                //std::cout << "bump REGION A" << std::endl;
             }
             if (event.GetQ2()>Constants::LARGEQlowB && event.GetQ2()<Constants::LARGEQhighB) {      //REGION B
                 counterLargeD_regB ++;

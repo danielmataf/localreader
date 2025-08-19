@@ -172,6 +172,7 @@ int main() {
             eventtestLD2.SetTargetType(0);
             eventtestLD2.calcAll();
             monTestLD2.FillHistogramswCuts(eventtestLD2);
+            monTestLD2.CheckLargeBins(eventtestLD2); //check large bins in order to fill them with the correct values
             ratC1.FillHistograms(eventtestLD2);
             ratC2.FillHistograms(eventtestLD2);
             ratSn.FillHistograms(eventtestLD2);
@@ -279,8 +280,8 @@ int main() {
             //else{ counter_restCxC++;}
         files.displayProgress(i + 1, totalevts);
     }
-                    munftrueC2.PrintRegionCounters(); //check large bins in order to fill them with the correct values
-
+    munftrueC2.PrintRegionCounters(); //check large bins in order to fill them with the correct values
+    monTestLD2.PrintRegionCounters(); //check large bins in order to fill them with the correct values
     std::cout << "\nProcessing completed \n";
     std::cout << "//========= RGD data CxC ==========//  \n";
     monTestC2.SaveHistRoot("janC2_test");
