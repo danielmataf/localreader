@@ -377,6 +377,20 @@ TH1F* h_theta_res[6];
     int counterLargeA_regR = 0; 
     int counterLargeA_regS = 0;
 
+
+    //couters for few region 
+    int counterFewD_regA = 0;
+    int counterFewD_regB = 0;
+    int counterFewD_regC = 0;
+    int counterFewD_regD = 0;
+    int counterFewD_regE = 0;
+    int counterFewD_regF = 0;
+    int counterFewD_regG = 0;
+    int counterFewD_regH = 0;
+    int counterFewD_regI = 0;
+    int counterFewD_regJ = 0;
+    int counterFewD_regK = 0;
+    int counterFewD_regL = 0;  
 };
 
 #endif 

@@ -288,7 +288,7 @@ void Monitoring::CheckLargeBins(const Event& event){
                 counterLargeD_regB ++;
             }
         }
-        else if (event.Getxb()>Constants::LARGEQhighB && event.Getxb()<Constants::LargexbhighCDE ){ //for regions C D and E
+        else if (event.Getxb()>Constants::LargexbhighAB && event.Getxb()<Constants::LargexbhighCDE ){ //for regions C D and E
             if (event.GetQ2()>Constants::LARGEQlowC && event.GetQ2()<Constants::LARGEQhighC) {      //REGION C
                 counterLargeD_regC ++;
             }
@@ -376,6 +376,60 @@ void Monitoring::PrintRegionCounters( ){
     std::cout << "DATA RegQ nb = " << counterLargeD_regQ << std::endl;
     std::cout << "DATA RegR nb = " << counterLargeD_regR << std::endl;
     std::cout << "DATA RegS nb = " << counterLargeD_regS << std::endl;
+}
+
+
+// New: counts only up to region L, uses FEW constants and FewD counters
+void Monitoring::CheckFewBins(const Event& event) {
+    int targetType = event.GetTargetType(); // (kept for symmetry; unused here)
+
+    if (cut1.PassCutsElectrons(event) && cut1.PassCutsDetectors(event)) {
+
+        // xB in AB band
+        if (event.Getxb() > Constants::FewxblowAB && event.Getxb() < Constants::FewxbhighAB) {  // A,B
+            if (event.GetQ2() > Constants::FEWQlowA && event.GetQ2() < Constants::FEWQhighA) { counterFewD_regA++; }
+            if (event.GetQ2() > Constants::FEWQlowB && event.GetQ2() < Constants::FEWQhighB) { counterFewD_regB++; }
+        }
+        // xB in CDE band
+        else if (event.Getxb() > Constants::FewxbhighAB && event.Getxb() < Constants::FewxbhighCDE) { // C,D,E
+            if (event.GetQ2() > Constants::FEWQlowC && event.GetQ2() < Constants::FEWQhighC) { counterFewD_regC++; }
+            if (event.GetQ2() > Constants::FEWQlowD && event.GetQ2() < Constants::FEWQhighD) { counterFewD_regD++; }
+            if (event.GetQ2() > Constants::FEWQlowE && event.GetQ2() < Constants::FEWQhighE) { counterFewD_regE++; }
+        }
+        // xB in FGH band
+        else if (event.Getxb() > Constants::FewxbhighCDE && event.Getxb() < Constants::FewxbhighFGH) { // F,G,H
+            if (event.GetQ2() > Constants::FEWQlowF && event.GetQ2() < Constants::FEWQhighF) { counterFewD_regF++; }
+            if (event.GetQ2() > Constants::FEWQlowG && event.GetQ2() < Constants::FEWQhighG) { counterFewD_regG++; }
+            if (event.GetQ2() > Constants::FEWQlowH && event.GetQ2() < Constants::FEWQhighH) { counterFewD_regH++; }
+        }
+        // xB in IJK band
+        else if (event.Getxb() > Constants::FewxbhighFGH && event.Getxb() < Constants::FewxbhighIJK) { // I,J,K
+            if (event.GetQ2() > Constants::FEWQlowI && event.GetQ2() < Constants::FEWQhighI) { counterFewD_regI++; }
+            if (event.GetQ2() > Constants::FEWQlowJ && event.GetQ2() < Constants::FEWQhighJ) { counterFewD_regJ++; }
+            if (event.GetQ2() > Constants::FEWQlowK && event.GetQ2() < Constants::FEWQhighK) { counterFewD_regK++; }
+        }
+        // xB in LMN band — but we STOP at L (M,N intentionally omitted)
+        else if (event.Getxb() > Constants::FewxbhighIJK && event.Getxb() < Constants::FewxbhighLMN) { // L only
+            if (event.GetQ2() > Constants::FEWQlowL && event.GetQ2() < Constants::FEWQhighL) { counterFewD_regL++; }
+        }
+        // Higher-x bands (OPQ, RS) are ignored by design in the FEW scheme.
+    }
+}
+
+// New: prints only A..L using the FewD counters
+void Monitoring::PrintFewRegionCounters() {
+    std::cout << "DATA RegA nb = " << counterFewD_regA << std::endl;
+    std::cout << "DATA RegB nb = " << counterFewD_regB << std::endl;
+    std::cout << "DATA RegC nb = " << counterFewD_regC << std::endl;
+    std::cout << "DATA RegD nb = " << counterFewD_regD << std::endl;
+    std::cout << "DATA RegE nb = " << counterFewD_regE << std::endl;
+    std::cout << "DATA RegF nb = " << counterFewD_regF << std::endl;
+    std::cout << "DATA RegG nb = " << counterFewD_regG << std::endl;
+    std::cout << "DATA RegH nb = " << counterFewD_regH << std::endl;
+    std::cout << "DATA RegI nb = " << counterFewD_regI << std::endl;
+    std::cout << "DATA RegJ nb = " << counterFewD_regJ << std::endl;
+    std::cout << "DATA RegK nb = " << counterFewD_regK << std::endl;
+    std::cout << "DATA RegL nb = " << counterFewD_regL << std::endl;
 }
 
 

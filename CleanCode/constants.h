@@ -110,7 +110,7 @@ namespace Constants {
     static const double v11cutminVzLD2dataelectron = -15 ;   //keeping these as the same...
     static const double v11cutmaxVzLD2dataelectron = -5 ;   //keeping these as the same...
     static const double v11cutminVzSndataelectron = -6.21 ;
-    static const double v11cutmaxVzSndataelectron = -5 ;
+    static const double v11cutmaxVzSndataelectron = -1.2 ;
     static const double v11cutminVzCudataelectron = -10.55 ;    
     static const double v11cutmaxVzCudataelectron = -6.62 ;    
     static const double v11cutminVzC2dataelectron = -10.56 ;//merging both carbons, no separation.!!
@@ -195,6 +195,42 @@ namespace Constants {
     static const double LargexbhighRS = 0.6;
     
 
+
+        //LARGER    bining xb,Q with theta assist (and W)
+    static const double FewQlowA = 1;
+    static const double FewQhighA = 2.291;
+    static const double FewQlowB = 1;
+    static const double FewQhighB = 1.549;
+    static const double FewQlowC = 1.549;
+    static const double FewQhighC = 2.908;
+    static const double FewQlowD = 1.197;
+    static const double FewQhighD = 1.808;
+    static const double FewQlowE = 1;
+    static const double FewQhighE = 1.349;
+    static const double FewQlowF = 1.808;
+    static const double FewQhighF = 4.176;
+    static const double FewQlowG = 1.346;
+    static const double FewQhighG = 2.229;
+    static const double FewQlowH = 1;
+    static const double FewQhighH = 1.566;
+    static const double FewQlowI = 2.229;
+    static const double FewQhighI = 4.937;
+    static const double FewQlowJ = 1.566;
+    static const double FewQhighJ = 2.429;
+    static const double FewQlowK = 1;
+    static const double FewQhighK = 1.663;
+    static const double FewQlowL = 2.429;
+    //static const double LARGEQhighL = 4.875821862;
+
+    //large limits for xb 
+    static const double FewxblowAB = 0.06;
+    static const double FewxbhighAB = 0.1;
+    static const double FewxbhighCDE = 0.15;
+    static const double FewxbhighFGH = 0.2;
+    static const double FewxbhighIJK = 0.25;
+    static const double FewxbhighLMN = 0.31;
+    static const double FewxbhighOPQ = 0.44;
+    static const double FewxbhighRS = 0.6;
     //Pass1 Vz mean values electron
     static const double meanC1ibel = -7.38522; 
     static const double meanC1obel = -3.66242;
