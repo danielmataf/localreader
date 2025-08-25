@@ -28,6 +28,10 @@ public:
     void CheckLargeBins(const Event& ); //check large bins in order to fill them with the correct values imported from monunfold that checks simus
     //I just need to properly check actual data, then modifiy it
     void PrintRegionCounters(); //print large all bin event number in all regions
+    void CheckFewBins(const Event& ); //check large bins in order to fill them with the correct values imported from monunfold that checks simus
+    void PrintFewRegionCounters(); //print large all bin event number in all regions
+    void CalcElectronRatio(Monitoring& monDeu);
+
 
     void initThetaBinning();            // called once in ctor
     void thetabinning(const Event& ev); // call from main event loop
@@ -391,6 +395,21 @@ TH1F* h_theta_res[6];
     int counterFewD_regJ = 0;
     int counterFewD_regK = 0;
     int counterFewD_regL = 0;  
+
+    int counterFewA_regA = 0;
+    int counterFewA_regB = 0;
+    int counterFewA_regC = 0;
+    int counterFewA_regD = 0;
+    int counterFewA_regE = 0;
+    int counterFewA_regF = 0;
+    int counterFewA_regG = 0;
+    int counterFewA_regH = 0;
+    int counterFewA_regI = 0;
+    int counterFewA_regJ = 0;
+    int counterFewA_regK = 0;
+    int counterFewA_regL = 0;  
+
+
 };
 
 #endif 

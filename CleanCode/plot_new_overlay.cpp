@@ -20,8 +20,8 @@ constexpr double M = 0.938272;
 constexpr double E = 10.4;
 
 constexpr double THETA_HI  = 27.0;
-constexpr double THETA_MID = 11.0;
-constexpr double THETA_LOW = 8.3;
+constexpr double THETA_MID = 9.90;
+constexpr double THETA_LOW = 8.2;
 
 inline double deg2rad(double d) { return d * M_PI / 180.0; }
 
@@ -50,11 +50,11 @@ int main() {
     }
 
     // ===== Five vertical xB lines (5 edges → 4 closed ranges + tail) =====
-    std::vector<double> xBins = {0.06, 0.13, 0.17, 0.26, 0.32}; // << exactly 5 lines
+    std::vector<double> xBins = {0.06, 0.11, 0.17, 0.25, 0.34}; // << exactly 5 lines
     if (xBins.size() != 5) {
         std::cerr << "ERROR: need exactly 5 x-bin edges (5 vertical lines); got "
                   << xBins.size() << "\n";
-        return 3;
+        return 3;   
     }
         const double regABx_LO  = xBins.at(0); // 0.06
         const double regABx_HI  = xBins.at(1); // 0.13

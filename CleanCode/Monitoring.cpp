@@ -382,38 +382,40 @@ void Monitoring::PrintRegionCounters( ){
 // New: counts only up to region L, uses FEW constants and FewD counters
 void Monitoring::CheckFewBins(const Event& event) {
     int targetType = event.GetTargetType(); // (kept for symmetry; unused here)
+        //this one is for LD2 
+        if (cut1.PassCutsElectrons(event) && cut1.PassCutsDetectors(event)) {
 
-    if (cut1.PassCutsElectrons(event) && cut1.PassCutsDetectors(event)) {
-
-        // xB in AB band
-        if (event.Getxb() > Constants::FewxblowAB && event.Getxb() < Constants::FewxbhighAB) {  // A,B
-            if (event.GetQ2() > Constants::FEWQlowA && event.GetQ2() < Constants::FEWQhighA) { counterFewD_regA++; }
-            if (event.GetQ2() > Constants::FEWQlowB && event.GetQ2() < Constants::FEWQhighB) { counterFewD_regB++; }
+            // xB in AB band
+            if (event.Getxb() > Constants::FewxblowAB && event.Getxb() < Constants::FewxbhighAB) {  // A,B
+                if (event.GetQ2() > Constants::FEWQlowA && event.GetQ2() < Constants::FEWQhighA) { counterFewD_regA++; }
+                if (event.GetQ2() > Constants::FEWQlowB && event.GetQ2() < Constants::FEWQhighB) { counterFewD_regB++; }
+            }
+            // xB in CDE band
+            else if (event.Getxb() > Constants::FewxbhighAB && event.Getxb() < Constants::FewxbhighCDE) { // C,D,E
+                if (event.GetQ2() > Constants::FEWQlowC && event.GetQ2() < Constants::FEWQhighC) { counterFewD_regC++; }
+                if (event.GetQ2() > Constants::FEWQlowD && event.GetQ2() < Constants::FEWQhighD) { counterFewD_regD++; }
+                if (event.GetQ2() > Constants::FEWQlowE && event.GetQ2() < Constants::FEWQhighE) { counterFewD_regE++; }
+            }
+            // xB in FGH band
+            else if (event.Getxb() > Constants::FewxbhighCDE && event.Getxb() < Constants::FewxbhighFGH) { // F,G,H
+                if (event.GetQ2() > Constants::FEWQlowF && event.GetQ2() < Constants::FEWQhighF) { counterFewD_regF++; }
+                if (event.GetQ2() > Constants::FEWQlowG && event.GetQ2() < Constants::FEWQhighG) { counterFewD_regG++; }
+                if (event.GetQ2() > Constants::FEWQlowH && event.GetQ2() < Constants::FEWQhighH) { counterFewD_regH++; }
+            }
+            // xB in IJK band
+            else if (event.Getxb() > Constants::FewxbhighFGH && event.Getxb() < Constants::FewxbhighIJK) { // I,J,K
+                if (event.GetQ2() > Constants::FEWQlowI && event.GetQ2() < Constants::FEWQhighI) { counterFewD_regI++; }
+                if (event.GetQ2() > Constants::FEWQlowJ && event.GetQ2() < Constants::FEWQhighJ) { counterFewD_regJ++; }
+                if (event.GetQ2() > Constants::FEWQlowK && event.GetQ2() < Constants::FEWQhighK) { counterFewD_regK++; }
+            }
+            // xB in LMN band — but we STOP at L (M,N intentionally omitted)
+            else if (event.Getxb() > Constants::FewxbhighIJK && event.Getxb() < Constants::FewxbhighLMN) { // L only
+                if (event.GetQ2() > Constants::FEWQlowL ) { counterFewD_regL++; }
+            }
+            // Higher-x bands (OPQ, RS) are ignored by design in the FEW scheme.
         }
-        // xB in CDE band
-        else if (event.Getxb() > Constants::FewxbhighAB && event.Getxb() < Constants::FewxbhighCDE) { // C,D,E
-            if (event.GetQ2() > Constants::FEWQlowC && event.GetQ2() < Constants::FEWQhighC) { counterFewD_regC++; }
-            if (event.GetQ2() > Constants::FEWQlowD && event.GetQ2() < Constants::FEWQhighD) { counterFewD_regD++; }
-            if (event.GetQ2() > Constants::FEWQlowE && event.GetQ2() < Constants::FEWQhighE) { counterFewD_regE++; }
-        }
-        // xB in FGH band
-        else if (event.Getxb() > Constants::FewxbhighCDE && event.Getxb() < Constants::FewxbhighFGH) { // F,G,H
-            if (event.GetQ2() > Constants::FEWQlowF && event.GetQ2() < Constants::FEWQhighF) { counterFewD_regF++; }
-            if (event.GetQ2() > Constants::FEWQlowG && event.GetQ2() < Constants::FEWQhighG) { counterFewD_regG++; }
-            if (event.GetQ2() > Constants::FEWQlowH && event.GetQ2() < Constants::FEWQhighH) { counterFewD_regH++; }
-        }
-        // xB in IJK band
-        else if (event.Getxb() > Constants::FewxbhighFGH && event.Getxb() < Constants::FewxbhighIJK) { // I,J,K
-            if (event.GetQ2() > Constants::FEWQlowI && event.GetQ2() < Constants::FEWQhighI) { counterFewD_regI++; }
-            if (event.GetQ2() > Constants::FEWQlowJ && event.GetQ2() < Constants::FEWQhighJ) { counterFewD_regJ++; }
-            if (event.GetQ2() > Constants::FEWQlowK && event.GetQ2() < Constants::FEWQhighK) { counterFewD_regK++; }
-        }
-        // xB in LMN band — but we STOP at L (M,N intentionally omitted)
-        else if (event.Getxb() > Constants::FewxbhighIJK && event.Getxb() < Constants::FewxbhighLMN) { // L only
-            if (event.GetQ2() > Constants::FEWQlowL && event.GetQ2() < Constants::FEWQhighL) { counterFewD_regL++; }
-        }
-        // Higher-x bands (OPQ, RS) are ignored by design in the FEW scheme.
-    }
+        //this one is for any target A
+ 
 }
 
 // New: prints only A..L using the FewD counters
@@ -432,6 +434,22 @@ void Monitoring::PrintFewRegionCounters() {
     std::cout << "DATA RegL nb = " << counterFewD_regL << std::endl;
 }
 
+
+void Monitoring::CalcElectronRatio(Monitoring& monDeu) {
+    std::cout << "EMC RegA electron Ratio = " << counterFewA_regA / monDeu.counterFewA_regA << std::endl;
+    std::cout << "EMC RegB electron Ratio = " << counterFewA_regB / monDeu.counterFewA_regB << std::endl;
+    std::cout << "EMC RegC electron Ratio = " << counterFewA_regC / monDeu.counterFewA_regC << std::endl;
+    std::cout << "EMC RegD electron Ratio = " << counterFewA_regD / monDeu.counterFewA_regD << std::endl;
+    std::cout << "EMC RegE electron Ratio = " << counterFewA_regE / monDeu.counterFewA_regE << std::endl;
+    std::cout << "EMC RegF electron Ratio = " << counterFewA_regF / monDeu.counterFewA_regF << std::endl;
+    std::cout << "EMC RegG electron Ratio = " << counterFewA_regG / monDeu.counterFewA_regG << std::endl;
+    std::cout << "EMC RegH electron Ratio = " << counterFewA_regH / monDeu.counterFewA_regH << std::endl;
+    std::cout << "EMC RegI electron Ratio = " << counterFewA_regI / monDeu.counterFewA_regI << std::endl;
+    std::cout << "EMC RegJ electron Ratio = " << counterFewA_regJ / monDeu.counterFewA_regJ << std::endl;
+    std::cout << "EMC RegK electron Ratio = " << counterFewA_regK / monDeu.counterFewA_regK << std::endl;
+    //std::cout << "EMC RegL electron Ratio = " << counterFewA_regL / monDeu.counterFewA_regL << std::endl;
+
+}
 
 
 void Monitoring::initThetaBinning()

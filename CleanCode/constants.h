@@ -197,40 +197,38 @@ namespace Constants {
 
 
         //LARGER    bining xb,Q with theta assist (and W)
-    static const double FewQlowA = 1;
-    static const double FewQhighA = 2.291;
-    static const double FewQlowB = 1;
-    static const double FewQhighB = 1.549;
-    static const double FewQlowC = 1.549;
-    static const double FewQhighC = 2.908;
-    static const double FewQlowD = 1.197;
-    static const double FewQhighD = 1.808;
-    static const double FewQlowE = 1;
-    static const double FewQhighE = 1.349;
-    static const double FewQlowF = 1.808;
-    static const double FewQhighF = 4.176;
-    static const double FewQlowG = 1.346;
-    static const double FewQhighG = 2.229;
-    static const double FewQlowH = 1;
-    static const double FewQhighH = 1.566;
-    static const double FewQlowI = 2.229;
-    static const double FewQhighI = 4.937;
-    static const double FewQlowJ = 1.566;
-    static const double FewQhighJ = 2.429;
-    static const double FewQlowK = 1;
-    static const double FewQhighK = 1.663;
-    static const double FewQlowL = 2.429;
+    static const double FEWQlowA = 1;
+    static const double FEWQhighA = 2.291;
+    static const double FEWQlowB = 1;
+    static const double FEWQhighB = 1.549;
+    static const double FEWQlowC = 1.549;
+    static const double FEWQhighC = 2.908;
+    static const double FEWQlowD = 1.197;
+    static const double FEWQhighD = 1.808;
+    static const double FEWQlowE = 1;
+    static const double FEWQhighE = 1.349;
+    static const double FEWQlowF = 1.808;
+    static const double FEWQhighF = 4.176;
+    static const double FEWQlowG = 1.346;
+    static const double FEWQhighG = 2.229;
+    static const double FEWQlowH = 1;
+    static const double FEWQhighH = 1.566;
+    static const double FEWQlowI = 2.229;
+    static const double FEWQhighI = 4.937;
+    static const double FEWQlowJ = 1.566;
+    static const double FEWQhighJ = 2.429;
+    static const double FEWQlowK = 1;
+    static const double FEWQhighK = 1.663;
+    static const double FEWQlowL = 2.429;
     //static const double LARGEQhighL = 4.875821862;
 
     //large limits for xb 
     static const double FewxblowAB = 0.06;
-    static const double FewxbhighAB = 0.1;
-    static const double FewxbhighCDE = 0.15;
-    static const double FewxbhighFGH = 0.2;
-    static const double FewxbhighIJK = 0.25;
-    static const double FewxbhighLMN = 0.31;
-    static const double FewxbhighOPQ = 0.44;
-    static const double FewxbhighRS = 0.6;
+    static const double FewxbhighAB = 0.13;
+    static const double FewxbhighCDE = 0.17;
+    static const double FewxbhighFGH = 0.26;
+    static const double FewxbhighIJK = 0.32;
+    static const double FewxbhighLMN = 0.32;
     //Pass1 Vz mean values electron
     static const double meanC1ibel = -7.38522; 
     static const double meanC1obel = -3.66242;
