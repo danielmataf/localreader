@@ -33,6 +33,8 @@ public:
     void CalcElectronRatio(Monitoring& monDeu);
     void CalcLARGEElectronRatio(Monitoring& monDeu);
 
+    void FillPrePostCutHistograms(const Event& event);
+
 
     void initThetaBinning();            // called once in ctor
     void thetabinning(const Event& ev); // call from main event loop
@@ -60,6 +62,7 @@ public:
     void DrawCompRECMC(const std::string);
     void DrawMonSratio(const std::string);
     
+    void SaveFINRoot(const std::string& ) ;
 
     void SaveHistRoot(const std::string& ) ;
 
@@ -202,6 +205,24 @@ private:
     TH2F *h_E_pi_theta; //= new TH2F("E_pro_theta", "E_pro_theta", 100, 0, 50, 100, 0, 10) ;
     TH2F *h_E_el_phi;   //= new TH2F("E_ele_phi", "E_ele_phi", 100, 0, 360, 100, 0, 10) ;
     TH2F *h_E_pi_phi;   //= new TH2F("E_pro_phi", "E_pro_phi", 100, 0, 360, 100, 0, 10) ;
+
+    //pre and pos histos 
+    TH1F *h_Vz_pre;
+    TH1F *h_Vz_post;
+    TH1F *h_Q2_pre;
+    TH1F *h_Q2_post;
+    TH1F *h_y_pre;
+    TH1F *h_y_post;
+    TH1F *h_nu_pre;
+    TH1F *h_nu_post;
+    TH1F *h_W2_pre;
+    TH1F *h_W2_post;
+    TH1F *h_z_pre;
+    TH1F *h_z_post;
+    TH1F *h_pt2_pre;
+    TH1F *h_pt2_post;
+    TH2F *h_sampl_el_pre;
+    TH2F *h_sampl_el_post;
 
 
     //Calo histograms

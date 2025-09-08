@@ -8,6 +8,8 @@
 #include "Event.h" // 
 #include "CutSet.h"
 #include "constants.h"
+//#include "RooUnfoldResponse.h"
+//#include "RooUnfoldBayes.h"
 
 //This class is made initially made ton avoid overppulating the class monitoring but it will implement the same function but mostly to fill True data and simulated REC and MC data. 
 //We will be filling then histograms for this databanks in the usual variables, Q², x, y, nu, W², z, pt², phi_h, vertexZ
@@ -55,6 +57,31 @@ public:
     void SaveHistRoot(const std::string& ) ;
     void SaveHistMCRoot(const std::string& ) ;
     void DrawMomentainSim(const std::string& ) ;
+    
+    
+        // ===== Unf (fine A..S) =====
+    void U_InitUnfold(const std::string& tag, const CutSet& dataCuts);
+
+    //fllers 
+    void U_FillSimPair(const Event& rec, const Event& mc, double w=1.0);
+    void U_FillSimTruthOnly(const Event& mc, double w=1.0);
+    void U_FillSimRecoOnly(const Event& rec, double w=1.0);
+    void U_FillData(const Event& data, double w=1.0);
+
+    //Unfold (Bayes, returns 19-bin A..S spectrum)
+    TH1D* U_UnfoldBayes(int nIter=4);
+
+    //refold test: R * t_unfold then m_refold
+    TH1D* U_Refold(const TH1D* htruth_like) const;
+
+    //save all
+    void U_SaveAll(const std::string& fname, TH1D* h_unfold=nullptr);
+
+    //opt 
+    TH1D* U_HTrue() const { return U_h_true_.get(); }
+    TH1D* U_HMeas() const { return U_h_meas_.get(); }
+    TH1D* U_HData() const { return U_h_data_.get(); }
+
 
     
 
@@ -271,6 +298,20 @@ private:
 
 
     TH1F *h_evtnbrdiff;   //evtnbr_sim - evtnbr_mc should be 0 iw we are reading the same event.    
+
+    // ===== Unf stuff (fine A..S) =====
+    //region index for fine bins (A..S -> 0..19). from CheckLargeBins 
+    int U_RegionIndexFine_(const Event& e) const;
+
+    std::string U_tag_;
+    CutSet U_dataCuts_;
+    std::unique_ptr<TH1D> U_h_true_;    //MC truth per region (A..S)
+    std::unique_ptr<TH1D> U_h_meas_;    //REC measured per region (A..S)
+    std::unique_ptr<TH1D> U_h_data_;    //RGD data per region (A..S)
+    //still in fie binning
+    //std::unique_ptr<RooUnfoldResponse> U_response_;
+    //std::unique_ptr<TMatrixD> U_cov_;   // covariance of unfolded
+
 
 
     TFile outputFile;

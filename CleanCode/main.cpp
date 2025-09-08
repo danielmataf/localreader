@@ -25,12 +25,27 @@ int main() {
     std::vector<std::string> filenamesCuSn;
     std::vector<std::string> filenamesCxC;
 
-    
+    std::vector<std::string> simufilesLD2;
+    std::vector<std::string> simufilesCu;
+    std::vector<std::string> simufilesSn;
+    std::vector<std::string> simufilesCxC;    
+
+
+
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/0v6/", filenamesLD2);
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/CuSn_v0/0v6/", filenamesCuSn);
+    files.Files2Vector("/home/matamoros/Desktop/LumiScanDta/C_v0/0v6/", filenamesCxC);
+    ////files.ParDir2Vector("/home/matamoros/Desktop/LumiScanDta/LD2_v0/", simufilesLD2);   //do not uncomment this line
+    //files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/LD2", simufilesLD2);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novLD2", simufilesLD2);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novC", simufilesCxC);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novCu", simufilesCu);  //uncomment for sim
+    files.SnDir2Vector("/home/matamoros/Desktop/LumiScanDta/simtestfolder/novSn", simufilesSn);
 
     //check this for pass1
-    files.ParDir2Vector("/cache/clas12/rg-d/production/pass1/recon/LD2/dst/recon/", filenamesLD2);
-    files.ParDir2Vector("/cache/clas12/rg-d/production/pass1/recon/CuSn/dst/recon/", filenamesCuSn);
-    files.ParDir2Vector("/cache/clas12/rg-d/production/pass1/recon/CxC/dst/recon/", filenamesCxC);
+    //files.ParDir2Vector("/cache/clas12/rg-d/production/pass1/recon/LD2/dst/recon/", filenamesLD2);
+    //files.ParDir2Vector("/cache/clas12/rg-d/production/pass1/recon/CuSn/dst/recon/", filenamesCuSn);
+    //files.ParDir2Vector("/cache/clas12/rg-d/production/pass1/recon/CxC/dst/recon/", filenamesCxC);
 
 
     //Uncomment 4 test on ifarm, comment all above
@@ -58,6 +73,10 @@ int main() {
     EventReader RGD_LD2(filenamesLD2);   
     EventReader RGD_CuSn(filenamesCuSn);   
 
+    EventReader SIM_LD2(simufilesLD2);
+    EventReader SIM_Cu(simufilesCu);
+    EventReader SIM_Sn(simufilesSn);
+    EventReader SIM_CxC(simufilesCxC);
 
     std::optional<Event> testCxC;
     std::optional<Event> testLD2;
@@ -65,25 +84,38 @@ int main() {
     std::optional<Event> testSn;
     std::optional<Event> testLD2full;
     std::optional<Event> testLD2fullMC;
+    
+    std::optional<Event> simuLD2;
+    std::optional<Event> simuCu;
+    std::optional<Event> simuSn;
+    std::optional<Event> simuCxC;
+
+    std::optional<Event> simuLD2_MC;
+    std::optional<Event> simuCu_MC;
+    std::optional<Event> simuSn_MC;
+    std::optional<Event> simuCxC_MC;
 
     CutSet testC1cuts;  //C1 RGD
     CutSet testC2cuts;  //C2 RGD  
-
+    CutSet testCCcuts;  //CxC RGD
     CutSet testLD2cuts;
     CutSet testCucuts;
     CutSet testSncuts;
-
+    //We'll use the same cuts for simu since they seem wide enough.
+    
 
 
     //Defining cuts here. Vz cuts for SIM and RGD may differ -> check Mon Vz
     //simC1cuts.SetCutVz(Constants::RcutminVzC1sim,Constants::RcutminVzC1sim);     //vz cut for C1 target
     //testC1cuts.SetCutVz(Constants::RcutminVzC1data,Constants::RcutmaxVzC1data);     //previous cut, b4jan2025. We change for uncalib data (?) peaks shifted of -1cm
-    testC1cuts.SetCutVz(Constants::v11cutminVzC1data,Constants::v11cutmaxVzC1data);     //Changing values in constants, also widening the cut
-    testC1cuts.SetCutGen4Rat();
 
     //testC2cuts.SetCutVz(Constants::v11cutminVzC2data, Constants::v11cutmaxVzC2data);    //vz cut for C2 target
+    testCCcuts.SetCutGen4Rat();
+    testCCcuts.SetCutVz(-10.56, 5);    //vz cut for CxC target, using C2 values for now
+    testC1cuts.SetCutGen4Rat();
+    testC1cuts.SetCutVz(-10.55,-6.62);     //vz cut for Cu target
     testC2cuts.SetCutGen4Rat();
-    testC2cuts.SetCutVz(-10.56, 5);    //vz cut for C2 target
+    testC2cuts.SetCutVz(-6.21,-1.26);
 
 
     //testLD2cuts.SetCutVz(Constants::v11cutminVzLD2data,Constants::v11cutmaxVzLD2data);     //vz cut for LD2 target
@@ -101,33 +133,51 @@ int main() {
 
     Monitoring monTestC1(testC1cuts, "C1_RGD");  //This needs to be figured out ASAP
     Monitoring monTestC2(testC2cuts, "C2_RGD");  //This needs to be figured out ASAP
+    Monitoring monTestCC(testCCcuts, "CxC_RGD");
     Monitoring monTestLD2(testLD2cuts, "LD2_RGD");
     Monitoring monTestCu(testCucuts, "Cu_RGD");
     Monitoring monTestSn(testSncuts, "Sn_RGD");
     Monitoring monLD2full(testLD2cuts, "LD2_RGD_full");
 
+    Monitoring monSimLD2(testLD2cuts, "LD2_SIMU");
+    Monitoring monSimCu(testCucuts, "Cu_SIMU");
+    Monitoring monSimSn(testSncuts, "Sn_SIMU");
+    Monitoring monSimCxC(testCCcuts, "CxC_SIMU");
+    Monitoring monSimC2(testC2cuts, "C2_SIMU");
+    Monitoring monSimC1(testC1cuts, "C1_SIMU");
+
+    Monunfold munfSimLD2(testLD2cuts, "LD2_SIMU");
+    Monunfold munfSimCu(testCucuts, "Cu_SIMU");
+    Monunfold munfSimSn(testSncuts, "Sn_SIMU");
+    Monunfold munfSimCxC(testCCcuts, "CxC_SIMU");
+
     Ratio ratC1(testLD2cuts, testC1cuts, "C1_RGD");
     Ratio ratC2(testLD2cuts, testC2cuts, "C2_RGD");
+    Ratio ratCC(testLD2cuts, testCCcuts, "CxC_RGD");
     Ratio ratSn(testLD2cuts, testSncuts, "Sn_RGD");
     Ratio ratCu(testLD2cuts, testCucuts, "Cu_RGD");
 
+
     deltaptsq dptC1(testLD2cuts, testC1cuts, "C1_RGD");
     deltaptsq dptC2(testLD2cuts, testC2cuts, "C2_RGD");
+    deltaptsq dptCC(testLD2cuts, testCCcuts, "CxC_RGD");
     deltaptsq dptSn(testLD2cuts, testSncuts, "Sn_RGD");
     deltaptsq dptCu(testLD2cuts, testCucuts, "Cu_RGD");
 
     sratio sratC2(testLD2cuts, testC2cuts, "C2_RGD");
     sratio sratSn(testLD2cuts, testSncuts, "Sn_RGD");
     sratio sratCu(testLD2cuts, testCucuts, "Cu_RGD");
+    sratio sratCC(testLD2cuts, testCCcuts, "CxC_RGD");
 
     cratio cratC1(testLD2cuts, testC1cuts, "C1_RGD");
     cratio cratC2(testLD2cuts, testC2cuts, "C2_RGD");
+    cratio cratCC(testLD2cuts, testCCcuts, "CxC_RGD");
     cratio cratSn(testLD2cuts, testSncuts, "Sn_RGD");
     cratio cratCu(testLD2cuts, testCucuts, "Cu_RGD");
 
 
-//    int totalevts = 10;
-    int totalevts =10000000;   //uncomment this on farm for fullT on C2 
+    int totalevts = 10000;       //local
+//    int totalevts =10000000;   //farm
 
     for (int i=0; i<totalevts; i++){
         testCxC = RGD_CxC.ProcessEventsInFile(); 
@@ -135,15 +185,27 @@ int main() {
         testSn = RGD_CuSn.ProcessEventsInFile();
         testCu = RGD_CuSn.ProcessEventsInFile();
 
+        simuCxC = SIM_CxC.ProcessEventsInFile();
+        simuLD2 = SIM_LD2.ProcessEventsInFile();
+        simuSn = SIM_Sn.ProcessEventsInFile();
+        simuCu = SIM_Cu.ProcessEventsInFile();
+        simuCxC_MC = SIM_CxC.ProcessEventsInFileMC();
+        simuLD2_MC = SIM_LD2.ProcessEventsInFileMC();
+        simuSn_MC = SIM_Sn.ProcessEventsInFileMC();
+        simuCu_MC = SIM_Cu.ProcessEventsInFileMC();
+
         if (testLD2.has_value()) {
             Event eventtestLD2 = testLD2.value();
             eventtestLD2.SetTargetType(0);
             eventtestLD2.calcAll();
-            monTestLD2.FillHistogramswCuts(eventtestLD2);
+            monTestLD2.FillHistogramswCuts( eventtestLD2);
             monTestLD2.CheckLargeBins(eventtestLD2); //check large bins in order to fill them with the correct values
-	    monTestLD2.CheckFewBins(eventtestLD2);    
-        ratC1.FillHistograms(eventtestLD2);
+	        monTestLD2.CheckFewBins(eventtestLD2);   
+            monTestLD2.FillPrePostCutHistograms(eventtestLD2); 
+            
+            ratC1.FillHistograms(eventtestLD2);
             ratC2.FillHistograms(eventtestLD2);
+            ratCC.FillHistograms(eventtestLD2);
             ratSn.FillHistograms(eventtestLD2);
             ratCu.FillHistograms(eventtestLD2);
             dptC1.FillHistograms(eventtestLD2);
@@ -167,6 +229,7 @@ int main() {
 
             //munfTestC2.FillHistComp(eventtestCxC);
             monTestC2.FillHistogramswCuts(eventtestCxC);
+            monTestCC.FillPrePostCutHistograms(eventtestCxC);
             monTestC2.thetabinning(eventtestCxC);    //for theta pending
             monTestC1.FillHistogramswCuts(eventtestCxC);
             monTestC2.CheckLargeBins(eventtestCxC); //check large bins in order to fill them with the correct values
@@ -182,18 +245,6 @@ int main() {
             cratC2.FillDebug(eventtestCxC);
 
         }
-        if (testLD2fullMC.has_value()){
-            Event eventtestLD2fullMC = testLD2fullMC.value();
-            eventtestLD2fullMC.SetTargetType(0);
-            eventtestLD2fullMC.calcMCAll();
-                if (testLD2full.has_value()){
-                    Event eventtestLD2full = testLD2full.value();
-                    eventtestLD2full.SetTargetType(0);
-                    eventtestLD2full.calcAll();
-                    monLD2full.FillHistogramswCuts(eventtestLD2full);
-                }
-        }
-
 
         if (testSn.has_value()) {
             Event eventtestSn = testSn.value();
@@ -201,12 +252,13 @@ int main() {
             eventtestSn.calcAll();
 
             monTestSn.FillHistogramswCuts(eventtestSn);
+            monTestSn.FillPrePostCutHistograms(eventtestSn);
             //monTestSn.FillHistogramsNoCuts(eventtestSn);
             ratSn.FillHistograms(eventtestSn);
             dptSn.FillHistograms(eventtestSn);
             sratSn.FillHistograms(eventtestSn);
             cratSn.FillHistograms(eventtestSn);
-	    monTestSn.CheckFewBins(eventtestSn);
+	        monTestSn.CheckFewBins(eventtestSn);
             monTestSn.CheckLargeBins(eventtestSn); //check large bins in order to fill them with the correct values
 
         }
@@ -215,6 +267,7 @@ int main() {
             eventtestCu.SetTargetType(1);
             eventtestCu.calcAll();
             monTestCu.FillHistogramswCuts(eventtestCu);
+            monTestCu.FillPrePostCutHistograms(eventtestCu);
             ratCu.FillHistograms(eventtestCu);
             dptCu.FillHistograms(eventtestCu);
             sratCu.FillHistograms(eventtestCu);
@@ -223,6 +276,52 @@ int main() {
             monTestCu.CheckFewBins(eventtestCu); //check large bins in order to fill them with the correct values
 
         }
+        //now the simus 
+        if (simuLD2_MC.has_value()){
+            Event eventsimuLD2_MC = simuLD2_MC.value();
+            eventsimuLD2_MC.SetTargetType(0);
+            eventsimuLD2_MC.calcMCAll();
+            if (simuLD2.has_value()){
+                Event eventsimuLD2 = simuLD2.value();
+                eventsimuLD2.SetTargetType(0);
+                eventsimuLD2.calcAll();
+                monSimLD2.FillHistogramswCuts(eventsimuLD2);
+            }
+        }
+        if (simuCxC_MC.has_value()){
+            Event eventsimuCxC_MC = simuCxC_MC.value();
+            eventsimuCxC_MC.SetTargetType(1);
+            eventsimuCxC_MC.calcMCAll();
+            if (simuCxC.has_value()){
+                Event eventsimuCxC = simuCxC.value();
+                eventsimuCxC.SetTargetType(1);
+                eventsimuCxC.calcAll();
+                monSimCxC.FillHistogramswCuts(eventsimuCxC);
+            }
+        }
+        if (simuSn_MC.has_value()){
+            Event eventsimuSn_MC = simuSn_MC.value();
+            eventsimuSn_MC.SetTargetType(1);
+            eventsimuSn_MC.calcMCAll();
+            if (simuSn.has_value()){
+                Event eventsimuSn = simuSn.value();
+                eventsimuSn.SetTargetType(1);
+                eventsimuSn.calcAll();
+                monSimSn.FillHistogramswCuts(eventsimuSn);
+            }
+        }
+        if (simuCu_MC.has_value()){
+            Event eventsimuCu_MC = simuCu_MC.value();
+            eventsimuCu_MC.SetTargetType(1);
+            eventsimuCu_MC.calcMCAll();
+            if (simuCu.has_value()){
+                Event eventsimuCu = simuCu.value();
+                eventsimuCu.SetTargetType(1);
+                eventsimuCu.calcAll();
+                monSimCu.FillHistogramswCuts(eventsimuCu);
+            }
+        }
+
 
             //else{ counter_restCxC++;}
         files.displayProgress(i + 1, totalevts);
@@ -274,6 +373,10 @@ std::cout << "\nProcessing completed \n";
     cratC2.saveCratioHistos();
     cratSn.saveCratioHistos();
     cratCu.saveCratioHistos();
+    monTestCC.SaveFINRoot("fin_CxC_test");
+    monTestSn.SaveFINRoot("fin_Sn_test");
+    monTestCu.SaveFINRoot("fin_Cu_test");
+    monTestLD2.SaveFINRoot("fin_LD2_test");
     monLD2full.SaveHistRoot("AprLD2full_test");
     monTestLD2.SaveHistRoot("testLD2_test");
 //    munftrueC2.SaveHistRoot("junC2_truef_test");

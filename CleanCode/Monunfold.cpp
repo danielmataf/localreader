@@ -298,6 +298,155 @@ int Monunfold::SetResponseIndex(const Event& event) {
 }
 
 
+// ===================== Unfolding (fine A..S) =====================
+
+int Monunfold::U_RegionIndexFine_(const Event& e) const {
+  const double xb = e.Getxb();
+  const double Q2 = e.GetQ2();
+
+  // A,B (xB in AB)
+  if (xb > Constants::LargexblowAB && xb < Constants::LargexbhighAB) {
+    if (Q2 > Constants::LARGEQlowA && Q2 < Constants::LARGEQhighA) return 0; // A
+    if (Q2 > Constants::LARGEQlowB && Q2 < Constants::LARGEQhighB) return 1; // B
+    return -1;
+  }
+  // C,D,E
+  if (xb > Constants::LargexbhighAB && xb < Constants::LargexbhighCDE) {
+    if (Q2 > Constants::LARGEQlowC && Q2 < Constants::LARGEQhighC) return 2;
+    if (Q2 > Constants::LARGEQlowD && Q2 < Constants::LARGEQhighD) return 3;
+    if (Q2 > Constants::LARGEQlowE && Q2 < Constants::LARGEQhighE) return 4;
+    return -1;
+  }
+  // F,G,H
+  if (xb > Constants::LargexbhighCDE && xb < Constants::LargexbhighFGH) {
+    if (Q2 > Constants::LARGEQlowF && Q2 < Constants::LARGEQhighF) return 5;
+    if (Q2 > Constants::LARGEQlowG && Q2 < Constants::LARGEQhighG) return 6;
+    if (Q2 > Constants::LARGEQlowH && Q2 < Constants::LARGEQhighH) return 7;
+    return -1;
+  }
+  // I,J,K
+  if (xb > Constants::LargexbhighFGH && xb < Constants::LargexbhighIJK) {
+    if (Q2 > Constants::LARGEQlowI && Q2 < Constants::LARGEQhighI) return 8;
+    if (Q2 > Constants::LARGEQlowJ && Q2 < Constants::LARGEQhighJ) return 9;
+    if (Q2 > Constants::LARGEQlowK && Q2 < Constants::LARGEQhighK) return 10;
+    return -1;
+  }
+  // L,M,N
+  if (xb > Constants::LargexbhighIJK && xb < Constants::LargexbhighLMN) {
+    if (Q2 > Constants::LARGEQlowL && Q2 < Constants::LARGEQhighL) return 11;
+    if (Q2 > Constants::LARGEQlowM && Q2 < Constants::LARGEQhighM) return 12;
+    if (Q2 > Constants::LARGEQlowN && Q2 < Constants::LARGEQhighN) return 13;
+    return -1;
+  }
+  // O,P,Q
+  if (xb > Constants::LargexbhighLMN && xb < Constants::LargexbhighOPQ) {
+    if (Q2 > Constants::LARGEQlowO && Q2 < Constants::LARGEQhighO) return 14;
+    if (Q2 > Constants::LARGEQlowP && Q2 < Constants::LARGEQhighP) return 15;
+    if (Q2 > Constants::LARGEQlowQ && Q2 < Constants::LARGEQhighQ) return 16;
+    return -1;
+  }
+  // R,S
+  if (xb > Constants::LargexbhighOPQ && xb < Constants::LargexbhighRS) {
+    if (Q2 > Constants::LARGEQlowR && Q2 < Constants::LARGEQhighR) return 17;
+    if (Q2 > Constants::LARGEQlowS && Q2 < Constants::LARGEQhighS) return 18;
+    return -1;
+  }
+  return -1;
+}
+
+void Monunfold::U_InitUnfold(const std::string& tag, const CutSet& dataCuts) {
+  U_tag_ = tag;
+  U_dataCuts_ = dataCuts;
+  const int nFine = 19; // A..S
+
+  U_h_true_.reset(new TH1D(("U_h_true_"+tag).c_str(), ("MC truth ["+tag+"]").c_str(), nFine, 0.5, nFine+0.5));
+  U_h_meas_.reset(new TH1D(("U_h_meas_"+tag).c_str(), ("REC meas ["+tag+"]").c_str(),  nFine, 0.5, nFine+0.5));
+  U_h_data_.reset(new TH1D(("U_h_data_"+tag).c_str(), ("RGD data ["+tag+"]").c_str(),  nFine, 0.5, nFine+0.5));
+
+  U_h_true_->SetDirectory(nullptr);
+  U_h_meas_->SetDirectory(nullptr);
+  U_h_data_->SetDirectory(nullptr);
+
+  static const char* labs = "ABCDEFGHIJKLMNOPQRS";
+  for (int i=1;i<=nFine;i++) {
+    U_h_true_->GetXaxis()->SetBinLabel(i, std::string(1,labs[i-1]).c_str());
+    U_h_meas_->GetXaxis()->SetBinLabel(i, std::string(1,labs[i-1]).c_str());
+    U_h_data_->GetXaxis()->SetBinLabel(i, std::string(1,labs[i-1]).c_str());
+  }
+
+  // Response built on the same binnings uncomment
+  //U_response_.reset(new RooUnfoldResponse(U_h_meas_.get(), U_h_true_.get()));
+}
+
+void Monunfold::U_FillSimPair(const Event& rec, const Event& mc, double w) {
+  // Apply your detector-level analysis cuts to REC (as you do for RGD)
+  if (!(U_dataCuts_.PassCutsElectrons(rec) && U_dataCuts_.PassCutsDetectors(rec))) return;
+
+  const int k_meas = U_RegionIndexFine_(rec);
+  const int k_true = U_RegionIndexFine_(mc);
+  if (k_true>=0) U_h_true_->Fill(k_true+1, w);
+  if (k_meas>=0 && k_true>=0) {
+    //U_response_->Fill(k_meas+1, k_true+1, w);
+    U_h_meas_->Fill(k_meas+1, w);
+  } else if (k_true>=0 && k_meas<0) {
+    //U_response_->Miss(k_true+1, w);
+  } else if (k_true<0 && k_meas>=0) {
+    //U_response_->Fake(k_meas+1, w);
+    U_h_meas_->Fill(k_meas+1, w);
+  }
+}
+
+void Monunfold::U_FillSimTruthOnly(const Event& mc, double w) {
+  const int k_true = U_RegionIndexFine_(mc);
+  if (k_true>=0) {
+    U_h_true_->Fill(k_true+1, w);
+    //U_response_->Miss(k_true+1, w);
+  }
+}
+
+void Monunfold::U_FillSimRecoOnly(const Event& rec, double w) {
+  if (!(U_dataCuts_.PassCutsElectrons(rec) && U_dataCuts_.PassCutsDetectors(rec))) return;
+  const int k_meas = U_RegionIndexFine_(rec);
+  if (k_meas>=0) {
+    U_h_meas_->Fill(k_meas+1, w);
+    //U_response_->Fake(k_meas+1, w);
+  }
+}
+
+void Monunfold::U_FillData(const Event& data, double w) {
+  if (!(U_dataCuts_.PassCutsElectrons(data) && U_dataCuts_.PassCutsDetectors(data))) return;
+  const int k_meas = U_RegionIndexFine_(data);
+  if (k_meas>=0) U_h_data_->Fill(k_meas+1, w);
+}
+
+//TH1D* Monunfold::U_UnfoldBayes(int nIter) {
+//  //RooUnfoldBayes unfold(U_response_.get(), U_h_data_.get(), nIter);
+//  unfold.SetVerbose(0);
+//  TH1D* h_unf = (TH1D*) unfold.Hreco(RooUnfold::kCovariance);
+//  h_unf->SetName(("U_h_unfold_"+U_tag_).c_str());
+//  h_unf->SetTitle(("Unfolded ["+U_tag_+"]").c_str());
+//  U_cov_ = std::make_unique<TMatrixD>(unfold.ErecoV());
+//  return h_unf;
+//}
+//
+//TH1D* Monunfold::U_Refold(const TH1D* htruth_like) const {
+//  TH1* href = U_response_->ApplyToTruth(htruth_like, ("U_hrefold_"+U_tag_).c_str());
+//  href->SetTitle(("Refolded ["+U_tag_+"]").c_str());
+//  return (TH1D*) href;
+//}
+
+void Monunfold::U_SaveAll(const std::string& fname, TH1D* h_unfold) {
+  TFile f(fname.c_str(), "RECREATE");
+  if (U_h_true_)  U_h_true_->Write();
+  if (U_h_meas_)  U_h_meas_->Write();
+  if (U_h_data_)  U_h_data_->Write();
+  //if (U_response_) U_response_->Write(("U_response_"+U_tag_).c_str());
+  //if (h_unfold) h_unfold->Write();
+  //if (U_cov_)   U_cov_->Write(("U_cov_unfold_"+U_tag_).c_str());
+  f.Close();
+}
+
+
 void Monunfold::FillOnlyVz(const Event& event) {
     //Temporary function to fill only vertexZ histograms
     //this used to check on vz for both (only true) True Carbon Targets

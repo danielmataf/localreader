@@ -120,7 +120,25 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_phi_el_sec3(new TH1F(("phi_el_sec3_" + targetName).c_str(), "phi_el_sec3", 100, 0, 360)),
     h_phi_el_sec4(new TH1F(("phi_el_sec4_" + targetName).c_str(), "phi_el_sec4", 100, 0, 360)),
     h_phi_el_sec5(new TH1F(("phi_el_sec5_" + targetName).c_str(), "phi_el_sec5", 100, 0, 360)),
-    h_phi_el_sec6(new TH1F(("phi_el_sec6_" + targetName).c_str(), "phi_el_sec6", 100, 0, 360)),    
+    h_phi_el_sec6(new TH1F(("phi_el_sec6_" + targetName).c_str(), "phi_el_sec6", 100, 0, 360)), 
+    // Pre- and post-cut histograms
+    h_Vz_pre(new TH1F((std::string("Vz_pre_")  + targetName).c_str(),  "Vz (pre Vz cut)", 100, -20, 15)),
+    h_Vz_post(new TH1F((std::string("Vz_post_") + targetName).c_str(),  "Vz (post Vz cut)", 100, -20, 15)),
+    h_Q2_pre(new TH1F((std::string("Q2_pre_")  + targetName).c_str(),  "Q^{2} (pre Q2 cut)", nubin, QminX, QmaxX)),
+    h_Q2_post(new TH1F((std::string("Q2_post_") + targetName).c_str(),  "Q^{2} (post Q2 cut)", nubin, QminX, QmaxX)),
+    h_y_pre(new TH1F((std::string("y_pre_")   + targetName).c_str(),  "y (pre y cut)", nubin, yminX, ymaxX)),
+    h_y_post(new TH1F((std::string("y_post_")  + targetName).c_str(),  "y (post y cut)", nubin, yminX, ymaxX)),
+    h_nu_pre(new TH1F((std::string("nu_pre_")  + targetName).c_str(),  "nu (pre nu cut)", nubin, numinX, numaxX)),
+    h_nu_post(new TH1F((std::string("nu_post_") + targetName).c_str(),  "nu (post nu cut)", nubin, numinX, numaxX)),
+    h_W2_pre(new TH1F((std::string("W2_pre_")  + targetName).c_str(),  "W^{2} (pre W^{2} cut)", nubin, WminX, WmaxX)),
+    h_W2_post(new TH1F((std::string("W2_post_") + targetName).c_str(),  "W^{2} (post W^{2} cut)", nubin, WminX, WmaxX)),
+    h_z_pre(new TH1F((std::string("z_pre_")   + targetName).c_str(),  "z (pre z cut)", nubin, zminX, zmaxX)),
+    h_z_post(new TH1F((std::string("z_post_")  + targetName).c_str(),  "z (post z cut)", nubin, zminX, zmaxX)),
+    h_pt2_pre(new TH1F((std::string("pt2_pre_")  + targetName).c_str(),  "p_{T}^{2} (pre p_{T}^{2} cut)", nubin, pt2minX, pt2maxX)),
+    h_pt2_post(new TH1F((std::string("pt2_post_") + targetName).c_str(),  "p_{T}^{2} (post p_{T}^{2} cut)", nubin, pt2minX, pt2maxX)),
+    h_sampl_el_pre(new TH2F((std::string("sampl_el_pre_")  + targetName).c_str(), "Sampling fraction (pre e-cuts);p (GeV);E_{PCAL}/p", nubin, 0, 10, nubin, 0, 1)),
+    h_sampl_el_post(new TH2F((std::string("sampl_el_post_") + targetName).c_str(), "Sampling fraction (post e-cuts);p (GeV);E_{PCAL}/p", nubin, 0, 10, nubin, 0, 1)),
+        
       counterel_R(0) {
     // Add more histograms as needed
         for (int s = 0; s < 6; ++s) {
@@ -1759,7 +1777,78 @@ void Monitoring::DrawCompRECMC(const std::string filename){
 
 
 }
+void Monitoring::FillPrePostCutHistograms(const Event& event) {
+    // Electron sampling fraction -- PRE
+    double p = event.electron.GetMomentum().P();
+    if (p > 0.0) {
+        double sf = event.electron.GetEpcal() / p;
+        h_sampl_el_pre->Fill(p, sf);
+    }
 
+    // Progressive electron cuts: Vz -> Q2 -> y -> nu -> W2
+    // Vz
+    double Vz = event.GetVz();
+    h_Vz_pre->Fill(Vz);
+    if (!cut1.PassCutVzselection(event)) {
+        return;
+    }
+    h_Vz_post->Fill(Vz);
+
+    // Q2
+    double Q2 = event.GetQ2();
+    h_Q2_pre->Fill(Q2);
+    if (Q2 < Constants::RcutminQ || Q2 > Constants::RcutmaxQ) {
+        return;
+    }
+    h_Q2_post->Fill(Q2);
+
+    // y
+    double y = event.Gety();
+    h_y_pre->Fill(y);
+    if (y < Constants::RcutminY || y > Constants::RcutmaxY) {
+        return;
+    }
+    h_y_post->Fill(y);
+
+    // nu
+    double nu = event.Getnu();
+    h_nu_pre->Fill(nu);
+    if (nu < Constants::Rcutminnu || nu > Constants::Rcutmaxnu) {
+        return;
+    }
+    h_nu_post->Fill(nu);
+
+    // W2
+    double W2 = event.GetW2();
+    h_W2_pre->Fill(W2);
+    if (W2 < Constants::RcutminW || W2 > Constants::RcutmaxW) {
+        return;
+    }
+    h_W2_post->Fill(W2);
+
+    // Electron sampling fraction -- POST (after all e-cuts)
+    if (p > 0.0) {
+        double sf = event.electron.GetEpcal() / p;
+        h_sampl_el_post->Fill(p, sf);
+    }
+
+    // Hadron progressive cuts: z -> pt2
+    for (const Particle& hadron : event.GetHadrons()) {
+        double z = hadron.Getz();
+        h_z_pre->Fill(z);
+        if (z < Constants::RcutminZ || z > Constants::RcutmaxZ) {
+            continue;
+        }
+        h_z_post->Fill(z);
+
+        double pt2 = hadron.Getpt2();
+        h_pt2_pre->Fill(pt2);
+        if (pt2 < Constants::RcutminPt2 || pt2 > Constants::RcutmaxPt2) {
+            continue;
+        }
+        h_pt2_post->Fill(pt2);
+    }
+}
 void Monitoring::DrawMonSratio(const std::string filename){
     TCanvas MonS("MonS", "MonS");
     MonS.Divide(2, 2);
@@ -1853,6 +1942,8 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
     delete rootFile;
 
 
+
+
     //counters are here to monitor cut evolution 
     //std::cout << " counterprecuts = " <<  counterprecuts << std::endl;
     //std::cout << " counterpassVz = " <<  counterpassVz << std::endl;
@@ -1866,6 +1957,36 @@ void Monitoring::SaveHistRoot(const std::string& filenameREC) {
 
 
 }
+
+
+void Monitoring::SaveFINRoot(const std::string& filenameREC) {
+    TFile* rootFile = new TFile((filenameREC + ".root").c_str(), "RECREATE");
+
+    h_Vz_pre->Write();
+    h_Vz_post->Write();
+    h_Q2_pre->Write();
+    h_Q2_post->Write();
+    h_y_pre->Write();
+    h_y_post->Write();
+    h_nu_pre->Write();
+    h_nu_post->Write();
+    h_W2_pre->Write();
+    h_W2_post->Write();
+    h_z_pre->Write();
+    h_z_post->Write();
+    h_pt2_pre->Write();
+    h_pt2_post->Write();
+    h_sampl_el_pre->Write();
+    h_sampl_el_post->Write();
+
+
+    rootFile->Close();
+    delete rootFile;
+
+
+
+}
+
 //void Monitoring::FillHistogramsNoCuts( const Event& event){
 //    int targetType = event.GetTargetType();//using a flag for targets 
 /*
