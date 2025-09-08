@@ -20,8 +20,8 @@ constexpr double M = 0.938272;
 constexpr double E = 10.4;
 
 constexpr double THETA_HI  = 27.0;
-constexpr double THETA_MID = 9.90;
-constexpr double THETA_LOW = 8.2;
+constexpr double THETA_MID = 11;
+constexpr double THETA_LOW = 8.8;
 
 inline double deg2rad(double d) { return d * M_PI / 180.0; }
 
@@ -31,13 +31,18 @@ double Q2_of_x_theta(double x, double thetaDeg) {
     double B = E * c;
     return A * x / (B + M * x);
 }
+double Q2_of_x_y(double x, double y) {
+    double s = 2.0 * M * E;
+    return x * y * s;
+}
 
 double Q2_of_x_W2(double x, double W2) {
     return (W2 - M * M) * x / (1.0 - x);
 }
 
 int main() {
-    TFile* fin = TFile::Open("DptinputFiles/REcutC2_test.root", "READ");
+    //TFile* fin = TFile::Open("DptinputFiles/REcutC2_test.root", "READ");
+    TFile* fin = TFile::Open("~/pass0v11C2.root", "READ");
     if (!fin || fin->IsZombie()) {
         std::cerr << "ERROR: cannot open input ROOT file.\n";
         return 1;
@@ -50,7 +55,7 @@ int main() {
     }
 
     // ===== Five vertical xB lines (5 edges → 4 closed ranges + tail) =====
-    std::vector<double> xBins = {0.06, 0.11, 0.17, 0.25, 0.34}; // << exactly 5 lines
+    std::vector<double> xBins = {0.075, 0.11, 0.15, 0.19, 0.29}; // << exactly 5 lines
     if (xBins.size() != 5) {
         std::cerr << "ERROR: need exactly 5 x-bin edges (5 vertical lines); got "
                   << xBins.size() << "\n";
@@ -98,6 +103,28 @@ int main() {
     TF1* fThetaHi  = make_theta_curve(THETA_HI , "fThetaHi" , kRed);
     TF1* fThetaMid = make_theta_curve(THETA_MID, "fThetaMid", kRed + 1);
     TF1* fThetaLow = make_theta_curve(THETA_LOW, "fThetaLow", kRed + 2);
+// y = 0.75 line    
+    double y_fixed = 0.67;  //change y value here 
+    double s = 2.0 * M * E;
+    double C_y = y_fixed * s;
+
+        // y = 0.25 line    (this is from low cut=0.25)
+    double y_fixedlow = 0.25;  //change y value here 
+    //double s = 2.0 * M * E;
+    double C_y2 = y_fixedlow * s;
+
+
+    TF1* fy = new TF1("fy", Form("%.5f * x", C_y), 0.0, 0.7);
+    fy->SetLineColor(kMagenta + 1);
+    fy->SetLineWidth(2);
+    fy->SetLineStyle(2);  // dashed
+    
+    TF1* fylow = new TF1("fy2", Form("%.5f * x", C_y2), 0.0, 0.7);
+    fylow->SetLineColor(kMagenta + 1);
+    fylow->SetLineWidth(2);
+    fylow->SetLineStyle(2);  // dashed
+
+    std::vector<double> yVals = {0.75, 0.25};  // cuts in y 
 
     // W² = 4 GeV² line
     TF1* fW2 = new TF1("fW2", "(4 - 0.938272*0.938272)*x/(1 - x)", 0.0, 0.7);
@@ -137,9 +164,11 @@ int main() {
     double yTop = gPad->GetUymax();
     //for (auto* lx : xLines) { lx->SetY2(yTop); lx->Draw("same"); }
 
-    fThetaHi ->Draw("same");
+    //fThetaHi ->Draw("same");
     fThetaMid->Draw("same");
     fThetaLow->Draw("same");
+    fy       ->Draw("same");
+    fylow    ->Draw("same");
     fW2      ->Draw("same");
     for (auto* l : Q2Lines) l->Draw("same");
     for (auto* l : xLines)  l->Draw("same");
@@ -147,10 +176,13 @@ int main() {
 
     TLegend* leg = new TLegend(0.70, 0.60, 0.93, 0.87);
     leg->SetBorderSize(0); leg->SetFillStyle(0);
-    leg->AddEntry(fThetaHi , Form("#theta_{e}=%.1f^{#circ}", THETA_HI ), "l");
+    //leg->AddEntry(fThetaHi , Form("#theta_{e}=%.1f^{#circ}", THETA_HI ), "l");
     leg->AddEntry(fThetaMid, Form("#theta_{e}=%.1f^{#circ}", THETA_MID), "l");
     leg->AddEntry(fThetaLow, Form("#theta_{e}=%.1f^{#circ}", THETA_LOW), "l");
     leg->AddEntry(fW2, "W^{2} = 4 GeV^{2}", "l");
+    leg->AddEntry(fy, "y = 0.75", "l");
+    leg->AddEntry(fylow, "y = 0.25", "l");
+
     leg->Draw();
 
     c->SaveAs("xQ2_overlay_bis.png");
@@ -191,47 +223,47 @@ int main() {
         }
     };
 
-    // Heuristic: at higher x the W2 line raises the lower boundary above 1.
-    dump_range("R1", R1_LO, R1_HI, /*useWmin=*/false);
-    dump_range("R2", R2_LO, R2_HI, /*useWmin=*/false);
-    dump_range("R3", R3_LO, R3_HI, /*useWmin=*/true);
-    dump_range("R4", R4_LO, R4_HI, /*useWmin=*/true);
+    std::cout << "\n===== Region [FEW] Definitions  =====\n";
+    std::cout << "A LO = Q2(" << regABx_LO << ", " << THETA_MID << ") = " << Q2_of_x_theta(regABx_LO,THETA_MID) << "  // loQregA\n";
+    std::cout << "A HI = Q2(" << regABx_HI << ", y=" << y_fixed << ") = "<< Q2_of_x_y(regABx_HI, y_fixed) << "  // hiQregA\n";
+    std::cout << std::endl;
+    std::cout << "B LO = Q2(fixed) = 1     // loQregB \n";
+    std::cout << "B HI = Q2(" << regABx_HI << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regABx_HI, THETA_MID) << "  // hiQregB\n";
+    std::cout << std::endl;
+    std::cout << "C LO = Q2(" << regCDEx_LO << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regCDEx_LO,THETA_MID  ) << "  // loQregC\n";
+    std::cout << "C HI = Q2(" << regCDEx_HI << ", y=" << y_fixed << ") = "<< Q2_of_x_y(regCDEx_HI,y_fixed  ) << "  // hiQregC\n";
+    std::cout << std::endl;
+    std::cout << "D LO = Q2(" << regCDEx_LO << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regCDEx_LO,THETA_LOW  ) << "  // loQregD\n";
+    std::cout << "D HI = Q2(" << regCDEx_HI << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regCDEx_HI,THETA_MID  ) << "  // hiQregD\n";
+    std::cout << std::endl;
+    std::cout << "E LO = Q2(fixed) = 1     //loQregE \n";
+    std::cout << "E HI = Q2(" << regCDEx_HI << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regCDEx_HI,THETA_LOW  ) << "  // hiQregE\n";
+    std::cout << std::endl;
+    std::cout << "F LO = Q2(" << regFGHx_LO << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regFGHx_LO,THETA_MID  ) << "  // loQregF\n";
+    std::cout << "F HI = Q2(" << regFGHx_HI << ", y=" << y_fixed << ") = "<< Q2_of_x_y(regFGHx_HI,y_fixed  ) << "  // hiQregF\n";
+    std::cout << std::endl;
+    std::cout << "G LO = Q2(" << regFGHx_LO << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regFGHx_LO,THETA_LOW  ) << "  // loQregG\n";
+    std::cout << "G HI = Q2(" << regFGHx_HI << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regFGHx_HI,THETA_MID  ) << "  // hiQregG\n";
+    std::cout << std::endl;
+    std::cout << "H LO = Q2(" << regFGHx_LO << ", y=" << y_fixedlow << ") = "<< Q2_of_x_theta(regFGHx_LO,y_fixedlow  ) << " //loQregH \n";
+    std::cout << "H HI = Q2(" << regFGHx_HI << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regFGHx_HI,THETA_LOW  ) << "  // hiQregH\n";
+    std::cout << std::endl;
+    std::cout << "I LO = Q2(" << regIJKx_LO << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regIJKx_LO,THETA_MID  ) << "  // loQregI\n";
+    std::cout << "I HI = Q2(" << regIJKx_HI << ", y=" << y_fixed << ") = "<< Q2_of_x_y(regIJKx_HI,  y_fixed) << "  // hiQregI\n";
+    std::cout << std::endl;
+    std::cout << "J LO = Q2(" << regIJKx_LO << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regIJKx_LO,THETA_LOW  ) << "  // loQregJ\n";
+    std::cout << "J HI = Q2(" << regIJKx_HI << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regIJKx_HI,THETA_MID  ) << "  // hiQregJ\n";
+    std::cout << std::endl;
+    std::cout << "K LO = Q2(" << regIJKx_LO << ", y=" << y_fixedlow << ") = "<< Q2_of_x_y(regIJKx_HI,y_fixedlow  ) << "//loQregK \n";
+    std::cout << "K HI = Q2(" << regIJKx_HI << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regIJKx_HI,THETA_LOW  ) << "  // hiQregK\n";
+    std::cout << std::endl;
 
-    const double q2w_R5 = q2w(R5_LO);
-    std::cout << "R5 (tail): Q2(x= " << R5_LO << ", W2=4) = " << q2w_R5
-              << "  // increases with x\n";
-
-    std::cout << "Q2(" << regABx_LO << ", " << THETA_MID << ") = " << Q2_of_x_theta(regABx_LO,THETA_MID) << "  // loQregA\n";
-    std::cout << "Q2(" << regABx_HI << ", " << THETA_HI << ") = "<< Q2_of_x_theta(regABx_HI, THETA_HI) << "  // hiQregA\n";
-    std::cout << "Q2(fixed) = 1     // loQregB \n";
-    std::cout << "Q2(" << regABx_HI << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regABx_HI, THETA_MID) << "  // hiQregB\n";
-
-    std::cout << "Q2(" << regCDEx_LO << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regCDEx_LO,THETA_MID  ) << "  // loQregC\n";
-    std::cout << "Q2(" << regCDEx_HI << ", " << THETA_HI << ") = "<< Q2_of_x_theta(regCDEx_HI,THETA_HI  ) << "  // hiQregC\n";
-    std::cout << "Q2(" << regCDEx_LO << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regCDEx_LO,THETA_LOW  ) << "  // loQregD\n";
-    std::cout << "Q2(" << regCDEx_HI << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regCDEx_HI,THETA_MID  ) << "  // hiQregD\n";
-    std::cout << "Q2(fixed) = 1     //loQregE \n";
-    std::cout << "Q2(" << regCDEx_HI << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regCDEx_HI,THETA_LOW  ) << "  // hiQregE\n";
-
-    std::cout << "Q2(" << regFGHx_LO << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regFGHx_LO,THETA_MID  ) << "  // loQregF\n";
-    std::cout << "Q2(" << regFGHx_HI << ", " << THETA_HI << ") = "<< Q2_of_x_theta(regFGHx_HI,THETA_HI  ) << "  // hiQregF\n";
-    std::cout << "Q2(" << regFGHx_LO << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regFGHx_LO,THETA_LOW  ) << "  // loQregG\n";
-    std::cout << "Q2(" << regFGHx_HI << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regFGHx_HI,THETA_MID  ) << "  // hiQregG\n";
-    std::cout << "Q2(fixed) = 1     //loQregH \n";
-    std::cout << "Q2(" << regFGHx_HI << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regFGHx_HI,THETA_LOW  ) << "  // hiQregH\n";
-
-
-    std::cout << "Q2(" << regIJKx_LO << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regIJKx_LO,THETA_MID  ) << "  // loQregI\n";
-    std::cout << "Q2(" << regIJKx_HI << ", " << THETA_HI << ") = "<< Q2_of_x_theta(regIJKx_HI,THETA_HI  ) << "  // hiQregI\n";
-    std::cout << "Q2(" << regIJKx_LO << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regIJKx_LO,THETA_LOW  ) << "  // loQregJ\n";
-    std::cout << "Q2(" << regIJKx_HI << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regIJKx_HI,THETA_MID  ) << "  // hiQregJ\n";
-    std::cout << "Q2(fixed) = 1     //loQregK \n";
-    std::cout << "Q2(" << regIJKx_HI << ", " << THETA_LOW << ") = "<< Q2_of_x_theta(regIJKx_HI,THETA_LOW  ) << "  // hiQregK\n";
-
-    std::cout << "Q2(" << regLMNx_LO << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regLMNx_LO,THETA_MID  ) << "  // loQregL\n";
+    std::cout << "L LO = Q2(" << regLMNx_LO << ", " << THETA_MID << ") = "<< Q2_of_x_theta(regLMNx_LO,THETA_MID  ) << "  // loQregL\n";
     std::cout << "non Q2 limit fixed for L-M region    TBD  //loQregRS \n";
 
 
     fin->Close();
     return 0;
 }
+
+

@@ -109,8 +109,8 @@ namespace Constants {
     //NewVertexValues pass1   ELECTRONS!! (OB)  MAthieu values in email
     static const double v11cutminVzLD2dataelectron = -15 ;   //keeping these as the same...
     static const double v11cutmaxVzLD2dataelectron = -5 ;   //keeping these as the same...
-    static const double v11cutminVzSndataelectron = -6.21 ;
-    static const double v11cutmaxVzSndataelectron = -1.2 ;
+    static const double v11cutminVzSndataelectron = -6.01642 ;
+    static const double v11cutmaxVzSndataelectron = -1.26094 ;
     static const double v11cutminVzCudataelectron = -10.55 ;    
     static const double v11cutmaxVzCudataelectron = -6.62 ;    
     static const double v11cutminVzC2dataelectron = -10.56 ;//merging both carbons, no separation.!!
@@ -145,90 +145,102 @@ namespace Constants {
 
 
         //LARGER    bining xb,Q with theta assist (and W)
-    static const double LARGEQlowA = 1.128313968;
-    static const double LARGEQhighA = 1.259832756;
+    static const double LARGEQlowA = 1.045;
+    static const double LARGEQhighA = 1.388;
     static const double LARGEQlowB = 1;
-    static const double LARGEQhighB = 1.259832756;
-    static const double LARGEQlowC = 1.549536766;
-    static const double LARGEQhighC = 2.635206776;
-    static const double LARGEQlowD = 1.259832756;
-    static const double LARGEQhighD = 2.098986509;
+    static const double LARGEQhighB = 1.309;
+    static const double LARGEQlowC = 1.309;
+    static const double LARGEQhighC = 1.719;
+    static const double LARGEQlowD = 1.104;
+    static const double LARGEQhighD = 1.490;
     static const double LARGEQlowE = 1;
-    static const double LARGEQhighE = 1.600454801;
-    static const double LARGEQlowF = 2.098986509;
-    static const double LARGEQhighF = 3.389715788;
-    static const double LARGEQlowG = 1.600454801;
-    static const double LARGEQhighG = 2.551322891;
+    static const double LARGEQhighE = 1.231;
+    static const double LARGEQlowF = 1.490;
+    static const double LARGEQhighF = 2.115;
+    static const double LARGEQlowG = 1.231;
+    static const double LARGEQhighG = 1.672;
     static const double LARGEQlowH = 1;
-    static const double LARGEQhighH = 1.850633467;
-    static const double LARGEQlowI = 2.551322891;
-    static const double LARGEQhighI = 4.09282768;
-    static const double LARGEQlowJ = 1.850633467;
-    static const double LARGEQhighJ = 2.930202024;
+    static const double LARGEQhighH = 1.352;
+    static const double LARGEQlowI = 1.672;
+    static const double LARGEQhighI = 2.644;
+    static const double LARGEQlowJ = 1.352;
+    static const double LARGEQhighJ = 1.870;
     static const double LARGEQlowK = 1;
-    static const double LARGEQhighK = 2.042169211;
-    static const double LARGEQlowL = 2.930202024;
-    static const double LARGEQhighL = 4.875821862;
-    static const double LARGEQlowM = 2.042169211;
-    static const double LARGEQhighM = 3.310850781;
-    static const double LARGEQlowN = 1.039050613;
-    static const double LARGEQhighN = 2.220055645;
-    static const double LARGEQlowO = 3.310850781;
-    static const double LARGEQhighO = 5;
-    static const double LARGEQlowP = 2.220055645;
-    static const double LARGEQhighP = 3.941119738;
-    static const double LARGEQlowQ = 1.400459522;
-    static const double LARGEQhighQ = 2.486714814;
-    static const double LARGEQlowR = 3.941119738;
+    static const double LARGEQhighK = 1.479;
+    static const double LARGEQlowL = 1.870;
+    static const double LARGEQhighL = 3.305;
+    static const double LARGEQlowM = 1.479;
+    static const double LARGEQhighM = 2.065;
+    static const double LARGEQlowN = 1.0;
+    static const double LARGEQhighN = 1.599;
+    static const double LARGEQlowO = 2.065;
+    static const double LARGEQhighO = 4.759;
+    static const double LARGEQlowP = 1.599;
+    static const double LARGEQhighP = 2.369;
+    static const double LARGEQlowQ = 1.233;
+    static const double LARGEQhighQ = 1.775;
+    static const double LARGEQlowR = 1.753;
     static const double LARGEQhighR = 5;
     static const double LARGEQlowS = 2.449190731;
     static const double LARGEQhighS = 4.483907471;
 
     //large limits for xb 
-    static const double LargexblowAB = 0.06;
-    static const double LargexbhighAB = 0.1;
-    static const double LargexbhighCDE = 0.15;
-    static const double LargexbhighFGH = 0.2;
-    static const double LargexbhighIJK = 0.25;
-    static const double LargexbhighLMN = 0.31;
-    static const double LargexbhighOPQ = 0.44;
-    static const double LargexbhighRS = 0.6;
+    static const double LargexblowAB = 0.075;
+    static const double LargexbhighAB = 0.105;
+    static const double LargexbhighCDE = 0.13;
+    static const double LargexbhighFGH = 0.16;
+    static const double LargexbhighIJK = 0.20;
+    static const double LargexbhighLMN = 0.25;
+    static const double LargexbhighOPQ = 0.36;
+    static const double LargexbhighRS = 0.9;
     
 
 
-        //LARGER    bining xb,Q with theta assist (and W)
-    static const double FEWQlowA = 1;
-    static const double FEWQhighA = 2.291;
+        //FEWER    bining xb,Q with theta assist (and W)
+    	//	=== DO NOT TOUCH === 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NOT
+    static const double FEWQlowA = 1.070;
+    static const double FEWQhighA = 1.438;
+
     static const double FEWQlowB = 1;
-    static const double FEWQhighB = 1.549;
-    static const double FEWQlowC = 1.549;
-    static const double FEWQhighC = 2.908;
-    static const double FEWQlowD = 1.197;
-    static const double FEWQhighD = 1.808;
+    static const double FEWQhighB = 1.394;
+
+    static const double FEWQlowC = 1.394;
+    static const double FEWQhighC = 1.961;
+
+    static const double FEWQlowD = 1.165;
+    static const double FEWQhighD = 1.686;
+
     static const double FEWQlowE = 1;
-    static const double FEWQhighE = 1.349;
-    static const double FEWQlowF = 1.808;
-    static const double FEWQhighF = 4.176;
-    static const double FEWQlowG = 1.346;
-    static const double FEWQhighG = 2.229;
+    static const double FEWQhighE = 1.362;
+
+    static const double FEWQlowF = 1.686;
+    static const double FEWQhighF = 2.484;
+
+    static const double FEWQlowG = 1.362;
+    static const double FEWQhighG = 1.918;
+
     static const double FEWQlowH = 1;
-    static const double FEWQhighH = 1.566;
-    static const double FEWQlowI = 2.229;
-    static const double FEWQhighI = 4.937;
-    static const double FEWQlowJ = 1.566;
-    static const double FEWQhighJ = 2.429;
-    static const double FEWQlowK = 1;
-    static const double FEWQhighK = 1.663;
-    static const double FEWQlowL = 2.429;
+    static const double FEWQhighH = 1.510;
+
+    static const double FEWQlowI = 1.918;
+    static const double FEWQhighI = 3.792;
+
+    static const double FEWQlowJ = 1.510;
+    static const double FEWQhighJ = 2.335;
+
+    static const double FEWQlowK = 1.415;
+    static const double FEWQhighK = 1.756;
+
+    static const double FEWQlowL = 2.335;
     //static const double LARGEQhighL = 4.875821862;
 
     //large limits for xb 
-    static const double FewxblowAB = 0.06;
-    static const double FewxbhighAB = 0.13;
-    static const double FewxbhighCDE = 0.17;
-    static const double FewxbhighFGH = 0.26;
-    static const double FewxbhighIJK = 0.32;
-    static const double FewxbhighLMN = 0.32;
+    static const double FewxblowAB = 0.07;
+    static const double FewxbhighAB = 0.11;
+    static const double FewxbhighCDE = 0.15;
+    static const double FewxbhighFGH = 0.19;
+    static const double FewxbhighIJK = 0.29;
+    static const double FewxbhighLMN = 0.29;
     //Pass1 Vz mean values electron
     static const double meanC1ibel = -7.38522; 
     static const double meanC1obel = -3.66242;

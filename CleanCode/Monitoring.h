@@ -31,6 +31,7 @@ public:
     void CheckFewBins(const Event& ); //check large bins in order to fill them with the correct values imported from monunfold that checks simus
     void PrintFewRegionCounters(); //print large all bin event number in all regions
     void CalcElectronRatio(Monitoring& monDeu);
+    void CalcLARGEElectronRatio(Monitoring& monDeu);
 
 
     void initThetaBinning();            // called once in ctor

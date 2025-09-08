@@ -252,45 +252,78 @@ void FilePathGenerator::SnDir2VectorThird(const std::string& parentDirectory, st
 }
 
 
+
 void FilePathGenerator::pass1search(const std::string& reconRoot,
-                                    std::vector<std::string>& filepaths)
-{
-    filepaths.clear();
+                                    std::vector<std::string>& filepaths) {
+    try {
+        std::cout << "[pass1search] Start. Root: " << reconRoot << std::endl;
 
-    if (!fs::exists(reconRoot) || !fs::is_directory(reconRoot)) {
-        std::cerr << "Error: Not a directory: " << reconRoot << std::endl;
-        return;
-    }
+        // Step 1: reset output vector
+        filepaths.clear();
+        std::cout << "[step 1] Cleared output vector." << std::endl;
 
-    // 0) (Optional) pick up .hipo files directly in .../dst/recon/
-    for (const auto& e : fs::directory_iterator(reconRoot)) {
-        if (e.is_regular_file() && e.path().extension() == ".hipo") {
-            filepaths.push_back(e.path().string());
+        // Step 2: validate directory
+        if (!fs::exists(reconRoot) || !fs::is_directory(reconRoot)) {
+            std::cerr << "[error] Not a directory: " << reconRoot << std::endl;
+            return;
         }
-    }
+        std::cout << "[step 2] Verified directory exists and is accessible." << std::endl;
 
-    // 1) Go into each subdir (e.g. 018541/) and grab .hipo files
-    for (const auto& sub : fs::directory_iterator(reconRoot)) {
-        if (!sub.is_directory()) continue;
+        int fileCountRoot = 0;
+        int subdirVisited = 0;
+        int fileCountSub  = 0;
 
-        for (const auto& f : fs::directory_iterator(sub.path())) {
-            if (f.is_regular_file() && f.path().extension() == ".hipo") {
-                filepaths.push_back(f.path().string());
+        // Step 3: pick up .hipo files directly under .../dst/recon/
+        std::cout << "[step 3] Scanning root for .hipo files..." << std::endl;
+        for (const auto& entry : fs::directory_iterator(reconRoot)) {
+            if (entry.is_regular_file() && entry.path().extension() == ".hipo") {
+                const std::string filePath = entry.path().string();
+                std::cout << "  [+] root .hipo: " << filePath << std::endl;
+                filepaths.push_back(filePath);
+                ++fileCountRoot;
             }
         }
+        std::cout << "[step 3] Found " << fileCountRoot << " .hipo files at root." << std::endl;
+
+        // Step 4: for each immediate subdirectory (e.g., 018530/), collect .hipo files
+        std::cout << "[step 4] Scanning subdirectories for .hipo files..." << std::endl;
+        for (const auto& sub : fs::directory_iterator(reconRoot)) {
+            if (!sub.is_directory()) continue;
+
+            ++subdirVisited;
+            std::cout << "  [dir] Entering: " << sub.path().string() << std::endl;
+
+            for (const auto& f : fs::directory_iterator(sub.path())) {
+                if (f.is_regular_file() && f.path().extension() == ".hipo") {
+                    const std::string filePath = f.path().string();
+                    std::cout << "    [+] subdir .hipo: " << filePath << std::endl;
+                    filepaths.push_back(filePath);
+                    ++fileCountSub;
+                }
+            }
+        }
+        std::cout << "[step 4] Visited " << subdirVisited
+                  << " subdirectories; found " << fileCountSub
+                  << " .hipo files in subdirs." << std::endl;
+
+        // Step 5: final report (same style as Files2Vector)
+        const int total = fileCountRoot + fileCountSub;
+        if (filepaths.empty()) {
+            std::cerr << "[result] No .hipo files found under: " << reconRoot << std::endl;
+        } else {
+            std::cout << "[result] Total .hipo files added to vector: " << total << std::endl;
+        }
+
+        std::cout << "[pass1search] Done." << std::endl;
     }
-
-    // Keep a deterministic order and remove accidental dups
-    std::sort(filepaths.begin(), filepaths.end());
-    filepaths.erase(std::unique(filepaths.begin(), filepaths.end()), filepaths.end());
-
-    if (filepaths.empty()) {
-        std::cerr << "No .hipo files found under: " << reconRoot << std::endl;
-    } else {
-        std::cout << "Found " << filepaths.size() << " .hipo files under: "
-                  << reconRoot << std::endl;
+    catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "[filesystem error] " << e.what() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[error] " << e.what() << std::endl;
     }
 }
+
 
 // Function to display progress with a percentage and a loading bar
 //void FilePathGenerator::displayProgress(int current, int total) {

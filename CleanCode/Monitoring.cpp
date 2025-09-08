@@ -409,7 +409,7 @@ void Monitoring::CheckFewBins(const Event& event) {
                 if (event.GetQ2() > Constants::FEWQlowK && event.GetQ2() < Constants::FEWQhighK) { counterFewD_regK++; }
             }
             // xB in LMN band — but we STOP at L (M,N intentionally omitted)
-            else if (event.Getxb() > Constants::FewxbhighIJK && event.Getxb() < Constants::FewxbhighLMN) { // L only
+            else if (event.Getxb() > Constants::FewxbhighIJK ) { // L only
                 if (event.GetQ2() > Constants::FEWQlowL ) { counterFewD_regL++; }
             }
             // Higher-x bands (OPQ, RS) are ignored by design in the FEW scheme.
@@ -435,21 +435,102 @@ void Monitoring::PrintFewRegionCounters() {
 }
 
 
+
+
 void Monitoring::CalcElectronRatio(Monitoring& monDeu) {
-    std::cout << "EMC RegA electron Ratio = " << counterFewA_regA / monDeu.counterFewA_regA << std::endl;
-    std::cout << "EMC RegB electron Ratio = " << counterFewA_regB / monDeu.counterFewA_regB << std::endl;
-    std::cout << "EMC RegC electron Ratio = " << counterFewA_regC / monDeu.counterFewA_regC << std::endl;
-    std::cout << "EMC RegD electron Ratio = " << counterFewA_regD / monDeu.counterFewA_regD << std::endl;
-    std::cout << "EMC RegE electron Ratio = " << counterFewA_regE / monDeu.counterFewA_regE << std::endl;
-    std::cout << "EMC RegF electron Ratio = " << counterFewA_regF / monDeu.counterFewA_regF << std::endl;
-    std::cout << "EMC RegG electron Ratio = " << counterFewA_regG / monDeu.counterFewA_regG << std::endl;
-    std::cout << "EMC RegH electron Ratio = " << counterFewA_regH / monDeu.counterFewA_regH << std::endl;
-    std::cout << "EMC RegI electron Ratio = " << counterFewA_regI / monDeu.counterFewA_regI << std::endl;
-    std::cout << "EMC RegJ electron Ratio = " << counterFewA_regJ / monDeu.counterFewA_regJ << std::endl;
-    std::cout << "EMC RegK electron Ratio = " << counterFewA_regK / monDeu.counterFewA_regK << std::endl;
-    //std::cout << "EMC RegL electron Ratio = " << counterFewA_regL / monDeu.counterFewA_regL << std::endl;
+
+    auto safe_ratio = [](long long num, long long den) -> double {
+        if (den == 0) return std::numeric_limits<double>::quiet_NaN();
+        return static_cast<double>(num) / static_cast<double>(den);
+    };
+
+    std::cout.setf(std::ios::fixed);
+    std::cout << std::setprecision(4);
+
+    double ratioA = safe_ratio(counterFewD_regA, monDeu.counterFewD_regA);
+    double ratioB = safe_ratio(counterFewD_regB, monDeu.counterFewD_regB);
+    double ratioC = safe_ratio(counterFewD_regC, monDeu.counterFewD_regC);
+    double ratioD = safe_ratio(counterFewD_regD, monDeu.counterFewD_regD);
+    double ratioE = safe_ratio(counterFewD_regE, monDeu.counterFewD_regE);
+    double ratioF = safe_ratio(counterFewD_regF, monDeu.counterFewD_regF);
+    double ratioG = safe_ratio(counterFewD_regG, monDeu.counterFewD_regG);
+    double ratioH = safe_ratio(counterFewD_regH, monDeu.counterFewD_regH);
+    double ratioI = safe_ratio(counterFewD_regI, monDeu.counterFewD_regI);
+    double ratioJ = safe_ratio(counterFewD_regJ, monDeu.counterFewD_regJ);
+    double ratioK = safe_ratio(counterFewD_regK, monDeu.counterFewD_regK);
+    double ratioL = safe_ratio(counterFewD_regL, monDeu.counterFewD_regL);
+
+    std::cout << "EMC RegA electron Ratio = " << counterFewD_regA << "/"<< monDeu.counterFewD_regA << " = " << ratioA << "\n";
+    std::cout << "EMC RegB electron Ratio = " << counterFewD_regB << "/"<< monDeu.counterFewD_regB << " = " << ratioB << "\n";
+    std::cout << "EMC RegC electron Ratio = " << counterFewD_regC << "/"<< monDeu.counterFewD_regC << " = " << ratioC << "\n";
+    std::cout << "EMC RegD electron Ratio = " << counterFewD_regD << "/"<< monDeu.counterFewD_regD << " = " << ratioD << "\n";
+    std::cout << "EMC RegE electron Ratio = " << counterFewD_regE << "/"<< monDeu.counterFewD_regE << " = " << ratioE << "\n";
+    std::cout << "EMC RegF electron Ratio = " << counterFewD_regF << "/"<< monDeu.counterFewD_regF << " = " << ratioF << "\n";
+    std::cout << "EMC RegG electron Ratio = " << counterFewD_regG << "/"<< monDeu.counterFewD_regG << " = " << ratioG << "\n";
+    std::cout << "EMC RegH electron Ratio = " << counterFewD_regH << "/"<< monDeu.counterFewD_regH << " = " << ratioH << "\n";
+    std::cout << "EMC RegI electron Ratio = " << counterFewD_regI << "/"<< monDeu.counterFewD_regI << " = " << ratioI << "\n";
+    std::cout << "EMC RegJ electron Ratio = " << counterFewD_regJ << "/"<< monDeu.counterFewD_regJ << " = " << ratioJ << "\n";
+    std::cout << "EMC RegK electron Ratio = " << counterFewD_regK << "/"<< monDeu.counterFewD_regK << " = " << ratioK << "\n";
+    std::cout << "EMC RegL electron Ratio = " << counterFewD_regL << "/"<< monDeu.counterFewD_regL << " = " << ratioL << "\n";
+
 
 }
+
+
+void Monitoring::CalcLARGEElectronRatio(Monitoring& monDeu) {
+
+    auto safe_ratio = [](long long num, long long den) -> double {
+        if (den == 0) return std::numeric_limits<double>::quiet_NaN();
+        return static_cast<double>(num) / static_cast<double>(den);
+    };
+
+    std::cout.setf(std::ios::fixed);
+    std::cout << std::setprecision(4);
+
+    double ratioA = safe_ratio(counterLargeD_regA, monDeu.counterLargeD_regA);
+    double ratioB = safe_ratio(counterLargeD_regB, monDeu.counterLargeD_regB);
+    double ratioC = safe_ratio(counterLargeD_regC, monDeu.counterLargeD_regC);
+    double ratioD = safe_ratio(counterLargeD_regD, monDeu.counterLargeD_regD);
+    double ratioE = safe_ratio(counterLargeD_regE, monDeu.counterLargeD_regE);
+    double ratioF = safe_ratio(counterLargeD_regF, monDeu.counterLargeD_regF);
+    double ratioG = safe_ratio(counterLargeD_regG, monDeu.counterLargeD_regG);
+    double ratioH = safe_ratio(counterLargeD_regH, monDeu.counterLargeD_regH);
+    double ratioI = safe_ratio(counterLargeD_regI, monDeu.counterLargeD_regI);
+    double ratioJ = safe_ratio(counterLargeD_regJ, monDeu.counterLargeD_regJ);
+    double ratioK = safe_ratio(counterLargeD_regK, monDeu.counterLargeD_regK);
+    double ratioL = safe_ratio(counterLargeD_regL, monDeu.counterLargeD_regL);
+    double ratioM = safe_ratio(counterLargeD_regM, monDeu.counterLargeD_regM);
+    double ratioN = safe_ratio(counterLargeD_regN, monDeu.counterLargeD_regN);
+    double ratioO = safe_ratio(counterLargeD_regO, monDeu.counterLargeD_regO);
+    double ratioP = safe_ratio(counterLargeD_regP, monDeu.counterLargeD_regP);
+    double ratioQ = safe_ratio(counterLargeD_regQ, monDeu.counterLargeD_regQ);
+    double ratioR = safe_ratio(counterLargeD_regR, monDeu.counterLargeD_regR);
+    double ratioS = safe_ratio(counterLargeD_regS, monDeu.counterLargeD_regS);
+
+
+    std::cout << "EMC RegA electron Ratio = " << counterLargeD_regA << "/"<< monDeu.counterLargeD_regA << " = " << ratioA << "\n";
+    std::cout << "EMC RegB electron Ratio = " << counterLargeD_regB << "/"<< monDeu.counterLargeD_regB << " = " << ratioB << "\n";
+    std::cout << "EMC RegC electron Ratio = " << counterLargeD_regC << "/"<< monDeu.counterLargeD_regC << " = " << ratioC << "\n";
+    std::cout << "EMC RegD electron Ratio = " << counterLargeD_regD << "/"<< monDeu.counterLargeD_regD << " = " << ratioD << "\n";
+    std::cout << "EMC RegE electron Ratio = " << counterLargeD_regE << "/"<< monDeu.counterLargeD_regE << " = " << ratioE << "\n";
+    std::cout << "EMC RegF electron Ratio = " << counterLargeD_regF << "/"<< monDeu.counterLargeD_regF << " = " << ratioF << "\n";
+    std::cout << "EMC RegG electron Ratio = " << counterLargeD_regG << "/"<< monDeu.counterLargeD_regG << " = " << ratioG << "\n";
+    std::cout << "EMC RegH electron Ratio = " << counterLargeD_regH << "/"<< monDeu.counterLargeD_regH << " = " << ratioH << "\n";
+    std::cout << "EMC RegI electron Ratio = " << counterLargeD_regI << "/"<< monDeu.counterLargeD_regI << " = " << ratioI << "\n";
+    std::cout << "EMC RegJ electron Ratio = " << counterLargeD_regJ << "/"<< monDeu.counterLargeD_regJ << " = " << ratioJ << "\n";
+    std::cout << "EMC RegK electron Ratio = " << counterLargeD_regK << "/"<< monDeu.counterLargeD_regK << " = " << ratioK << "\n";
+    std::cout << "EMC RegL electron Ratio = " << counterLargeD_regL << "/"<< monDeu.counterLargeD_regL << " = " << ratioL << "\n";
+    std::cout << "EMC RegM electron Ratio = " << counterLargeD_regM << "/"<< monDeu.counterLargeD_regM << " = " << ratioM << "\n";
+    std::cout << "EMC RegN electron Ratio = " << counterLargeD_regN << "/"<< monDeu.counterLargeD_regN << " = " << ratioN << "\n";
+    std::cout << "EMC RegO electron Ratio = " << counterLargeD_regO << "/"<< monDeu.counterLargeD_regO << " = " << ratioO << "\n";
+    std::cout << "EMC RegP electron Ratio = " << counterLargeD_regP << "/"<< monDeu.counterLargeD_regP << " = " << ratioP << "\n";
+    std::cout << "EMC RegQ electron Ratio = " << counterLargeD_regQ << "/"<< monDeu.counterLargeD_regQ << " = " << ratioQ << "\n";
+    std::cout << "EMC RegR electron Ratio = " << counterLargeD_regR << "/"<< monDeu.counterLargeD_regR << " = " << ratioR << "\n";
+    std::cout << "EMC RegS electron Ratio = " << counterLargeD_regS << "/"<< monDeu.counterLargeD_regS << " = " << ratioS << "\n";
+
+
+}
+
 
 
 void Monitoring::initThetaBinning()
