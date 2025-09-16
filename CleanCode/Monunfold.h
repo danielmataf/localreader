@@ -307,19 +307,55 @@ private:
     TH1F *h_evtnbrdiff;   //evtnbr_sim - evtnbr_mc should be 0 iw we are reading the same event.    
 
 
-        //2D histos for unfolding on xB and theta
-    TH2F *h_xB_thetaelMC; 
-    std::vector<double> xEdgesMC = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36};
-    std::vector<double> thEdgesMC = {5.0,8.4, 10.3, 27.0,30.0};
-    const int nxMC = (int)xEdgesMC.size() - 1;
-    const int nyMC = (int)thEdgesMC.size() - 1;
+    //bin nbrs for unfolding histos //manual but seems to be the way to go by now 
+  enum { NX_MC = 6, NY_MC = 4, NX_REC = 4, NY_REC = 4 };
 
-    TH2F *h_xB_thetaelREC;
-    std::vector<double> xEdgesREC = {0.075, 0.11, 0.15, 0.19, 0.29};
-    std::vector<double> thEdgesREC = {5.0,8.8, 11.0, 27.0,30.0};
-    const int nxREC = (int)xEdgesREC.size() - 1;
-    const int nyREC = (int)thEdgesREC.size() - 1;
+   static TH2F* HistoMC() {
+    // Edges live here; no STL; initialized once on first call.
+    static const double xEdgesMC[NX_MC + 1]  = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36};
+    static const double thEdgesMC[NY_MC + 1] = {5.0, 8.4, 10.3, 27.0, 30.0};
+
+    // Create the histogram once
+    static TH2F* h = [](){
+      TH2F* tmp = new TH2F("h_xB_thetaelMC",
+                           "MC: x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]",
+                           NX_MC,  xEdgesMC,
+                           NY_MC,  thEdgesMC);
+      tmp->GetYaxis()->SetRangeUser(0.0, 30.0); // display 0–30; bins still 5–30
+      return tmp;
+    }();
+    return h;
+  }
+
+  static TH2F* HistoREC() {
+    static const double xEdgesREC[NX_REC + 1]  = {0.075, 0.11, 0.15, 0.19, 0.29};
+    static const double thEdgesREC[NY_REC + 1] = {5.0, 8.8, 11.0, 27.0, 30.0};
+
+    static TH2F* h = [](){
+      TH2F* tmp = new TH2F("h_xB_thetaelREC",
+                           "REC: x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]",
+                           NX_REC, xEdgesREC,
+                           NY_REC, thEdgesREC);
+      tmp->GetYaxis()->SetRangeUser(0.0, 30.0);
+      return tmp;
+    }();
+    return h;
+  }
+
+  // Helpers to build the histos
+  //static TH2F* MakeMC();
+  //static TH2F* MakeREC();
+
+
+//  static const double xEdgesREC[]  = {0.075, 0.11, 0.15, 0.19, 0.29};
+//  static const double thEdgesREC[] = {5.0, 8.8, 11.0, 27.0, 30.0};
+//  const int nxREC = (int)(sizeof(xEdgesREC)/sizeof(double)) - 1;
+//  const int nyREC = (int)(sizeof(thEdgesREC)/sizeof(double)) - 1;
+//
     //1D histos for theta for mnitoring 
+    TH2F *h_xB_thetaelMC;
+    TH2F *h_xB_thetaelREC;
+
     TH1F *h_thetaelMC_1D;
     TH1F *h_thetaelREC_1D;
     TH1F *h_thetaelcalcMC_1D;

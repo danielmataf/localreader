@@ -283,7 +283,9 @@ int main() {
             eventsimuLD2_MC.SetTargetType(0);
             eventsimuLD2_MC.calcMCAll();
             //eventsimuLD2_MC.PrintMC();
-            munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
+            munfSimLD2.FillDISforUnfoldMC(eventsimuLD2_MC);
+
+            //munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
             if (simuLD2.has_value()){
                 Event eventsimuLD2 = simuLD2.value();
                 eventsimuLD2.SetTargetType(0);
@@ -292,7 +294,6 @@ int main() {
 
                 monSimLD2.FillHistogramswCuts(eventsimuLD2);
                 munfSimLD2.FillDISforUnfoldREC(eventsimuLD2);
-    //            munfSimLD2.FillDISforUnfoldMC(eventsimuLD2_MC);
                 
             }
         }
