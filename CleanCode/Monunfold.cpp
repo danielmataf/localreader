@@ -120,6 +120,14 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_phi_piDelta(new TH1F (("U_Delta_phi_pi_" + targetName).c_str(), "Delta_phi_pi", nubin, -100, 100)),
     h_E_piDelta(new TH1F (("U_Delta_E_pi_" + targetName).c_str(), "Delta_E_pi", nubin, -1, 1)),
 
+    h_xB_thetaelMC(new TH2F(("h_xB_thetaelMC_"+ targetName).c_str(),"MC: x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]", nxMC, xEdgesMC.data(), nyMC, thEdgesMC.data())),
+    //h_xB_thetaelREC(new TH2F(("h_xB_thetaelREC_"+ targetName).c_str(),"REC: x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]", nxREC, xEdgesREC.data(), nyREC, thEdgesREC.data())),
+    h_xB_thetaelREC(new TH2F(("h_xB_thetaelREC_"+ targetName).c_str(),"REC: x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]", nxREC, xEdgesREC.data(), 4, 0 , 30)),
+    h_thetaelMC_1D(new TH1F(("U_thetaelMC_1D_" + targetName).c_str(), "thetaelMC_1D", 100, 0, 30.0)),
+    h_thetaelREC_1D(new TH1F(("U_thetaelREC_1D_" + targetName).c_str(), "thetaelREC_1D", 100, 0, 30.0)),
+    h_thetaelcalcMC_1D(new TH1F(("U_thetaelcalcMC_1D_" + targetName).c_str(), "thetaelcalcMC_1D", 100, 0, 30.0)),
+    h_thetaelcalcREC_1D(new TH1F(("U_thetaelcalcREC_1D_" + targetName).c_str(), "thetaelcalcREC_1D", 100, 0, 30.0)),
+    h_thxbuniform(new TH2F(("U_thxbuniform_" + targetName).c_str(), "thxbuniform", 100, 0,1, 100, 0, 30.0)),
 
 
     h_evtnbrdiff(new TH1F(("U_evtnbrdiff_" + targetName).c_str(), "evtnbrdiff", 100, -10, 10.0)),
@@ -560,12 +568,69 @@ void Monunfold::FillHistogramsNoCuts(const Event& event) {
     }
 }
 
+void Monunfold::FillDISforUnfoldMC(const Event& event) {
+    //std::cout<<"entering MC function"<<std::endl;
+    if (cut1.PassCutsDetectors(event)) {
+        std::cout<<"event passed det cuts"<<std::endl;
+        if (cut1.PassCutsElectrons(event)==true) {
+            // dont forget to convert from rad to deg
+            //h_xB_thetaelMC->Fill(event.GetxbMC(), event.GetThetaElectronMC()* 180.0 / Constants::PI);
+            h_xB_thetaelMC->Fill(event.GetxbMC(), event.GetThetaElectronMC()* 180.0 / Constants::PI);
+            h_thetaelMC_1D->Fill(event.MCelectron.GetMomentum().Theta()*180/Constants::PI);
+            h_thetaelcalcMC_1D->Fill(event.GetThetaElectronMC()* 180.0 / Constants::PI);
+
+            std::cout<<"xb mc = "<<event.GetxbMC()<<" theta el mc = "<<event.MCelectron.GetPID()<<std::endl;
+        }
+    }
+}
+void Monunfold::SetrangesMC(){
+    h_xB_thetaelMC->GetXaxis()->SetRangeUser(0.0, 1.0);
+    h_xB_thetaelMC->GetYaxis()->SetRangeUser(0.0, 30.0);
+}
+void Monunfold::SetrangesREC(){
+    h_xB_thetaelREC->GetXaxis()->SetRangeUser(0.0, 1.0);
+    h_xB_thetaelREC->GetYaxis()->SetRangeUser(0.0, 30.0);
+}
+
+void Monunfold::debughisto(){
+    //h_xB_thetaelREC->
+    std::cout << "nbins x = " << h_xB_thetaelREC->GetNbinsX() << std::endl;
+    std::cout << "nbins y = " << h_xB_thetaelREC->GetNbinsY() << std::endl;
+    std::cout << "suuposed nbr of bins = " << nxREC*nyREC << std::endl;
+    std::cout << "supp bins X = " << nxREC <<   std::endl;
+    std::cout << "supp bins Y = " << nyREC <<   std::endl;
+}
+void Monunfold::FillDISforUnfoldREC(const Event& event) {
+    if (cut1.PassCutsDetectors(event)) {
+        if (cut1.PassCutsElectrons(event)==true) {
+            //h_xB_thetaelREC->Fill(event.Getxb(), event.GetThetaElectron()* 180.0 / Constants::PI);
+            h_xB_thetaelREC->Fill(event.Getxb(), event.electron.GetMomentum().Theta());
+            //std::cout<<"xb rec = "<<event.Getxb()<<" theta el rec = "<<event.GetThetaElectron()<<std::endl;
+            h_thetaelREC_1D->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+            h_thetaelcalcREC_1D->Fill(event.GetThetaElectron()* 180.0 / Constants::PI);
+            h_thxbuniform->Fill(event.Getxb(), event.electron.GetMomentum().Theta()*180/Constants::PI);
+        }
+    }
+}
+void Monunfold::saveDISforUnfoldRoot(const std::string& filenameDIS) {
+    TFile* rootFile = new TFile((filenameDIS + ".root").c_str(), "RECREATE");
+    if (h_xB_thetaelMC)  h_xB_thetaelMC->Write();
+    if (h_xB_thetaelREC)  h_xB_thetaelREC->Write();
+    if (h_thetaelMC_1D)  h_thetaelMC_1D->Write();
+    if (h_thetaelREC_1D)  h_thetaelREC_1D->Write();
+    if (h_thetaelcalcMC_1D)  h_thetaelcalcMC_1D->Write();
+    if (h_thetaelcalcREC_1D)  h_thetaelcalcREC_1D->Write();
+    if (h_thxbuniform)  h_thxbuniform->Write();
+    rootFile->Close();
+
+    delete rootFile; 
+}
 
 
 void Monunfold::FillHistogramswCuts(const Event& event) {
     if (cut1.PassCutsDetectors(event)) {
-        if (cut1.PassCutsElectrons(event)==true) {
 
+        if (cut1.PassCutsElectrons(event)==true) {
         // Fill histograms after passing detector cuts
         h_vertexZ->Fill(event.GetVz()); // Fill vertex Z histogram
 
@@ -575,7 +640,7 @@ void Monunfold::FillHistogramswCuts(const Event& event) {
         h_y->Fill(event.Gety());
         h_nu->Fill(event.Getnu());
         h_W2->Fill(event.GetW2());
-
+        
         // Fill electron momentum histograms
         Particle electron = event.GetElectron();
         h_px_el->Fill(electron.GetMomentum().X());
@@ -619,8 +684,11 @@ void Monunfold::FillHistogramswCuts(const Event& event) {
 
 
 void Monunfold::FillHistogramswCutsMC(const Event& event) {
+
     //std::cout<< "bump MC starts"<<std::endl;
     if (cut1.PassCutsDetectors(event)) {
+    std::cout<< "bump MC 1 cuts"<<std::endl;
+
         // Fill histograms after passing detector cuts for MC data
         h_vertexZMC->Fill(event.GetVz()); // Fill MC vertex Z histogram
 

@@ -176,7 +176,7 @@ int main() {
     cratio cratCu(testLD2cuts, testCucuts, "Cu_RGD");
 
 
-    int totalevts = 10000;       //local
+    int totalevts = 19000;       //local
 //    int totalevts =10000000;   //farm
 
     for (int i=0; i<totalevts; i++){
@@ -274,6 +274,7 @@ int main() {
             cratCu.FillHistograms(eventtestCu);
             monTestCu.CheckLargeBins(eventtestCu); //check large bins in order to fill them with the correct values
             monTestCu.CheckFewBins(eventtestCu); //check large bins in order to fill them with the correct values
+            //munfSimCu.FillDISforUnfoldREC(eventtestCu);
 
         }
         //now the simus 
@@ -281,11 +282,18 @@ int main() {
             Event eventsimuLD2_MC = simuLD2_MC.value();
             eventsimuLD2_MC.SetTargetType(0);
             eventsimuLD2_MC.calcMCAll();
+            //eventsimuLD2_MC.PrintMC();
+            munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
             if (simuLD2.has_value()){
                 Event eventsimuLD2 = simuLD2.value();
                 eventsimuLD2.SetTargetType(0);
                 eventsimuLD2.calcAll();
+                munfSimLD2.SetrangesREC();
+
                 monSimLD2.FillHistogramswCuts(eventsimuLD2);
+                munfSimLD2.FillDISforUnfoldREC(eventsimuLD2);
+    //            munfSimLD2.FillDISforUnfoldMC(eventsimuLD2_MC);
+                
             }
         }
         if (simuCxC_MC.has_value()){
@@ -329,6 +337,7 @@ int main() {
 //    monTestLD2.CalcElectronRatio();
 //
 //  
+    munfSimLD2.debughisto();
     std::cout << "region large counters LD2 \n";
     monTestLD2.PrintRegionCounters(); //check large bins in order to fill them with the correct values
     std::cout << "region large counters Sn \n";
@@ -412,7 +421,8 @@ std::cout << "\nProcessing completed \n";
 //    cratSn.multiplotCratio(cratCu, cratC2);
     //cratC2.calcCratioCarbon(cratC1);
     //cratC2.multiplotCratioBis();
-    
+    munfSimLD2.saveDISforUnfoldRoot("unfoldLD2_sim");    
+    munfSimCu.saveDISforUnfoldRoot("unfoldCu_sim");
     std::cout << "//========= Validations ==========//  \n";
 //    ratC2.ValidateHistograms();
 //    ratC2.LogBinContent();

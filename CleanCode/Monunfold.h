@@ -39,6 +39,12 @@ public:
     void FillHistogramsNoCutsMC(const Event& ); 
     void FillHistComp(const Event&, const Event&);
     void FillHistCompwCuts(const Event&, const Event&);
+    void FillDISforUnfoldMC(const Event&);
+    void FillDISforUnfoldREC(const Event&);
+
+    void SetrangesMC();
+    void SetrangesREC();
+    void debughisto();
 
     void FillMomentumHistograms(const Event& );
 
@@ -56,6 +62,7 @@ public:
     void DrawVertexHistograms(const std::string);
     void SaveHistRoot(const std::string& ) ;
     void SaveHistMCRoot(const std::string& ) ;
+    void saveDISforUnfoldRoot(const std::string& ) ;
     void DrawMomentainSim(const std::string& ) ;
     
     
@@ -298,6 +305,28 @@ private:
 
 
     TH1F *h_evtnbrdiff;   //evtnbr_sim - evtnbr_mc should be 0 iw we are reading the same event.    
+
+
+        //2D histos for unfolding on xB and theta
+    TH2F *h_xB_thetaelMC; 
+    std::vector<double> xEdgesMC = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36};
+    std::vector<double> thEdgesMC = {5.0,8.4, 10.3, 27.0,30.0};
+    const int nxMC = (int)xEdgesMC.size() - 1;
+    const int nyMC = (int)thEdgesMC.size() - 1;
+
+    TH2F *h_xB_thetaelREC;
+    std::vector<double> xEdgesREC = {0.075, 0.11, 0.15, 0.19, 0.29};
+    std::vector<double> thEdgesREC = {5.0,8.8, 11.0, 27.0,30.0};
+    const int nxREC = (int)xEdgesREC.size() - 1;
+    const int nyREC = (int)thEdgesREC.size() - 1;
+    //1D histos for theta for mnitoring 
+    TH1F *h_thetaelMC_1D;
+    TH1F *h_thetaelREC_1D;
+    TH1F *h_thetaelcalcMC_1D;
+    TH1F *h_thetaelcalcREC_1D;
+    TH2F *h_thxbuniform;
+
+
 
     // ===== Unf stuff (fine A..S) =====
     //region index for fine bins (A..S -> 0..19). from CheckLargeBins 
