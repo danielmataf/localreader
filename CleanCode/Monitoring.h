@@ -66,6 +66,10 @@ public:
 
     void SaveHistRoot(const std::string& ) ;
 
+
+    void FillDISforUnfoldDAT(const Event&);
+    void saveDISforUnfoldRoot(const std::string& ) ;
+
     //void FillQ2pre(const Event&  );
     //void Fillypre(const Event&  );
     //void Fillnupre(const Event&  );
@@ -304,6 +308,28 @@ std::vector<float> phi_sector[6];
 
 TH1F* h_phi_res[6];
 TH1F* h_theta_res[6];
+
+
+//this part is for the unfolding application
+ enum {  NX_DAT = 5, NY_DAT = 3 };
+
+  static TH2F* HistoDAT() {
+    static const double xEdgesDAT[NX_DAT + 1]  = {0.075, 0.11, 0.15, 0.19, 0.29,1.0};
+    static const double thEdgesDAT[NY_DAT + 1] = {5.0, 8.8, 11.0, 27.0};
+
+    static TH2F* h = [](){
+      TH2F* tmp = new TH2F("h_xB_thetaelDAT",
+                           "DAT: x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]",
+                           NX_DAT, xEdgesDAT,
+                           NY_DAT, thEdgesDAT);
+      tmp->GetYaxis()->SetRangeUser(0.0, 30.0);
+      return tmp;
+    }();
+    return h;
+  }
+    TH2F *h_xB_thetaelDAT;
+    TH1F *h_thetaelDAT_1D;
+
 
 
 

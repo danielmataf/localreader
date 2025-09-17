@@ -234,8 +234,9 @@ int main() {
             monTestC1.FillHistogramswCuts(eventtestCxC);
             monTestC2.CheckLargeBins(eventtestCxC); //check large bins in order to fill them with the correct values
             monTestC2.CheckFewBins(eventtestCxC); //check large bins in order to fill them with the correct values
-
-	    ratC2.FillHistograms(eventtestCxC);
+            monTestCC.FillDISforUnfoldDAT(eventtestCxC);
+	        
+            ratC2.FillHistograms(eventtestCxC);
             ratC1.FillHistograms(eventtestCxC);
             dptC1.FillHistograms(eventtestCxC);
             dptC2.FillHistograms(eventtestCxC);
@@ -301,11 +302,13 @@ int main() {
             Event eventsimuCxC_MC = simuCxC_MC.value();
             eventsimuCxC_MC.SetTargetType(1);
             eventsimuCxC_MC.calcMCAll();
+            munfSimCxC.FillDISforUnfoldMC(eventsimuCxC_MC);
             if (simuCxC.has_value()){
                 Event eventsimuCxC = simuCxC.value();
                 eventsimuCxC.SetTargetType(1);
                 eventsimuCxC.calcAll();
                 monSimCxC.FillHistogramswCuts(eventsimuCxC);
+                munfSimCxC.FillDISforUnfoldREC(eventsimuCxC);
             }
         }
         if (simuSn_MC.has_value()){
@@ -424,6 +427,8 @@ std::cout << "\nProcessing completed \n";
     //cratC2.multiplotCratioBis();
     munfSimLD2.saveDISforUnfoldRoot("unfoldLD2_sim");    
     munfSimCu.saveDISforUnfoldRoot("unfoldCu_sim");
+    munfSimCxC.saveDISforUnfoldRoot("unfSIMCxC");
+    monTestCC.saveDISforUnfoldRoot("unfDATACxC");
     std::cout << "//========= Validations ==========//  \n";
 //    ratC2.ValidateHistograms();
 //    ratC2.LogBinContent();

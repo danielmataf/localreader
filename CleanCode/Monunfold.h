@@ -308,12 +308,12 @@ private:
 
 
     //bin nbrs for unfolding histos //manual but seems to be the way to go by now 
-  enum { NX_MC = 6, NY_MC = 4, NX_REC = 4, NY_REC = 4 };
+  enum { NX_MC = 7, NY_MC = 3, NX_REC = 5, NY_REC = 3 };
 
    static TH2F* HistoMC() {
     // Edges live here; no STL; initialized once on first call.
-    static const double xEdgesMC[NX_MC + 1]  = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36};
-    static const double thEdgesMC[NY_MC + 1] = {5.0, 8.4, 10.3, 27.0, 30.0};
+    static const double xEdgesMC[NX_MC + 1]  = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36,1.0};
+    static const double thEdgesMC[NY_MC + 1] = {5.0, 8.4, 10.3, 27.0};
 
     // Create the histogram once
     static TH2F* h = [](){
@@ -328,8 +328,8 @@ private:
   }
 
   static TH2F* HistoREC() {
-    static const double xEdgesREC[NX_REC + 1]  = {0.075, 0.11, 0.15, 0.19, 0.29};
-    static const double thEdgesREC[NY_REC + 1] = {5.0, 8.8, 11.0, 27.0, 30.0};
+    static const double xEdgesREC[NX_REC + 1]  = {0.075, 0.11, 0.15, 0.19, 0.29,1.0};
+    static const double thEdgesREC[NY_REC + 1] = {5.0, 8.8, 11.0, 27.0};
 
     static TH2F* h = [](){
       TH2F* tmp = new TH2F("h_xB_thetaelREC",

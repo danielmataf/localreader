@@ -138,6 +138,9 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_pt2_post(new TH1F((std::string("pt2_post_") + targetName).c_str(),  "p_{T}^{2} (post p_{T}^{2} cut)", nubin, pt2minX, pt2maxX)),
     h_sampl_el_pre(new TH2F((std::string("sampl_el_pre_")  + targetName).c_str(), "Sampling fraction (pre e-cuts);p (GeV);E_{PCAL}/p", nubin, 0, 10, nubin, 0, 1)),
     h_sampl_el_post(new TH2F((std::string("sampl_el_post_") + targetName).c_str(), "Sampling fraction (post e-cuts);p (GeV);E_{PCAL}/p", nubin, 0, 10, nubin, 0, 1)),
+
+    h_xB_thetaelDAT(Monitoring::HistoDAT()),
+    h_thetaelDAT_1D(new TH1F(("U_thetaelDAT_1D_" + targetName).c_str(), "thetaelDAT_1D", 100, 0, 30.0)),
         
       counterel_R(0) {
     // Add more histograms as needed
@@ -1986,6 +1989,28 @@ void Monitoring::SaveFINRoot(const std::string& filenameREC) {
 
 
 }
+
+
+//this part is for unfolding 
+void Monitoring::FillDISforUnfoldDAT(const Event& event) {
+    if (cut1.PassCutsDetectors(event)) {
+        if (cut1.PassCutsElectrons(event)==true) {
+            //std::cout<<"bumpREC"<<std::endl;
+            //h_xB_thetaelREC->Fill(event.Getxb(), event.GetThetaElectron()* 180.0 / Constants::PI);
+            h_xB_thetaelDAT->Fill(event.Getxb(), event.electron.GetMomentum().Theta()* 180.0 / Constants::PI);
+            h_thetaelDAT_1D->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+        }
+    }
+}
+void Monitoring::saveDISforUnfoldRoot(const std::string& filenameDIS) {
+    TFile* rootFile = new TFile((filenameDIS + ".root").c_str(), "RECREATE");
+    if (h_xB_thetaelDAT)  h_xB_thetaelDAT->Write();
+    if (h_thetaelDAT_1D)  h_thetaelDAT_1D->Write();
+    rootFile->Close();
+
+    delete rootFile; 
+}
+
 
 //void Monitoring::FillHistogramsNoCuts( const Event& event){
 //    int targetType = event.GetTargetType();//using a flag for targets 
