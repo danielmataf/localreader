@@ -11,6 +11,10 @@
 #include <TPDF.h>
 #include "Event.h" 
 #include "Monunfold.h"
+#include "RooUnfoldResponse.h"
+#include "RooUnfoldBayes.h"
+
+
 #include "CutSet.h"
 #include "constants.h"
 
@@ -122,6 +126,8 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
 
     h_xB_thetaelMC(Monunfold::HistoMC()),  // already initialized
     h_xB_thetaelREC(Monunfold::HistoREC()),  // already initialized
+    tEv_(new TTree(("tEv_" + targetName).c_str(), "Event Tree")),
+
     //h_xB_thetaelMC(new TH2F(("h_xB_thetaelMC_"+ targetName).c_str(),"MC: x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]", nxMC, xEdgesMC.data(), nyMC, thEdgesMC.data())),
     //h_xB_thetaelREC(new TH2F(("h_xB_thetaelREC_"+ targetName).c_str(),"REC: x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]", nxREC, xEdgesREC.data(), nyREC, thEdgesREC.data())),
     //h_xB_thetaelREC(new TH2F(("h_xB_thetaelREC_"+ targetName).c_str(),"REC: x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]", nxREC, xEdgesREC.data(), 4, 0 , 30)),
@@ -138,7 +144,14 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
 
 
       counterel_R(0) {
+        tEv_->Branch("evnbr", &evnum_, "evtnbr/I"); 
+        tEv_->Branch("xb_MC", &Br_xbMC, "xb_MC/D");
+        tEv_->Branch("th_el_MC", &Br_thMC, "th_el_MC/D");
+        tEv_->Branch("xb_REC", &Br_xbREC, "xb_REC/D");
+        tEv_->Branch("th_el_REC", &Br_thREC, "th_el_REC/D");
+
     // Add more histograms as needed
+
 }
 
 
@@ -612,6 +625,7 @@ void Monunfold::FillDISforUnfoldREC(const Event& event) {
             h_thetaelREC_1D->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
             h_thetaelcalcREC_1D->Fill(event.GetThetaElectron()* 180.0 / Constants::PI);
             h_thxbuniform->Fill(event.Getxb(), event.electron.GetMomentum().Theta()*180/Constants::PI);
+
         }
     }
 }
@@ -629,6 +643,34 @@ void Monunfold::saveDISforUnfoldRoot(const std::string& filenameDIS) {
     delete rootFile; 
 }
 
+
+void Monunfold::FillTreeEvt(const Event& event_MC  , const Event& event_REC , int option  ){
+    //event.Getxb(), event.electron.GetMomentum().Theta()* 180.0 / Constants::PI
+    //add cuts, you can definnitelt handle different cuts for bot hevts, needs to recheck cut handling in MC 
+    Br_xbREC = event_REC.Getxb();
+    Br_thREC = event_REC.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
+    Br_xbMC = event_MC.GetxbMC();
+    Br_thMC = event_MC.MCelectron.GetMomentum().Theta()*180/Constants::PI;
+
+    //Br_xbREC = 1.1;
+    //Br_thREC = 1.0;
+//std::cout<<"BUMP   xb = "<< event.Getxb() << " theta = " << event.electron.GetMomentum().Theta()*180/Constants::PI << std::endl;
+    tEv_->Fill();
+    
+
+}
+
+void Monunfold::WriteTTree(const std::string& filenameTREE) {
+    TFile* rootFile = new TFile((filenameTREE + ".root").c_str(), "RECREATE");
+    if (!tEv_) return;
+    rootFile->cd();
+    tEv_->Write();  // writes "tEv_<targetName>"
+
+    rootFile->Close();
+    delete rootFile; 
+
+
+}
 
 void Monunfold::FillHistogramswCuts(const Event& event) {
     if (cut1.PassCutsDetectors(event)) {
@@ -920,6 +962,12 @@ void Monunfold::FillHistCompwCuts(const Event& eventsim, const Event& eventmc) {
     }
 //    }
 }
+
+
+//void Monunfold::createResponseMatrix(){
+//    RooUnfoldResponse responseof2D(h_xB_thetaelREC,h_xB_thetaelMC);
+//}
+
 
 
 void Monunfold::Fill(const Event& event) {

@@ -179,6 +179,9 @@ int main() {
     int totalevts = 19000;       //local
 //    int totalevts =10000000;   //farm
 
+//creating options for unfolding 
+    int optionLD2 = 0;
+
     for (int i=0; i<totalevts; i++){
         testCxC = RGD_CxC.ProcessEventsInFile(); 
         testLD2 = RGD_LD2.ProcessEventsInFile();
@@ -281,22 +284,26 @@ int main() {
         //now the simus 
         if (simuLD2_MC.has_value()){
             Event eventsimuLD2_MC = simuLD2_MC.value();
+            Event eventsimuLD2 ;
             eventsimuLD2_MC.SetTargetType(0);
             eventsimuLD2_MC.calcMCAll();
             //eventsimuLD2_MC.PrintMC();
             munfSimLD2.FillDISforUnfoldMC(eventsimuLD2_MC);
-
+            optionLD2 = false ;
             //munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
             if (simuLD2.has_value()){
-                Event eventsimuLD2 = simuLD2.value();
+                optionLD2 = true ;
+                 eventsimuLD2 = simuLD2.value();
                 eventsimuLD2.SetTargetType(0);
                 eventsimuLD2.calcAll();
                 munfSimLD2.SetrangesREC();
-
                 monSimLD2.FillHistogramswCuts(eventsimuLD2);
                 munfSimLD2.FillDISforUnfoldREC(eventsimuLD2);
                 
             }
+            munfSimLD2.FillTreeEvt(eventsimuLD2_MC , eventsimuLD2, optionLD2 );
+
+             //Fillfct(evtREC, evtMC, opt miss)
         }
         if (simuCxC_MC.has_value()){
             Event eventsimuCxC_MC = simuCxC_MC.value();
@@ -429,6 +436,7 @@ std::cout << "\nProcessing completed \n";
     munfSimCu.saveDISforUnfoldRoot("unfoldCu_sim");
     munfSimCxC.saveDISforUnfoldRoot("unfSIMCxC");
     monTestCC.saveDISforUnfoldRoot("unfDATACxC");
+    munfSimLD2.WriteTTree("treeunfLD2_sim");
     std::cout << "//========= Validations ==========//  \n";
 //    ratC2.ValidateHistograms();
 //    ratC2.LogBinContent();

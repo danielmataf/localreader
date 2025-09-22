@@ -8,8 +8,8 @@
 #include "Event.h" // 
 #include "CutSet.h"
 #include "constants.h"
-//#include "RooUnfoldResponse.h"
-//#include "RooUnfoldBayes.h"
+#include "RooUnfoldResponse.h"
+#include "RooUnfoldBayes.h"
 
 //This class is made initially made ton avoid overppulating the class monitoring but it will implement the same function but mostly to fill True data and simulated REC and MC data. 
 //We will be filling then histograms for this databanks in the usual variables, Q², x, y, nu, W², z, pt², phi_h, vertexZ
@@ -65,7 +65,10 @@ public:
     void saveDISforUnfoldRoot(const std::string& ) ;
     void DrawMomentainSim(const std::string& ) ;
     
-    
+    void createResponseMatrix(); //create response matrix after filling histograms for MC and REC
+    void FillTreeEvt(const Event&, const Event&, int  ); // needs redefinition of arguments, maybe an option 0 or 1 if the MC has a match or miss in REC
+    void WriteTTree(const std::string& );
+
         // ===== Unf (fine A..S) =====
     void U_InitUnfold(const std::string& tag, const CutSet& dataCuts);
 
@@ -308,12 +311,14 @@ private:
 
 
     //bin nbrs for unfolding histos //manual but seems to be the way to go by now 
-  enum { NX_MC = 7, NY_MC = 3, NX_REC = 5, NY_REC = 3 };
+  enum { NX_MC = 5, NY_MC = 3, NX_REC = 7, NY_REC = 3 };
 
    static TH2F* HistoMC() {
     // Edges live here; no STL; initialized once on first call.
-    static const double xEdgesMC[NX_MC + 1]  = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36,1.0};
-    static const double thEdgesMC[NY_MC + 1] = {5.0, 8.4, 10.3, 27.0};
+    //static const double xEdgesMC[NX_MC + 1]  = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36,1.0};
+    //static const double thEdgesMC[NY_MC + 1] = {5.0, 8.4, 10.3, 27.0};
+    static const double xEdgesMC[NX_MC + 1]  = {0.075, 0.11, 0.15, 0.19, 0.29,1.0};
+    static const double thEdgesMC[NY_MC + 1] = {5.0, 8.8, 11.0, 27.0};
 
     // Create the histogram once
     static TH2F* h = [](){
@@ -328,8 +333,10 @@ private:
   }
 
   static TH2F* HistoREC() {
-    static const double xEdgesREC[NX_REC + 1]  = {0.075, 0.11, 0.15, 0.19, 0.29,1.0};
-    static const double thEdgesREC[NY_REC + 1] = {5.0, 8.8, 11.0, 27.0};
+    //static const double xEdgesREC[NX_REC + 1]  = {0.075, 0.11, 0.15, 0.19, 0.29,1.0};
+    //static const double thEdgesREC[NY_REC + 1] = {5.0, 8.8, 11.0, 27.0};
+    static const double xEdgesREC[NX_REC + 1]  = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36,1.0};
+    static const double thEdgesREC[NY_REC + 1] = {5.0, 8.4, 10.3, 27.0};
 
     static TH2F* h = [](){
       TH2F* tmp = new TH2F("h_xB_thetaelREC",
@@ -353,7 +360,7 @@ private:
 //  const int nyREC = (int)(sizeof(thEdgesREC)/sizeof(double)) - 1;
 //
     //1D histos for theta for mnitoring 
-    TH2F *h_xB_thetaelMC;
+    TH2F *h_xB_thetaelMC;       
     TH2F *h_xB_thetaelREC;
 
     TH1F *h_thetaelMC_1D;
@@ -361,7 +368,16 @@ private:
     TH1F *h_thetaelcalcMC_1D;
     TH1F *h_thetaelcalcREC_1D;
     TH2F *h_thxbuniform;
+    //RooUnfoldResponse responseof2D(h_xB_thetaelREC,h_xB_thetaelMC);
 
+
+  TFile outTreeFile_;
+  TTree *tEv_;
+  //create branches for xb and theta in REC and MC
+  double Br_xbMC , Br_thMC;
+  double Br_xbREC , Br_thREC;
+  int has_true=0; //1 if MC filled, seems unnecessary, need the inverse of this, check the REC
+  int evnum_=0;
 
 
     // ===== Unf stuff (fine A..S) =====
