@@ -68,7 +68,7 @@ public:
     void createResponseMatrix(); //create response matrix after filling histograms for MC and REC
     void FillTreeEvt(const Event&, const Event&, int  ); // needs redefinition of arguments, maybe an option 0 or 1 if the MC has a match or miss in REC
     void WriteTTree(const std::string& );
-
+    void PrintFAKE(); //print evts the nb of evts that missed the cut
         // ===== Unf (fine A..S) =====
     void U_InitUnfold(const std::string& tag, const CutSet& dataCuts);
 
@@ -378,8 +378,10 @@ private:
   double Br_xbREC , Br_thREC;
   int has_true=0; //1 if MC filled, seems unnecessary, need the inverse of this, check the REC
   int evnum_=0;
-
-
+  int counterFAKEMC=0; //to count events in fake MC, should be 0 
+  int counterMISSREC=0; //to count events that are in MC but not in REC, should be 0 if unfolding is done on same sample
+  int counterMATCHREC=0; //to count events that are in MC and also in REC, should be equal to the number of events in MC if unfolding is done on same sample
+  int counterTOTAL =0; //to count total number of events processed, should be equal to the number of events in REC if unfolding is done on same sample
     // ===== Unf stuff (fine A..S) =====
     //region index for fine bins (A..S -> 0..19). from CheckLargeBins 
     int U_RegionIndexFine_(const Event& e) const;

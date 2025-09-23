@@ -643,39 +643,63 @@ void Monunfold::saveDISforUnfoldRoot(const std::string& filenameDIS) {
     delete rootFile; 
 }
 
+void Monunfold::PrintFAKE(){
+    std::cout<<"Number of 'FAKE' events = "<<counterFAKEMC<<std::endl;
+    std::cout<<"Number of 'MISS' events = "<<counterMISSREC<<std::endl;
+    std::cout<<"Number of 'RESPONSE' events = "<<counterMATCHREC<<std::endl;
+    std::cout<<"Number of 'TOTAL' events = "<<counterTOTAL<<std::endl;
+}
+
+
+
+
+
+
 
 void Monunfold::FillTreeEvt(const Event& event_MC  , const Event& event_REC , int option  ){
-    //event.Getxb(), event.electron.GetMomentum().Theta()* 180.0 / Constants::PI
-    //add cuts, you can definnitelt handle different cuts for bot hevts, needs to recheck cut handling in MC 
-    double currentxbREC = 0.0;
+    //this version is WORKING
+    //add cuts, you can definnitelt handle different cuts for bot hevts, needs to recheck cut handling in MC
+    
+    //if option is true, register value, if option is false, then set REC to 0 
+    //( will later be treated as miiss hen checking the TTRee) 
+ 
+    //reset values of the variables before branching, sometimes we need REC valeues at zer to rgister MISS
     double currentxbMC = 0.0;
-    double currentthREC = 0.0;
     double currentthMC = 0.0;
+    
     if (cut1.PassCutsElectronsMC(event_MC)==true){
         //std::cout<<"event passed mc cuts"<<std::endl;
+        counterTOTAL++; //not a real total, just total of considered MC evts 
+
         currentthMC = event_MC.MCelectron.GetMomentum().Theta()*180/Constants::PI;
         currentxbMC = event_MC.GetxbMC();
-    }
-    if (option == true ){   
-        if (cut1.PassCutsDetectors(event_REC)==true && cut1.PassCutsElectrons(event_REC)==true){
-            //std::cout<<"event passed rec cuts"<<std::endl;
-            currentthREC = event_REC.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
-            currentxbREC = event_REC.Getxb();
+        double currentxbREC = 0.0;
+        double currentthREC = 0.0;
+        if (option == true ){   
+            if (cut1.PassCutsDetectors(event_REC)==true && cut1.PassCutsElectrons(event_REC)==true){
+                //std::cout<<"event passed rec cuts"<<std::endl;
+                currentthREC = event_REC.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
+                currentxbREC = event_REC.Getxb();
+                counterMATCHREC++;
+
+            }
         }
-  
+        if (currentthREC == 0 && currentxbREC == 0){
+            counterMISSREC++;
+        }
+        Br_xbREC = currentxbREC;
+        Br_thREC = currentthREC;
+        Br_xbMC = currentxbMC;
+        Br_thMC = currentthMC;
+
+
+        tEv_->Fill();
+
     }
-    Br_xbREC = currentxbREC;
-    Br_thREC = currentthREC;
-    Br_xbMC = currentxbMC;
-    Br_thMC = currentthMC;
-    
-    //Br_xbREC = 1.1;
-    //Br_thREC = 1.0;
-//std::cout<<"BUMP   xb = "<< event.Getxb() << " theta = " << event.electron.GetMomentum().Theta()*180/Constants::PI << std::endl;
-    tEv_->Fill();
     
 
 }
+
 
 void Monunfold::WriteTTree(const std::string& filenameTREE) {
     TFile* rootFile = new TFile((filenameTREE + ".root").c_str(), "RECREATE");

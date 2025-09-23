@@ -287,10 +287,11 @@ int main() {
             Event eventsimuLD2 ;
             eventsimuLD2_MC.SetTargetType(0);
             eventsimuLD2_MC.calcMCAll();
-            optionLD2 = false ;
+            optionLD2 = false ;     //resetting the option 
             //munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
+            munfSimLD2.FillHistogramsNoCutsMC(eventsimuLD2_MC);
             if (simuLD2.has_value()){
-                optionLD2 = true ;
+                optionLD2 = true ;      //affects the option if REC exists 
                  eventsimuLD2 = simuLD2.value();
                 eventsimuLD2.SetTargetType(0);
                 eventsimuLD2.calcAll();
@@ -300,7 +301,8 @@ int main() {
 
                 
             }
-            munfSimLD2.FillTreeEvt(eventsimuLD2_MC , eventsimuLD2, optionLD2 );
+            munfSimLD2.FillTreeEvt(eventsimuLD2_MC , eventsimuLD2, optionLD2 );         //if option is true, register value, if option is false, then set REC to 0 
+                                                                                        //( will later be treated as miiss hen checking the TTRee) 
 
              //Fillfct(evtREC, evtMC, opt miss)
         }
@@ -436,6 +438,8 @@ std::cout << "\nProcessing completed \n";
     munfSimCxC.saveDISforUnfoldRoot("unfSIMCxC");
     monTestCC.saveDISforUnfoldRoot("unfDATACxC");
     munfSimLD2.WriteTTree("treeunfLD2_sim");
+    munfSimLD2.PrintFAKE();
+    munfSimLD2.SaveHistMCRoot("MConLD2TEST");
     std::cout << "//========= Validations ==========//  \n";
 //    ratC2.ValidateHistograms();
 //    ratC2.LogBinContent();
