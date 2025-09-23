@@ -647,11 +647,28 @@ void Monunfold::saveDISforUnfoldRoot(const std::string& filenameDIS) {
 void Monunfold::FillTreeEvt(const Event& event_MC  , const Event& event_REC , int option  ){
     //event.Getxb(), event.electron.GetMomentum().Theta()* 180.0 / Constants::PI
     //add cuts, you can definnitelt handle different cuts for bot hevts, needs to recheck cut handling in MC 
-    Br_xbREC = event_REC.Getxb();
-    Br_thREC = event_REC.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
-    Br_xbMC = event_MC.GetxbMC();
-    Br_thMC = event_MC.MCelectron.GetMomentum().Theta()*180/Constants::PI;
-
+    double currentxbREC = 0.0;
+    double currentxbMC = 0.0;
+    double currentthREC = 0.0;
+    double currentthMC = 0.0;
+    if (cut1.PassCutsElectronsMC(event_MC)==true){
+        //std::cout<<"event passed mc cuts"<<std::endl;
+        currentthMC = event_MC.MCelectron.GetMomentum().Theta()*180/Constants::PI;
+        currentxbMC = event_MC.GetxbMC();
+    }
+    if (option == true ){   
+        if (cut1.PassCutsDetectors(event_REC)==true && cut1.PassCutsElectrons(event_REC)==true){
+            //std::cout<<"event passed rec cuts"<<std::endl;
+            currentthREC = event_REC.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
+            currentxbREC = event_REC.Getxb();
+        }
+  
+    }
+    Br_xbREC = currentxbREC;
+    Br_thREC = currentthREC;
+    Br_xbMC = currentxbMC;
+    Br_thMC = currentthMC;
+    
     //Br_xbREC = 1.1;
     //Br_thREC = 1.0;
 //std::cout<<"BUMP   xb = "<< event.Getxb() << " theta = " << event.electron.GetMomentum().Theta()*180/Constants::PI << std::endl;

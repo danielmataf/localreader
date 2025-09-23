@@ -180,7 +180,7 @@ int main() {
 //    int totalevts =10000000;   //farm
 
 //creating options for unfolding 
-    int optionLD2 = 0;
+    bool optionLD2 = false;
 
     for (int i=0; i<totalevts; i++){
         testCxC = RGD_CxC.ProcessEventsInFile(); 
@@ -287,8 +287,6 @@ int main() {
             Event eventsimuLD2 ;
             eventsimuLD2_MC.SetTargetType(0);
             eventsimuLD2_MC.calcMCAll();
-            //eventsimuLD2_MC.PrintMC();
-            munfSimLD2.FillDISforUnfoldMC(eventsimuLD2_MC);
             optionLD2 = false ;
             //munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
             if (simuLD2.has_value()){
@@ -299,6 +297,7 @@ int main() {
                 munfSimLD2.SetrangesREC();
                 monSimLD2.FillHistogramswCuts(eventsimuLD2);
                 munfSimLD2.FillDISforUnfoldREC(eventsimuLD2);
+
                 
             }
             munfSimLD2.FillTreeEvt(eventsimuLD2_MC , eventsimuLD2, optionLD2 );

@@ -142,6 +142,7 @@ void Event::PrintMC() {   //add int v=0 as argument 4 different types of verbose
         std::cout << "MC y  value : " << MCy<< std::endl;
         std::cout << "MC W2 value : " << MCw2<< std::endl;
         std::cout << "MC xb value : " << MCxb<< std::endl;
+        std::cout << "MC vz value " << MCvz << std::endl;
 
     
     //}

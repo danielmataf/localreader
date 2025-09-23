@@ -57,6 +57,7 @@ public:
     bool PassCutLD2Target (const Event& ) ;
     bool PassCutCuTarget (const Event& ) ;
     bool PassCutsElectrons(const Event& ) ;
+    bool PassCutsElectronsMC(const Event& ) ;
     bool PassCutsHadrons(const Particle& ) ;
     bool PassCutsVariables(const Event& );
     bool PassCutVzselection(const Event& );

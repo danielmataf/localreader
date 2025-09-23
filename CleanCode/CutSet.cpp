@@ -272,6 +272,32 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     return false;
 }
 
+bool CutSet::PassCutsElectronsMC(const Event& event)  {
+    // recover kinematic variables from the event
+    // Pass cut electrons also filters Vz initially!! (cool)
+    double Q2 = event.GetQ2MC();
+    double y  = event.GetyMC();
+    double v  = event.GetnuMC();
+    double w  = event.GetW2MC();
+    double Vz = event.GetVzMC();
+    if (Vz >= cutVzMin && Vz <= cutVzMax ){
+        //std::cout << "Vz passed" << std::endl;
+        if (Q2 >= Constants::RcutminQ && Q2 <= Constants::RcutmaxQ ){
+            if (y >= Constants::RcutminY && y <= Constants::RcutmaxY){
+                if (v >= Constants::Rcutminnu && v <= Constants::RcutnuMax ){             //not specified... is broad enough not to be considered
+                    if (w >= Constants::RcutminW && w <= Constants::RcutmaxW ){
+                        //std::cout << "nu value " << event.Getnu()<< std::endl;
+                        //std::cout << "y max " << Constants::RcutmaxY<< std::endl;
+                        return true;
+                    }
+                }
+            }
+        }
+    }    
+    return false;
+}
+
+
 bool CutSet::PassCutVzselection(const Event& event){
     double Vz = event.GetVz();
     int targetType = event.GetTargetType();
