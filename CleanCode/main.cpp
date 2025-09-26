@@ -150,6 +150,8 @@ int main() {
     Monunfold munfSimCu(testCucuts, "Cu_SIMU");
     Monunfold munfSimSn(testSncuts, "Sn_SIMU");
     Monunfold munfSimCxC(testCCcuts, "CxC_SIMU");
+    Monunfold munfSimC2(testC2cuts, "C2_SIMU"); //Vz cuts are already included here for target selection, so ts safe to put here
+    Monunfold munfSimC1(testC1cuts, "C1_SIMU"); //Vz cuts are already included here for target selection, so ts safe to put here
 
     Ratio ratC1(testLD2cuts, testC1cuts, "C1_RGD");
     Ratio ratC2(testLD2cuts, testC2cuts, "C2_RGD");
@@ -181,6 +183,9 @@ int main() {
 
 //creating options for unfolding 
     bool optionLD2 = false;
+    bool optionCu = false;
+    bool optionSn = false;
+    bool optionCxC = false;
 
     for (int i=0; i<totalevts; i++){
         testCxC = RGD_CxC.ProcessEventsInFile(); 
@@ -196,7 +201,7 @@ int main() {
         simuLD2_MC = SIM_LD2.ProcessEventsInFileMC();
         simuSn_MC = SIM_Sn.ProcessEventsInFileMC();
         simuCu_MC = SIM_Cu.ProcessEventsInFileMC();
-
+        //Data LD2
         if (testLD2.has_value()) {
             Event eventtestLD2 = testLD2.value();
             eventtestLD2.SetTargetType(0);
@@ -205,6 +210,7 @@ int main() {
             monTestLD2.CheckLargeBins(eventtestLD2); //check large bins in order to fill them with the correct values
 	        monTestLD2.CheckFewBins(eventtestLD2);   
             monTestLD2.FillPrePostCutHistograms(eventtestLD2); 
+            monTestLD2.FillDISforUnfoldDAT(eventtestLD2);
             
             ratC1.FillHistograms(eventtestLD2);
             ratC2.FillHistograms(eventtestLD2);
@@ -224,7 +230,7 @@ int main() {
 
 
         }
-
+        //Data CxC
         if (testCxC.has_value()) {
             Event eventtestCxC = testCxC.value();
             eventtestCxC.SetTargetType(1);
@@ -238,7 +244,9 @@ int main() {
             monTestC2.CheckLargeBins(eventtestCxC); //check large bins in order to fill them with the correct values
             monTestC2.CheckFewBins(eventtestCxC); //check large bins in order to fill them with the correct values
             monTestCC.FillDISforUnfoldDAT(eventtestCxC);
-	        
+            monTestC1.FillDISforUnfoldDAT(eventtestCxC);
+            monTestC2.FillDISforUnfoldDAT(eventtestCxC);
+            	        
             ratC2.FillHistograms(eventtestCxC);
             ratC1.FillHistograms(eventtestCxC);
             dptC1.FillHistograms(eventtestCxC);
@@ -249,7 +257,7 @@ int main() {
             cratC2.FillDebug(eventtestCxC);
 
         }
-
+        //Data Sn
         if (testSn.has_value()) {
             Event eventtestSn = testSn.value();
             eventtestSn.SetTargetType(1);
@@ -264,8 +272,10 @@ int main() {
             cratSn.FillHistograms(eventtestSn);
 	        monTestSn.CheckFewBins(eventtestSn);
             monTestSn.CheckLargeBins(eventtestSn); //check large bins in order to fill them with the correct values
+            monTestSn.FillDISforUnfoldDAT(eventtestSn);
 
         }
+        //Data Cu
         if (testCu.has_value()) {
             Event eventtestCu = testCu.value();
             eventtestCu.SetTargetType(1);
@@ -279,9 +289,10 @@ int main() {
             monTestCu.CheckLargeBins(eventtestCu); //check large bins in order to fill them with the correct values
             monTestCu.CheckFewBins(eventtestCu); //check large bins in order to fill them with the correct values
             //munfSimCu.FillDISforUnfoldREC(eventtestCu);
+            monTestCu.FillDISforUnfoldDAT(eventtestCu);
 
         }
-        //now the simus 
+        //Simulation LD2 
         if (simuLD2_MC.has_value()){
             Event eventsimuLD2_MC = simuLD2_MC.value();
             Event eventsimuLD2 ;
@@ -289,57 +300,84 @@ int main() {
             eventsimuLD2_MC.calcMCAll();
             optionLD2 = false ;     //resetting the option 
             //munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
-            munfSimLD2.FillHistogramsNoCutsMC(eventsimuLD2_MC);
+            munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
             if (simuLD2.has_value()){
                 optionLD2 = true ;      //affects the option if REC exists 
-                 eventsimuLD2 = simuLD2.value();
+                eventsimuLD2 = simuLD2.value();
                 eventsimuLD2.SetTargetType(0);
                 eventsimuLD2.calcAll();
                 munfSimLD2.SetrangesREC();
                 monSimLD2.FillHistogramswCuts(eventsimuLD2);
                 munfSimLD2.FillDISforUnfoldREC(eventsimuLD2);
-
-                
             }
             munfSimLD2.FillTreeEvt(eventsimuLD2_MC , eventsimuLD2, optionLD2 );         //if option is true, register value, if option is false, then set REC to 0 
-                                                                                        //( will later be treated as miiss hen checking the TTRee) 
-
-             //Fillfct(evtREC, evtMC, opt miss)
         }
+        //Simulation CxC
         if (simuCxC_MC.has_value()){
             Event eventsimuCxC_MC = simuCxC_MC.value();
+            Event eventsimuCxC;
             eventsimuCxC_MC.SetTargetType(1);
             eventsimuCxC_MC.calcMCAll();
+            munfSimCxC.FillHistogramswCutsMC(eventsimuCxC_MC);
+            munfSimC1.FillHistogramswCutsMC(eventsimuCxC_MC);
+            munfSimC2.FillHistogramswCutsMC(eventsimuCxC_MC);
             munfSimCxC.FillDISforUnfoldMC(eventsimuCxC_MC);
+            munfSimC1.FillDISforUnfoldMC(eventsimuCxC_MC);
+            munfSimC2.FillDISforUnfoldMC(eventsimuCxC_MC);
+            optionCxC = false ;     //resetting the option
             if (simuCxC.has_value()){
-                Event eventsimuCxC = simuCxC.value();
+                optionCxC = true ;
+                eventsimuCxC = simuCxC.value();
                 eventsimuCxC.SetTargetType(1);
                 eventsimuCxC.calcAll();
                 monSimCxC.FillHistogramswCuts(eventsimuCxC);
+                monSimC1.FillHistogramswCuts(eventsimuCxC);
+                monSimC2.FillHistogramswCuts(eventsimuCxC);
                 munfSimCxC.FillDISforUnfoldREC(eventsimuCxC);
+                munfSimC1.FillDISforUnfoldREC(eventsimuCxC);
+                munfSimC2.FillDISforUnfoldREC(eventsimuCxC);
+
             }
+            munfSimCxC.FillTreeEvt(eventsimuCxC_MC, eventsimuCxC, optionCxC );         //if option is true, register value, if option is false, then set REC to 0
+            munfSimC1.FillTreeEvt(eventsimuCxC_MC, eventsimuCxC, optionCxC );         //if option is true, register value, if option is false, then set REC to 0
+            munfSimC2.FillTreeEvt(eventsimuCxC_MC, eventsimuCxC, optionCxC );         //if option is true, register value, if option is false, then set REC to 0 
         }
+        //simulation Sn
         if (simuSn_MC.has_value()){
             Event eventsimuSn_MC = simuSn_MC.value();
+            Event eventsimuSn;
             eventsimuSn_MC.SetTargetType(1);
             eventsimuSn_MC.calcMCAll();
+            munfSimSn.FillHistogramswCutsMC(eventsimuSn_MC);
+            munfSimSn.FillDISforUnfoldMC(eventsimuSn_MC);
+            optionSn = false ;     
             if (simuSn.has_value()){
-                Event eventsimuSn = simuSn.value();
+                optionSn = true ;
+                eventsimuSn = simuSn.value();
                 eventsimuSn.SetTargetType(1);
                 eventsimuSn.calcAll();
                 monSimSn.FillHistogramswCuts(eventsimuSn);
+                munfSimSn.FillDISforUnfoldREC(eventsimuSn);
             }
+            munfSimSn.FillTreeEvt(eventsimuSn_MC , eventsimuSn, optionSn );         //if option is true, register value, if option is false, then set REC to 0 
         }
         if (simuCu_MC.has_value()){
             Event eventsimuCu_MC = simuCu_MC.value();
+            Event eventsimuCu;
             eventsimuCu_MC.SetTargetType(1);
             eventsimuCu_MC.calcMCAll();
+            munfSimCu.FillHistogramswCutsMC(eventsimuCu_MC);
+            munfSimCu.FillDISforUnfoldMC(eventsimuCu_MC);
+            optionCu = false ;
             if (simuCu.has_value()){
-                Event eventsimuCu = simuCu.value();
+                optionCu = true ;
+                eventsimuCu = simuCu.value();
                 eventsimuCu.SetTargetType(1);
                 eventsimuCu.calcAll();
                 monSimCu.FillHistogramswCuts(eventsimuCu);
+                munfSimCu.FillDISforUnfoldREC(eventsimuCu);
             }
+            munfSimCu.FillTreeEvt(eventsimuCu_MC , eventsimuCu, optionCu );         //if option is true, register value, if option is false, then set REC to 0
         }
 
 
@@ -379,6 +417,20 @@ std::cout << "\nProcessing completed \n";
     monTestLD2.SaveHistRoot("pass1LD2");
     monTestCu.SaveHistRoot("pass1Cu");
 
+    monSimCxC.SaveHistRoot("sepCxC_sim");
+    monSimC1.SaveHistRoot("sepC1_sim");
+    monSimC2.SaveHistRoot("monC2_sim");
+    monSimCu.SaveHistRoot("sepCu_sim");
+    monSimSn.SaveHistRoot("sepSn_sim");
+    monSimCxC.SaveHistRoot("sepCxC_sim");
+    munfSimCu.SaveHistMCRoot("sepCu_MC");
+    munfSimSn.SaveHistMCRoot("sepSn_MC");
+    munfSimCxC.SaveHistMCRoot("sepCxC_MC");
+    munfSimC2.SaveHistMCRoot("sepC2_MC");
+    munfSimC1.SaveHistMCRoot("sepC1_MC");
+    munfSimLD2.SaveHistMCRoot("sepLD2_MC");
+
+
     monTestSn.DrawHistograms("SnUrgent");
     //monTestCu.SaveHistRoot("janCu_test");
     //monTestCu.DrawHistograms("CuUrgent");
@@ -398,47 +450,33 @@ std::cout << "\nProcessing completed \n";
     monTestSn.SaveFINRoot("fin_Sn_test");
     monTestCu.SaveFINRoot("fin_Cu_test");
     monTestLD2.SaveFINRoot("fin_LD2_test");
-    monLD2full.SaveHistRoot("AprLD2full_test");
-    monTestLD2.SaveHistRoot("testLD2_test");
+    //monTestLD2.SaveHistRoot("testLD2_test");
 //    munftrueC2.SaveHistRoot("junC2_truef_test");
   //  munftrueC2.SaveHistMCRoot("junC2_truef_testMC");
     
     monLD2full.DrawEnergyHistograms("nrg_angLD2full");
     monTestLD2.DrawEnergyHistograms("nrg_angLD2RGDd");
-    //ratCu.saveRhistos();
-    //dptC2.saveDptHistos();
-    //dptSn.saveDptHistos();
-    //dptCu.saveDptHistos();
-    //cratC2.saveCratioHistos();
-    //cratSn.saveCratioHistos();
-    //cratCu.saveCratioHistos();
-
-    //ratC2.calcR();  
-    //ratSn.calcR();
-    //ratCu.calcR();
-    //ratC2.calcR_xB_Q2_z();
-    //dptC2.calcDpt();
-    //dptSn.calcDpt();
-    //dptCu.calcDpt();
-    //cratC2.calcCratio();
-    //cratSn.calcCratio();
-    //cratCu.calcCratio();
-
-    //sratC2.calcSratio();
-    
-
-//    ratC2.multiplotR(ratSn);
-//    ratSn.multiplotR(ratCu, ratC2);
-//    dptSn.multiplotDpt(dptCu, dptC2);
-//    cratSn.multiplotCratio(cratCu, cratC2);
-    //cratC2.calcCratioCarbon(cratC1);
-    //cratC2.multiplotCratioBis();
-    munfSimLD2.saveDISforUnfoldRoot("unfoldLD2_sim");    
-    munfSimCu.saveDISforUnfoldRoot("unfoldCu_sim");
+    munfSimLD2.saveDISforUnfoldRoot("unfSIMLD2_sim");    
+    munfSimCu.saveDISforUnfoldRoot("unfSIMCu");
     munfSimCxC.saveDISforUnfoldRoot("unfSIMCxC");
+    munfSimSn.saveDISforUnfoldRoot("unfSIMSn");
+    munfSimC1.saveDISforUnfoldRoot("unfSIMC1");
+    munfSimC2.saveDISforUnfoldRoot("unfSIMC2");
+    
     monTestCC.saveDISforUnfoldRoot("unfDATACxC");
+    monTestSn.saveDISforUnfoldRoot("unfDATASn");
+    monTestCu.saveDISforUnfoldRoot("unfDATACu");
+    monTestC1.saveDISforUnfoldRoot("unfDATAC1");
+    monTestC2.saveDISforUnfoldRoot("unfDATAC2");
+    monTestLD2.saveDISforUnfoldRoot("unfDATALD2");
+
     munfSimLD2.WriteTTree("treeunfLD2_sim");
     munfSimLD2.PrintFAKE();
+    munfSimCu.WriteTTree("treeunfCu_sim");
+    munfSimSn.WriteTTree("treeunfSn_sim");
+    munfSimCxC.WriteTTree("treeunfCxC_sim");
+    munfSimC2.WriteTTree("treeunfC2_sim");
+    munfSimC1.WriteTTree("treeunfC1_sim");
     munfSimLD2.SaveHistMCRoot("MConLD2TEST");
     std::cout << "//========= Validations ==========//  \n";
 //    ratC2.ValidateHistograms();

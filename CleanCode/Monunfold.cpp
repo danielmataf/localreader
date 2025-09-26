@@ -772,11 +772,10 @@ void Monunfold::FillHistogramswCuts(const Event& event) {
 void Monunfold::FillHistogramswCutsMC(const Event& event) {
 
     //std::cout<< "bump MC starts"<<std::endl;
-    if (cut1.PassCutsDetectors(event)) {
-    std::cout<< "bump MC 1 cuts"<<std::endl;
+    if (cut1.PassCutsElectronsMC(event)) {
 
         // Fill histograms after passing detector cuts for MC data
-        h_vertexZMC->Fill(event.GetVz()); // Fill MC vertex Z histogram
+        h_vertexZMC->Fill(event.GetVzMC()); // Fill MC vertex Z histogram
 
         // Fill other histograms related to MC electron variables
         h_Q2MC->Fill(event.GetQ2MC());
