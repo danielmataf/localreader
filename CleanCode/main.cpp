@@ -301,6 +301,7 @@ int main() {
             optionLD2 = false ;     //resetting the option 
             //munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
             munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
+            munfSimLD2.FillDISforUnfoldMC(eventsimuLD2_MC);
             if (simuLD2.has_value()){
                 optionLD2 = true ;      //affects the option if REC exists 
                 eventsimuLD2 = simuLD2.value();
@@ -456,7 +457,7 @@ std::cout << "\nProcessing completed \n";
     
     monLD2full.DrawEnergyHistograms("nrg_angLD2full");
     monTestLD2.DrawEnergyHistograms("nrg_angLD2RGDd");
-    munfSimLD2.saveDISforUnfoldRoot("unfSIMLD2_sim");    
+    munfSimLD2.saveDISforUnfoldRoot("unfSIMLD2");    
     munfSimCu.saveDISforUnfoldRoot("unfSIMCu");
     munfSimCxC.saveDISforUnfoldRoot("unfSIMCxC");
     munfSimSn.saveDISforUnfoldRoot("unfSIMSn");

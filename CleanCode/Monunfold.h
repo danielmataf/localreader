@@ -312,9 +312,8 @@ private:
 
     //bin nbrs for unfolding histos //manual but seems to be the way to go by now 
   enum { NX_MC = 5, NY_MC = 3, NX_REC = 7, NY_REC = 3 };
-
+/*
    static TH2F* HistoMC() {
-    // Edges live here; no STL; initialized once on first call.
     //static const double xEdgesMC[NX_MC + 1]  = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36,1.0};
     //static const double thEdgesMC[NY_MC + 1] = {5.0, 8.4, 10.3, 27.0};
     static const double xEdgesMC[NX_MC + 1]  = {0.075, 0.11, 0.15, 0.19, 0.29,1.0};
@@ -348,6 +347,45 @@ private:
     }();
     return h;
   }
+  */
+  //modifying custom binning histos declaration (replicating from monitoring method )  
+       struct HistoDefsMC {
+      static const double* XEdgesMC() {
+        static const double xEdgesMC[NX_MC + 1] = {0.075, 0.11, 0.15, 0.19, 0.29,1.0};
+        return xEdgesMC;
+      }
+      static const double* ThEdgesMC() {
+        static const double thEdgesMC[NY_MC + 1] = {5.0, 8.8, 11.0, 27.0};
+        return thEdgesMC;
+      }
+    };
+  static TH2F* MakeHistoMC(const std::string& name, const std::string& title) {
+      TH2F* h = new TH2F(name.c_str(), title.c_str(),
+                         NX_MC, HistoDefsMC::XEdgesMC(),
+                         NY_MC, HistoDefsMC::ThEdgesMC());
+      h->GetYaxis()->SetRangeUser(0.0, 30.0);
+      h->SetDirectory(nullptr); //this should avoid collisions ig MANDATORY ?
+      return h;
+    }
+    //now for the REC
+      struct HistoDefs {
+      static const double* XEdgesREC() {
+        static const double xEdgesREC[NX_REC + 1] = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36,1.0};
+        return xEdgesREC;
+      }
+      static const double* ThEdgesREC() {
+        static const double thEdgesREC[NY_REC + 1] = {5.0, 8.4, 10.3, 27.0};
+        return thEdgesREC;
+      }
+    };
+  static TH2F* MakeHistoSIM(const std::string& name, const std::string& title) {
+      TH2F* h = new TH2F(name.c_str(), title.c_str(),
+                         NX_REC, HistoDefs::XEdgesREC(),
+                         NY_REC, HistoDefs::ThEdgesREC());
+      h->GetYaxis()->SetRangeUser(0.0, 30.0);
+      h->SetDirectory(nullptr); //this should avoid collisions ig MANDATORY ?
+      return h;
+    }
 
   // Helpers to build the histos
   //static TH2F* MakeMC();

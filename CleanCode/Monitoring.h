@@ -310,23 +310,37 @@ TH1F* h_phi_res[6];
 TH1F* h_theta_res[6];
 
 
-//this part is for the unfolding application
- enum {  NX_DAT = 5, NY_DAT = 3 };
-
-  static TH2F* HistoDAT() {
-    static const double xEdgesDAT[NX_DAT + 1]  = {0.075, 0.11, 0.15, 0.19, 0.29,1.0};
-    static const double thEdgesDAT[NY_DAT + 1] = {5.0, 8.8, 11.0, 27.0};
-
-    static TH2F* h = [](){
-      TH2F* tmp = new TH2F("h_xB_thetaelDAT",
-                           "DAT: x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]",
-                           NX_DAT, xEdgesDAT,
-                           NY_DAT, thEdgesDAT);
-      tmp->GetYaxis()->SetRangeUser(0.0, 30.0);
-      return tmp;
-    }();
-    return h;
-  }
+    //this part is for the unfolding application
+    //enum {  NX_DAT = 5, NY_DAT = 3 };
+    enum {  NX_DAT = 7, NY_DAT = 3 };
+    // IMPORTANT here I believe the DAT histo should be filled with the meas binning (so large, coarse(?))
+    //this for the correction to make sense I believe. so Im adding below the comment the proper values of NX_DAT and NY_DAT
+    // and xEdgesDAT; thEdgesDAT are not hte same EITHER, need to be changed as well !!!
+      //declare bin edges in fct to be called i another fct 
+    struct HistoDefs {
+      static const double* XEdgesDAT() {
+//        static const double xEdgesREC[NX_REC + 1] = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36,1.0};
+        static const double xEdgesDAT[NX_DAT + 1] = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36,1.0}; // values come from meas histo (REC) in monunfolding class
+        //static const double xEdgesDAT[NX_DAT + 1] = {0.075, 0.11, 0.15, 0.19, 0.29, 1.0};
+        return xEdgesDAT;
+      }
+      static const double* ThEdgesDAT() {
+        static const double thEdgesDAT[NY_DAT + 1] = {5.0, 8.4, 10.3, 27.0};  //from REC or "meas" values of edges  
+        //static const double thEdgesDAT[NY_DAT + 1] = {5.0, 8.8, 11.0, 27.0};
+        return thEdgesDAT;
+      }
+    };
+    //stating fct to create histos with previoulsy stablished edges 4 custom binning
+    static TH2F* MakeHistoDAT(const std::string& name, const std::string& title) {
+        //declaraiton here allows to call for targetname.str() in the constructor in cpp 
+        //this method of declaration should be propagated also to the simulated data ig 
+      TH2F* h = new TH2F(name.c_str(), title.c_str(),
+                         NX_DAT, HistoDefs::XEdgesDAT(),
+                         NY_DAT, HistoDefs::ThEdgesDAT());
+      h->GetYaxis()->SetRangeUser(0.0, 30.0);
+      h->SetDirectory(nullptr); //this should avoid collisions ig MANDATORY ?
+      return h;
+    }
     TH2F *h_xB_thetaelDAT;
     TH1F *h_thetaelDAT_1D;
 

@@ -139,7 +139,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_sampl_el_pre(new TH2F((std::string("sampl_el_pre_")  + targetName).c_str(), "Sampling fraction (pre e-cuts);p (GeV);E_{PCAL}/p", nubin, 0, 10, nubin, 0, 1)),
     h_sampl_el_post(new TH2F((std::string("sampl_el_post_") + targetName).c_str(), "Sampling fraction (post e-cuts);p (GeV);E_{PCAL}/p", nubin, 0, 10, nubin, 0, 1)),
 
-    h_xB_thetaelDAT(Monitoring::HistoDAT()),
+    h_xB_thetaelDAT(Monitoring::MakeHistoDAT( Form("h_xB_thetaelDAT_%s", targetName.c_str()), Form("DAT (%s): x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]", targetName.c_str()))),
     h_thetaelDAT_1D(new TH1F(("U_thetaelDAT_1D_" + targetName).c_str(), "thetaelDAT_1D", 100, 0, 30.0)),
         
       counterel_R(0) {
