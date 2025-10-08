@@ -244,6 +244,21 @@ bool CutSet::PassCutOnlyVz(const Event& event){     //assimilate to cutset class
     return false;
 }
 
+bool CutSet::PassCutxb(const Event& event, double minxb)  {
+    double xb = event.Getxb();
+    if (xb > minxb ){
+        return true;
+    }
+    return false;
+}
+
+bool CutSet::PassCutxbMC(const Event& event)  {
+    double xb = event.GetxbMC();
+    if (xb > 0.8 ){
+        return true;
+    }
+    return false;
+}
 
 bool CutSet::PassCutsElectrons(const Event& event)  {
     // recover kinematic variables from the event

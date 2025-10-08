@@ -48,6 +48,10 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_vertexXMC(new TH1F(("U_targetVx_MC" + targetName).c_str(), "vertex4targetMC", 100, -10, 10)),
     h_pt2zMC(new TH2F(("U_pt2z_MC" + targetName).c_str(), "pt2zMC", nubin, pt2minX, pt2maxX, nubin, zminX, zmaxX)),
 
+    h_xBthREC(new TH2F(("U_xBthREC_" + targetName).c_str(), "xBthREC", nubin, 0,30, nubin, xminX, xmaxX)),
+    h_xBthMC(new TH2F(("U_xBthMC_" + targetName).c_str(), "xBthMC", nubin, 0,30, nubin, xminX, xmaxX)),
+    h_xQREC(new TH2F(("U_xQ2REC_" + targetName).c_str(), "xQ2REC", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
+    h_xQMC(new TH2F(("U_xQ2MC_" + targetName).c_str(), "xQ2MC", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
 
     h_Q2comp(new TH2F(("U_Q2comp_" + targetName).c_str(), "Q2comp", nubin, QminX, QmaxX, nubin, QminX, QmaxX)),
     h_xbcomp(new TH2F(("U_xbcomp_" + targetName).c_str(), "xbcomp", nubin, xminX, xmaxX, nubin, xminX, xmaxX)),
@@ -152,6 +156,15 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
         tEv_->Branch("th_el_MC", &Br_thMC, "th_el_MC/D");
         tEv_->Branch("xb_REC", &Br_xbREC, "xb_REC/D");
         tEv_->Branch("th_el_REC", &Br_thREC, "th_el_REC/D");
+        tEv_->Branch("Q2_MC", &Br_Q2MC, "Q2_MC/D");
+        tEv_->Branch("Q2_REC", &Br_Q2REC, "Q2_REC/D");
+        tEv_->Branch("y_MC", &Br_yMC, "y_MC/D");
+        tEv_->Branch("y_REC", &Br_yREC, "y_REC/D");
+        tEv_->Branch("W2_MC", &Br_W2MC, "W2_MC/D");
+        tEv_->Branch("W2_REC", &Br_W2REC, "W2_REC/D");
+        tEv_->Branch("nu_MC", &Br_nuMC, "nu_MC/D");
+        tEv_->Branch("nu_REC", &Br_nuREC, "nu_REC/D");
+
 
     // Add more histograms as needed
 
@@ -659,8 +672,110 @@ void Monunfold::PrintFAKE(){
 
 
 
+void Monunfold::ProperFillRECMC(const Event& event_MC, const Event& event_REC, int option ){
+    //ig folwoing the option system. should consider only evts that pass REC and MC cuts I suppose... 
+    //is this useful ? 
+    double currentxbMC = -.1;
+    double currentQ2MC = -.1;
+    double currentthMC = -.1;
+    double currentyMC = -.1;
+    double currentW2MC = -.1;
+    double currentnuMC = -.1;
+    double currentxbREC = -.1;
+    double currentQ2REC = -.1;
+    double currentthREC = -.1;
+    double currentyREC = -.1;
+    double currentW2REC = -.1;
+    double currentnuREC = -.1;
+    //defining them here helps reset the values to 0 in each call of the function (evt) 
+    if (cut1.PassCutsElectronsMC(event_MC)==true) {
+            currentxbMC = event_MC.GetxbMC();
+            currentQ2MC = event_MC.GetQ2MC();
+            currentyMC = event_MC.GetyMC();
+            currentW2MC = event_MC.GetW2MC();
+            currentnuMC = event_MC.GetnuMC();
+            currentthMC = event_MC.MCelectron.GetMomentum().Theta()*  180.0 / Constants::PI;
+            counterPassMCproper++;
+        //std::cout<<"[bump] MC"<<std::endl;
 
+    }
+    if (option == true ){   
+        if ( cut1.PassCutsElectrons(event_REC)==true){
+            currentQ2REC = event_REC.GetQ2();
+            currentxbREC = event_REC.Getxb();
+            currentyREC = event_REC.Gety();
+            currentW2REC = event_REC.GetW2();
+            currentnuREC = event_REC.Getnu();
+            currentthREC = event_REC.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
+        }
+                
+    }
 
+    double sumMC = currentQ2MC + currentxbMC + currentyMC + currentW2MC + currentnuMC;
+    double sumREC = currentQ2REC + currentxbREC + currentyREC + currentW2REC + currentnuREC;  
+
+    if (sumREC > 0.0 ){
+        h_Q2->Fill(currentQ2REC);
+        h_xb->Fill(currentxbREC);
+        h_y->Fill(currentyREC);
+        h_nu->Fill(currentnuREC);
+        h_W2->Fill(currentnuREC);
+        h_xQREC->Fill(currentxbREC, currentQ2REC);
+        h_xBthREC->Fill(currentxbREC, currentthREC);
+        Br_xbREC = currentxbREC;
+        Br_Q2REC = currentQ2REC;
+        Br_yREC = currentyREC;
+        Br_nuREC = currentnuREC;
+        Br_W2REC = currentW2REC;
+        
+    }
+    if (sumMC > 0.0 ){
+        h_Q2MC->Fill(currentxbMC);
+        h_xbMC->Fill(currentQ2MC);
+        h_yMC->Fill(currentyMC);
+        h_nuMC->Fill(currentnuMC);
+        h_W2MC->Fill(currentW2MC);
+        h_xQMC->Fill(currentxbMC, currentQ2MC);
+        h_xBthMC->Fill(currentxbMC, currentthMC);
+        Br_xbMC = currentxbMC;
+        Br_Q2MC = currentQ2MC;
+        Br_yMC = currentyMC;
+        Br_nuMC = currentnuMC;
+        Br_W2MC = currentW2MC;
+    }
+    tEv_->Fill();
+    
+}
+
+void Monunfold::ProperSaveRECMC(const std::string& filenameRECMC) {
+    std::cout<<"[COUNT] passingxb MC = "<<counterPassMCproper<<std::endl;
+    
+    TFile* rootFile = new TFile((filenameRECMC + ".root").c_str(), "RECREATE");
+    if (h_Q2)  h_Q2->Write();
+    if (h_xb)  h_xb->Write();
+    if (h_y)  h_y->Write();
+    if (h_nu)  h_nu->Write();
+    if (h_W2)  h_W2->Write();
+
+    if (h_Q2MC)  h_Q2MC->Write();
+    if (h_xbMC)  h_xbMC->Write();
+    if (h_yMC)  h_yMC->Write();
+    if (h_nuMC)  h_nuMC->Write();
+    if (h_W2MC)  h_W2MC->Write();
+
+    if (h_xQREC)  h_xQREC->Write();
+    if (h_xQMC)  h_xQMC->Write();
+    if (h_xBthREC)  h_xBthREC->Write();
+    if (h_xBthMC)  h_xBthMC->Write();
+
+    if (!tEv_) return;
+    rootFile->cd();
+    tEv_->Write();  // writes "tEv_<targetName>"
+
+    rootFile->Close();
+
+    delete rootFile; 
+}
 
 
 void Monunfold::FillTreeEvt(const Event& event_MC  , const Event& event_REC , int option  ){

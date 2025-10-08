@@ -26,6 +26,7 @@ public:
     void SetCutnu(double minnu, double maxnu);
 
 
+
     //==Detector cuts==// 
     
     void SetCutVx(double, double);
@@ -61,6 +62,9 @@ public:
     bool PassCutsHadrons(const Particle& ) ;
     bool PassCutsVariables(const Event& );
     bool PassCutVzselection(const Event& );
+    bool PassCutxb(const Event& , double );
+    bool PassCutxbMC(const Event& );
+
 
     
 

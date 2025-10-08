@@ -68,6 +68,8 @@ public:
     void createResponseMatrix(); //create response matrix after filling histograms for MC and REC
     void FillTreeEvt(const Event&, const Event&, int  ); // needs redefinition of arguments, maybe an option 0 or 1 if the MC has a match or miss in REC
     void WriteTTree(const std::string& );
+    void ProperFillRECMC(const Event&, const Event&, int); //fill properly the REC and MC using principle we used to fill the tree branches ig
+    void ProperSaveRECMC(const std::string& ); //save properly the REC and MC using principle we used to fill the tree branches ig
     void PrintFAKE(); //print evts the nb of evts that missed the cut
         // ===== Unf (fine A..S) =====
     void U_InitUnfold(const std::string& tag, const CutSet& dataCuts);
@@ -412,8 +414,8 @@ private:
   TFile outTreeFile_;
   TTree *tEv_;
   //create branches for xb and theta in REC and MC
-  double Br_xbMC , Br_thMC;
-  double Br_xbREC , Br_thREC;
+  double Br_xbMC , Br_thMC , Br_Q2MC, Br_yMC, Br_nuMC, Br_W2MC, Br_zMC, Br_pt2MC, Br_phihMC;
+  double Br_xbREC , Br_thREC , Br_Q2REC, Br_yREC, Br_nuREC, Br_W2REC, Br_zREC, Br_pt2REC, Br_phihREC;
   int has_true=0; //1 if MC filled, seems unnecessary, need the inverse of this, check the REC
   int evnum_=0;
   int counterFAKEMC=0; //to count events in fake MC, should be 0 
@@ -429,6 +431,14 @@ private:
     std::unique_ptr<TH1D> U_h_true_;    //MC truth per region (A..S)
     std::unique_ptr<TH1D> U_h_meas_;    //REC measured per region (A..S)
     std::unique_ptr<TH1D> U_h_data_;    //RGD data per region (A..S)
+
+    // polishinhng of unfolding ig 
+    TH2F *h_xBthMC;       
+    TH2F *h_xBthREC;
+    TH2F *h_xQMC;
+    TH2F *h_xQREC;
+    int counterPassMCproper=0;
+
     //still in fie binning
     //std::unique_ptr<RooUnfoldResponse> U_response_;
     //std::unique_ptr<TMatrixD> U_cov_;   // covariance of unfolded

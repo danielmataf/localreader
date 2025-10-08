@@ -17,7 +17,7 @@
 
     EventReader::EventReader(const std::vector<std::string>& Files){
         filelist = Files; 
-        filenb = 0;
+        filenb = -1;
         simulatedEventCount =0;
 
     }
@@ -407,68 +407,140 @@ bool EventReader::isSimulatedData(hipo::event event) {
     }
 
 
-
-
-std::optional<Event> EventReader::ProcessEventsInFile() { 
-        std::string filename;
-        if (!reader.hasNext()) {
-            filenb++;
-            filename = filelist.at(filenb);
-            reader.open(filename.c_str());  
+bool EventReader::openNextValidRECFile() {
+    while (true) {
+        ++filenb;
+        if (filenb < 0) filenb = 0;
+        if (static_cast<size_t>(filenb) >= filelist.size()) {
+            //std::cout << "[INFO] No more REC files.\n";
+            return false;
+        }
+        const std::string& filename = filelist[filenb];
+        try {
+            reader.open(filename.c_str());
             reader.readDictionary(factory);
+
             RUNconfig = factory.getSchema("RUN::config");
-            RECgen = factory.getSchema("REC::Particle");
-            RECcalo = factory.getSchema("REC::Calorimeter");
-            RECcher = factory.getSchema("REC::Cherenkov");
-            RECevt  = factory.getSchema("REC::Event");  //using bank to recover helicity and helicity raw
-            HELbank = factory.getSchema("HEL::online"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
-            //HELbank = factory.getSchema("REC::Event"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
-            //HELbank = factory.getSchema("HEL::flip"); //can be HEL::online or HEL::flip or HEL::raw? eventually 
-            MCpart = factory.getSchema("MC::Particle");
-            MCevt = factory.getSchema("MC::Event");
-            //RUNconfig = factory.getSchema("RUN::config");
-            std::cout << "Processing file: " << filename << std::endl;
-        } 
-        hipo::event hipoEvent;
-        if (reader.next()) {
-            reader.read(hipoEvent);
-            //std::cout<<"starting event"<<std::endl;
-            Event event ;
-            if (isSimulatedData(hipoEvent)==true) {
-                ProcessEventMC(hipoEvent);
-                //std::cout << "Simulated data" << std::endl;
+            RECgen    = factory.getSchema("REC::Particle");
+            RECcalo   = factory.getSchema("REC::Calorimeter");
+            RECcher   = factory.getSchema("REC::Cherenkov");
+            RECevt    = factory.getSchema("REC::Event");
+            HELbank   = factory.getSchema("HEL::online");
+            MCpart    = factory.getSchema("MC::Particle");
+            MCevt     = factory.getSchema("MC::Event");
+
+            const int n = reader.getEntries();
+            if (n > 0) {
+                std::cout << "[OPEN][REC] " << filename << " | entries=" << n << "\n";
+                return true;
+            } else {
+                std::cout << "[SKIP][REC] " << filename
+                          << " | entries=0 (no index/corrupted)\n";
             }
-            return ProcessEvent(hipoEvent, 0, false);    
-            //prevoius line was commented and replace by the next one for CLAScollNOV
-            //return ProcessEventsWithPositivePions(hipoEvent, 0);
-        } 
-        Event empty;
-        return empty;
+        } catch (const std::exception& e) {
+            std::cerr << "[SKIP][REC] " << filename << " | open failed: " << e.what() << "\n";
+        } catch (...) {
+            std::cerr << "[SKIP][REC] " << filename << " | open failed: unknown error\n";
+        }
+    }
+}
+
+bool EventReader::openNextValidMCFile() {
+    while (true) {
+        ++filenb;
+        if (filenb < 0) filenb = 0;
+        if (static_cast<size_t>(filenb) >= filelist.size()) {
+            //std::cout << "[INFO] No more MC files.\n";
+            return false;
+        }
+        const std::string& filename = filelist[filenb];
+        try {
+            reader.open(filename.c_str());
+            reader.readDictionary(factory);
+
+            RUNconfig = factory.getSchema("RUN::config");
+            MCpart    = factory.getSchema("MC::Particle");
+            MCevt     = factory.getSchema("MC::Event");
+
+            const int n = reader.getEntries();
+            if (n > 0) {
+                std::cout << "[OPEN][MC ] " << filename << " | entries=" << n << "\n";
+                return true;
+            } else {
+                std::cout << "[SKIP][MC ] " << filename
+                          << " | entries=0 (no index/corrupted)\n";
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "[SKIP][MC ] " << filename << " | open failed: " << e.what() << "\n";
+        } catch (...) {
+            std::cerr << "[SKIP][MC ] " << filename << " | open failed: unknown error\n";
+        }
+    }
+}
+
+std::optional<Event> EventReader::ProcessEventsInFile() {
+    // If duplicate requested and we cached the last event, return it without advancing
+    if (duplicateMode && haveCached) {
+        haveCached = false;
+        return cachedEvent;
+    }
+
+    while (true) {
+        // Make sure we have a file and try to advance to the next event
+        if (!reader.next()) {
+            // Either no file yet or file exhausted -> open next valid file and try again
+            if (!openNextValidRECFile()) return std::nullopt;
+            if (!reader.next())          continue; // newly opened but immediately exhausted? try again
+        }
+
+        // Decode the event we just advanced to
+        hipo::event he;
+        reader.read(he);
+
+        // Build your Event (if your ProcessEvent returns optional, honor it)
+        auto opt = ProcessEvent(he, /*run?*/0, /*isMC?*/false);
+        if (!opt) continue;   // skip undecodable events, grab next
+
+        Event ev = *opt;
+
+        // If you want to deliver the same event twice (Cu/Sn), cache it now
+        if (duplicateMode) {
+            cachedEvent = ev;
+            haveCached  = true;
+        }
+        return ev;            // success
+    }
 }
 
 
-std::optional<Event> EventReader::ProcessEventsInFileMC() { 
-        std::string filename;
-        //change reader has next to 
-        if (!reader.hasNext()) {
-            filenb++;
-            filename = filelist.at(filenb);
-            reader.open(filename.c_str());  
-            reader.readDictionary(factory);
-            RUNconfig = factory.getSchema("RUN::config");
-            MCpart = factory.getSchema("MC::Particle");
-            MCevt = factory.getSchema("MC::Event");
-            std::cout << "Processing file MC: " << filename << std::endl;   //I guess we can delete this!
-        } 
-        hipo::event hipoEvent;
-        //if (reader.next()) {
-            reader.read(hipoEvent);
-            Event event ;
-            if (isSimulatedData(hipoEvent)==true) {
-                ProcessEventMC(hipoEvent);
-                return ProcessEventMC(hipoEvent);    
-            }
-        //} 
-        Event empty;
-        return empty;
+
+
+std::optional<Event> EventReader::ProcessEventsInFileMC() {
+    if (duplicateMode && haveCached) {
+        haveCached = false;
+        return cachedEvent;
+    }
+
+    while (true) {
+        if (!reader.next()) {
+            if (!openNextValidMCFile()) return std::nullopt;
+            if (!reader.next())          continue;
+        }
+
+        hipo::event he;
+        reader.read(he);
+
+        auto opt = ProcessEventMC(he);
+        if (!opt) continue;
+
+        Event ev = *opt;
+
+        if (duplicateMode) {
+            cachedEvent = ev;
+            haveCached  = true;
+        }
+        return ev;
+    }
 }
+
+

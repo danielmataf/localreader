@@ -28,6 +28,9 @@ public:
     bool isSimulatedData(hipo::event) ;
     void ReadRunconfig(hipo::event event);
 
+    void SetDuplicateMode(bool on) { duplicateMode = on; }  //this in order to call the reading funvction twice, when using CuSn files taht need to be recalled 
+
+
 
 private:
     std::optional<Event> ProcessEvent( hipo::event event, int eventNumber, bool isSimulated);
@@ -35,7 +38,12 @@ private:
     std::optional<Event> ProcessEventsWithPositivePions(hipo::event event, int eventNumber) ;
     //std::optional<Event> ReadRunconfigMC(hipo::event event);
 
-
+    //following statements for WARD  in case of empty or corrupted .hipo files
+     bool duplicateMode = false;     // when true: return each event twice (no advance on 2nd)
+    bool haveCached = false;        // indicates a cached decoded Event is available
+    Event cachedEvent;              // copy of last decoded Event
+    bool openNextValidRECFile();
+    bool openNextValidMCFile();
 
     int simulatedEventCount=0;
 

@@ -72,6 +72,8 @@ int main() {
     EventReader RGD_CxC(filenamesCxC);
     EventReader RGD_LD2(filenamesLD2);   
     EventReader RGD_CuSn(filenamesCuSn);   
+    RGD_CuSn.SetDuplicateMode(true);    // <-- important    enables to rread the file twice to makje distinction
+
 
     EventReader SIM_LD2(simufilesLD2);
     EventReader SIM_Cu(simufilesCu);
@@ -193,6 +195,7 @@ int main() {
         testSn = RGD_CuSn.ProcessEventsInFile();
         testCu = RGD_CuSn.ProcessEventsInFile();
 
+
         simuCxC = SIM_CxC.ProcessEventsInFile();
         simuLD2 = SIM_LD2.ProcessEventsInFile();
         simuSn = SIM_Sn.ProcessEventsInFile();
@@ -201,8 +204,10 @@ int main() {
         simuLD2_MC = SIM_LD2.ProcessEventsInFileMC();
         simuSn_MC = SIM_Sn.ProcessEventsInFileMC();
         simuCu_MC = SIM_Cu.ProcessEventsInFileMC();
+        std::cout << "Processing event: " << i << "\r" << std::flush;
         //Data LD2
         if (testLD2.has_value()) {
+            std::cout << "Processing LD2 event: " << i << "\r" << std::flush;
             Event eventtestLD2 = testLD2.value();
             eventtestLD2.SetTargetType(0);
             eventtestLD2.calcAll();
@@ -300,17 +305,19 @@ int main() {
             eventsimuLD2_MC.calcMCAll();
             optionLD2 = false ;     //resetting the option 
             //munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
-            munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
-            munfSimLD2.FillDISforUnfoldMC(eventsimuLD2_MC);
+            //munfSimLD2.FillHistogramswCutsMC(eventsimuLD2_MC);
+            //munfSimLD2.FillDISforUnfoldMC(eventsimuLD2_MC);
             if (simuLD2.has_value()){
                 optionLD2 = true ;      //affects the option if REC exists 
                 eventsimuLD2 = simuLD2.value();
                 eventsimuLD2.SetTargetType(0);
                 eventsimuLD2.calcAll();
                 munfSimLD2.SetrangesREC();
-                monSimLD2.FillHistogramswCuts(eventsimuLD2);
-                munfSimLD2.FillDISforUnfoldREC(eventsimuLD2);
+                //monSimLD2.FillHistogramswCuts(eventsimuLD2);
+                //munfSimLD2.FillHistogramswCuts(eventsimuLD2);
+                //munfSimLD2.FillDISforUnfoldREC(eventsimuLD2);
             }
+            //munfSimLD2.ProperFillRECMC(eventsimuLD2_MC , eventsimuLD2, optionLD2 ); //fill properly the REC and MC using principle we used to fill the tree branches ig
             munfSimLD2.FillTreeEvt(eventsimuLD2_MC , eventsimuLD2, optionLD2 );         //if option is true, register value, if option is false, then set REC to 0 
         }
         //Simulation CxC
@@ -388,6 +395,7 @@ int main() {
 //    monTestLD2.CalcElectronRatio();
 //
 //  
+    munfSimLD2.ProperSaveRECMC("ProperLD2_RECMC");
     munfSimLD2.debughisto();
     std::cout << "region large counters LD2 \n";
     monTestLD2.PrintRegionCounters(); //check large bins in order to fill them with the correct values
