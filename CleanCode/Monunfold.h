@@ -353,7 +353,7 @@ private:
   //modifying custom binning histos declaration (replicating from monitoring method )  
        struct HistoDefsMC {
       static const double* XEdgesMC() {
-        static const double xEdgesMC[NX_MC + 1] = {0.075, 0.11, 0.15, 0.19, 0.29,1.0};
+        static const double xEdgesMC[NX_MC + 1] = {0.1, 0.11, 0.15, 0.19, 0.29,1.0};
         return xEdgesMC;
       }
       static const double* ThEdgesMC() {
@@ -372,7 +372,9 @@ private:
     //now for the REC
       struct HistoDefs {
       static const double* XEdgesREC() {
-        static const double xEdgesREC[NX_REC + 1] = {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36,1.0};
+        static const double xEdgesREC[NX_REC + 1] = {0.1, 0.11, 0.13, 0.16, 0.20, 0.25, 0.36,1.0};
+                                                  //we can try {0.075, 0.11, 0.15, 0.19, 0.29,1.0};
+                                                  //it was originally {0.075, 0.105, 0.13, 0.16, 0.20, 0.25, 0.36,1.0};
         return xEdgesREC;
       }
       static const double* ThEdgesREC() {

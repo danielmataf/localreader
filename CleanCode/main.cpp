@@ -204,10 +204,10 @@ int main() {
         simuLD2_MC = SIM_LD2.ProcessEventsInFileMC();
         simuSn_MC = SIM_Sn.ProcessEventsInFileMC();
         simuCu_MC = SIM_Cu.ProcessEventsInFileMC();
-        std::cout << "Processing event: " << i << "\r" << std::flush;
+        //std::cout << "Processing event: " << i << "\r" << std::flush;
         //Data LD2
         if (testLD2.has_value()) {
-            std::cout << "Processing LD2 event: " << i << "\r" << std::flush;
+            //std::cout << "Processing LD2 event: " << i << "\r" << std::flush;
             Event eventtestLD2 = testLD2.value();
             eventtestLD2.SetTargetType(0);
             eventtestLD2.calcAll();

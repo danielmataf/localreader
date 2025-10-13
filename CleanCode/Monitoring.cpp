@@ -142,6 +142,8 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_xB_thetaelDAT(Monitoring::MakeHistoDAT( Form("h_xB_thetaelDAT_%s", targetName.c_str()), Form("DAT (%s): x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]", targetName.c_str()))),
     h_thetaelDAT_1D(new TH1F(("U_thetaelDAT_1D_" + targetName).c_str(), "thetaelDAT_1D", 100, 0, 30.0)),
         
+    h_xB_thetaelBIS(Monitoring::MakeHistoBIS( Form("h_xB_thetaelBIS_%s", targetName.c_str()), Form("BIS (%s): x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]", targetName.c_str()))),
+
       counterel_R(0) {
     // Add more histograms as needed
         for (int s = 0; s < 6; ++s) {
@@ -1996,16 +1998,20 @@ void Monitoring::SaveFINRoot(const std::string& filenameREC) {
 void Monitoring::FillDISforUnfoldDAT(const Event& event) {
     if (cut1.PassCutsDetectors(event)) {
         if (cut1.PassCutsElectrons(event)==true) {
-            //std::cout<<"bumpREC"<<std::endl;
-            //h_xB_thetaelREC->Fill(event.Getxb(), event.GetThetaElectron()* 180.0 / Constants::PI);
-            h_xB_thetaelDAT->Fill(event.Getxb(), event.electron.GetMomentum().Theta()* 180.0 / Constants::PI);
-            h_thetaelDAT_1D->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+            if (event.Getxb() > 0.1) {
+                //std::cout<<"bumpREC"<<std::endl;
+                //h_xB_thetaelREC->Fill(event.Getxb(), event.GetThetaElectron()* 180.0 / Constants::PI);
+                h_xB_thetaelDAT->Fill(event.Getxb(), event.electron.GetMomentum().Theta()* 180.0 / Constants::PI);
+                h_xB_thetaelBIS->Fill(event.Getxb(), event.electron.GetMomentum().Theta()* 180.0 / Constants::PI);
+                h_thetaelDAT_1D->Fill(event.electron.GetMomentum().Theta()*180/Constants::PI);
+            }
         }
     }
 }
 void Monitoring::saveDISforUnfoldRoot(const std::string& filenameDIS) {
     TFile* rootFile = new TFile((filenameDIS + ".root").c_str(), "RECREATE");
     if (h_xB_thetaelDAT)  h_xB_thetaelDAT->Write();
+    if (h_xB_thetaelBIS)  h_xB_thetaelBIS->Write();
     if (h_thetaelDAT_1D)  h_thetaelDAT_1D->Write();
     rootFile->Close();
 

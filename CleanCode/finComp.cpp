@@ -1,6 +1,6 @@
 // finComp.cpp
 // g++ finComp.cpp $(root-config --cflags --libs) -o finComp && ./finComp
-
+// this compares pre & pos cuts
 #include <TFile.h>
 #include <TH1.h>
 #include <TH2.h>

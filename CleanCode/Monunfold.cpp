@@ -610,8 +610,7 @@ void Monunfold::FillDISforUnfoldMC(const Event& event) {
             h_xB_thetaelMC->Fill(event.GetxbMC(), event.GetThetaElectronMC()* 180.0 / Constants::PI);
             h_thetaelMC_1D->Fill(event.MCelectron.GetMomentum().Theta()*180/Constants::PI);
             h_thetaelcalcMC_1D->Fill(event.GetThetaElectronMC()* 180.0 / Constants::PI);
-
-            //std::cout<<"xb mc = "<<event.GetxbMC()<<" theta el mc = "<<event.MCelectron.GetPID()<<std::endl;
+                      //std::cout<<"xb mc = "<<event.GetxbMC()<<" theta el mc = "<<event.MCelectron.GetPID()<<std::endl;
         }
     //}
 }
@@ -636,7 +635,6 @@ void Monunfold::FillDISforUnfoldREC(const Event& event) {
     if (cut1.PassCutsDetectors(event)) {
         if (cut1.PassCutsElectrons(event)==true) {
             h_vertexZ->Fill(event.GetVz());
-            //std::cout<<"bumpREC"<<std::endl;
             //h_xB_thetaelREC->Fill(event.Getxb(), event.GetThetaElectron()* 180.0 / Constants::PI);
             h_xB_thetaelREC->Fill(event.Getxb(), event.electron.GetMomentum().Theta()* 180.0 / Constants::PI);
             //std::cout<<"xb rec = "<<event.Getxb()<<" theta el rec = "<<event.GetThetaElectron()<<std::endl;
@@ -697,7 +695,6 @@ void Monunfold::ProperFillRECMC(const Event& event_MC, const Event& event_REC, i
             currentthMC = event_MC.MCelectron.GetMomentum().Theta()*  180.0 / Constants::PI;
             counterPassMCproper++;
         //std::cout<<"[bump] MC"<<std::endl;
-
     }
     if (option == true ){   
         if ( cut1.PassCutsElectrons(event_REC)==true){
@@ -707,6 +704,7 @@ void Monunfold::ProperFillRECMC(const Event& event_MC, const Event& event_REC, i
             currentW2REC = event_REC.GetW2();
             currentnuREC = event_REC.Getnu();
             currentthREC = event_REC.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
+
         }
                 
     }

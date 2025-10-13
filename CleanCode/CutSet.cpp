@@ -264,6 +264,7 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     // recover kinematic variables from the event
     // Pass cut electrons also filters Vz initially!! (cool)
     double Q2 = event.GetQ2();
+    double xb = event.Getxb();
     double y  = event.Gety();
     double v  = event.Getnu();
     double w  = event.GetW2();
@@ -273,6 +274,7 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     if (Vz >= cutVzMin && Vz <= cutVzMax ){
         //std::cout << "Vz passed" << std::endl;
         if (Q2 >= Constants::RcutminQ && Q2 <= Constants::RcutmaxQ ){
+            if (xb >= Constants::Rcutminxb ){  //FILTERING for edges for CORRECTION
             if (y >= Constants::RcutminY && y <= Constants::RcutmaxY){
                 if (v >= Constants::Rcutminnu && v <= Constants::RcutnuMax ){             //not specified... is broad enough not to be considered
                     if (w >= Constants::RcutminW && w <= Constants::RcutmaxW ){
@@ -281,6 +283,7 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
                         return true;
                     }
                 }
+            }
             }
         }
     }    
@@ -291,6 +294,7 @@ bool CutSet::PassCutsElectronsMC(const Event& event)  {
     // recover kinematic variables from the event
     // Pass cut electrons also filters Vz initially!! (cool)
     double Q2 = event.GetQ2MC();
+    double xb = event.GetxbMC();
     double y  = event.GetyMC();
     double v  = event.GetnuMC();
     double w  = event.GetW2MC();
@@ -298,6 +302,7 @@ bool CutSet::PassCutsElectronsMC(const Event& event)  {
     if (Vz >= cutVzMin && Vz <= cutVzMax ){
         //std::cout << "Vz passed" << std::endl;
         if (Q2 >= Constants::RcutminQ && Q2 <= Constants::RcutmaxQ ){
+            if (xb >= Constants::Rcutminxb ){  //FILTERING for edges for CORRECTION
             if (y >= Constants::RcutminY && y <= Constants::RcutmaxY){
                 if (v >= Constants::Rcutminnu && v <= Constants::RcutnuMax ){             //not specified... is broad enough not to be considered
                     if (w >= Constants::RcutminW && w <= Constants::RcutmaxW ){
@@ -306,6 +311,7 @@ bool CutSet::PassCutsElectronsMC(const Event& event)  {
                         return true;
                     }
                 }
+            }
             }
         }
     }    
