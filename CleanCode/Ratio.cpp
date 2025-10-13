@@ -76,8 +76,9 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
     h_5D_A_had (new THnSparseD(("h_5D_A_had_" + targetName).c_str(), "5D hadron counts (A)", Rdim, bins, binMins, binMaxs)), // using default chuinksize ? idk the implications of this 
 
     h_nuC1(new TH1F(("nu_C1"+targetName).c_str(), ("nu_C1"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)), 
-    h_nuC2(new TH1F(("nu_C2"+targetName).c_str(), ("nu_C2"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu))
+    h_nuC2(new TH1F(("nu_C2"+targetName).c_str(), ("nu_C2"+targetName).c_str(), Constants::Rbin_nu , Constants::Rcutminnu , Constants::Rcutmaxnu)),
 
+    tEv_(new TTree(("tEv_" + targetName).c_str(), "Event R Tree")) //TTREE should have branches for both nuclear target A and for D target
     
      {
 //Ratio::Ratio(CutSet a)
@@ -121,6 +122,41 @@ Ratio::Ratio(CutSet cutsD, CutSet cutsA,const std::string& targetName): //: cuts
                   << h_5D_A_had->GetAxis(i)->GetXmin() << ", "
                   << h_5D_A_had->GetAxis(i)->GetXmax() << "]" << std::endl;
     }
+
+    // initi tree branches
+    tEv_->Branch("Q2", &Br_Q2, "Q2/D");
+    tEv_->Branch("xB", &Br_xb, "xB/D");
+    tEv_->Branch("thetae", &Br_th, "thetae/D");
+    tEv_->Branch("nu", &Br_nu, "nu/D");
+    tEv_->Branch("z", &Br_z, "z/D");
+    tEv_->Branch("pt2", &Br_pt2, "pt2/D");
+    tEv_->Branch("phih", &Br_phih, "phih/D");
+    tEv_->Branch("Q2onlye", &Br_onlye_Q2, "Q2onlye/D");
+    tEv_->Branch("xBonlye", &Br_onlye_xb, "xBonlye/D");
+    tEv_->Branch("thetaeonlye", &Br_onlye_th, "thetaeonlye/D");
+    tEv_->Branch("nuonlye", &Br_onlye_nu, "nuonlye/D");
+    tEv_->Branch("yonlye", &Br_onlye_y, "yonlye/D");    
+    tEv_->Branch("W2onlye", &Br_onlye_W2, "W2onlye/D");
+    double Br_onlye_xb, Br_onlye_th , Br_onlye_Q2, Br_onlye_y, Br_onlye_nu, Br_onlye_W2; //branches for histos filled with only electrons
+
+    tEv_->Branch("Q2_D", &BrD_Q2, "Q2_D/D");
+    tEv_->Branch("xB_D", &BrD_xb, "xB_D/D");
+    tEv_->Branch("thetae_D", &BrD_th, "thetae_D/D");
+    tEv_->Branch("nu_D", &BrD_nu, "nu_D/D");
+    tEv_->Branch("z_D", &BrD_z, "z_D/D");
+    tEv_->Branch("pt2_D", &BrD_pt2, "pt2_D/D");
+    tEv_->Branch("phih_D", &BrD_phih, "phih_D/D");
+    
+    tEv_->Branch("Q2onlye_D", &BrD_onlye_Q2, "Q2onlye_D/D");
+    tEv_->Branch("xBonlye_D", &BrD_onlye_xb, "xBonlye_D/D");
+    tEv_->Branch("thetaeonlye_D", &BrD_onlye_th, "thetaeonlye_D/D");
+    tEv_->Branch("nuonlye_D", &BrD_onlye_nu, "nuonlye_D/D");
+    tEv_->Branch("yonlye_D", &BrD_onlye_y, "yonlye_D/D");    
+    tEv_->Branch("W2onlye_D", &BrD_onlye_W2, "W2onlye_D/D");
+
+
+    // Initialize counters    
+
 }
 //~ add deletes complete
 Ratio::~Ratio() {
@@ -155,6 +191,14 @@ void Ratio::FillHistograms(const Event& event) {
         h_3D_D_e->Fill(event.GetQ2(), event.Getxb(), event.Getnu());   //filling a 3D histo for 5D w/ only ele vars
         h_2D_D_e->Fill(event.GetQ2(), event.Getxb());   //restricting electron vaiables to Q2, xB only for 5D analysis
         //std::cout << "nu = " << event.Getnu() << std::endl; /bump
+
+        //fill here tree branches for D and only e 
+        BrD_onlye_Q2 = event.GetQ2();
+        BrD_onlye_xb = event.Getxb();
+        BrD_onlye_th = event.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
+        BrD_onlye_nu = event.Getnu();
+        BrD_onlye_y = event.Gety();
+        BrD_onlye_W2 = event.GetW2();
         for (const Particle& hadron : event.GetHadrons()) {
             if (cutd.PassCutsHadrons(hadron)==true){
                 //if (hadron.GetPID() == Constants::PION_PLUS_PID  ){
@@ -163,6 +207,18 @@ void Ratio::FillHistograms(const Event& event) {
                 h_nu_z_pt2D->Fill(event.Getnu(), hadron.Getz(), hadron.Getpt2());
                 h_nu_D_had->Fill(event.Getnu() );   //these  histos  added to to track binning switch
                 h_pt2_D_had->Fill(hadron.Getpt2()); //these  histos  added to to track binning switch
+
+                //fill here all the default branches for D 
+                BrD_Q2 = event.GetQ2();
+                BrD_xb = event.Getxb();
+                BrD_th = event.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
+                BrD_nu = event.Getnu();
+                BrD_z = hadron.Getz();
+                BrD_pt2 = hadron.Getpt2();
+                BrD_phih = hadron.Getphih();
+                //fill the tree for D
+
+
                 //h_5D_D_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
                 //below a debug porcedure
                 if (event.GetQ2()>Q2lowA && event.GetQ2()<Q2highA && event.Getxb()>xblowA && event.Getxb()<xbhighA ) { //REGION A
@@ -221,6 +277,15 @@ void Ratio::FillHistograms(const Event& event) {
         //else if (targetName == "C2"){
         //    h_nuC2->Fill(event.Getnu());
         //}
+        //filling here only e branches for A
+        //this filling separation is important for to get the electroons that pass cuts for both targets and diferentiate the electrons DIS that also have a pion coincidential 
+        Br_onlye_Q2 = event.GetQ2();
+        Br_onlye_nu = event.Getnu();
+        Br_onlye_xb = event.Getxb();
+        Br_onlye_th = event.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
+        Br_onlye_y = event.Gety();
+        Br_onlye_W2 = event.GetW2(); 
+
         for (const Particle& hadron : event.GetHadrons()) {
 
 
@@ -231,6 +296,17 @@ void Ratio::FillHistograms(const Event& event) {
                 h_z_A_had->Fill(hadron.Getz()); //these 3 histos were added to monitor CxC self Ratio
                 h_pt2_A_had->Fill(hadron.Getpt2()); //these 3 histos were added to monitor CxC self Ratio
                 h_z_A->Fill(hadron.Getz()); //debugging Ybins jan25
+
+            //fill here all the default branches for A
+                Br_Q2 = event.GetQ2();
+                Br_xb = event.Getxb();
+                Br_th = event.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
+                Br_nu = event.Getnu();
+                Br_z = hadron.Getz();
+                Br_pt2 = hadron.Getpt2();
+                Br_phih = hadron.Getphih();
+
+
                 //h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), event.Getnu(), hadron.Getz(), hadron.Getpt2());    //filling a 5D histo for 5D calc inside hadron loop
                 h_5D_A_had->Fill(event.GetQ2(), event.Getxb(), hadron.Getphih(), hadron.Getz(), hadron.Getpt2());    //TODO uncomment this to add phih variable replace 
 
@@ -272,8 +348,9 @@ void Ratio::FillHistograms(const Event& event) {
     //    for (const Particle& hadron : event.GetHadrons()) {
     //    }
     //}
-    //Add CxC
 
+    //Add CxC
+    tEv_->Fill();
 }
 void Ratio::saveRhistos() {
     system("mkdir -p ../RinputFiles");
@@ -358,11 +435,18 @@ void Ratio::saveRhistos() {
     cA_regC->Write();
     cA_regD->Write();
     //save to target
+    if (!tEv_) return;
+    fout->cd();
+    tEv_->Write();  // writes "tEv_<targetName>"
+
+
+
     TNamed* tname = new TNamed("targetName", targetName.c_str());
     tname->Write();
 
     fout->Close();
-    std::cout << "Saved input histograms for Ratio in file: " << outPath << std::endl;
+    std::cout << "Saved input histograms and TTree for Ratio in file: " << outPath << std::endl;
+    delete fout;
 }
 
 

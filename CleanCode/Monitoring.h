@@ -325,7 +325,7 @@ TH1F* h_theta_res[6];
         return xEdgesDAT;
       }
       static const double* ThEdgesDAT() {
-        static const double thEdgesDAT[NY_DAT + 1] = {5.0, 8.4, 10.3, 27.0};  //from REC or "meas" values of edges  
+        static const double thEdgesDAT[NY_DAT + 1] = {7.6, 8.4, 10.3, 23.0};  //from REC or "meas" values of edges  
         //static const double thEdgesDAT[NY_DAT + 1] = {5.0, 8.8, 11.0, 27.0};
         return thEdgesDAT;
       }

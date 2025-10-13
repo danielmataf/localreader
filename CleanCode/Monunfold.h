@@ -357,7 +357,7 @@ private:
         return xEdgesMC;
       }
       static const double* ThEdgesMC() {
-        static const double thEdgesMC[NY_MC + 1] = {5.0, 8.8, 11.0, 27.0};
+        static const double thEdgesMC[NY_MC + 1] = {7.6, 8.8, 11.0, 23.0};
         return thEdgesMC;
       }
     };
@@ -376,7 +376,7 @@ private:
         return xEdgesREC;
       }
       static const double* ThEdgesREC() {
-        static const double thEdgesREC[NY_REC + 1] = {5.0, 8.4, 10.3, 27.0};
+        static const double thEdgesREC[NY_REC + 1] = {7.6, 8.4, 10.3, 23.0};
         return thEdgesREC;
       }
     };

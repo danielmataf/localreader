@@ -316,6 +316,23 @@ private:
     //TH3D* h_3D_A = nullptr;
 
 
+//tree handling 
+    TFile outTreeFile_;
+    TTree *tEv_;
+    //setting the five variable branches ( Q2, xB, nu, z, pt2) adding maybe phih and using theta as well for corrections 
+    //we wont be using Q2 because qe qill be translating the theta to Q2 ranges
+    //double Br_xbMC , Br_thMC , Br_Q2MC, Br_yMC, Br_nuMC, Br_W2MC, Br_zMC, Br_pt2MC, Br_phihMC;
+    //double Br_xbREC , Br_thREC , Br_Q2REC, Br_yREC, Br_nuREC, Br_W2REC, Br_zREC, Br_pt2REC, Br_phihREC;
+    double Br_xb , Br_th , Br_Q2, Br_y, Br_nu, Br_W2, Br_z, Br_pt2, Br_phih;
+    double Br_onlye_xb, Br_onlye_th , Br_onlye_Q2, Br_onlye_y, Br_onlye_nu, Br_onlye_W2; //branches for histos filled with only electrons
+    double BrD_xb , BrD_th , BrD_Q2, BrD_y, BrD_nu, BrD_W2, BrD_z, BrD_pt2, BrD_phih;   // We need the specific branches for deuterium. this will differentiate from normal branches used for nuclear targets 
+    double BrD_onlye_xb, BrD_onlye_th , BrD_onlye_Q2, BrD_onlye_y, BrD_onlye_nu, BrD_onlye_W2; 
+    //    a given ttree should have Br_xb fior example , and also have BrD_xb for deuterium 
+int has_true=0; //1 if MC filled, seems unnecessary, need the inverse of this, check the REC
+
+
+
+
 
     CutSet cutsD;
     CutSet cutsSn;
