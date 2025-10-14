@@ -180,7 +180,7 @@ int main() {
     cratio cratCu(testLD2cuts, testCucuts, "Cu_RGD");
 
 
-    int totalevts = 19000;       //local
+    int totalevts = 20000;       //local
 //    int totalevts =10000000;   //farm
 
 //creating options for unfolding 
@@ -482,7 +482,7 @@ std::cout << "\nProcessing completed \n";
     monTestLD2.saveDISforUnfoldRoot("unfDATALD2");
 
     munfSimLD2.WriteTTree("treeunfLD2_sim");
-    munfSimLD2.PrintFAKE();
+    munfSimC2.PrintFAKE();
     munfSimCu.WriteTTree("treeunfCu_sim");
     munfSimSn.WriteTTree("treeunfSn_sim");
     munfSimCxC.WriteTTree("treeunfCxC_sim");
