@@ -318,9 +318,11 @@ int main() {
                 //monSimLD2.FillHistogramswCuts(eventsimuLD2);
                 //munfSimLD2.FillHistogramswCuts(eventsimuLD2);
                 //munfSimLD2.FillDISforUnfoldREC(eventsimuLD2);
+            munfSimLD2.FillHistComp(eventsimuLD2, eventsimuLD2_MC );
+
             }
             //munfSimLD2.ProperFillRECMC(eventsimuLD2_MC , eventsimuLD2, optionLD2 ); //fill properly the REC and MC using principle we used to fill the tree branches ig
-            munfSimLD2.FillTreeEvt(eventsimuLD2_MC , eventsimuLD2, optionLD2 );         //if option is true, register value, if option is false, then set REC to 0 
+            //munfSimLD2.FillTreeEvt(eventsimuLD2_MC , eventsimuLD2, optionLD2 );         //if option is true, register value, if option is false, then set REC to 0 
         }
         //Simulation CxC
         if (simuCxC_MC.has_value()){
@@ -346,6 +348,7 @@ int main() {
                 munfSimCxC.FillDISforUnfoldREC(eventsimuCxC);
                 munfSimC1.FillDISforUnfoldREC(eventsimuCxC);
                 munfSimC2.FillDISforUnfoldREC(eventsimuCxC);
+                munfSimCxC.FillHistComp(eventsimuCxC, eventsimuCxC_MC );
 
             }
             munfSimCxC.FillTreeEvt(eventsimuCxC_MC, eventsimuCxC, optionCxC );         //if option is true, register value, if option is false, then set REC to 0
@@ -430,10 +433,11 @@ std::cout << "\nProcessing completed \n";
 
     monSimCxC.SaveHistRoot("sepCxC_sim");
     monSimC1.SaveHistRoot("sepC1_sim");
-    monSimC2.SaveHistRoot("monC2_sim");
+    monSimC2.SaveHistRoot("sepC2_sim");
     monSimCu.SaveHistRoot("sepCu_sim");
     monSimSn.SaveHistRoot("sepSn_sim");
     monSimCxC.SaveHistRoot("sepCxC_sim");
+    monSimLD2.SaveHistRoot("sepLD2_sim");
     munfSimCu.SaveHistMCRoot("sepCu_MC");
     munfSimSn.SaveHistMCRoot("sepSn_MC");
     munfSimCxC.SaveHistMCRoot("sepCxC_MC");
@@ -489,6 +493,8 @@ std::cout << "\nProcessing completed \n";
     munfSimC2.WriteTTree("treeunfC2_sim");
     munfSimC1.WriteTTree("treeunfC1_sim");
     munfSimLD2.SaveHistMCRoot("MConLD2TEST");
+    munfSimLD2.DrawCompRECMC("CompRECMC_LD2sim");
+    munfSimCxC.DrawCompRECMC("CompRECMC_CxCsim");
     std::cout << "//========= Validations ==========//  \n";
 //    ratC2.ValidateHistograms();
 //    ratC2.LogBinContent();

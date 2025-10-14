@@ -725,11 +725,12 @@ void Monunfold::ProperFillRECMC(const Event& event_MC, const Event& event_REC, i
         Br_yREC = currentyREC;
         Br_nuREC = currentnuREC;
         Br_W2REC = currentW2REC;
+        h_Q2comp->Fill(currentQ2REC, currentQ2MC);
         
     }
     if (sumMC > 0.0 ){
-        h_Q2MC->Fill(currentxbMC);
-        h_xbMC->Fill(currentQ2MC);
+        h_Q2MC->Fill(currentQ2MC);
+        h_xbMC->Fill(currentxbMC);
         h_yMC->Fill(currentyMC);
         h_nuMC->Fill(currentnuMC);
         h_W2MC->Fill(currentW2MC);
@@ -750,6 +751,7 @@ void Monunfold::ProperSaveRECMC(const std::string& filenameRECMC) {
     
     TFile* rootFile = new TFile((filenameRECMC + ".root").c_str(), "RECREATE");
     if (h_Q2)  h_Q2->Write();
+    if (h_Q2comp)  h_Q2comp->Write();
     if (h_xb)  h_xb->Write();
     if (h_y)  h_y->Write();
     if (h_nu)  h_nu->Write();
@@ -989,10 +991,11 @@ void Monunfold::FillHistComp(const Event& eventsim, const Event& eventmc){
         h_phi_elMC->Fill(eventmc.GetElectronMC().GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
         h_E_elMC->Fill(eventmc.GetElectronMC().GetMomentum().E());
     }
-    if (eventsim.GetElectron().GetMomentum().P()> 2 && eventmc.GetElectronMC().GetMomentum().P()> 2 ){
+    if (cut1.PassCutsElectrons(eventsim) == true ){
+    //if (eventsim.GetElectron().GetMomentum().P()> 2 && eventmc.GetElectronMC().GetMomentum().P()> 2 ){
         double deltaphi_el = abs(eventsim.GetElectron().GetMomentum().Phi()  - eventmc.GetElectronMC().GetMomentum().Phi() )*180;
         double deltatheta_el = abs(eventsim.GetElectron().GetMomentum().Theta()  - eventmc.GetElectronMC().GetMomentum().Theta() )*180; 
-        if ( deltaphi_el+ deltatheta_el < 10){
+        //if ( deltaphi_el+ deltatheta_el < 10){
             h_Q2comp->Fill(eventsim.GetQ2(), eventmc.GetQ2MC());
             h_xbcomp->Fill(eventsim.Getxb(), eventmc.GetxbMC());
             h_ycomp->Fill(eventsim.Gety(), eventmc.GetyMC());
@@ -1014,7 +1017,7 @@ void Monunfold::FillHistComp(const Event& eventsim, const Event& eventmc){
             //h_Delta_theta_el->Fill(eventmc.GetElectronMC().GetMomentum().Theta() * 180.0 / Constants::PI - eventsim.GetElectron().GetMomentum().Theta() * 180.0 / Constants::PI  );
             h_Delta_theta_el->Fill(( eventmc.GetElectronMC().GetMomentum().Theta() - eventsim.GetElectron().GetMomentum().Theta()  )*180  );
             h_E_elcomp->Fill(eventsim.GetElectron().GetMomentum().E(), eventmc.GetElectronMC().GetMomentum().E());
-        }
+        //}
     }
 
 
@@ -1500,8 +1503,9 @@ void Monunfold::DrawCompRECMC(const std::string& filename) {
     //h_vertexZ->Draw();
     h_vertexZcomp->Draw("colz");
 
-    //c1.Print((filename + ".pdf").c_str());
-    c1.Print((filename + ".pdf(").c_str());
+    c1.Print((filename + ".pdf").c_str());
+    //c1.Print((filename + ".pdf(").c_str());
+    /*
 TCanvas c2("c2", "c2", 800, 600);
     c2.Divide(3, 3);
     c2.cd(1);
@@ -1581,7 +1585,7 @@ TCanvas c5("c5", "c5", 800, 600);
 
 
 
-    
+    */
 
 
     //c2.Print((filename + ".pdf)").c_str());

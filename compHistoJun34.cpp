@@ -13,8 +13,8 @@
 
 void CompareHistograms(const char* target) {
     // fix: add trailing slash in paths
-    std::string file1 = std::string("/home/matamoros/jan") + target + "_test.root";
-    std::string file2 = std::string("/home/matamoros/jan") + target + "_sim.root";
+    std::string file1 = std::string("/home/matamoros/pass1") + target + ".root";
+    std::string file2 = std::string("/home/matamoros/sep") + target + "_sim.root";
 
     TFile* rootFile1 = new TFile(file1.c_str(), "READ");
     if (!rootFile1->IsOpen()) { std::cerr << "Error: Cannot open file1!\n"; return; }
@@ -124,3 +124,4 @@ int main() {
     CompareHistograms(target);
     return 0;
 }
+
