@@ -193,6 +193,7 @@ private:
     TH1F *h_vertexZ_pi;    //= new TH1F("targetVx", "vertex4target", 100, -40, 40) ;
     TH1F *h_vertexX;    //= new TH1F("targetVy", "vertex4target", 100, -40, 40) ;
     TH1F *h_vertexY;    //= new TH1F("targetVy", "vertex4target", 100, -40, 40) ;
+    TH1F *h_diffQ;
     
 
     TH1F *h_thetaelectron;

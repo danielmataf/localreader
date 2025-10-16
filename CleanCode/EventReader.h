@@ -23,6 +23,7 @@ public:
     void PrintEventInfo(int eventIndex);
     std::optional<Event> ProcessEventsInFile();
     std::optional<Event> ProcessEventsInFileMC();
+    std::optional<Event> ProcessEventsInFileREC();
     int getevtnbr();
     int getSimulatedCount() const ;
     bool isSimulatedData(hipo::event) ;
@@ -64,6 +65,8 @@ private:
     int filenb ;
     std::vector<std::string> filelist;
     Event currentEvent;
+    hipo::event cached_;      //last raw event read by MC
+    bool have_cached_ = false;
 
 
 };

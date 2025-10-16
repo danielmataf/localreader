@@ -127,6 +127,7 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_theta_piDelta(new TH1F (("U_Delta_theta_pi_" + targetName).c_str(), "Delta_theta_pi", nubin, -10, 10)),
     h_phi_piDelta(new TH1F (("U_Delta_phi_pi_" + targetName).c_str(), "Delta_phi_pi", nubin, -100, 100)),
     h_E_piDelta(new TH1F (("U_Delta_E_pi_" + targetName).c_str(), "Delta_E_pi", nubin, -1, 1)),
+    h_diffQ(new TH1F (("U_Delta_Q_" + targetName).c_str(), "Delta_Q", nubin, -1, 1)),
 
     //h_xB_thetaelMC(Monunfold::HistoMC()),  // already initialized
     //h_xB_thetaelREC(Monunfold::HistoREC()),  // already initialized
@@ -991,13 +992,23 @@ void Monunfold::FillHistComp(const Event& eventsim, const Event& eventmc){
         h_phi_elMC->Fill(eventmc.GetElectronMC().GetMomentum().Phi() * 180.0 / Constants::PI + 180.0);
         h_E_elMC->Fill(eventmc.GetElectronMC().GetMomentum().E());
     }
+    double Q2valuesim = -0.5;
+    double xbvaluesim = -0.5;
+    double yvaluesim = -0.5;
+        if (cut1.PassCutsElectronsMC(eventmc) == true ){
+
     if (cut1.PassCutsElectrons(eventsim) == true ){
+            //std::cout<<"both events passed cuts"<<std::endl;
+        
     //if (eventsim.GetElectron().GetMomentum().P()> 2 && eventmc.GetElectronMC().GetMomentum().P()> 2 ){
         double deltaphi_el = abs(eventsim.GetElectron().GetMomentum().Phi()  - eventmc.GetElectronMC().GetMomentum().Phi() )*180;
         double deltatheta_el = abs(eventsim.GetElectron().GetMomentum().Theta()  - eventmc.GetElectronMC().GetMomentum().Theta() )*180; 
         //if ( deltaphi_el+ deltatheta_el < 10){
+            //Q2valuesim = eventsim.GetQ2();
             h_Q2comp->Fill(eventsim.GetQ2(), eventmc.GetQ2MC());
+            //xbvaluesim = eventsim.Getxb();
             h_xbcomp->Fill(eventsim.Getxb(), eventmc.GetxbMC());
+            //yvaluesim = eventsim.Gety();
             h_ycomp->Fill(eventsim.Gety(), eventmc.GetyMC());
             h_nucomp->Fill(eventsim.Getnu(), eventmc.GetnuMC());
             h_W2comp->Fill(eventsim.GetW2(), eventmc.GetW2MC());
@@ -1018,9 +1029,28 @@ void Monunfold::FillHistComp(const Event& eventsim, const Event& eventmc){
             h_Delta_theta_el->Fill(( eventmc.GetElectronMC().GetMomentum().Theta() - eventsim.GetElectron().GetMomentum().Theta()  )*180  );
             h_E_elcomp->Fill(eventsim.GetElectron().GetMomentum().E(), eventmc.GetElectronMC().GetMomentum().E());
         //}
+        }
     }
-
-
+    /*
+    double Q2valuemc ;
+    double xbvaluemc ;
+    double yvaluemc ;
+    if (cut1.PassCutsElectronsMC(eventmc) == true ){
+        Q2valuemc = eventmc.GetQ2MC();
+        xbvaluemc = eventmc.GetxbMC();
+        yvaluemc = eventmc.GetyMC();
+    }
+    if (Q2valuesim > 0 && Q2valuemc > 0){
+        h_Q2comp->Fill(Q2valuesim, Q2valuemc);
+        h_diffQ->Fill(Q2valuesim -  Q2valuemc);
+    }
+    if (xbvaluesim > 0 && xbvaluemc > 0){
+        h_xbcomp->Fill(xbvaluesim, xbvaluemc);
+    }
+    if (yvaluesim > 0 && yvaluemc > 0){
+        h_ycomp->Fill(yvaluesim, yvaluemc);
+    }
+    */
     for (const Particle& MChadron: eventmc.GetMCHadrons()){
         if (MChadron.GetPID() == Constants::PION_PLUS_PID  ){   
             h_px_piMC->Fill(MChadron.GetMomentum().X());
@@ -1476,6 +1506,7 @@ void Monunfold::DrawCompRECMC(const std::string& filename) {
     c1.Divide(3, 3);
     c1.cd(1);
     //h_Q2->Draw();
+    //h_diffQ->Draw();
     h_Q2comp->Draw("colz");
     c1.cd(2);
     //h_xb->Draw();

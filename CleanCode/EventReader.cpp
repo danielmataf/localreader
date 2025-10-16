@@ -234,13 +234,14 @@ bool EventReader::isSimulatedData(hipo::event event) {
         //std::cout << "Processing event: " << eventNumber << std::endl;
         bool el_detect = false;
         int electron_count = 0;
-        double max_energy_electron = 0.0; 
+        double max_energy_electron = 0.0;
         event.getStructure(RECgen);
         event.getStructure(RECcalo);
         event.getStructure(RECcher);
         event.getStructure(HELbank);
         event.getStructure(MCpart);
         event.getStructure(RECevt);
+
 
         
         //RECgen.show();
@@ -479,68 +480,129 @@ bool EventReader::openNextValidMCFile() {
 }
 
 std::optional<Event> EventReader::ProcessEventsInFile() {
-    // If duplicate requested and we cached the last event, return it without advancing
-    if (duplicateMode && haveCached) {
-        haveCached = false;
-        return cachedEvent;
+    // Open next REC file if needed
+    if (!reader.hasNext()) {
+        ++filenb;
+        if (filenb < 0) filenb = 0;
+        if (static_cast<size_t>(filenb) >= filelist.size()) return std::nullopt;
+
+        const std::string& filename = filelist.at(filenb);
+        reader.open(filename.c_str());
+        reader.readDictionary(factory);
+
+        // Bind REC (and RUN) schemas for real data
+        RUNconfig = factory.getSchema("RUN::config");
+        RECgen    = factory.getSchema("REC::Particle");
+        RECcalo   = factory.getSchema("REC::Calorimeter");
+        RECcher   = factory.getSchema("REC::Cherenkov");
+        RECevt    = factory.getSchema("REC::Event");
+        HELbank   = factory.getSchema("HEL::online");
+        // MC schemas not needed for RGD, but harmless if present
+        MCpart    = factory.getSchema("MC::Particle");
+        MCevt     = factory.getSchema("MC::Event");
+
+        std::cout << "Processing file: " << filename << std::endl;
     }
 
-    while (true) {
-        // Make sure we have a file and try to advance to the next event
-        if (!reader.next()) {
-            // Either no file yet or file exhausted -> open next valid file and try again
-            if (!openNextValidRECFile()) return std::nullopt;
-            if (!reader.next())          continue; // newly opened but immediately exhausted? try again
-        }
+    // Advance one event
+    if (!reader.next()) return std::nullopt;
 
-        // Decode the event we just advanced to
-        hipo::event he;
-        reader.read(he);
-
-        // Build your Event (if your ProcessEvent returns optional, honor it)
-        auto opt = ProcessEvent(he, /*run?*/0, /*isMC?*/false);
-        if (!opt) continue;   // skip undecodable events, grab next
-
-        Event ev = *opt;
-
-        // If you want to deliver the same event twice (Cu/Sn), cache it now
-        if (duplicateMode) {
-            cachedEvent = ev;
-            haveCached  = true;
-        }
-        return ev;            // success
-    }
+    // Read current event and decode REC (data path => isSimulated=false)
+    hipo::event hipoEvent;
+    reader.read(hipoEvent);
+    return ProcessEvent(hipoEvent, /*eventNumber*/ 0, /*isSimulated*/ false);
 }
-
-
-
 
 std::optional<Event> EventReader::ProcessEventsInFileMC() {
-    if (duplicateMode && haveCached) {
-        haveCached = false;
-        return cachedEvent;
-    }
-
     while (true) {
-        if (!reader.next()) {
-            if (!openNextValidMCFile()) return std::nullopt;
-            if (!reader.next())          continue;
+        // Open next SIM file if needed
+        if (!reader.hasNext()) {
+            ++filenb;
+            if (filenb < 0) filenb = 0;
+            if (static_cast<size_t>(filenb) >= filelist.size()) return std::nullopt;
+
+            const std::string& filename = filelist.at(filenb);
+            reader.open(filename.c_str());
+            reader.readDictionary(factory);
+
+            // Bind BOTH MC and REC schemas (SIM files carry both)
+            RUNconfig = factory.getSchema("RUN::config");
+
+            // MC banks
+            MCpart    = factory.getSchema("MC::Particle");
+            MCevt     = factory.getSchema("MC::Event");
+
+            // REC banks (needed immediately after for paired REC read)
+            RECgen    = factory.getSchema("REC::Particle");
+            RECcalo   = factory.getSchema("REC::Calorimeter");
+            RECcher   = factory.getSchema("REC::Cherenkov");
+            RECevt    = factory.getSchema("REC::Event");
+            HELbank   = factory.getSchema("HEL::online");
         }
 
-        hipo::event he;
-        reader.read(he);
+        // Advance exactly one event
+        if (!reader.next()) continue;
 
-        auto opt = ProcessEventMC(he);
-        if (!opt) continue;
+        // Read & cache the raw event for the paired REC call
+        reader.read(cached_);
+        have_cached_ = true;
 
-        Event ev = *opt;
-
-        if (duplicateMode) {
-            cachedEvent = ev;
-            haveCached  = true;
+        // Must be a SIM event (has MC::Particle rows)
+        if (!isSimulatedData(cached_)) {
+            have_cached_ = false;
+            continue;
         }
-        return ev;
+
+        // Decode MC view from the cached raw event
+        auto evMC = ProcessEventMC(cached_);
+        if (!evMC) {
+            have_cached_ = false;   // malformed/no MC bank; try next event
+            continue;
+        }
+
+        // MC drives progression
+        return evMC;
     }
 }
 
+std::optional<Event> EventReader::ProcessEventsInFileREC() {
+    // Must be called right after a successful ProcessEventsInFileMC()
+    if (!have_cached_) {
+        // No MC cached → caller didn’t fetch MC first this iteration
+        return std::nullopt;
+    }
 
+    // Re-read the SAME current event (NO next())
+    hipo::event hipoEvent;
+    if (!reader.hasNext()) {         // defensive: end-of-file edge
+        have_cached_ = false;
+        return std::nullopt;
+    }
+    reader.read(hipoEvent);
+
+    // (Re)bind REC schemas from the current dictionary (idempotent)
+    RUNconfig = factory.getSchema("RUN::config");
+    RECgen    = factory.getSchema("REC::Particle");
+    RECcalo   = factory.getSchema("REC::Calorimeter");
+    RECcher   = factory.getSchema("REC::Cherenkov");
+    RECevt    = factory.getSchema("REC::Event");
+    HELbank   = factory.getSchema("HEL::online");
+
+    // Optional extra guard: ensure this event actually has REC::Particle
+   try {
+    hipoEvent.getStructure(RECgen);
+} catch (...) {
+    std::cerr << "[!] No REC::Particle bank in current event (MISS)." << std::endl;
+    have_cached_ = false;
+    return std::nullopt;
+}
+
+
+    // Decode REC view from SIM event (set isSimulated=true for semantics)
+    auto evREC = ProcessEvent(hipoEvent, /*eventNumber*/ 0, /*isSimulated*/ true);
+
+    // Pair consumed → clear the MC-ready flag
+    have_cached_ = false;
+
+    return evREC;  // may be nullopt (MISS), which your caller handles with 'option'
+}

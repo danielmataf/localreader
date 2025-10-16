@@ -64,10 +64,10 @@ void CompareHistograms() {
         //{"Sn",  "~/Desktop/rootJUL8/REcutSn_test.root"},
         //{"Cu",  "~/Desktop/rootJUL8/REcutCu_test.root"},
         //{"LD2", "~/Desktop/rootJUL8/REcutLD2_test.root"}
-        {"CxC",  "~/pass1CC.root"},
-        {"Sn",  "~/pass1Sn.root"},
-        {"Cu",  "~/pass1Cu.root"},
-        {"LD2", "~/pass1LD2.root"}
+        {"CxC", "~/Desktop/localreader/Cleacode/build/pass1CC.root"},
+        {"Sn",  "~/Desktop/localreader/Cleacode/build/pass1Sn.root"},
+        {"Cu",  "~/Desktop/localreader/Cleacode/build/pass1Cu.root"},
+        {"LD2", "~/Desktop/localreader/Cleacode/build/pass1LD2.root"}
    
     };
 
