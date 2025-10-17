@@ -833,7 +833,7 @@ void Monunfold::FillTreeEvt(const Event& event_MC  , const Event& event_REC , in
 }
 
 
-
+/*
 void Monunfold::WriteTTree(const std::string& filenameTREE) {
     TFile* rootFile = new TFile((filenameTREE + ".root").c_str(), "RECREATE");
     if (!tEv_) return;
@@ -844,6 +844,41 @@ void Monunfold::WriteTTree(const std::string& filenameTREE) {
     delete rootFile; 
 
 
+}
+*/
+void Monunfold::WriteTTree(const std::string& filenameTREE) {
+    if (!tEv_) {
+        std::cerr << "[WriteTTree] ERROR: tEv_ is null. Nothing to write.\n";
+        return;
+    }
+
+    // Entries before writing
+    Long64_t nInMem = tEv_->GetEntries();
+    std::cout << "[WriteTTree] In-memory entries for '" << tEv_->GetName()
+              << "': " << nInMem << "\n";
+
+    TFile* rootFile = new TFile((filenameTREE + ".root").c_str(), "RECREATE");
+    rootFile->cd();
+    tEv_->Write();  // writes "tEv_<targetName>"
+    rootFile->Close();
+    delete rootFile;
+
+    // Verify by reopening and counting on-disk entries
+    TFile fverify((filenameTREE + ".root").c_str(), "READ");
+    if (!fverify.IsZombie()) {
+        TTree* tOnDisk = nullptr;
+        fverify.GetObject(tEv_->GetName(), tOnDisk);
+        if (tOnDisk) {
+            std::cout << "[WriteTTree] On-disk entries for '" << tOnDisk->GetName()
+                      << "': " << tOnDisk->GetEntries() << "\n";
+        } else {
+            std::cerr << "[WriteTTree] WARNING: Could not retrieve tree '"
+                      << tEv_->GetName() << "' from file.\n";
+        }
+        fverify.Close();
+    } else {
+        std::cerr << "[WriteTTree] ERROR: Could not reopen file for verification.\n";
+    }
 }
 
 
@@ -857,6 +892,7 @@ void Monunfold::FillHistogramswCuts(const Event& event) {
         // Fill other histograms related to electron variables
         h_Q2->Fill(event.GetQ2());
         h_xb->Fill(event.Getxb());
+        h_xQREC->Fill(event.Getxb(), event.GetQ2());
         h_y->Fill(event.Gety());
         h_nu->Fill(event.Getnu());
         h_W2->Fill(event.GetW2());
@@ -881,6 +917,8 @@ void Monunfold::FillHistogramswCuts(const Event& event) {
                 if (hadron.GetPID() == Constants::PION_PLUS_PID) {
                     h_z->Fill(hadron.Getz());
                     h_pt2->Fill(hadron.Getpt2());
+                    h_pt2zREC->Fill(hadron.Getpt2(), hadron.Getz());
+
                     h_phih->Fill(hadron.Getphih());
                     h_px_pi->Fill(hadron.GetMomentum().X());
                     h_py_pi->Fill(hadron.GetMomentum().Y());
@@ -914,10 +952,11 @@ void Monunfold::FillHistogramswCutsMC(const Event& event) {
         // Fill other histograms related to MC electron variables
         h_Q2MC->Fill(event.GetQ2MC());
         h_xbMC->Fill(event.GetxbMC());
+        h_xQMC->Fill(event.GetxbMC(), event.GetQ2MC());
         h_yMC->Fill(event.GetyMC());
         h_nuMC->Fill(event.GetnuMC());
         h_W2MC->Fill(event.GetW2MC());
-        //std::cout<< "bump MC el cuts"<<std::endl;
+//        std::cout<< "[BUMP] MC el cuts"<<std::endl;
         // Fill MC electron momentum histograms
         Particle electron = event.GetElectron();
         //h_px_el->Fill(electron.GetMomentum().X()); // Assuming the same histogram as in real data
@@ -933,9 +972,8 @@ void Monunfold::FillHistogramswCutsMC(const Event& event) {
 
         // Loop over MC hadrons and fill histograms for those passing hadron cuts
         for (const Particle& hadron : event.GetMCHadrons()) {
-            if (cut1.PassCutsHadrons(hadron)) {
+            if (cut1.PassCutsHadronsMC(hadron)) {
                 if (hadron.GetPID() == Constants::PION_PLUS_PID) {
-                    std::cout<< "bump MC hadron cuts"<<std::endl;
                     h_zMC->Fill(hadron.GetzMC());
                     h_pt2MC->Fill(hadron.Getpt2MC());
                     h_phihMC->Fill(hadron.GetphihMC());
@@ -1299,6 +1337,7 @@ void Monunfold::SaveHistRoot(const std::string& filenameREC) {
     // Write histograms related to real data
     h_vertexZ->Write();
     h_Q2->Write();
+    h_xQREC->Write();
     h_xb->Write();
     h_y->Write();
     h_nu->Write();
@@ -1316,6 +1355,7 @@ void Monunfold::SaveHistRoot(const std::string& filenameREC) {
     h_z->Write();
     h_pt2->Write();
     h_phih->Write();
+    h_pt2zREC->Write();
     //h_px_pi->Write();
     //h_py_pi->Write();
     //h_pz_pi->Write();
@@ -1384,6 +1424,7 @@ void Monunfold::SaveHistMCRoot(const std::string& filenameMC) {
     h_vertexZMC->Write();
     h_Q2MC->Write();
     h_xbMC->Write();
+    h_xQMC->Write();
     h_yMC->Write();
     h_nuMC->Write();
     h_W2MC->Write();
@@ -1400,6 +1441,7 @@ void Monunfold::SaveHistMCRoot(const std::string& filenameMC) {
     h_zMC->Write();
     h_pt2MC->Write();
     h_phihMC->Write();
+    h_pt2zMC->Write();
     //h_px_pi->Write(); // Assuming these are the same as real data for simplicity
     //h_py_pi->Write();
     //h_pz_pi->Write();

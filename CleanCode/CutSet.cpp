@@ -272,7 +272,7 @@ bool CutSet::PassCutsElectrons(const Event& event)  {
     double Vx = event.GetVx();
     double Vy = event.GetVy();
     if (Vz >= cutVzMin && Vz <= cutVzMax ){
-        //std::cout << "Vz passed" << std::endl;
+        //std   ::cout << "Vz passed" << std::endl;
         if (Q2 >= Constants::RcutminQ && Q2 <= Constants::RcutmaxQ ){
             if (xb >= Constants::Rcutminxb ){  //FILTERING for edges for CORRECTION
             if (y >= Constants::RcutminY && y <= Constants::RcutmaxY){
@@ -336,6 +336,23 @@ bool CutSet::PassCutsHadrons( const Particle& hadron)  {
     double phih = hadron.Getphih();
     double h_pid= hadron.GetPID();
     double hadVz = hadron.GetParticleVertexZ();
+    //PID is not being included !!!
+    if (z >= cutZMin && z <= cutZMax) {
+        if (pt2 >= Constants::RcutminPt2 && pt2 <= Constants::RcutmaxPt2) {
+            //std::cout << "vz value =" << hadVz <<  std::endl;
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+bool CutSet::PassCutsHadronsMC( const Particle& hadron)  {
+    double z = hadron.GetzMC();
+    double pt2 = hadron.Getpt2MC();
+    double phih = hadron.GetphihMC();
+    double h_pid= hadron.GetPID();
+    //double hadVz = hadron.GetParticleVertexZMC();
     //PID is not being included !!!
     if (z >= cutZMin && z <= cutZMax) {
         if (pt2 >= Constants::RcutminPt2 && pt2 <= Constants::RcutmaxPt2) {

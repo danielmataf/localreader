@@ -68,6 +68,7 @@ public:
     void createResponseMatrix(); //create response matrix after filling histograms for MC and REC
     void FillTreeEvt(const Event&, const Event&, int  ); // needs redefinition of arguments, maybe an option 0 or 1 if the MC has a match or miss in REC
     void WriteTTree(const std::string& );
+    
     void ProperFillRECMC(const Event&, const Event&, int); //fill properly the REC and MC using principle we used to fill the tree branches ig
     void ProperSaveRECMC(const std::string& ); //save properly the REC and MC using principle we used to fill the tree branches ig
     void PrintFAKE(); //print evts the nb of evts that missed the cut

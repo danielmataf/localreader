@@ -343,8 +343,8 @@ int main() {
             munfSimC2 .FillDISforUnfoldMC(eventsimuCxC_MC);
 
             //Fill trees (same MC/REC pair; each Monunfold applies its own Vz window)
-            //munfSimCxC.FillTreeEvt(eventsimuCxC_MC, eventsimuCxC, optionCxC);
-            //munfSimC1.FillTreeEvt(eventsimuCxC_MC, eventsimuCxC, optionCxC);
+            munfSimCxC.FillTreeEvt(eventsimuCxC_MC, eventsimuCxC, optionCxC);
+            munfSimC1.FillTreeEvt(eventsimuCxC_MC, eventsimuCxC, optionCxC);
             munfSimC2.FillTreeEvt(eventsimuCxC_MC, eventsimuCxC, optionCxC);
 
             // REC histos & comparisons (after tree fill)
@@ -453,12 +453,12 @@ std::cout << "\nProcessing completed \n";
     monSimCxC.SaveHistRoot("octCxC_sim");
     monSimC1.SaveHistRoot("octC1_sim");
     monSimC2.SaveHistRoot("octC2_sim");
-    monSimCu.SaveHistRoot("sepCu_sim");
-    monSimSn.SaveHistRoot("sepSn_sim");
+    monSimCu.SaveHistRoot("octCu_sim");
+    monSimSn.SaveHistRoot("octSn_sim");
     monSimCxC.SaveHistRoot("octCxC_sim");
     monSimLD2.SaveHistRoot("octLD2_sim");
-    munfSimCu.SaveHistMCRoot("sepCu_MC");
-    munfSimSn.SaveHistMCRoot("sepSn_MC");
+    munfSimCu.SaveHistMCRoot("octCu_MC");
+    munfSimSn.SaveHistMCRoot("octSn_MC");
     munfSimCxC.SaveHistMCRoot("octCxC_MC");
     munfSimC2.SaveHistMCRoot("octC2_MC");
     munfSimC1.SaveHistMCRoot("octC1_MC");
@@ -495,19 +495,30 @@ std::cout << "\nProcessing completed \n";
     monTestC1.saveDISforUnfoldRoot("unfDATAC1");
     monTestC2.saveDISforUnfoldRoot("unfDATAC2");
     monTestLD2.saveDISforUnfoldRoot("unfDATALD2");
-
+    std::cout << "//========= Unfolding Trees ==========//  \n";
+    std::cout << "check misses LD2 \n";
     munfSimLD2.PrintFAKE();
     munfSimLD2.WriteTTree("treeunfLD2_sim");
+    std::cout << "check misses Cu \n";
+    munfSimCu.PrintFAKE();
+    munfSimCu.WriteTTree("treeunfCu_sim");
+    std::cout << "check misses Sn \n";
+    munfSimSn.PrintFAKE();
+    munfSimSn.WriteTTree("treeunfSn_sim");
+    std::cout << "check misses CxC \n";
+    munfSimCxC.PrintFAKE();
+    munfSimCxC.WriteTTree("treeunfCxC_sim");
+    std::cout << "check misses C1 \n";
+    munfSimC1.PrintFAKE();
+    munfSimC1.WriteTTree("treeunfC1_sim");
+    std::cout << "check misses C2 \n";
     munfSimC2.PrintFAKE();
     munfSimC2.WriteTTree("treeunfC2_sim");
-    munfSimCu.WriteTTree("treeunfCu_sim");
-    munfSimSn.WriteTTree("treeunfSn_sim");
-    munfSimCxC.WriteTTree("treeunfCxC_sim");
-    munfSimC1.WriteTTree("treeunfC1_sim");
     munfSimLD2.SaveHistMCRoot("MConLD2TEST");
+    munfSimC2.SaveHistMCRoot("MConC2TEST");
     munfSimLD2.DrawCompRECMC("CompRECMC_LD2sim");
     munfSimCxC.DrawCompRECMC("CompRECMC_CxCsim");
-    std::cout << "//========= Validations ==========//  \n";
+    std::cout << "//========= done ==========//  \n";
 //    ratC2.ValidateHistograms();
 //    ratC2.LogBinContent();
 
