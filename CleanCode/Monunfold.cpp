@@ -46,12 +46,13 @@ Monunfold::Monunfold(CutSet a, const std::string& targetName)
     h_vertexZMC(new TH1F(("U_targetVz_MC" + targetName).c_str(), "vertex4targetMC", 100, -20, 10)),
     h_vertexYMC(new TH1F(("U_targetVy_MC" + targetName).c_str(), "vertex4targetMC", 100, -10, 10)),
     h_vertexXMC(new TH1F(("U_targetVx_MC" + targetName).c_str(), "vertex4targetMC", 100, -10, 10)),
-    h_pt2zMC(new TH2F(("U_pt2z_MC" + targetName).c_str(), "pt2zMC", nubin, pt2minX, pt2maxX, nubin, zminX, zmaxX)),
 
     h_xBthREC(new TH2F(("U_xBthREC_" + targetName).c_str(), "xBthREC", nubin, 0,30, nubin, xminX, xmaxX)),
     h_xBthMC(new TH2F(("U_xBthMC_" + targetName).c_str(), "xBthMC", nubin, 0,30, nubin, xminX, xmaxX)),
     h_xQREC(new TH2F(("U_xQ2REC_" + targetName).c_str(), "xQ2REC", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
     h_xQMC(new TH2F(("U_xQ2MC_" + targetName).c_str(), "xQ2MC", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
+    h_pt2zREC(new TH2F(("U_pt2zREC_" + targetName).c_str(), "pt2zREC", nubin, pt2minX, pt2maxX, nubin, zminX, zmaxX)),
+    h_pt2zMC(new TH2F(("U_pt2z_MC" + targetName).c_str(), "pt2zMC", nubin, pt2minX, pt2maxX, nubin, zminX, zmaxX)),
 
     h_Q2comp(new TH2F(("U_Q2comp_" + targetName).c_str(), "Q2comp", nubin, QminX, QmaxX, nubin, QminX, QmaxX)),
     h_xbcomp(new TH2F(("U_xbcomp_" + targetName).c_str(), "xbcomp", nubin, xminX, xmaxX, nubin, xminX, xmaxX)),
@@ -721,6 +722,7 @@ void Monunfold::ProperFillRECMC(const Event& event_MC, const Event& event_REC, i
         h_W2->Fill(currentnuREC);
         h_xQREC->Fill(currentxbREC, currentQ2REC);
         h_xBthREC->Fill(currentxbREC, currentthREC);
+        //h_pt2zREC-> ;// Need to get the hadron stuff urgent 
         Br_xbREC = currentxbREC;
         Br_Q2REC = currentQ2REC;
         Br_yREC = currentyREC;
@@ -737,6 +739,7 @@ void Monunfold::ProperFillRECMC(const Event& event_MC, const Event& event_REC, i
         h_W2MC->Fill(currentW2MC);
         h_xQMC->Fill(currentxbMC, currentQ2MC);
         h_xBthMC->Fill(currentxbMC, currentthMC);
+        //h_pt2zMC-> ;// Need to get the hadron stuff urgent
         Br_xbMC = currentxbMC;
         Br_Q2MC = currentQ2MC;
         Br_yMC = currentyMC;
@@ -766,6 +769,8 @@ void Monunfold::ProperSaveRECMC(const std::string& filenameRECMC) {
 
     if (h_xQREC)  h_xQREC->Write();
     if (h_xQMC)  h_xQMC->Write();
+    if (h_pt2zMC) h_pt2zMC->Write();
+    if (h_pt2zREC) h_pt2zREC->Write();
     if (h_xBthREC)  h_xBthREC->Write();
     if (h_xBthMC)  h_xBthMC->Write();
 
@@ -789,18 +794,18 @@ void Monunfold::FillTreeEvt(const Event& event_MC  , const Event& event_REC , in
     //reset values of the variables before branching, sometimes we need REC valeues at zer to rgister MISS
     double currentxbMC = 0.0;
     double currentthMC = 0.0;
-    
+    //std::cout << "[BUMP] entering FillTreeEvt function" << std::endl;
     if (cut1.PassCutsElectronsMC(event_MC)==true){
         //std::cout<<"[BUMP] event passed mc cuts"<<std::endl;
         counterTOTAL++; //not a real total, just total of considered MC evts 
-
         currentthMC = event_MC.MCelectron.GetMomentum().Theta()*180/Constants::PI;
         currentxbMC = event_MC.GetxbMC();
         double currentxbREC = 0.0;
         double currentthREC = 0.0;
         if (option == true ){   
             if (cut1.PassCutsDetectors(event_REC)==true && cut1.PassCutsElectrons(event_REC)==true){
-//                std::cout<<"[BUMP] event passed rec cuts"<<std::endl;
+                //std::cout<<"[RESP] +1"<<std::endl;
+
                 currentthREC = event_REC.electron.GetMomentum().Theta()* 180.0 / Constants::PI;
                 currentxbREC = event_REC.Getxb();
                 counterMATCHREC++;
@@ -809,19 +814,24 @@ void Monunfold::FillTreeEvt(const Event& event_MC  , const Event& event_REC , in
         }
         if (currentthREC == 0 && currentxbREC == 0){
             counterMISSREC++;
+            //std::cout<<"[MISS] +1"<<std::endl;
         }
+
         Br_xbREC = currentxbREC;
         Br_thREC = currentthREC;
         Br_xbMC = currentxbMC;
         Br_thMC = currentthMC;
-
-
+        //std::cout << "xb REC =" << currentxbREC << std::endl;
+        //std::cout << "xb MC =" << currentxbMC << std::endl;
+        //std::cout << "th REC =" << currentthREC << std::endl;
+        //std::cout << "th MC =" << currentthMC << std::endl;
         tEv_->Fill();
 
     }
     
 
 }
+
 
 
 void Monunfold::WriteTTree(const std::string& filenameTREE) {
@@ -835,6 +845,7 @@ void Monunfold::WriteTTree(const std::string& filenameTREE) {
 
 
 }
+
 
 void Monunfold::FillHistogramswCuts(const Event& event) {
     if (cut1.PassCutsDetectors(event)) {
