@@ -120,8 +120,37 @@ void FilePathGenerator::ParDir2Vector(const std::string& parentDirectory, std::v
 //            }
 //        }
 //    }
+void FilePathGenerator::serverFilespass1(const std::string& parentDirectory,
+                                         std::vector<std::string>& filepaths) {
+    if (!fs::exists(parentDirectory) || !fs::is_directory(parentDirectory)) {
+        std::cerr << "[serverFilespass1] Not a directory: " << parentDirectory << '\n';
+        return;
+    }
 
+    for (const auto& entry : fs::directory_iterator(parentDirectory)) {
+        if (!entry.is_directory()) continue;
 
+        for (const auto& f : fs::directory_iterator(entry.path())) {
+            if (f.is_regular_file() && f.path().extension() == ".hipo") {
+                filepaths.push_back(f.path().string());
+            }
+        }
+    }
+}
+
+void FilePathGenerator::serverFilesSIM(const std::string& directory,
+                                       std::vector<std::string>& filepaths) {
+    if (!fs::exists(directory) || !fs::is_directory(directory)) {
+        std::cerr << "[serverFilesSIM] Not a directory: " << directory << '\n';
+        return;
+    }
+
+    for (const auto& entry : fs::directory_iterator(directory)) {
+        if (entry.is_regular_file() && entry.path().extension() == ".hipo") {
+            filepaths.push_back(entry.path().string());
+        }
+    }
+}
 
 void FilePathGenerator::SnDir2Vector(const std::string& parentDirectory, std::vector<std::string>& filepaths) {
     try {

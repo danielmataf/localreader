@@ -46,7 +46,15 @@ int main() {
     //files.ParDir2Vector("/cache/clas12/rg-d/production/pass1/recon/LD2/dst/recon/", filenamesLD2);
     //files.ParDir2Vector("/cache/clas12/rg-d/production/pass1/recon/CuSn/dst/recon/", filenamesCuSn);
     //files.ParDir2Vector("/cache/clas12/rg-d/production/pass1/recon/CxC/dst/recon/", filenamesCxC);
-
+    
+    //check this in server (IJCLab)
+    //files.serverFilespass1("/projet/nucleon/matamoros/criticaldump/pass1CuSn/", filenamesCuSn);
+    //files.serverFilespass1("/projet/nucleon/matamoros/criticaldump/pass1CC/", filenamesCxC);
+    //files.serverFilespass1("/projet/nucleon/matamoros/criticaldump/pass1LD2/", filenamesLD2);
+    //files.serverFilesSIM("/projet/nucleon/matamoros/criticaldump/D2_ciritical/", simufilesLD2);
+    //files.serverFilesSIM("/projet/nucleon/matamoros/criticaldump/Cu_ciritcal/", simufilesCu);
+    //files.serverFilesSIM("/projet/nucleon/matamoros/criticaldump/Sn_critical/", simufilesSn);
+    //files.serverFilesSIM("/projet/nucleon/matamoros/criticaldump/CC_critical/", simufilesCxC);
 
     //Uncomment 4 test on ifarm, comment all above
     //files.Files2Vector("/cache/hallb/scratch/rg-d/production/skim_pass0v7/LD2/", filenamesLD2);
@@ -179,7 +187,7 @@ int main() {
     cratio cratCu(testLD2cuts, testCucuts, "Cu_RGD");
 
 
-    int totalevts = 19000;       //local
+    int totalevts = 50000;       //local
 //    int totalevts =10000000;   //farm
 
 //creating options for unfolding 
@@ -220,6 +228,7 @@ int main() {
 	        monTestLD2.CheckFewBins(eventtestLD2);   
             monTestLD2.FillPrePostCutHistograms(eventtestLD2); 
             monTestLD2.FillDISforUnfoldDAT(eventtestLD2);
+            
             
             ratC1.FillHistograms(eventtestLD2);
             ratC2.FillHistograms(eventtestLD2);
@@ -446,6 +455,7 @@ std::cout << "\nProcessing completed \n";
     monTestLD2.DrawHistograms("monLD2_test");
     monTestSn.SaveHistRoot("pass1Sn");
     monTestC2.SaveHistRoot("pass1C2");
+    monTestC1.SaveHistRoot("pass1C1 ");
     monTestLD2.SaveHistRoot("pass1LD2");
     monTestCu.SaveHistRoot("pass1Cu");
     monSimCxC.SaveHistRoot("pass1CC");
