@@ -138,9 +138,15 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_pt2_post(new TH1F((std::string("pt2_post_") + targetName).c_str(),  "p_{T}^{2} (post p_{T}^{2} cut)", nubin, pt2minX, pt2maxX)),
     h_sampl_el_pre(new TH2F((std::string("sampl_el_pre_")  + targetName).c_str(), "Sampling fraction (pre e-cuts);p (GeV);E_{PCAL}/p", nubin, 0, 10, nubin, 0, 1)),
     h_sampl_el_post(new TH2F((std::string("sampl_el_post_") + targetName).c_str(), "Sampling fraction (post e-cuts);p (GeV);E_{PCAL}/p", nubin, 0, 10, nubin, 0, 1)),
-    h_beta_p_pos (new TH2F("beta_p_pos", "#beta (meas) vs p; p (GeV/c); #beta", nubin, 0.0, 7.5, nubin, 0.0, 1.2)),
-    h_m2_p_pos   (new TH2F("m2_p_pos",   "m^{2} (from #beta_{meas}) vs p; p (GeV/c); m^{2} (GeV^{2}/c^{4})", nubin, 0.0, 7.5, nubin, -0.5, 2.5)),
-    h_pt2_vz_pi  (new TH2F("pt2_vz_pi",  "p_{T}^{2} vs V_{z} (#pi^{+}); V_{z} (cm); p_{T}^{2} (GeV^{2})", nubin, -12.0, 2.0, nubin, 0.0, 2.0)),
+    h_beta_p_pre (new TH2F("beta_p_pre", "#beta (meas) vs p; p (GeV/c); #beta", nubin, 0.0, 7.5, nubin, 0.0, 1.2)),    
+    h_beta_p_posPID (new TH2F("beta_p_posPID", "#beta (meas) vs p; p (GeV/c); #beta", nubin, 0.0, 7.5, nubin, 0.0, 1.2)),
+    h_beta_p_posKIN (new TH2F("beta_p_posKIN", "#beta (meas) vs p; p (GeV/c); #beta", nubin, 0.0, 7.5, nubin, 0.0, 1.2)),
+    h_m2_p_pre   (new TH2F("m2_p_pre",   "m^{2} (from #beta_{meas}) vs p; p (GeV/c); m^{2} (GeV^{2}/c^{4})", nubin, 0.0, 7.5, nubin, -0.5, 2.5)),
+    h_m2_p_posPID   (new TH2F("m2_p_posPID",   "m^{2} (from #beta_{meas}) vs p; p (GeV/c); m^{2} (GeV^{2}/c^{4})", nubin, 0.0, 7.5, nubin, -0.5, 2.5)),
+    h_m2_p_posKIN   (new TH2F("m2_p_pKIN",   "m^{2} (from #beta_{meas}) vs p; p (GeV/c); m^{2} (GeV^{2}/c^{4})", nubin, 0.0, 7.5, nubin, -0.5, 2.5)),
+    h_pt2_vz_pi_pre  (new TH2F("pt2_vz_pi_pre",  "p_{T}^{2} vs V_{z} (#pi^{+}); V_{z} (cm); p_{T}^{2} (GeV^{2})", nubin, -12.0, 2.0, nubin, 0.0, 2.0)),
+    h_pt2_vz_pi_postPID  (new TH2F("pt2_vz_pi_posPID",  "p_{T}^{2} vs V_{z} (#pi^{+}); V_{z} (cm); p_{T}^{2} (GeV^{2})", nubin, -12.0, 2.0, nubin, 0.0, 2.0)),
+    h_pt2_vz_pi_postKIN  (new TH2F("pt2_vz_pi_posKIN",  "p_{T}^{2} vs V_{z} (#pi^{+}); V_{z} (cm); p_{T}^{2} (GeV^{2})", nubin, -12.0, 2.0, nubin, 0.0, 2.0)),
 
 
     h_xB_thetaelDAT(Monitoring::MakeHistoDAT( Form("h_xB_thetaelDAT_%s", targetName.c_str()), Form("DAT (%s): x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]", targetName.c_str()))),
@@ -1845,33 +1851,45 @@ void Monitoring::FillPrePostCutHistograms(const Event& event) {
         return;
     }
     h_W2_post->Fill(W2);
-  for (const Particle& hadron : event.GetHadrons()) {
-        const double p_h   = hadron.GetMomentum().P();
-        const double beta  = hadron.GetBeta();              // measured β from REC::Particle
-        if (!std::isnan(beta)) {
-            if (h_beta_p_pos) h_beta_p_pos->Fill(p_h, beta);
+ 
+    // ===================== PRE (before hadron PID) =====================
+    for (const Particle& hadron : event.GetHadrons()) {
+        const double p_h  = hadron.GetMomentum().P();
+        const double beta = hadron.GetBeta(); // measured β from REC::Particle
 
-            // m^2 = p^2 * (1/β^2 - 1), guard against β≈0 to avoid inf/nan
-            if (beta > 0.0) {
-                const double invb2 = 1.0 / (beta * beta);
-                const double m2 = p_h * p_h * (invb2 - 1.0);
-                if (h_m2_p_pos) h_m2_p_pos->Fill(p_h, m2);
-            }
+        if (!std::isnan(beta) && beta > 0.0) {
+            if (h_beta_p_pre) h_beta_p_pre->Fill(p_h, beta);
+            const double m2 = p_h*p_h * (1.0/(beta*beta) - 1.0);
+            if (h_m2_p_pre) h_m2_p_pre->Fill(p_h, m2);
         }
-
-        // π+ transverse structure vs target position (before hadron cuts)
-        if (hadron.GetPID() == Constants::PION_PLUS_PID) {
-            if (h_pt2_vz_pi) {
-                h_pt2_vz_pi->Fill(hadron.GetParticleVertexZ(), hadron.Getpt2());
-            }
+        // π+ only for pt2–Vz (but still PRE-PID stage since we merely check PID)
+        if (hadron.GetPID() == Constants::PION_PLUS_PID && h_pt2_vz_pi_pre) {
+            h_pt2_vz_pi_pre->Fill(hadron.GetParticleVertexZ(), hadron.Getpt2());
         }
     }
-    // =================== END ADD ====================================================
+    // ==================================================================
 
-
-    // Hadron progressive cuts: z -> pt2
+    // ===================== POST_PID (π+ only; before z & pt2 cuts) =====================
     for (const Particle& hadron : event.GetHadrons()) {
-        double z = hadron.Getz();
+        if (hadron.GetPID() != Constants::PION_PLUS_PID) continue;
+
+        const double p_h  = hadron.GetMomentum().P();
+        const double beta = hadron.GetBeta();
+
+        if (!std::isnan(beta) && beta > 0.0) {
+            if (h_beta_p_posPID) h_beta_p_posPID->Fill(p_h, beta);
+            const double m2 = p_h*p_h * (1.0/(beta*beta) - 1.0);
+            if (h_m2_p_posPID) h_m2_p_posPID->Fill(p_h, m2);
+        }
+        if (h_pt2_vz_pi_postPID) {
+            h_pt2_vz_pi_postPID->Fill(hadron.GetParticleVertexZ(), hadron.Getpt2());
+        }
+    }
+    // ================================================================================
+
+    //progressive cuts: z -> pt2 
+    for (const Particle& hadron : event.GetHadrons()) {
+        double z   = hadron.Getz();
         h_z_pre->Fill(z);
         if (z < Constants::RcutminZ || z > Constants::RcutmaxZ) {
             continue;
@@ -1884,6 +1902,20 @@ void Monitoring::FillPrePostCutHistograms(const Event& event) {
             continue;
         }
         h_pt2_post->Fill(pt2);
+
+        //POST_KIN (after z & pt2 cuts)
+        if (hadron.GetPID() == Constants::PION_PLUS_PID) {
+            const double p_h  = hadron.GetMomentum().P();
+            const double beta = hadron.GetBeta();
+            if (!std::isnan(beta) && beta > 0.0) {
+                if (h_beta_p_posKIN) h_beta_p_posKIN->Fill(p_h, beta);
+                const double m2 = p_h*p_h * (1.0/(beta*beta) - 1.0);
+                if (h_m2_p_posKIN) h_m2_p_posKIN->Fill(p_h, m2);
+            }
+            if (h_pt2_vz_pi_postKIN) {
+                h_pt2_vz_pi_postKIN->Fill(hadron.GetParticleVertexZ(), hadron.Getpt2());
+            }
+        }
     }
 }
 void Monitoring::DrawMonSratio(const std::string filename){
@@ -2017,9 +2049,21 @@ void Monitoring::SaveFINRoot(const std::string& filenameREC) {
     h_sampl_el_post->Write();
 
 // --- NEW: PID/vertex monitoring ---
-    if (h_beta_p_pos) h_beta_p_pos->Write();   // β(meas) vs p
-    if (h_m2_p_pos)   h_m2_p_pos->Write();     // m^2(from β) vs p
-    if (h_pt2_vz_pi)  h_pt2_vz_pi->Write();    // pT^2 vs Vz for π+
+    // PRE
+if (h_beta_p_pre)      h_beta_p_pre->Write();
+if (h_m2_p_pre)        h_m2_p_pre->Write();
+if (h_pt2_vz_pi_pre)   h_pt2_vz_pi_pre->Write();
+
+// POST_PID
+if (h_beta_p_posPID)  h_beta_p_posPID->Write();
+if (h_m2_p_posPID)    h_m2_p_posPID->Write();
+if (h_pt2_vz_pi_postPID) h_pt2_vz_pi_postPID->Write();
+
+// POST_KIN
+if (h_beta_p_posKIN)  h_beta_p_posKIN->Write();
+if (h_m2_p_posKIN)    h_m2_p_posKIN->Write();
+if (h_pt2_vz_pi_postKIN) h_pt2_vz_pi_postKIN->Write();
+
     rootFile->Close();
     delete rootFile;
 
