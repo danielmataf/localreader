@@ -38,10 +38,10 @@ struct Target {
 };
 
 static const std::vector<Target> kTargets = {
-    {"Cu",  "Cu",        kGreen+2,  "build/fin_Cu_test.root"},
-    {"CxC", "C (CxC)",   kBlack,    "build/fin_CxC_test.root"},
-    {"LD2", "LD2",       kBlue,     "build/fin_LD2_test.root"},
-    {"Sn",  "Sn",        kOrange+7, "build/fin_Sn_test.root"}
+    {"Cu",  "Cu",        kGreen,  "~/fin_Cu_test.root"},
+    {"CxC", "C (CxC)",   kBlack,    "~/fin_CxC_test.root"},
+    {"LD2", "LD2",       kBlue,     "~/fin_LD2_test.root"},
+    {"Sn",  "Sn",        kOrange, "~/fin_Sn_test.root"}
 };
 
 // -------- Variables to draw (exact set you requested) --------
@@ -218,8 +218,22 @@ static void drawOne(const std::string& base,
 
     // Optional cut lines
     auto [xlo, xhi] = cutsFor(base);
-    if (xlo != 100.0) { TLine l(xlo, 0.0, xlo, ymax); l.SetLineStyle(3); l.SetLineWidth(2); l.Draw(); }
-    if (xhi != 100.0) { TLine r(xhi, 0.0, xhi, ymax); r.SetLineStyle(2); r.SetLineWidth(2); r.Draw(); }
+if (xlo != 100.0) {
+    auto* l = new TLine(xlo, 0.0, xlo, ymax);
+    l->SetLineStyle(2);  // dotted
+    l->SetLineWidth(3);
+    //l->SetLineColor(kRed+1);
+    l->Draw("same");
+}
+if (xhi != 100.0) {
+    auto* r = new TLine(xhi, 0.0, xhi, ymax);
+    r->SetLineStyle(2);  // dashed
+    r->SetLineWidth(3);
+    //r->SetLineColor(kRed+1);
+    r->Draw("same");
+}
+gPad->Modified();
+gPad->Update();
 
     // Save PNG and append to PDF
     c->SaveAs(Form("finComp_%s_%s.png", base.c_str(), state.c_str()));

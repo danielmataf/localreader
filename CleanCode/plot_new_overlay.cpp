@@ -43,6 +43,7 @@ double Q2_of_x_W2(double x, double W2) {
 int main() {
     //TFile* fin = TFile::Open("DptinputFiles/REcutC2_test.root", "READ");
     TFile* fin = TFile::Open("~/pass0v11C2.root", "READ");
+    //cahnge this to simulation output...
     if (!fin || fin->IsZombie()) {
         std::cerr << "ERROR: cannot open input ROOT file.\n";
         return 1;

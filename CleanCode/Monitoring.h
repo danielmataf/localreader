@@ -269,6 +269,11 @@ private:
 
     //sampling fraction 
     TH2F *h_sampl_el; //
+    //BETA stufff
+    TH2F * h_beta_p_pos ; //= new TH2F("beta_p_pos", "#beta (meas) vs p; p (GeV/c); #beta", 150, 0.0, 7.5, 120, 0.0, 1.2);
+    TH2F * h_m2_p_pos   ; //= new TH2F("m2_p_pos",   "m^{2} (from #beta_{meas}) vs p; p (GeV/c); m^{2} (GeV^{2}/c^{4})", 150, 0.0, 7.5, 200, -0.5, 2.5);
+    TH2F * h_pt2_vz_pi  ; //= new TH2F("pt2_vz_pi",  "p_{T}^{2} vs V_{z} (#pi^{+}); V_{z} (cm); p_{T}^{2} (GeV^{2})", 200, -12.0, 2.0, 200, 0.0, 2.0);
+
 
 
 

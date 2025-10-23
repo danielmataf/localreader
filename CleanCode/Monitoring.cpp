@@ -138,6 +138,10 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_pt2_post(new TH1F((std::string("pt2_post_") + targetName).c_str(),  "p_{T}^{2} (post p_{T}^{2} cut)", nubin, pt2minX, pt2maxX)),
     h_sampl_el_pre(new TH2F((std::string("sampl_el_pre_")  + targetName).c_str(), "Sampling fraction (pre e-cuts);p (GeV);E_{PCAL}/p", nubin, 0, 10, nubin, 0, 1)),
     h_sampl_el_post(new TH2F((std::string("sampl_el_post_") + targetName).c_str(), "Sampling fraction (post e-cuts);p (GeV);E_{PCAL}/p", nubin, 0, 10, nubin, 0, 1)),
+    h_beta_p_pos (new TH2F("beta_p_pos", "#beta (meas) vs p; p (GeV/c); #beta", nubin, 0.0, 7.5, nubin, 0.0, 1.2)),
+    h_m2_p_pos   (new TH2F("m2_p_pos",   "m^{2} (from #beta_{meas}) vs p; p (GeV/c); m^{2} (GeV^{2}/c^{4})", nubin, 0.0, 7.5, nubin, -0.5, 2.5)),
+    h_pt2_vz_pi  (new TH2F("pt2_vz_pi",  "p_{T}^{2} vs V_{z} (#pi^{+}); V_{z} (cm); p_{T}^{2} (GeV^{2})", nubin, -12.0, 2.0, nubin, 0.0, 2.0)),
+
 
     h_xB_thetaelDAT(Monitoring::MakeHistoDAT( Form("h_xB_thetaelDAT_%s", targetName.c_str()), Form("DAT (%s): x_{B} vs #theta_{e};x_{B};#theta_{e} [deg]", targetName.c_str()))),
     h_thetaelDAT_1D(new TH1F(("U_thetaelDAT_1D_" + targetName).c_str(), "thetaelDAT_1D", 100, 0, 30.0)),
@@ -229,6 +233,9 @@ void Monitoring::FillHistogramswCuts(const Event& event) {              /// good
             h_vertexZ->Fill(event.GetVz());     //Vz only exists when an electron is detected !!!!
                                                 //add Vz for the hadron too
             h_Q2->Fill(event.electron.GetQ2());
+//            h_xQ2pos->Fill(event.Getxb(), event.electron.GetQ2());
+//            h_xQ2->Fill(event.Getxb(), event.electron.GetQ2());
+
             h_theta_xB->Fill(event.GetThetaElectron() * TMath::RadToDeg(), event.Getxb());
             //std::cout   << "theta electron = " << event.GetThetaElectron() * TMath::RadToDeg() << std::endl;
             h_xb->Fill(event.Getxb());
@@ -1785,10 +1792,10 @@ void Monitoring::DrawCompRECMC(const std::string filename){
 }
 void Monitoring::FillPrePostCutHistograms(const Event& event) {
     // Electron sampling fraction -- PRE
-    double p = event.electron.GetMomentum().P();
-    if (p > 0.0) {
-        double sf = event.electron.GetEpcal() / p;
-        h_sampl_el_pre->Fill(p, sf);
+    double p_e = event.electron.GetMomentum().P();
+    if (p_e > 0.0) {
+        double sf = event.electron.GetEpcal() / p_e;
+        h_sampl_el_pre->Fill(p_e, sf);
     }
 
     // Progressive electron cuts: Vz -> Q2 -> y -> nu -> W2
@@ -1799,9 +1806,16 @@ void Monitoring::FillPrePostCutHistograms(const Event& event) {
         return;
     }
     h_Vz_post->Fill(Vz);
+        // Electron sampling fraction -- POST (after all e-cuts)
+    if (p_e > 0.0 && cut1.PassCutsDetectors(event)) {
+        double sf = event.electron.GetEpcal() / p_e;
+        h_sampl_el_post->Fill(p_e, sf);
+    }
+
 
     // Q2
     double Q2 = event.GetQ2();
+    double xB = event.Getxb();
     h_Q2_pre->Fill(Q2);
     if (Q2 < Constants::RcutminQ || Q2 > Constants::RcutmaxQ) {
         return;
@@ -1831,12 +1845,29 @@ void Monitoring::FillPrePostCutHistograms(const Event& event) {
         return;
     }
     h_W2_post->Fill(W2);
+  for (const Particle& hadron : event.GetHadrons()) {
+        const double p_h   = hadron.GetMomentum().P();
+        const double beta  = hadron.GetBeta();              // measured β from REC::Particle
+        if (!std::isnan(beta)) {
+            if (h_beta_p_pos) h_beta_p_pos->Fill(p_h, beta);
 
-    // Electron sampling fraction -- POST (after all e-cuts)
-    if (p > 0.0) {
-        double sf = event.electron.GetEpcal() / p;
-        h_sampl_el_post->Fill(p, sf);
+            // m^2 = p^2 * (1/β^2 - 1), guard against β≈0 to avoid inf/nan
+            if (beta > 0.0) {
+                const double invb2 = 1.0 / (beta * beta);
+                const double m2 = p_h * p_h * (invb2 - 1.0);
+                if (h_m2_p_pos) h_m2_p_pos->Fill(p_h, m2);
+            }
+        }
+
+        // π+ transverse structure vs target position (before hadron cuts)
+        if (hadron.GetPID() == Constants::PION_PLUS_PID) {
+            if (h_pt2_vz_pi) {
+                h_pt2_vz_pi->Fill(hadron.GetParticleVertexZ(), hadron.Getpt2());
+            }
+        }
     }
+    // =================== END ADD ====================================================
+
 
     // Hadron progressive cuts: z -> pt2
     for (const Particle& hadron : event.GetHadrons()) {
@@ -1985,7 +2016,10 @@ void Monitoring::SaveFINRoot(const std::string& filenameREC) {
     h_sampl_el_pre->Write();
     h_sampl_el_post->Write();
 
-
+// --- NEW: PID/vertex monitoring ---
+    if (h_beta_p_pos) h_beta_p_pos->Write();   // β(meas) vs p
+    if (h_m2_p_pos)   h_m2_p_pos->Write();     // m^2(from β) vs p
+    if (h_pt2_vz_pi)  h_pt2_vz_pi->Write();    // pT^2 vs Vz for π+
     rootFile->Close();
     delete rootFile;
 

@@ -273,6 +273,13 @@ bool EventReader::isSimulatedData(hipo::event event) {
             double targetvy = RECgen.getFloat("vy", i);
             double chi2_row = RECgen.getFloat("chi2pid", i);
             TLorentzVector momentum;
+            double beta_raw = RECgen.getFloat("beta", i);
+            auto sanitize_beta = [](double b){
+                if (b <= 0.0 || b > 1.5) return std::numeric_limits<double>::quiet_NaN();
+                return b;
+            };
+            double beta_meas = sanitize_beta(beta_raw);
+
             momentum.SetPx(RECgen.getFloat("px", i));
             momentum.SetPy(RECgen.getFloat("py", i));
             momentum.SetPz(RECgen.getFloat("pz", i));
@@ -295,6 +302,13 @@ bool EventReader::isSimulatedData(hipo::event event) {
                     ProcessParticle(momentum, pid,targetvx,targetvy,targetvz,i, chi2_row ); 
 
                 //}
+            }
+            if (pid == Constants::ELECTRON_PID) {
+                currentEvent.electron.SetBeta(beta_meas);
+            } else if (IsHadron(pid) && !currentEvent.GetHadrons().empty()) {
+                // set β on the most recently appended hadron
+                // (your AddHadron pushes_back, so back() is the current one)
+                const_cast<Particle&>(currentEvent.GetHadrons().back()).SetBeta(beta_meas);
             }
             //if (pid == Constants::ELECTRON_PID) {
 

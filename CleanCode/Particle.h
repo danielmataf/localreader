@@ -93,6 +93,15 @@ public:
 
     int CalcHadronKin(TLorentzVector,TLorentzVector);
     int CalcMCHadronKin(TLorentzVector,TLorentzVector);
+    //BETA stuff 
+    void   SetBeta(double b) { beta_meas_ = b; }
+    double GetBeta() const   { return beta_meas_; }
+
+    // Optional helper: expected β under a mass hypothesis dismiss this 
+    double BetaExpected(double mass) const {
+    const double p = momentum.P();            // you already store TLorentzVector
+    return p / std::sqrt(p*p + mass*mass);
+}
 
 private:
     TLorentzVector momentum;
@@ -135,6 +144,8 @@ private:
     double Epcal=0.0, Ecalin=0, Ecalout = 0;
     double calox=0, caloy=0, caloz=0;
     double nphe15=0, nphe16=0;
+    //BETA stuff
+    double beta_meas_ = std::numeric_limits<double>::quiet_NaN();
 
     //differentiationg Edep per layer, this should be associated to the layer nb the particle crossed. 
     // assigning default 0 values. Allows to see wich layer has been crossed. 
