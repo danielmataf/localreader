@@ -66,6 +66,14 @@ public:
     //debugging? 
     void ValidateHistograms();
     void LogBinContent();
+
+    void InitializeTrees();                // create trees + branches (idempotent)
+    void FillTrees(const Event& event);    // call this from main (separate from histos)
+    void WriteTrees();                     // write both trees to current file/dir
+
+    // Optional: clear per-row values to avoid stale data
+    inline void ResetOnlyEBranches();
+    inline void ResetHadBranches();
     
     std::vector<std::vector<std::vector<double>>> getRatMatrix() const{
         return ratMatrix;
@@ -319,14 +327,32 @@ private:
 //tree handling 
     TFile outTreeFile_;
     TTree *tEv_;
+    TTree* tEv_onlye_ = nullptr;   // one row per passing electron (D/A)
+    TTree* tEv_had_   = nullptr;   // one row per passing hadron   (D/A)
+
+
+    Int_t   Br_targetFlag = -1; // 0 = D, 1 = A
     //setting the five variable branches ( Q2, xB, nu, z, pt2) adding maybe phih and using theta as well for corrections 
     //we wont be using Q2 because qe qill be translating the theta to Q2 ranges
     //double Br_xbMC , Br_thMC , Br_Q2MC, Br_yMC, Br_nuMC, Br_W2MC, Br_zMC, Br_pt2MC, Br_phihMC;
     //double Br_xbREC , Br_thREC , Br_Q2REC, Br_yREC, Br_nuREC, Br_W2REC, Br_zREC, Br_pt2REC, Br_phihREC;
-    double Br_xb , Br_th , Br_Q2, Br_y, Br_nu, Br_W2, Br_z, Br_pt2, Br_phih;
-    double Br_onlye_xb, Br_onlye_th , Br_onlye_Q2, Br_onlye_y, Br_onlye_nu, Br_onlye_W2; //branches for histos filled with only electrons
-    double BrD_xb , BrD_th , BrD_Q2, BrD_y, BrD_nu, BrD_W2, BrD_z, BrD_pt2, BrD_phih;   // We need the specific branches for deuterium. this will differentiate from normal branches used for nuclear targets 
-    double BrD_onlye_xb, BrD_onlye_th , BrD_onlye_Q2, BrD_onlye_y, BrD_onlye_nu, BrD_onlye_W2; 
+    //double Br_xb , Br_th , Br_Q2, Br_y, Br_nu, Br_W2, Br_z, Br_pt2, Br_phih;
+    //double Br_onlye_xb, Br_onlye_th , Br_onlye_Q2, Br_onlye_y, Br_onlye_nu, Br_onlye_W2; //branches for histos filled with only electrons
+    //double BrD_xb , BrD_th , BrD_Q2, BrD_y, BrD_nu, BrD_W2, BrD_z, BrD_pt2, BrD_phih;   // We need the specific branches for deuterium. this will differentiate from normal branches used for nuclear targets 
+    //double BrD_onlye_xb, BrD_onlye_th , BrD_onlye_Q2, BrD_onlye_y, BrD_onlye_nu, BrD_onlye_W2; 
+
+    Double_t Br_Q2  = std::numeric_limits<double>::quiet_NaN();
+    Double_t Br_xb  = std::numeric_limits<double>::quiet_NaN();
+    Double_t Br_th  = std::numeric_limits<double>::quiet_NaN(); // deg
+    Double_t Br_nu  = std::numeric_limits<double>::quiet_NaN();
+    Double_t Br_y   = std::numeric_limits<double>::quiet_NaN();
+    Double_t Br_W2  = std::numeric_limits<double>::quiet_NaN();
+    Double_t Br_targetVz = std::numeric_limits<double>::quiet_NaN();  // monitoring, only in only-e rows
+
+    // Hadron-level (only for tEv_had_)
+    Double_t Br_h_z    = std::numeric_limits<double>::quiet_NaN();
+    Double_t Br_h_pt2  = std::numeric_limits<double>::quiet_NaN();
+    Double_t Br_h_phih = std::numeric_limits<double>::quiet_NaN();
     //    a given ttree should have Br_xb fior example , and also have BrD_xb for deuterium 
 int has_true=0; //1 if MC filled, seems unnecessary, need the inverse of this, check the REC
 

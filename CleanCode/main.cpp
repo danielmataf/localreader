@@ -167,6 +167,7 @@ int main() {
     Ratio ratCC(testLD2cuts, testCCcuts, "CxC_RGD");
     Ratio ratSn(testLD2cuts, testSncuts, "Sn_RGD");
     Ratio ratCu(testLD2cuts, testCucuts, "Cu_RGD");
+    Ratio ratLD2(testLD2cuts, testLD2cuts, "LD2_RGD");
 
 
     deltaptsq dptC1(testLD2cuts, testC1cuts, "C1_RGD");
@@ -229,7 +230,7 @@ int main() {
             monTestLD2.FillPrePostCutHistograms(eventtestLD2); 
             monTestLD2.FillDISforUnfoldDAT(eventtestLD2);
             
-            
+            ratLD2.FillTrees(eventtestLD2);
             ratC1.FillHistograms(eventtestLD2);
             ratC2.FillHistograms(eventtestLD2);
             ratCC.FillHistograms(eventtestLD2);
@@ -264,7 +265,10 @@ int main() {
             monTestCC.FillDISforUnfoldDAT(eventtestCxC);
             monTestC1.FillDISforUnfoldDAT(eventtestCxC);
             monTestC2.FillDISforUnfoldDAT(eventtestCxC);
-            	        
+
+            ratC1.FillTrees(eventtestCxC);     
+            ratC2.FillTrees(eventtestCxC);     
+            ratCC.FillTrees(eventtestCxC);     
             ratC2.FillHistograms(eventtestCxC);
             ratC1.FillHistograms(eventtestCxC);
             dptC1.FillHistograms(eventtestCxC);
@@ -285,6 +289,8 @@ int main() {
             monTestSn.FillHistogramswCuts(eventtestCuSn);
             monTestSn.FillPrePostCutHistograms(eventtestCuSn);
             //monTestSn.FillHistogramsNoCuts(eventtestCuSn);
+            ratSn.FillTrees(eventtestCuSn);
+            ratCu.FillTrees(eventtestCuSn);
             ratSn.FillHistograms(eventtestCuSn);
             dptSn.FillHistograms(eventtestCuSn);
             sratSn.FillHistograms(eventtestCuSn);
@@ -458,7 +464,7 @@ std::cout << "\nProcessing completed \n";
     monTestC1.SaveHistRoot("pass1C1 ");
     monTestLD2.SaveHistRoot("pass1LD2");
     monTestCu.SaveHistRoot("pass1Cu");
-    monSimCxC.SaveHistRoot("pass1CC");
+    monTestCC.SaveHistRoot("pass1CC");
 
     monSimCxC.SaveHistRoot("octCxC_sim");
     monSimC1.SaveHistRoot("octC1_sim");
@@ -531,6 +537,11 @@ std::cout << "\nProcessing completed \n";
     std::cout << "//========= done ==========//  \n";
 //    ratC2.ValidateHistograms();
 //    ratC2.LogBinContent();
-
+    ratC1.WriteTrees();
+    ratC2.WriteTrees();
+    ratCC.WriteTrees();
+    ratCu.WriteTrees();
+    ratSn.WriteTrees();
+    ratLD2.WriteTrees();
     return 0;
 }
