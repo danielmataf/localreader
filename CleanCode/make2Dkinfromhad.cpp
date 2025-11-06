@@ -1,16 +1,19 @@
 // make2Dkinfromhad.cpp
-//
-//   Produces xB–Q^2 and xB–theta 2D histograms from hadron TTrees, binned in (z, pT2, phih);
-//   outputs are 5 PDFs (one per phi bin), each with 25 xB–Q^2 + 25 xB–theta pages.
-//   Optionally exports one (xB–Q^2) + (xB–theta) PNG for a given 1..125 (z, pT2, phih) bin.
-//
+//-------------------------------
+//This is a monitoring function to check the behavior of xB, theta and Q2 through diff hadron bins
+//Produces xB–Q2 and xBtheta 2D histograms from hadron TTrees, binned in (z, pT2, phih);
+//outputs are 5 PDFs (one per phi bin), each with 25 xB–Q2 + 25 xB–theta pages.
+//Optionally exports one (xB–Q^2) + (xB–theta) PNG for a given 1..125 (z, pT2, phih) bin.
+//TTrees were already preselected for a given target (e.g. Cu), with corresponding cuts. 
+//Trees can be checked inside to monitor data and such
 // How to compile (with ROOT):
 //   g++ -O2 -std=c++17 make2Dkinfromhad.cpp `root-config --cflags --libs` -o make2Dkinfromhad
 //
 // How to run (example):
 //   ./make2Dkinfromhad
-//
+//--------------------------------
 #include <TFile.h>
+#include <TLatex.h>
 #include <TTree.h>
 #include <TH2F.h>
 #include <TCanvas.h>
@@ -23,36 +26,31 @@
 #include <string>
 #include <algorithm>
 
-// ===============================
-// ========== INPUTS =============
-// ===============================
+//INPUTS
 namespace INPUTS {
-  const std::string kFile = "build/Trees_Cu_RGD.root";
-  const std::string kTree = "tEv_had_Cu_RGD";
+  const std::string kFile = "~/dump/Trees_CxC_RGD.root";
+  const std::string kTree = "tEv_had_CxC_RGD";
   const int SINGLE_BIN_INDEX = 25;  // e.g. 73 for bin #73, -1 disables
   const std::string kOutDir = "plots_full_bins";
 }
 
-// ===============================
-// ======= BIN DEFINITIONS =======
-// ===============================
+//BINS
 static const double Z_EDGES[6]   = {0.30, 0.38, 0.46, 0.54, 0.62, 0.70};
 static const double PT2_EDGES[6] = {0.00, 0.24, 0.48, 0.72, 0.96, 1.20};
 static const double PHI_EDGES[6] = {0.0, 72.0, 144.0, 216.0, 288.0, 360.0};
 
-static const int XB_NBINS = 20;
+static const int XB_NBINS = 10;
 static const double XB_MIN = 0.0, XB_MAX = 1;
 
-static const int Q2_NBINS = 20;
+static const int Q2_NBINS = 10;
 static const double Q2_MIN = 0.0, Q2_MAX = 5.0;
 
-static const int TH_NBINS = 20;
+static const int TH_NBINS = 10;
 static const double TH_MIN = 7.0, TH_MAX = 23.0;
 
-// ===============================
-// ======= HELPER FUNCTIONS ======
-// ===============================
+//additional functions
 inline void IndexToTriplet125(int idx, int &iz, int &ip, int &iph) {
+///this for getters in given bin nbr (1-125)
   const int idx0 = idx - 1;
   iph = idx0 / 25;
   const int r = idx0 % 25;
@@ -61,6 +59,7 @@ inline void IndexToTriplet125(int idx, int &iz, int &ip, int &iph) {
 }
 
 TString BuildSelCell(int iz, int ip, int iph) {
+    //crates triplet 
   const bool lastPhi = (iph == 4);
   TString sel;
   sel.Form("z>=%g && z<%g && pt2>=%g && pt2<%g && %s",
@@ -72,6 +71,7 @@ TString BuildSelCell(int iz, int ip, int iph) {
 }
 
 TString CellTitleSuffix(int iz, int ip, int iph) {
+    //puts triplet in title
   const bool lastPhi = (iph == 4);
   return Form("z [%.2f, %.2f)   p_{T}^{2} [%.2f, %.2f)   #phi_{h} [%.0f^{#circ}, %.0f^{#circ}%s",
               Z_EDGES[iz], Z_EDGES[iz + 1],
@@ -80,7 +80,7 @@ TString CellTitleSuffix(int iz, int ip, int iph) {
               lastPhi ? "]" : ")");
 }
 
-// --- DEBUG: print selection + a few (xb, Q2, th) tuples to stdout
+//debugger if needed: print selection + a some (xb, Q2, th
 void DebugPrintSample(TTree* T, const TString& sel, int maxPrint = 5) {
   Long64_t n = T->Draw("xb:Q2:th", sel, "goff");
   std::cout << "  -> selected rows: " << n << std::endl;
@@ -96,21 +96,20 @@ void DebugPrintSample(TTree* T, const TString& sel, int maxPrint = 5) {
   }
 }
 
-#include <TLatex.h>
 
-// Draw a 2D hist (xb vs Q2) for a selection; returns pointer so caller can delete
+//drawer function for 2D hist (xb-Q2) for a selection; returns pointer so caller can delete
 TH2F* DrawXBQ2(TTree *T, const TString &sel, const TString &title) {
   // Book the target histogram (so we control binning)
   TH2F *h = new TH2F("hxbq2", "", XB_NBINS, XB_MIN, XB_MAX, Q2_NBINS, Q2_MIN, Q2_MAX);
   h->GetXaxis()->SetTitle("x_{B}");
   h->GetYaxis()->SetTitle("Q^{2}  [GeV^{2}]");
 
-  // Fill via TTree::Draw and check how many rows were selected
+  //fille with  TTree::Draw 
   Long64_t nsel = T->Draw("Q2:xb>>hxbq2", sel, "COLZ");
   gPad->SetRightMargin(0.12);
 
   if (nsel <= 0) {
-    // No entries: draw a clean empty frame with axes and an info label
+    // if No entries: draw a blank empty frame with axes and an info label
     gPad->Clear();
     TH2F *frame = new TH2F("frame_xbq2","",XB_NBINS, XB_MIN, XB_MAX, Q2_NBINS, Q2_MIN, Q2_MAX);
     frame->GetXaxis()->SetTitle("x_{B}");
@@ -121,19 +120,20 @@ TH2F* DrawXBQ2(TTree *T, const TString &sel, const TString &title) {
     lat.SetNDC(true);
     lat.SetTextSize(0.035);
     lat.DrawLatex(0.18, 0.88, title);
+    //for debiugging purposes, indicates if the canvas has no entries
     lat.DrawLatex(0.18, 0.82, "#bf{No entries in this (z, p_{T}^{2}, #phi_{h}) bin}");
     gPad->Update();
-    delete h;                     // nothing filled
-    return frame;                 // caller can delete this instead
+    delete h;                     //nothing filled
+    return frame;                 //caller can delete this instead
   }
 
-  // Entries exist: now set the nice title (after Draw so ROOT won’t overwrite)
+  //when entries exist then set nice plots (after Draw so ROOT won’t overwrite)
   h->SetTitle(title);
   gPad->Update();
   return h;
 }
 
-// Draw a 2D hist (xb vs theta) for a selection; returns pointer so caller can delete
+//second drawing function  (xb-theta) for a selection; returns pointer so caller can delete
 TH2F* DrawXBTheta(TTree *T, const TString &sel, const TString &title) {
   TH2F *h = new TH2F("hxbth", "", XB_NBINS, XB_MIN, XB_MAX, TH_NBINS, TH_MIN, TH_MAX);
   h->GetXaxis()->SetTitle("x_{B}");
@@ -141,7 +141,7 @@ TH2F* DrawXBTheta(TTree *T, const TString &sel, const TString &title) {
 
   Long64_t nsel = T->Draw("th:xb>>hxbth", sel, "COLZ");
   gPad->SetRightMargin(0.12);
-
+    //same logic as before
   if (nsel <= 0) {
     gPad->Clear();
     TH2F *frame = new TH2F("frame_xbth","",XB_NBINS, XB_MIN, XB_MAX, TH_NBINS, TH_MIN, TH_MAX);
@@ -164,10 +164,9 @@ TH2F* DrawXBTheta(TTree *T, const TString &sel, const TString &title) {
   return h;
 }
 
+// ###################################
 
-// ===============================
-// ========== MAIN ===============
-// ===============================
+//application in MAIN 
 int main() {
   gStyle->SetOptStat(0);
   gSystem->mkdir(INPUTS::kOutDir.c_str(), kTRUE);
@@ -183,19 +182,20 @@ int main() {
     return 1;
   }
 
-  // ---- Loop over phi bins ----
+  // ---- Loop over phi bins (5) ----
   for (int iph = 0; iph < 5; ++iph) {
+    //this is useful to create the 5 pdfs in outpout dir
     TString pdf = Form("%s/phiBin%d.pdf", INPUTS::kOutDir.c_str(), iph + 1);
     TCanvas c("c", "", 900, 800);
     c.Print(pdf + "[");
 
-    // 25 (z,pT²) bins per φh
+    // looop for the rest :  25 (z,pt2 -> 5x5) bins per phih
     for (int ip = 0; ip < 5; ++ip) {
       for (int iz = 0; iz < 5; ++iz) {
         TString sel = BuildSelCell(iz, ip, iph);
         TString suffix = CellTitleSuffix(iz, ip, iph);
 
-        // ---- DEBUG: print the bin ranges + some sample values to stdout
+        // ---- DEBUG: (if needed) print the bin ranges + some sample values to stdout
         //std::cout << "[phi-bin " << (iph+1) << "] "
         //          << "z in [" << Z_EDGES[iz] << ", " << Z_EDGES[iz+1] << ")  "
         //          << "pt2 in [" << PT2_EDGES[ip] << ", " << PT2_EDGES[ip+1] << ")  "
@@ -203,14 +203,14 @@ int main() {
         //          << std::endl;
         //DebugPrintSample(T, sel, /*maxPrint=*/5);
 
-        // xB vs Q2
+        //xB-Q2
         TString title1 = "x_{B} vs Q^{2}  |  " + suffix;
         c.Clear();
         TH2F* h1 = DrawXBQ2(T, sel, title1);
         c.Print(pdf);
         delete h1;
 
-        // xB vs theta
+        //xB-theta
         TString title2 = "x_{B} vs #theta_{e}  |  " + suffix;
         c.Clear();
         TH2F* h2 = DrawXBTheta(T, sel, title2);
@@ -221,7 +221,7 @@ int main() {
     c.Print(pdf + "]");
   }
 
-  // ---- Optional single-bin PNG export ----
+  // Additional one single PNG export, check the bin nbr in the head of the code 
   if (INPUTS::SINGLE_BIN_INDEX >= 1 && INPUTS::SINGLE_BIN_INDEX <= 125) {
     int iz, ip, iph;
     IndexToTriplet125(INPUTS::SINGLE_BIN_INDEX, iz, ip, iph);

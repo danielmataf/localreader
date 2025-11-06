@@ -514,6 +514,8 @@ std::optional<Event> EventReader::ProcessEventsInFile() {
         // MC schemas not needed for RGD, but harmless if present
         MCpart    = factory.getSchema("MC::Particle");
         MCevt     = factory.getSchema("MC::Event");
+        
+        noteOpen_(filename); //adding thjis to track
 
         std::cout << "Processing file: " << filename << std::endl;
     }
@@ -524,7 +526,13 @@ std::optional<Event> EventReader::ProcessEventsInFile() {
     // Read current event and decode REC (data path => isSimulated=false)
     hipo::event hipoEvent;
     reader.read(hipoEvent);
-    return ProcessEvent(hipoEvent, /*eventNumber*/ 0, /*isSimulated*/ false);
+    //return ProcessEvent(hipoEvent, /*eventNumber*/ 0, /*isSimulated*/ false);
+    auto ev = ProcessEvent(hipoEvent, /*eventNumber*/ 0, /*isSimulated*/ false);
+
+    // --- NEW: count only if we produced a real event
+    if (ev) noteEvent_();
+
+    return ev; // may be nullopt (MISS) and that's fine
 }
 
 std::optional<Event> EventReader::ProcessEventsInFileMC() {
@@ -538,6 +546,7 @@ std::optional<Event> EventReader::ProcessEventsInFileMC() {
             const std::string& filename = filelist.at(filenb);
             reader.open(filename.c_str());
             reader.readDictionary(factory);
+            noteOpen_(filename);    //register the opened file
 
             // Bind BOTH MC and REC schemas (SIM files carry both)
             RUNconfig = factory.getSchema("RUN::config");
@@ -619,4 +628,16 @@ std::optional<Event> EventReader::ProcessEventsInFileREC() {
     have_cached_ = false;
 
     return evREC;  // may be nullopt (MISS), which your caller handles with 'option'
+}
+
+
+void EventReader::printFileReadSummary(std::ostream& os) const {
+    size_t total = 0;
+    os << "\n=== File Read Summary ===\n";
+    for (const auto& kv : perFileCounts_) {
+        os << kv.second << "  :  " << kv.first << '\n';
+        total += kv.second;
+    }
+    os << "-------------------------\n";
+    os << "Total events read: " << total << "\n\n";
 }

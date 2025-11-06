@@ -226,12 +226,12 @@ void computeCratioRegion4x4(const std::string& fileName, const std::string& tag,
 
     if (!hA || !hD || !hSqA || !hSqD || !hCountA || !hCountD) {
     std::cerr << "[computeCratioRegion4x4] Missing one or more histograms.\n";
-        if (!hA)     std::cerr << " - Missing: " << nameA.str()     << "\n";
-        if (!hD)     std::cerr << " - Missing: " << nameD.str()     << "\n";
-        if (!hSqA)    std::cerr << " - Missing: " << nameSqA.str()    << "\n";
-        if (!hSqD)    std::cerr << " - Missing: " << nameSqD.str()    << "\n";
-        if (!hCountA) std::cerr << " - Missing: " << nameCountA.str() << "\n";
-        if (!hCountD) std::cerr << " - Missing: " << nameCountD.str() << "\n";
+        if (!hA)     std::cerr << "  - missing: " << nameA.str()     << "\n";
+        if (!hD)     std::cerr << "  - missing: " << nameD.str()     << "\n";
+        if (!hSqA)    std::cerr << " - missing: " << nameSqA.str()    << "\n";
+        if (!hSqD)    std::cerr << " - missing: " << nameSqD.str()    << "\n";
+        if (!hCountA) std::cerr << " - missing: " << nameCountA.str() << "\n";
+        if (!hCountD) std::cerr << " - missing: " << nameCountD.str() << "\n";
         return;
     }
     for (int ipt2 = 1; ipt2 <= 4; ++ipt2) {

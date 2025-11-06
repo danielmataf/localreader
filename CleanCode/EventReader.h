@@ -7,6 +7,9 @@
 #include "dictionary.h"  
 #include "Event.h"
 #include <optional>
+#include <unordered_map>
+#include <string>
+
 class EventReader {
 public:
     EventReader(const std::vector<std::string>& );
@@ -30,8 +33,10 @@ public:
     void ReadRunconfig(hipo::event event);
 
     void SetDuplicateMode(bool on) { duplicateMode = on; }  //this in order to call the reading funvction twice, when using CuSn files taht need to be recalled 
-
-
+    // wahteve to track opened files and events per file
+    const std::unordered_map<std::string, size_t>& fileEventCounts() const { return perFileCounts_; }
+    const std::string& currentFile() const { return currentFilePath_; }
+    void printFileReadSummary(std::ostream& os = std::cout) const;
 
 private:
     std::optional<Event> ProcessEvent( hipo::event event, int eventNumber, bool isSimulated);
@@ -67,6 +72,21 @@ private:
     Event currentEvent;
     hipo::event cached_;      //last raw event read by MC
     bool have_cached_ = false;
+
+    //more shit to track files 
+    std::string currentFilePath_;
+    std::unordered_map<std::string, size_t> perFileCounts_;
+
+    // call when opening a file
+    void noteOpen_(const std::string& path) {
+        currentFilePath_ = path;
+        // ensure key exists so “opened but yielded 0 events” still appears
+        perFileCounts_.emplace(currentFilePath_, 0);
+    }
+    // call when you successfully yield one event to the caller
+    void noteEvent_() {
+        if (!currentFilePath_.empty()) ++perFileCounts_[currentFilePath_];
+    }
 
 
 };
