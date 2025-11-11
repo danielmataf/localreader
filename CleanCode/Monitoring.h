@@ -211,16 +211,20 @@ private:
     TH2F *h_E_pi_phi;   //= new TH2F("E_pro_phi", "E_pro_phi", 100, 0, 360, 100, 0, 10) ;
 
     //pre and pos histos 
+    
     TH1F *h_Vz_pre;
     TH1F *h_Vz_post;
     TH1F *h_Q2_pre;
     TH1F *h_Q2_post;
+    TH2F *h_xb_Q2_pre;
+    TH2F *h_xb_Q2_post;
     TH1F *h_y_pre;
     TH1F *h_y_post;
     TH1F *h_nu_pre;
     TH1F *h_nu_post;
     TH1F *h_W2_pre;
     TH1F *h_W2_post;
+    TH1F *h_phih_post;
     TH1F *h_z_pre;
     TH1F *h_z_post;
     TH1F *h_pt2_pre;

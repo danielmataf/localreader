@@ -88,7 +88,7 @@ void computeDpt(const std::string& fileName, const std::string& tag, DptMatrixSt
 
     int NX = h_ptD->GetNbinsX();
     int NY = h_ptD->GetNbinsY();
-    int NZ = h_ptD->GetNbinsZ();    //ok
+    int NZ = h_ptD->GetNbinsZ();    //ok 
 
     for (int x = 1; x <= NX; ++x) {
         for (int y = 1; y <= NY; ++y) {

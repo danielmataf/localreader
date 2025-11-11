@@ -296,7 +296,7 @@ namespace Constants {
 
     static const double RcutminQ = 1.0 ;
     static const double Rcutminx = 0.05 ;
-    static const double Rcutminxb = 0.1 ;
+    static const double Rcutminxb = 0.1 ;       //why did you put this ??? -> looks like we added this fro unfolding but.... well 
     static const double RcutminY = 0.25 ;
     static const double RcutminW = 4.0 ;
     static const double RcutminZ = 0.3 ;

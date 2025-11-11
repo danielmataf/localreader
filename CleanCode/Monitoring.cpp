@@ -62,7 +62,7 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_pid(new TH1F(("pid_" + targetName).c_str(), "pid", 100, -250, 250)),
     h_xQ2(new TH2F(("xQ2_" + targetName).c_str(), "xQ2", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
     h_xQ2pos(new TH2F(("xQ2pos_" + targetName).c_str(), "xQ2pos", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
-    h_pt2z(new TH2F(("pt2z_" + targetName).c_str(), "pt2z", nubin, pt2minX, pt2maxX, nubin, zminX, zmaxX)),
+    h_pt2z(new TH2F(("pt2z_" + targetName).c_str(), "pt2z", nubin, pt2minX, 1.2, nubin, 0.3, 0.7)),
     h_thetaP_el(new TH2F(("thetaP_el_" + targetName).c_str(), "thetaP_el",  nubin, 0, 10, nubin, 0, 30)),
     h_phiP_el(new TH2F(("phiP_el_" + targetName).c_str(), "phiP_el", nubin,  0, 10,nubin, 0, 360)),
     h_thetaP_had(new TH2F(("thetaP_had_" + targetName).c_str(), "thetaP_had", nubin, 0, 7,  nubin, 0, 100)),
@@ -126,12 +126,15 @@ Monitoring::Monitoring(CutSet a, const std::string& targetName)
     h_Vz_post(new TH1F((std::string("Vz_post_") + targetName).c_str(),  "Vz (post Vz cut)", 100, -20, 15)),
     h_Q2_pre(new TH1F((std::string("Q2_pre_")  + targetName).c_str(),  "Q^{2} (pre Q2 cut)", nubin, QminX, QmaxX)),
     h_Q2_post(new TH1F((std::string("Q2_post_") + targetName).c_str(),  "Q^{2} (post Q2 cut)", nubin, QminX, QmaxX)),
+    h_xb_Q2_pre(new TH2F((std::string("xb_Q2_pre_")  + targetName).c_str(), "x_{B} vs Q^{2} (pre x_{B} & Q^{2} cuts)", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
+    h_xb_Q2_post(new TH2F((std::string("xb_Q2_post_") + targetName).c_str(), "x_{B} vs Q^{2} (post x_{B} & Q^{2} cuts)", nubin, xminX, xmaxX, nubin, QminX, QmaxX)),
     h_y_pre(new TH1F((std::string("y_pre_")   + targetName).c_str(),  "y (pre y cut)", nubin, yminX, ymaxX)),
     h_y_post(new TH1F((std::string("y_post_")  + targetName).c_str(),  "y (post y cut)", nubin, yminX, ymaxX)),
     h_nu_pre(new TH1F((std::string("nu_pre_")  + targetName).c_str(),  "nu (pre nu cut)", nubin, numinX, numaxX)),
     h_nu_post(new TH1F((std::string("nu_post_") + targetName).c_str(),  "nu (post nu cut)", nubin, numinX, numaxX)),
     h_W2_pre(new TH1F((std::string("W2_pre_")  + targetName).c_str(),  "W^{2} (pre W^{2} cut)", nubin, WminX, WmaxX)),
     h_W2_post(new TH1F((std::string("W2_post_") + targetName).c_str(),  "W^{2} (post W^{2} cut)", nubin, WminX, WmaxX)),
+    h_phih_post(new TH1F((std::string("phih_post_") + targetName).c_str(),  "phi_h (post phi_h cut)", nubin, phihminX, phihmaxX)),
     h_z_pre(new TH1F((std::string("z_pre_")   + targetName).c_str(),  "z (pre z cut)", nubin, zminX, zmaxX)),
     h_z_post(new TH1F((std::string("z_post_")  + targetName).c_str(),  "z (post z cut)", nubin, zminX, zmaxX)),
     h_pt2_pre(new TH1F((std::string("pt2_pre_")  + targetName).c_str(),  "p_{T}^{2} (pre p_{T}^{2} cut)", nubin, pt2minX, pt2maxX)),
@@ -1808,6 +1811,7 @@ void Monitoring::FillPrePostCutHistograms(const Event& event) {
     // Vz
     double Vz = event.GetVz();
     h_Vz_pre->Fill(Vz);
+        //h_xb_Q2_pre->Fill(event.Getxb(), event.GetQ2()); // for checking wit
     if (!cut1.PassCutVzselection(event)) {
         return;
     }
@@ -1822,11 +1826,21 @@ void Monitoring::FillPrePostCutHistograms(const Event& event) {
     // Q2
     double Q2 = event.GetQ2();
     double xB = event.Getxb();
+    h_xb_Q2_pre->Fill(xB,Q2);
+
     h_Q2_pre->Fill(Q2);
     if (Q2 < Constants::RcutminQ || Q2 > Constants::RcutmaxQ) {
         return;
     }
     h_Q2_post->Fill(Q2);
+
+    // W2
+    double W2 = event.GetW2();
+    h_W2_pre->Fill(W2);
+    if (W2 < Constants::RcutminW || W2 > Constants::RcutmaxW) {
+        return;
+    }
+    h_W2_post->Fill(W2);
 
     // y
     double y = event.Gety();
@@ -1844,13 +1858,8 @@ void Monitoring::FillPrePostCutHistograms(const Event& event) {
     }
     h_nu_post->Fill(nu);
 
-    // W2
-    double W2 = event.GetW2();
-    h_W2_pre->Fill(W2);
-    if (W2 < Constants::RcutminW || W2 > Constants::RcutmaxW) {
-        return;
-    }
-    h_W2_post->Fill(W2);
+    h_xb_Q2_post->Fill(xB, Q2);
+
  
     // ===================== PRE (before hadron PID) =====================
     for (const Particle& hadron : event.GetHadrons()) {
@@ -1889,12 +1898,19 @@ void Monitoring::FillPrePostCutHistograms(const Event& event) {
 
     //progressive cuts: z -> pt2 
     for (const Particle& hadron : event.GetHadrons()) {
-        double z   = hadron.Getz();
-        h_z_pre->Fill(z);
+        double z = hadron.Getz();
+
+        // Only fill the PRE z histogram if z is finite and > 0.001
+        if (std::isfinite(z) && z > 6e-3) {
+            h_z_pre->Fill(z);
+        }
+
+        // Keep your actual z-cut for the POST histogram as-is
         if (z < Constants::RcutminZ || z > Constants::RcutmaxZ) {
             continue;
         }
         h_z_post->Fill(z);
+
 
         double pt2 = hadron.Getpt2();
         h_pt2_pre->Fill(pt2);
@@ -1914,6 +1930,8 @@ void Monitoring::FillPrePostCutHistograms(const Event& event) {
             }
             if (h_pt2_vz_pi_postKIN) {
                 h_pt2_vz_pi_postKIN->Fill(hadron.GetParticleVertexZ(), hadron.Getpt2());
+                h_phih_post->Fill(hadron.Getphih());
+
             }
         }
     }
@@ -2047,6 +2065,10 @@ void Monitoring::SaveFINRoot(const std::string& filenameREC) {
     h_pt2_post->Write();
     h_sampl_el_pre->Write();
     h_sampl_el_post->Write();
+    h_phih_post->Write();
+    h_xb_Q2_pre->Write();
+    h_xb_Q2_post->Write();
+
 
 // --- NEW: PID/vertex monitoring ---
     // PRE

@@ -203,7 +203,7 @@ void CompareHistograms() {
     // List the 2D bases you want to draw. Names are "<base><TAG>_RGD" (e.g., "pt2z_Cu_RGD").
     struct Var2D { std::string base; std::string title; std::string xlab; std::string ylab; };
     const std::vector<Var2D> vars2D = {
-        {"pt2z_", "p_{T}^{2} vs z",       "z",                 "p_{T}^{2} [GeV^{2}]"},
+        {"pt2z_", "p_{T}^{2} vs z",       "p_{T}^{2} [GeV^{2}]",      "z"},
         {"xQ2_",  "Q^{2} vs x_{B}",       "x_{B}",             "Q^{2} [GeV^{2}]"}
     };
 
