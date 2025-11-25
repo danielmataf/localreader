@@ -245,7 +245,7 @@ int main(int argc, char** argv){
         TCanvas c("c","",900,650);
         const double x1 = Z_EDGES[0], x2 = Z_EDGES[5];
         drawFrameAndTitle(
-          c, x1, x2, 0.2, 1.8,
+          c, x1, x2, 0.8, 1.2,
           Form("<cos#phi_{h}> ratio  A/LD2  |  scheme=%s  |  x_{B} [%g,%g]  #theta_{e} [%g,%g] deg  p_{T}^{2} [%g,%g] GeV^{2}",
                cfg.scheme.c_str(),
                G.x[ixb-1], G.x[ixb], G.th[ith-1], G.th[ith],

@@ -1,24 +1,8 @@
 // electronCountsR.cpp
-// ------------------------------*
-// Plots electron counts vs xB for all 4 targets, per theta bin.
-// Reads from R_unfold_TARGET.root files.
-// Outputs multi-page PDF (one page per theta bin).
-//how to compile 
-// g++ electronCountsR.cpp -o electronCountsR $(root-config --cflags --libs)
-//# DAT binning (default)
-//./electronCountsR --scheme DAT
-
-//# BIS binning
-//./electronCountsR --scheme BIS
-
-//# if needed :save PNGs for each θ page
-//./electronCountsR --scheme DAT --png
-
-// electronCountsR.cpp
 // Plot only-electron counts vs xB for all four targets (CxC, Cu, LD2, Sn)
 // One page per theta bin, points only with Poisson errors.
 //
-// not normalized!!!! maybe consider normalizing with intgral 1 . Errors are small 
+// Normalized per-theta-bin distributions (sum_x N = 1).
 // Build: g++ electronCountsR.cpp -o electronCountsR $(root-config --cflags --libs)
 // Run  : ./electronCountsR --scheme DAT
 //        ./electronCountsR --scheme BIS
@@ -44,12 +28,13 @@ struct Config {
   std::string scheme = "DAT"; // DAT or BIS
   bool save_png = false;      // PDF by default, PNG if true
 } cfg;
-// whatever options we could have either BIS or DATA 
+
 void usage(const char* prog){
   std::cerr
     << "Usage: " << prog << " --scheme DAT|BIS [--png]\n"
-    << "Reads unfold_<SCHEME>_<TARGET>.root (TARGET = CxC, Cu, LD2, Sn)\n"
-    << "Plots N(xB,theta) with Poisson errors, one page per theta bin.\n"
+    << "Reads R_unfold_<SCHEME>_<TARGET>.root (TARGET = CxC, Cu, LD2, Sn)\n"
+    << "and unf2D_<TARGET>outw4.root with h_xB_thetael_UNF.\n"
+    << "Plots N(xB,theta) (normalized) with Poisson errors, one page per theta bin.\n"
     << "Outputs electroncount_<SCHEME>.pdf or PNGs.\n";
 }
 
@@ -81,21 +66,21 @@ int main(int argc, char** argv){
   gStyle->SetOptStat(0);
 
   const std::vector<std::string> targets = {"CxC","Cu","LD2","Sn"};
-  const std::vector<int> colors = {kBlack, kGreen+2, kBlue, kRed};
+  const std::vector<int> colors  = {kBlack, kGreen+2, kBlue, kRed};
 
+  // --- Original data (R_unfold_...) ---
   std::vector<TargetData> data;
   data.reserve(targets.size());
 
-  //get hists
   for (size_t i=0;i<targets.size();++i){
     TargetData t;
-    t.name = targets[i];
+    t.name  = targets[i];
     t.color = colors[i];
 
     std::string fname = "R_unfold_" + cfg.scheme + "_" + t.name + ".root";
     t.file.reset(TFile::Open(fname.c_str(), "READ"));
     if (!t.file || t.file->IsZombie()){
-      std::cerr << "[Err] error openeing file " << fname << "\n";
+      std::cerr << "[Err] error opening file " << fname << "\n";
       return 10;
     }
 
@@ -109,61 +94,128 @@ int main(int argc, char** argv){
     data.push_back(std::move(t));
   }
 
-  // use binning of first hist
+  // --- Unfolded data (unf2D_...outw4.root, h_xB_thetael_UNF) ---
+  std::vector<TargetData> dataUnf;
+  dataUnf.reserve(targets.size());
+
+for (size_t i=0;i<targets.size();++i){
+  TargetData t;
+  t.name  = targets[i];
+  t.color = colors[i]; // same color as original
+
+  // Directory where the UNF files live
+  const std::string unfDir = "/home/matamoros/Downloads/RooUnfold/";
+
+  std::string fname = unfDir + "unf2D_" + t.name + "outw4.root";
+  t.file.reset(TFile::Open(fname.c_str(), "READ"));
+  if (!t.file || t.file->IsZombie()){
+    std::cerr << "[Err] error opening UNF file " << fname << "\n";
+    return 20;
+  }
+
+  std::string hname = "h_xB_thetael_UNF";
+  t.hist = dynamic_cast<TH2*>(t.file->Get(hname.c_str()));
+  if (!t.hist){
+    std::cerr << "[Err] Missing UNF histogram " << hname << " in " << fname << "\n";
+    return 21;
+  }
+
+  dataUnf.push_back(std::move(t));
+}
+
+  // --- Use binning of first original hist for page structure ---
   TH2* href = data.front().hist;
   TAxis* ax = href->GetXaxis();
   TAxis* ay = href->GetYaxis();
-  int ny = ay->GetNbins();
+  int ny = ay->GetNbins();   // number of theta bins (pages)
 
   std::string outName = "electroncount_" + cfg.scheme + (cfg.save_png ? "" : ".pdf");
 
   bool firstPage = true;
   for (int iy=1; iy<=ny; ++iy){
     auto* c = new TCanvas(Form("c_theta_%d", iy), "", 900, 650);
-    //c->SetGrid(); //no GRID
 
     double ymin = 1e99, ymax = -1e99;
 
-    std::vector<TGraphErrors*> graphs;
-  //double ymin = +1e99, ymax = -1e99;
+    std::vector<TGraphErrors*> graphs;     // original
+    std::vector<TGraphErrors*> graphsUnf;  // unfolded
 
-for (auto& t : data) {
-  TGraphErrors* g = new TGraphErrors();
-  const int nx = ax->GetNbins();
+    // ---------- ORIGINAL DATA GRAPHS ----------
+    for (auto& t : data) {
+      TGraphErrors* g = new TGraphErrors();
+      const int nx = ax->GetNbins();
 
-  // 
-  double total = 0.0;
-  for (int ix=1; ix<=nx; ++ix)   total += t.hist->GetBinContent(ix, iy); // this should sum all the counts each xb in this theata bin
+      double total = 0.0;
+      for (int ix=1; ix<=nx; ++ix)
+        total += t.hist->GetBinContent(ix, iy);
 
-    g->Set(nx);
+      g->Set(nx);
 
-  for (int ix=1; ix<=nx; ++ix) {  //looping a second time over the xb bins to fill graphs now that we have the total count per bin info 
-    const double x    = ax->GetBinCenter(ix);   //standard xB bin center
-    const double Nraw = t.hist->GetBinContent(ix, iy);  // "raw" counts in this (xB, theta) bin 
-    const double eRaw = std::sqrt(std::max(0.0, Nraw));  // Poisson raw error, so just the sqrt
+      for (int ix=1; ix<=nx; ++ix) {
+        const double x    = ax->GetBinCenter(ix);
+        const double Nraw = t.hist->GetBinContent(ix, iy);
+        const double eRaw = std::sqrt(std::max(0.0, Nraw));
 
-    const double N    = (total > 0.0) ? (Nraw / total) : 0.0;   // total is known cause we looped twice // acts as an "average" count
-    const double eN   = (total > 0.0) ? (eRaw / total) : 0.0;   // total is known cause we looped twice// acts as an "average" count
+        const double N  = (total > 0.0) ? (Nraw / total) : 0.0;
+        const double eN = (total > 0.0) ? (eRaw / total) : 0.0;
 
-    g->SetPoint(ix-1, x, N);
-    g->SetPointError(ix-1, 0.0, eN);
+        g->SetPoint(ix-1, x, N);
+        g->SetPointError(ix-1, 0.0, eN);
 
-    ymin = std::min(ymin, N - eN);
-    ymax = std::max(ymax, N + eN);
-  }
+        ymin = std::min(ymin, N - eN);
+        ymax = std::max(ymax, N + eN);
+      }
 
-  g->SetMarkerColor(t.color);
-  g->SetLineColor(t.color);   //same color
-  g->SetMarkerStyle(20);
-  g->SetMarkerSize(1.0);
-  g->SetLineWidth(1);
+      g->SetMarkerColor(t.color);
+      g->SetLineColor(t.color);
+      g->SetMarkerStyle(20);   // solid marker (data)
+      g->SetMarkerSize(1.0);
+      g->SetLineWidth(1);
 
-  graphs.push_back(g);
-}
+      graphs.push_back(g);
+    }
 
-    double x1 = ax->GetBinLowEdge(1);
+    // ---------- UNFOLDED DATA GRAPHS ----------
+    // Same theta-bin index 'iy', but use their own xB binning.
+    for (auto& t : dataUnf) {
+      TGraphErrors* g = new TGraphErrors();
+      TAxis* axUnf = t.hist->GetXaxis();
+      const int nxUnf = axUnf->GetNbins();
+
+      double total = 0.0;
+      for (int ix=1; ix<=nxUnf; ++ix)
+        total += t.hist->GetBinContent(ix, iy);
+
+      g->Set(nxUnf);
+
+      for (int ix=1; ix<=nxUnf; ++ix) {
+        const double x    = axUnf->GetBinCenter(ix);      // UNF xB bin center (5 bins)
+        const double Nraw = t.hist->GetBinContent(ix, iy);
+        const double eRaw = std::sqrt(std::max(0.0, Nraw));
+
+        const double N  = (total > 0.0) ? (Nraw / total) : 0.0;
+        const double eN = (total > 0.0) ? (eRaw / total) : 0.0;
+
+        g->SetPoint(ix-1, x, N);
+        g->SetPointError(ix-1, 0.0, eN);
+
+        ymin = std::min(ymin, N - eN);
+        ymax = std::max(ymax, N + eN);
+      }
+
+      g->SetMarkerColor(t.color);
+      g->SetLineColor(t.color);
+      g->SetMarkerStyle(24);   // hollow marker (unfolded)
+      g->SetMarkerSize(1.0);
+      g->SetLineWidth(1);
+
+      graphsUnf.push_back(g);
+    }
+
+    // ---------- FRAME & AXES ----------
+    double x1 = 0.0; // force X-axis to start at 0, as you requested
     double x2 = ax->GetBinUpEdge(ax->GetNbins());
-    double pad = 0.15 * ymax;
+    double pad = (ymax > 0.0) ? 0.15 * ymax : 0.1;
     double y1 = std::max(0.0, ymin - pad);
     double y2 = ymax + pad;
 
@@ -175,26 +227,46 @@ for (auto& t : data) {
     double thH = ay->GetBinUpEdge(iy);
     frame->SetTitle(Form("#theta_{e} #in [%.3g, %.3g] deg", thL, thH));
 
-    for (auto* g : graphs) g->Draw("PE SAME");
+    // Draw original first, then UNF over them
+    for (auto* g : graphs)    g->Draw("PE SAME");
+    for (auto* g : graphsUnf) g->Draw("PE SAME");
 
-    auto* leg = new TLegend(0.65, 0.72, 0.88, 0.90);
-    leg->SetBorderSize(0); leg->SetFillStyle(0); leg->SetTextSize(0.035);
-    leg->AddEntry(graphs[0], "CxC", "p");
-    leg->AddEntry(graphs[1], "Cu", "p");
-    leg->AddEntry(graphs[2], "LD2", "p");
-    leg->AddEntry(graphs[3], "Sn", "p");
+    // ---------- LEGEND ----------
+    auto* leg = new TLegend(0.60, 0.62, 0.88, 0.90);
+    leg->SetBorderSize(0);
+    leg->SetFillStyle(0);
+    leg->SetTextSize(0.032);
+
+    // assumes same ordering of targets in graphs and graphsUnf
+    leg->AddEntry(graphs[0],    "CxC (data)", "p");
+    leg->AddEntry(graphsUnf[0], "CxC (unf.)", "p");
+    leg->AddEntry(graphs[1],    "Cu (data)",  "p");
+    leg->AddEntry(graphsUnf[1], "Cu (unf.)",  "p");
+    leg->AddEntry(graphs[2],    "LD2 (data)", "p");
+    leg->AddEntry(graphsUnf[2], "LD2 (unf.)", "p");
+    leg->AddEntry(graphs[3],    "Sn (data)",  "p");
+    leg->AddEntry(graphsUnf[3], "Sn (unf.)",  "p");
     leg->Draw();
 
-    // output
+    // ---------- OUTPUT ----------
     if (cfg.save_png) {
       c->Print(Form("electroncount_%s_theta%d.png", cfg.scheme.c_str(), iy));
     } else {
-      if (firstPage) c->Print((outName + "(").c_str()), firstPage=false;
-      else if (iy==ny) c->Print((outName + ")").c_str());
-      else c->Print(outName.c_str());
+      if (firstPage) {
+        c->Print((outName + "(").c_str());
+        firstPage = false;
+      }
+      else if (iy==ny) {
+        c->Print((outName + ")").c_str());
+      }
+      else {
+        c->Print(outName.c_str());
+      }
     }
 
-    for (auto* g : graphs) delete g;
+    // cleanup
+    for (auto* g : graphs)    delete g;
+    for (auto* g : graphsUnf) delete g;
     delete c;
   }
 

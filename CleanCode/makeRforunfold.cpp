@@ -79,7 +79,7 @@ std::string joinEdges(const std::vector<double>& v) {
 TString makeSelZPtPhi(int iz, int ip, int iph, bool includePhi) {
   // z in [z_i, z_{i+1})
   // pt2 in [pt_i, pt_{i+1})
-  // phi in [phi_i, phi_{i+1}) except last: <=
+  // phi in [phi_i, phi_{i+1}) except in thelast
   char buf[512];
   TString sel;
 
@@ -155,7 +155,7 @@ void fillAndWriteHists(TTree* Thad, TTree* Tele,
       fout->cd(); // back to file root
     }
   } else {
-    // No phih binning: write 25 histograms at the top level
+    //no phih binning: write 25 histograms at the top foilder
     for (int ip = 0; ip < 5; ++ip) {
       for (int iz = 0; iz < 5; ++iz) {
         char hname[128];
@@ -176,7 +176,7 @@ void fillAndWriteHists(TTree* Thad, TTree* Tele,
     }
   }
 
-  // ---- Only-electron histogram at top level ----
+  // ---- Only-electron histogram at top folder ----
   {
     char hname[128];
     std::snprintf(hname, sizeof(hname), "h%s_onlye_%s",
